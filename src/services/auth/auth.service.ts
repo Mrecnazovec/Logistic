@@ -7,10 +7,12 @@ import {
 	ILoginResponse,
 	IResetPassword,
 	IResetPasswordResponse,
+	ITokenRefreshRequest,
+	ITokenRefreshResponse,
 } from '@/shared/types/Login.interface'
 import { removeFromStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
-import { ILogoutRequest, ILogoutResponse } from '@/shared/types/Logout.interface'
+import { ILogoutResponse } from '@/shared/types/Logout.interface'
 import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto } from '@/shared/types/Registration.interface'
 
 class AuthService {
@@ -47,13 +49,16 @@ class AuthService {
 		return response
 	}
 
-	async getNewTokens() {
-		const response = await axiosClassic<ILoginResponse>({
+	async getNewTokens(data: ITokenRefreshRequest) {
+		const response = await axiosClassic<ITokenRefreshResponse>({
 			url: API_URL.auth('refresh'),
 			method: 'POST',
+			data,
 		})
 
-		if (response.data.access) saveTokenStorage(response.data.access)
+		if (response.data.access) {
+			saveTokenStorage(response.data.access, response.data.refresh)
+		}
 
 		return response
 	}
