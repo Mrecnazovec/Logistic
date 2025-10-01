@@ -19,7 +19,7 @@ export interface IMe {
 
 export type PatchedMeDto = Partial<Pick<IMe, 'first_name' | 'phone' | 'company_name' | 'photo'>>
 
-// export type UpdateMe = Partial<Pick<IMe, 'first_name' | 'phone' | 'company_name' | 'photo'>>
+export type UpdateMeDto = Partial<Pick<IMe, 'first_name' | 'phone' | 'company_name' | 'photo'>>
 
 export interface RoleChangeDto {
 	role: RoleEnum
