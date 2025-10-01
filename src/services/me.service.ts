@@ -3,27 +3,38 @@ import { API_URL } from '@/config/api.config'
 import { IMe, PatchedMeDto, UpdateMeDto } from '@/shared/types/Me.interface'
 
 class MeService {
+
+	/* GET */
+
 	async getMe() {
-		return await axiosWithAuth<IMe>({
+		const { data } = await axiosWithAuth<IMe>({
 			url: API_URL.auth('me'),
 			method: 'GET',
 		})
+
+		return data
 	}
 
+	/* PUT & PATCH */
+
 	async updateMe(data: UpdateMeDto) {
-		return await axiosWithAuth<IMe>({
+		const { data: updatedMe } = await axiosWithAuth<IMe>({
 			url: API_URL.auth('me/update'),
 			method: 'PUT',
 			data,
 		})
+
+		return updatedMe
 	}
 
 	async patchMe(data: PatchedMeDto) {
-		return await axiosWithAuth<IMe>({
+		const { data: patchedMe } = await axiosWithAuth<IMe>({
 			url: API_URL.auth('me/update'),
 			method: 'PATCH',
 			data,
 		})
+
+		return patchedMe
 	}
 }
 export const meService = new MeService()

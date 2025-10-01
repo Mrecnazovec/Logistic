@@ -16,6 +16,9 @@ import { ILogoutResponse } from '@/shared/types/Logout.interface'
 import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto } from '@/shared/types/Registration.interface'
 
 class AuthService {
+
+	/* POST */
+
 	async login(data: ILogin) {
 		const response = await axiosClassic<ILoginResponse>({
 			url: API_URL.auth('login'),
