@@ -5,12 +5,12 @@ export interface IPaginatedCargoListList {
 	count: number
 	next?: string | null
 	previous?: string | null
-	result: ICargoList[]
+	results: ICargoList[]
 }
 
 export interface IPaginatedOfferShortList {
 	count: number
 	next?: string | null
 	previous?: string | null
-	result: IOfferShort[]
+	results: IOfferShort[]
 }
