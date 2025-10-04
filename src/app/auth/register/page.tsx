@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
-import { AuthPage } from './AuthPage'
+import { RegisterPage } from './RegisterPage'
 
 export const metadata: Metadata = {
-	title: 'Авторизация',
+	title: 'Регистрация',
 }
 
 export default function page() {
-	return <AuthPage />
+	return <RegisterPage />
 }

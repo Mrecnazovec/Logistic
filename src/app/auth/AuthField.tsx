@@ -23,12 +23,12 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 				}}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-muted-foreground'>Введите почту</FormLabel>
+						<FormLabel className='text-grayscale'>Введите почту</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} />
-								<InputGroupAddon className='pr-3'>
-									<Mail />
+								<InputGroupAddon className='pr-2'>
+									<Mail className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>
@@ -43,12 +43,12 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 				}}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-muted-foreground'>Введите пароль</FormLabel>
+						<FormLabel className='text-grayscale'>Введите пароль</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите пароль' disabled={isPending} {...field} value={field.value ?? ''} />
-								<InputGroupAddon className='pr-3'>
-									<LockKeyhole />
+								<InputGroupInput placeholder='Введите пароль' type='password' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupAddon className='pr-2'>
+									<LockKeyhole className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>
@@ -56,20 +56,20 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 				)}
 			/>
 
-			<div className='flex items-center justify-between mb-6'>
+			<div className='flex items-center gap-4 justify-between flex-wrap mb-6'>
 				<FormField
 					control={form.control}
 					name='remember_me'
 					render={({ field }) => (
 						<FormItem className='flex flex-row items-center space-x-2'>
 							<FormControl>
-								<Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isPending} />
+								<Checkbox className='rounded-full ' checked={field.value} onCheckedChange={field.onChange} disabled={isPending} />
 							</FormControl>
 							<FormLabel className='text-sm font-medium leading-none cursor-pointer'>Запомнить меня</FormLabel>
 						</FormItem>
 					)}
 				/>
-				<Link href={PUBLIC_URL.auth('forgot')}>Забыли пароль?</Link>
+				<Link className='text-brand text-base font-medium' href={PUBLIC_URL.auth('forgot-password')}>Забыли пароль?</Link>
 			</div>
 		</>
 	)

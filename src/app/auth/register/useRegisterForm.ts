@@ -1,6 +1,6 @@
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { authService } from '@/services/auth/auth.service'
-import { ILogin } from '@/shared/types/Login.interface'
+import { RegisterDto } from '@/shared/types/Registration.interface'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
@@ -11,39 +11,33 @@ interface IErrorResponse {
 	message: string
 }
 
-export function useAuthForm() {
+export function useRegisterForm() {
 	const router = useRouter()
 
-	const form = useForm<ILogin>({
+	const form = useForm<RegisterDto>({
 		mode: 'onChange',
 	})
 
 	const { mutate, isPending } = useMutation({
-		mutationKey: ['auth user'],
-		mutationFn: (data: ILogin) => authService.login(data),
+		mutationKey: ['register user'],
+		mutationFn: (data: RegisterDto) => authService.register(data),
 		onSuccess(result) {
 			form.reset()
-			const isVerified = result.user.is_email_verified
 
-			if (isVerified === false) {
-				router.replace(PUBLIC_URL.auth('verification'))
-				return
-			}
-			
-			toast.success('Успешная авторизация')
-			router.replace(DASHBOARD_URL.home())
+			toast.success('Мы отправили письмо с кодом подтверждения')
+			router.replace(PUBLIC_URL.auth('verification'))
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>
 			if (err.response) {
 				toast.error(err.response.data?.message)
 			} else {
-				toast.error('Ошибка при авторизации')
+				toast.error('Ошибка при регистрации')
 			}
 		},
 	})
 
-	const onSubmit: SubmitHandler<ILogin> = (data) => {
+	const onSubmit: SubmitHandler<RegisterDto> = (data) => {
 		mutate(data)
 	}
 

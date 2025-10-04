@@ -16,105 +16,104 @@ import { ILogoutResponse } from '@/shared/types/Logout.interface'
 import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto } from '@/shared/types/Registration.interface'
 
 class AuthService {
-
 	/* POST */
 
 	async login(data: ILogin) {
-		const response = await axiosClassic<ILoginResponse>({
+		const { data: result } = await axiosClassic<ILoginResponse>({
 			url: API_URL.auth('login'),
 			method: 'POST',
 			data,
 		})
 
-		if (response.data.access) saveTokenStorage(response.data.access)
+		if (result.access) saveTokenStorage(result.access)
 
-		return response
+		return result
 	}
 
 	async register(data: RegisterDto) {
-		const response = await axiosClassic<IRegisterResponse>({
+		const { data: result } = await axiosClassic<IRegisterResponse>({
 			url: API_URL.auth('register'),
 			method: 'POST',
 			data,
 		})
 
-		return response
+		return result
 	}
 
 	async logout(refresh?: string) {
-		const response = await axiosWithAuth<ILogoutResponse>({
+		const { data: result } = await axiosWithAuth<ILogoutResponse>({
 			url: API_URL.auth('logout'),
 			method: 'POST',
 			data: refresh ? { refresh } : {},
 		})
 
 		removeFromStorage()
-		return response
+		return result
 	}
 
 	async getNewTokens(data: ITokenRefreshRequest) {
-		const response = await axiosClassic<ITokenRefreshResponse>({
+		const { data: result } = await axiosClassic<ITokenRefreshResponse>({
 			url: API_URL.auth('refresh'),
 			method: 'POST',
 			data,
 		})
 
-		if (response.data.access) {
-			saveTokenStorage(response.data.access, response.data.refresh)
+		if (result.access) {
+			saveTokenStorage(result.access, result.refresh)
 		}
 
-		return response
+		return result
 	}
 
 	async changeRole(data: RoleChangeDto) {
-		const response = await axiosWithAuth<IRoleChangeResponse>({
+		const { data: result } = await axiosWithAuth<IRoleChangeResponse>({
 			url: API_URL.auth('change-role'),
 			method: 'POST',
 			data,
 		})
 
-		return response
+		return result
 	}
 
 	async forgotPassword(data: IForgotPassword) {
-		const response = await axiosClassic<IForgotPasswordResponse>({
+		const { data: result } = await axiosClassic<IForgotPasswordResponse>({
 			url: API_URL.auth('forgot-password'),
 			method: 'POST',
 			data,
 		})
 
-		return response
+		return result
 	}
 
 	async resendVerify(email: string) {
-		const response = await axiosClassic<IResendVerifyResponse>({
+		const { data: result } = await axiosClassic<IResendVerifyResponse>({
 			url: API_URL.auth('resend-verify'),
 			method: 'POST',
 			data: { email },
 		})
 
-		return response
+		return result
 	}
 
 	async resetPassword(data: IResetPassword) {
-		const response = await axiosClassic<IResetPasswordResponse>({
+		const { data: result } = await axiosClassic<IResetPasswordResponse>({
 			url: API_URL.auth('reset-password'),
 			method: 'POST',
 			data,
 		})
 
-		return response
+		return result
 	}
 
 	async verifyEmail(data: IVerifyEmail) {
-		const response = await axiosClassic<IVerifyEmailResponse>({
+		const { data: result } = await axiosClassic<IVerifyEmailResponse>({
 			url: API_URL.auth('verify-email'),
 			method: 'POST',
 			data,
 		})
 
-		if (response.data.access) saveTokenStorage(response.data.access)
-		return response
+		if (result.access) saveTokenStorage(result.access)
+		return result
 	}
 }
 

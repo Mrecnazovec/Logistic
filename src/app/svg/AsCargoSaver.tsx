@@ -1,0 +1,65 @@
+import React from 'react'
+
+interface IconProps {
+	color?: string
+
+}
+
+export const AsCargoSaver = ({ color = 'white' }: IconProps) => (
+	<svg className='size-8' width='25' height='24' viewBox='0 0 25 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+		<path
+			d='M11.1125 11.1752H3.815C3.815 9.18392 5.70875 8.59517 6.45125 8.43017C6.65 8.38517 6.78875 8.21267 6.78875 8.01017V7.95017C6.78875 7.78892 6.695 7.64642 6.5525 7.57142C5.87 7.20767 5.43125 6.45017 5.54375 5.59892C5.66 4.73267 6.36875 4.03892 7.23875 3.94142C8.405 3.81392 9.39125 4.72142 9.39125 5.86142C9.39125 6.61892 8.95625 7.27517 8.31875 7.59392C8.16875 7.66892 8.07125 7.81142 8.07125 7.98017V7.99142C8.07125 8.20142 8.22125 8.37767 8.4275 8.41517C9.18875 8.55767 11.0488 9.09392 11.1125 11.1752Z'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path
+			d='M7.46002 11.1714V14.8539V15.2326C7.46002 16.0726 8.13877 16.7514 8.97877 16.7514H10.6175'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path
+			d='M7.46002 3.92994V2.58369C7.46002 1.74369 8.13877 1.06494 8.97877 1.06494H14.9263C15.77 1.06494 16.4488 1.74369 16.4488 2.58369V6.64494V14.8499V15.2287C16.4488 16.0687 15.77 16.7474 14.9263 16.7474H14.0638'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path
+			d='M16.4487 8.32886L17.0937 8.70386C17.6825 9.05261 18.1437 9.58136 18.41 10.2151L19.4862 12.8214C19.7112 13.3614 19.7825 13.9501 19.685 14.5276L18.8675 19.6051C18.8075 19.9876 18.6762 20.3551 18.4812 20.6926L17.1725 22.9389'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path
+			d='M11.0075 22.9313C11.9675 20.7826 11.2512 18.5513 11.2512 18.5513C11.2512 18.5513 9.28247 13.9426 10.85 13.3126C12.425 12.6901 12.6162 16.6238 14.0637 16.7476'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path d='M5.98999 11.175V14.28' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+		<path
+			d='M20.7387 16.7514L21.125 14.6627C21.2562 13.9464 21.1775 13.2114 20.8962 12.5402L20.3112 11.1377'
+			stroke={color}
+			strokeWidth='0.75'
+			strokeMiterlimit='10'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<path d='M7.46002 14.4863H10.2425' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+		<path d='M12.38 14.4863H16.4488' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+		<path d='M7.46002 2.94385H16.4488' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+		<path d='M17.1613 22.9314H11.0075' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+		<path d='M17.855 9.33765V3.33765' stroke={color} strokeWidth='0.75' strokeMiterlimit='10' strokeLinecap='round' strokeLinejoin='round' />
+	</svg>
+)
