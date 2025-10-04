@@ -73,7 +73,7 @@ export function RegisterFields({ form, isPending }: RegisterFieldsProps) {
 			/>
 
 			{/* Телефон */}
-			{/* <FormField
+			<FormField
 				control={form.control}
 				name='phone'
 				rules={{ required: 'Телефон обязателен' }}
@@ -90,7 +90,7 @@ export function RegisterFields({ form, isPending }: RegisterFieldsProps) {
 						</FormControl>
 					</FormItem>
 				)}
-			/> */}
+			/>
 		</>
 	)
 }

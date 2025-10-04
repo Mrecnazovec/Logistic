@@ -63,13 +63,15 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 					render={({ field }) => (
 						<FormItem className='flex flex-row items-center space-x-2'>
 							<FormControl>
-								<Checkbox className='rounded-full ' checked={field.value} onCheckedChange={field.onChange} disabled={isPending} />
+								<Checkbox className='rounded-full ' checked={field.value ?? false} onCheckedChange={field.onChange} disabled={isPending} />
 							</FormControl>
 							<FormLabel className='text-sm font-medium leading-none cursor-pointer'>Запомнить меня</FormLabel>
 						</FormItem>
 					)}
 				/>
-				<Link className='text-brand text-base font-medium' href={PUBLIC_URL.auth('forgot-password')}>Забыли пароль?</Link>
+				<Link className='text-brand text-base font-medium' href={PUBLIC_URL.auth('forgot-password')}>
+					Забыли пароль?
+				</Link>
 			</div>
 		</>
 	)

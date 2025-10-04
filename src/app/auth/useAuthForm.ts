@@ -29,7 +29,7 @@ export function useAuthForm() {
 				router.replace(PUBLIC_URL.auth('verification'))
 				return
 			}
-			
+
 			toast.success('Успешная авторизация')
 			router.replace(DASHBOARD_URL.home())
 		},
