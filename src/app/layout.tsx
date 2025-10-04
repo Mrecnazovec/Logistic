@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Raleway, Manrope, Inter } from 'next/font/google'
 import './globals.css'
-import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME } from '@/constants/seo.constants'
+import { NO_INDEX_PAGE, SITE_AUTHOR, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME } from '@/constants/seo.constants'
 import { Providers } from './provider'
 
 const raleway = Raleway({
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 	description: SITE_DESCRIPTION,
 	authors: SITE_AUTHOR,
 	keywords: SITE_KEYWORDS,
+	...NO_INDEX_PAGE,
 }
 
 export default function RootLayout({
