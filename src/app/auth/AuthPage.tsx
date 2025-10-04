@@ -1,10 +1,18 @@
+'use client'
+
 import { Button } from '@/components/ui/Button'
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/Select'
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from '@/components/ui/Select'
 import { IMG_URL } from '@/config/url.config'
 import { SelectValue } from '@radix-ui/react-select'
 import Image from 'next/image'
+import { useAuthForm } from './useAuthForm'
+import { Card, CardContent, CardHeader } from '@/components/ui/Card'
+import { Form } from '@/components/ui/form-control/Form'
+import { AuthFields } from './AuthField'
 
 export function AuthPage() {
+	const { form, isPending, onSubmit } = useAuthForm()
+
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
 			<h1 className='sr-only'>Авторизация</h1>
@@ -16,36 +24,53 @@ export function AuthPage() {
 				</div>
 			</div>
 			<div className='flex flex-col h-full px-12 py-8'>
-				<div className='flex gap-2 self-end'>
+				<div className='flex gap-2 self-end justify-self-start'>
 					<Button variant={'outline'} className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 px-4 py-3 font-medium'>
 						Зарегистрироваться
 					</Button>
 					<Select>
 						<SelectTrigger
-							className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand data-[state=open]:text-white transition-all
+							className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand data-[state=open]:text-white transition-all *:data-[slot=select-value]:bg-brand
 '
 							aria-label='Выберите язык'
 						>
 							<SelectValue placeholder='Выберите язык' />
 						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value='UZB'>
+						<SelectContent className='rounded-2xl'>
+							<SelectItem value='UZB' className='rounded-2xl'>
 								<div className='flex items-center gap-2.5 font-medium'>
 									<Image className='rounded-full' src={IMG_URL.svg('uzb')} width={24} height={24} alt='' /> Узбекский
 								</div>
 							</SelectItem>
-							<SelectItem value='RUS'>
+							<SelectSeparator />
+							<SelectItem value='RUS' className='rounded-2xl'>
 								<div className='flex items-center gap-2.5 font-medium'>
 									<Image className='rounded-full' src={IMG_URL.svg('rus')} width={24} height={24} alt='' /> Русский
 								</div>
 							</SelectItem>
-							<SelectItem value='ENG'>
+							<SelectSeparator />
+							<SelectItem value='ENG' className='rounded-2xl'>
 								<div className='flex items-center gap-2.5 font-medium'>
 									<Image className='rounded-full' src={IMG_URL.svg('eng')} width={24} height={24} alt='' /> Английский
 								</div>
 							</SelectItem>
 						</SelectContent>
 					</Select>
+				</div>
+				<div className='flex flex-1 items-center justify-center'>
+					<Card className='w-full max-w-xl'>
+						<CardHeader>
+							<h1 className='text-5xl font-bold text-center'>Войти в аккаунт</h1>
+						</CardHeader>
+						<CardContent>
+							<Form {...form}>
+								<form onSubmit={form.handleSubmit(onSubmit)}>
+									<AuthFields form={form} isPending={isPending}/>
+									<Button className='w-full'>Войти</Button>
+								</form>
+							</Form>
+						</CardContent>
+					</Card>
 				</div>
 			</div>
 		</div>
