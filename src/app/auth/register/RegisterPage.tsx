@@ -1,9 +1,8 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from '@/components/ui/Select'
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { IMG_URL, PUBLIC_URL } from '@/config/url.config'
-import { SelectValue } from '@radix-ui/react-select'
 import Image from 'next/image'
 import { useRegisterForm } from './useRegisterForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -18,15 +17,16 @@ import TruckIcon from '@/app/svg/TruckIcon'
 import LogistIcon from '@/app/svg/LogistIcon'
 import { RegisterRoles } from './RegisterRoles'
 import { Role, RoleEnum } from '@/shared/enums/Role.enum'
+import { RegisterCarrierFields } from './RegisterCarrier'
 
 const ROLES = [
 	{
 		key: Role.CUSTOMER,
-		title: 'Грузоотправитель',
+		title: 'Грузовладелец',
 		icon: AsCargoSaver,
 		color: '#1E3A8A',
 		description: 'Компания или человек, которому нужно что-то перевезти, хранить или обработать.',
-		buttonText: 'грузоотправитель',
+		buttonText: 'грузовладелец',
 	},
 	{
 		key: Role.CARRIER,
@@ -51,6 +51,21 @@ export function RegisterPage() {
 	const { form, isPending, onSubmit } = useRegisterForm()
 
 	const [role, setRole] = useState<RoleEnum>()
+	const [step, setStep] = useState<1 | 2>(1)
+
+	const handleNext = async () => {
+		const isValid = await form.trigger()
+		if (isValid) {
+			setStep(2)
+		} else {
+			const firstErrorField = Object.keys(form.formState.errors)[0]
+			if (firstErrorField) {
+				const element = document.querySelector(`[name="${firstErrorField}"]`)
+				element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+			}
+		}
+	}
+	const handleBack = () => setStep(1)
 
 	const onClick = (role: RoleEnum) => {
 		setRole(role)
@@ -79,11 +94,11 @@ export function RegisterPage() {
 						</Link>
 						<Select>
 							<SelectTrigger
-								className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand-900 data-[state=open]:text-white transition-all *:data-[slot=select-value]:bg-brand-900
+								className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand-900 data-[state=open]:text-white transition-all 
 '
 								aria-label='Выберите язык'
 							>
-								<SelectValue placeholder='Выберите язык' />
+								<SelectValue className='bg-transparent text-foreground' placeholder='Выберите язык' />
 							</SelectTrigger>
 							<SelectContent className='rounded-2xl'>
 								<SelectItem value='UZB' className='rounded-2xl'>
@@ -109,43 +124,74 @@ export function RegisterPage() {
 				</div>
 
 				<div className='flex flex-1 items-center justify-center'>
-					<div className='flex flex-1 items-center justify-center'>
-						<Card className='w-full max-w-xl border-none bg-transparent shadow-none'>
-							<CardHeader className='mb-6'>
-								<h1 className='sm:text-5xl text-4xl font-bold text-center mb-12 '>Регистрация</h1>
-								{!role && (
-									<p className='text-center text-lg font-bold'>
-										Добро пожаловать в {SITE_NAME}! <br /> Пожалуйста, выберите вашу роль для регистрации
-									</p>
-								)}
-							</CardHeader>
-							{!role ? (
-								<CardContent>
-									<RegisterRoles roles={ROLES} onSelect={setRole} />
-									<Button className='mx-auto block ' variant={'link'}>
-										Что такое роли?
-									</Button>
-								</CardContent>
-							) : (
-								<CardContent>
-									<Form {...form}>
-										<form onSubmit={form.handleSubmit((data) => onSubmit({ ...data, role }))}>
-											<RegisterFields form={form} isPending={isPending} />
-											<Button className='w-full' disabled={isPending}>
-												Зарегистрироваться
-											</Button>
-										</form>
-									</Form>
-								</CardContent>
+					<Card className='w-full max-w-xl border-none bg-transparent shadow-none'>
+						<CardHeader className='mb-6'>
+							<h1 className='sm:text-5xl text-4xl font-bold text-center'>
+								{!role ? 'Регистрация' : step === 1 ? 'Регистрация' : 'Информация о компании'}
+							</h1>
+							{!role && (
+								<p className='text-center text-lg font-bold mt-6'>
+									Добро пожаловать в {SITE_NAME}! <br /> Пожалуйста, выберите вашу роль для регистрации
+								</p>
 							)}
-						</Card>
-					</div>
+						</CardHeader>
+
+						{!role ? (
+							<CardContent>
+								<RegisterRoles roles={ROLES} onSelect={setRole} />
+								<Button className='mx-auto block' variant={'link'}>
+									Что такое роли?
+								</Button>
+							</CardContent>
+						) : (
+							<Form {...form}>
+								<form
+									onSubmit={form.handleSubmit((data) =>
+										onSubmit({
+											...data,
+											role,
+										})
+									)}
+								>
+									<CardContent>
+										{role !== Role.CARRIER || step === 1 ? (
+											<>
+												<RegisterFields form={form} isPending={isPending} role={role} />
+												{role === Role.CARRIER ? (
+													<Button type='button' className='w-full' disabled={isPending} onClick={handleNext}>
+														Продолжить
+													</Button>
+												) : (
+													<Button type='submit' className='w-full' disabled={isPending}>
+														Зарегистрироваться
+													</Button>
+												)}
+											</>
+										) : (
+											<>
+												<RegisterCarrierFields role={role} form={form} isPending={isPending} />
+												<div className='flex justify-between items-center gap-4'>
+													<Button type='button' variant={'outline'} onClick={handleBack} disabled={isPending}>
+														Назад
+													</Button>
+													<Button type='submit' disabled={isPending}>
+														Зарегистрироваться
+													</Button>
+												</div>
+											</>
+										)}
+									</CardContent>
+								</form>
+							</Form>
+						)}
+					</Card>
 				</div>
 
 				<div className='flex gap-4 items-center justify-end'>
 					<div className='flex items-center gap-3'>
 						<div className={`w-[39px] h-[4px] rounded-[6px] ${!role ? 'bg-brand' : 'bg-brand/40'}`}></div>
-						<div className={`w-[39px] h-[4px] rounded-[6px] ${role ? 'bg-brand' : 'bg-brand/40'}`}></div>
+						<div className={`w-[39px] h-[4px] rounded-[6px] ${role && step !== 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>
+						{role === Role.CARRIER && <div className={`w-[39px] h-[4px] rounded-[6px] ${step === 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>}
 					</div>
 				</div>
 			</div>

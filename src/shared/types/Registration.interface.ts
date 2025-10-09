@@ -16,6 +16,15 @@ export interface RegisterDto {
 	company_name?: string
 
 	role: RoleEnum
+
+	country: string
+	country_code: string
+	region: string
+	city: string
+
+	transport_name: string
+	car_number: string
+	trailer_number: string
 }
 
 export interface IRegisterResponse {

@@ -9,24 +9,12 @@ export const getAccessToken = () => {
 	return Cookies.get(Tokens.ACCESS_TOKEN) || null
 }
 
-export const getRefreshToken = () => {
-	return Cookies.get(Tokens.REFRESH_TOKEN) || null
-}
-
-export const saveTokenStorage = (accessToken: string, refreshToken?: string) => {
+export const saveTokenStorage = (accessToken: string) => {
 	Cookies.set(Tokens.ACCESS_TOKEN, accessToken, {
 		domain: process.env.APP_DOMAIN,
 		sameSite: 'strict',
-		expires: 1,
+		expires: 30,
 	})
-
-	if (refreshToken) {
-		Cookies.set(Tokens.REFRESH_TOKEN, refreshToken, {
-			domain: process.env.APP_DOMAIN,
-			sameSite: 'strict',
-			expires: 7,
-		})
-	}
 }
 
 export const removeFromStorage = () => {

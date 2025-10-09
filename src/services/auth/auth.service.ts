@@ -59,7 +59,7 @@ class AuthService {
 		})
 
 		if (result.access) {
-			saveTokenStorage(result.access, result.refresh)
+			saveTokenStorage(result.access)
 		}
 
 		return result

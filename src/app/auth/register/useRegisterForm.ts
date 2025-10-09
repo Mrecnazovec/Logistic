@@ -38,7 +38,9 @@ export function useRegisterForm() {
 	})
 
 	const onSubmit: SubmitHandler<RegisterDto> = (data) => {
-		mutate(data)
+		// mutate(data)
+		console.log(data);
+		
 	}
 
 	return { onSubmit, form, isPending }

@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 interface IErrorResponse {
-	message: string
+	detail: string
 }
 
 export function useAuthForm() {
@@ -35,8 +35,10 @@ export function useAuthForm() {
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>
+			console.log(err)
+
 			if (err.response) {
-				toast.error(err.response.data?.message)
+				toast.error(err.response.data.detail)
 			} else {
 				toast.error('Ошибка при авторизации')
 			}

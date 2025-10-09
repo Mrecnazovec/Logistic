@@ -67,7 +67,7 @@ export function AuthPage() {
 				</div>
 				<div className='flex flex-1 items-center justify-center'>
 					<Card className='w-full max-w-xl border-none bg-transparent shadow-none'>
-						<CardHeader className='mb-12'>
+						<CardHeader className='mb-6'>
 							<h1 className='text-5xl font-bold text-center'>Войти в аккаунт</h1>
 						</CardHeader>
 						<CardContent>
