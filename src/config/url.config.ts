@@ -3,7 +3,6 @@ export const APP_URL = process.env.APP_URL as string
 export const PUBLIC_URL = {
 	root: (url = '') => `${url ? url : ''}`,
 
-
 	home: (url = '') => `/${url}`,
 	auth: (url = '') => `/auth/${url}`,
 }
@@ -12,6 +11,8 @@ export const DASHBOARD_URL = {
 	root: (url = '') => `${url ? url : ''}`,
 
 	home: (url = '') => `/dashboard/${url}`,
+	announcements: (url = '') => `/dashboard/announcements/${url}`,
+	posting: (url = '') => `/dashboard/posting/${url}`,
 }
 
 export const IMG_URL = {

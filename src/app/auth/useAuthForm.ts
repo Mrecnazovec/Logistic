@@ -31,11 +31,10 @@ export function useAuthForm() {
 			}
 
 			toast.success('Успешная авторизация')
-			router.replace(DASHBOARD_URL.home())
+			router.replace(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>
-			console.log(err)
 
 			if (err.response) {
 				toast.error(err.response.data.detail)

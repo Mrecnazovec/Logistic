@@ -5,7 +5,8 @@ import { getAccessToken, removeFromStorage } from '@/services/auth/auth-token.se
 import { authService } from '@/services/auth/auth.service'
 
 const options: CreateAxiosDefaults = {
-	baseURL: SERVER_URL,
+	// baseURL: SERVER_URL,
+	baseURL: '/api/proxy',
 	headers: getContentType(),
 	withCredentials: true,
 }

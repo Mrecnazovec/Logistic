@@ -17,6 +17,7 @@ export function Header() {
 	]
 	const [isActive, setIsActive] = useState<number>(0)
 	const { me, isLoading } = useGetMe()
+
 	return (
 		<header className='h-24 flex items-center justify-between pl-10 pr-15 bg-white border-b shadow-lg'>
 			<div className='flex items-center gap-6 self-end'>

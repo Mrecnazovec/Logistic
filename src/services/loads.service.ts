@@ -1,4 +1,5 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
+import { ISearch } from '@/app/dashboard/announcements/Searching/search.interface'
 import { API_URL } from '@/config/api.config'
 import { ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { IPaginatedCargoListList } from '@/shared/types/PaginatedList.interface'
@@ -34,10 +35,11 @@ class LoadsService {
 		return data
 	}
 
-	async getLoadsPublic() {
+	async getLoadsPublic(params?: ISearch) {
 		const { data } = await axiosWithAuth<IPaginatedCargoListList>({
 			url: API_URL.loads('public'),
 			method: 'GET',
+			params,
 		})
 
 		return data

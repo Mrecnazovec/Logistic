@@ -31,7 +31,7 @@ export function Sidebar() {
 				</Tooltip>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Link className='w-full flex justify-center' href={DASHBOARD_URL.home()}>
+						<Link className='w-full flex justify-center' href={DASHBOARD_URL.announcements()}>
 							<Button
 								variant='ghost'
 								className={cn('w-[70%] justify-center text-white hover:bg-white/10 hover:text-white px-6', 'lg:text-base text-sm')}

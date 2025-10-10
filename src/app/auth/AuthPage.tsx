@@ -37,7 +37,7 @@ export function AuthPage() {
 						</Link>
 						<Select>
 							<SelectTrigger
-								className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand-900 data-[state=open]:text-white transition-all *:data-[slot=select-value]:bg-brand-900
+								className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand-900 data-[state=open]:text-white transition-all *:data-[slot=select-value]:bg-brand-900 data-[state=open]:[&_svg]:rotate-180 data-[state=open]:[&_svg]:transition-transform data-[state=open]:[&_svg]:duration-200 data-[state=open]:[&_svg]:text-white
 '
 								aria-label='Выберите язык'
 							>
