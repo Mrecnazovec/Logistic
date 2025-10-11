@@ -1,9 +1,10 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
-import { ISearch } from '@/app/dashboard/announcements/Searching/search.interface'
+
 import { API_URL } from '@/config/api.config'
 import { ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { IPaginatedCargoListList } from '@/shared/types/PaginatedList.interface'
 import { IRefreshResponse } from '@/shared/types/Registration.interface'
+import { ISearch } from '@/shared/types/Search.interface'
 
 class LoadsService {
 	/* GET */

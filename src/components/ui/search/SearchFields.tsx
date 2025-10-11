@@ -4,7 +4,6 @@ import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/for
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { ArrowLeftRight, CalendarIcon, Search, Settings2, SquaresIntersect } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
-import { ISearch } from './search.interface'
 import { CitySelect } from '@/components/ui/selectors/CitySelector'
 import { useState } from 'react'
 import { City } from '@/shared/types/Geo.interface'
@@ -17,6 +16,7 @@ import { Calendar } from '@/components/ui/Calendar'
 import { ru } from 'date-fns/locale'
 import { PriceCurrency, PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 import { usePathname, useRouter } from 'next/navigation'
+import { ISearch } from '@/shared/types/Search.interface'
 
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>

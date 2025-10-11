@@ -1,8 +1,9 @@
-import { ISearch } from '@/app/dashboard/announcements/Searching/search.interface'
+
 import { loadsService } from '@/services/loads.service'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { ISearch } from '@/shared/types/Search.interface'
 
 export const useGetLoadsPublic = () => {
 	const searchParams = useSearchParams()

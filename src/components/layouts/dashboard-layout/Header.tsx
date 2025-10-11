@@ -3,28 +3,42 @@
 import { Button } from '@/components/ui/Button'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
-import { Loader2, Mail, Search, User } from 'lucide-react'
+import { Loader2, Mail, User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
 
 export function Header() {
 	const navList = [
 		{ href: DASHBOARD_URL.announcements(), label: 'Поиск грузоперевозок' },
-		{ href: DASHBOARD_URL.home(), label: 'Мои предложения' },
 		{ href: DASHBOARD_URL.posting(), label: 'Публикация заявки' },
-		{ href: DASHBOARD_URL.home(), label: 'Доска заявок' },
+		{ href: DASHBOARD_URL.desk(), label: 'Доска заявок' },
+		{ href: DASHBOARD_URL.desk('my'), label: 'Мои предложения' },
+		{ href: DASHBOARD_URL.transportation(), label: 'Заказы' },
+		{ href: DASHBOARD_URL.transportation('my'), label: 'Везу' },
 	]
+
 	const { me, isLoading } = useGetMe()
 	const pathname = usePathname()
+	const filteredPathname = `${pathname}/`
+
+	let filteredNavList = navList
+	if (filteredPathname.startsWith(DASHBOARD_URL.announcements())) {
+		filteredNavList = navList.slice(0, 2)
+	} else if (filteredPathname.startsWith(DASHBOARD_URL.desk())) {
+		filteredNavList = navList.slice(2, 4)
+	} else if (filteredPathname.startsWith(DASHBOARD_URL.transportation())) {
+		filteredNavList = navList.slice(4)
+	} else {
+		filteredNavList = []
+	}
 
 	return (
 		<header className='h-24 flex items-center justify-between pl-10 pr-15 bg-white border-b shadow-lg'>
 			<div className='flex items-center gap-6 self-end'>
 				<nav className='hidden md:flex gap-6 font-medium text-gray-700'>
-					{navList.map((item, index) => (
-						<Link href={item.href} key={index} className={`${item.href === `${pathname}/` && 'border-b-4 border-b-brand'}`}>
+					{filteredNavList.map((item, index) => (
+						<Link href={item.href} key={index} className={`${filteredPathname === item.href ? 'border-b-4 border-b-brand' : ''}`}>
 							{item.label}
 						</Link>
 					))}
@@ -48,7 +62,7 @@ export function Header() {
 								<User className='size-5 text-brand' />
 							</div>
 						)}
-						<p className='font-medium text-base'>{me?.first_name}</p>
+						<p className='font-medium text-base'>{me?.first_name ? me?.first_name : 'Пользователь'}</p>
 					</div>
 				)}
 			</div>

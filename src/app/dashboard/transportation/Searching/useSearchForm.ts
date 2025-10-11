@@ -25,7 +25,7 @@ export function useSearchForm() {
 
 		form.reset()
 
-		router.push(`${DASHBOARD_URL.announcements()}?${queryString}`, {
+		router.push(`${DASHBOARD_URL.transportation()}?${queryString}`, {
 			scroll: false,
 		})
 
