@@ -6,24 +6,25 @@ import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { Loader2, Mail, Search, User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 export function Header() {
 	const navList = [
-		{ href: DASHBOARD_URL.home(), label: 'Поиск грузоперевозок' },
+		{ href: DASHBOARD_URL.announcements(), label: 'Поиск грузоперевозок' },
 		{ href: DASHBOARD_URL.home(), label: 'Мои предложения' },
-		{ href: DASHBOARD_URL.home(), label: 'Публикация заявки' },
+		{ href: DASHBOARD_URL.posting(), label: 'Публикация заявки' },
 		{ href: DASHBOARD_URL.home(), label: 'Доска заявок' },
 	]
-	const [isActive, setIsActive] = useState<number>(0)
 	const { me, isLoading } = useGetMe()
+	const pathname = usePathname()
 
 	return (
 		<header className='h-24 flex items-center justify-between pl-10 pr-15 bg-white border-b shadow-lg'>
 			<div className='flex items-center gap-6 self-end'>
 				<nav className='hidden md:flex gap-6 font-medium text-gray-700'>
 					{navList.map((item, index) => (
-						<Link href={item.href} key={index} className={`${isActive === index && 'border-b-4 border-b-brand'}`}>
+						<Link href={item.href} key={index} className={`${item.href === `${pathname}/` && 'border-b-4 border-b-brand'}`}>
 							{item.label}
 						</Link>
 					))}

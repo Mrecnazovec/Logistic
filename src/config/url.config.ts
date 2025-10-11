@@ -12,7 +12,7 @@ export const DASHBOARD_URL = {
 
 	home: (url = '') => `/dashboard/${url}`,
 	announcements: (url = '') => `/dashboard/announcements/${url}`,
-	posting: (url = '') => `/dashboard/posting/${url}`,
+	posting: (url = '') => `/dashboard/announcements/posting/${url}`,
 }
 
 export const IMG_URL = {

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 /* @import 'tw-animate-css'; */
 
 @custom-variant dark (&:is(.dark *));
@@ -39,9 +40,9 @@
 	--color-card-foreground: var(--card-foreground);
 	--color-card: var(--card);
 	--color-brand-900: #1e3a8a;
-	--color-brand: #2563EB;
-	--color-grayscale: #9CA3AF;
-	--color-grayscale-50: #F9FAFB;
+	--color-brand: #2563eb;
+	--color-grayscale: #9ca3af;
+	--color-grayscale-50: #f9fafb;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

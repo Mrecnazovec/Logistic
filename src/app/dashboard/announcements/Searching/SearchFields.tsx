@@ -9,13 +9,13 @@ import { CitySelect } from '@/components/ui/selectors/CitySelector'
 import { useState } from 'react'
 import { City } from '@/shared/types/Geo.interface'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { TransportType } from '@/shared/enums/TransportType.enum'
+import { TransportSelector, TransportType } from '@/shared/enums/TransportType.enum'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/Calendar'
 import { ru } from 'date-fns/locale'
-import { PriceCurrency } from '@/shared/enums/PriceCurrency.enum'
+import { PriceCurrency, PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 import { usePathname, useRouter } from 'next/navigation'
 
 interface SearchFieldsProps {
@@ -89,16 +89,11 @@ export function SearchFields({ form }: SearchFieldsProps) {
 												<SelectValue className='' placeholder='Тип транспорта' />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value={TransportType.TENT}>Тент</SelectItem>
-												<SelectItem value={TransportType.CONT}>Контейнер</SelectItem>
-												<SelectItem value={TransportType.REEFER}>Рефрижератор</SelectItem>
-												<SelectItem value={TransportType.DUMP}>Самосвал</SelectItem>
-												<SelectItem value={TransportType.CARTR}>Автотранспортер</SelectItem>
-												<SelectItem value={TransportType.GRAIN}>Зерновоз</SelectItem>
-												<SelectItem value={TransportType.LOG}>Лесовоз</SelectItem>
-												<SelectItem value={TransportType.PICKUP}>Пикап</SelectItem>
-												<SelectItem value={TransportType.MEGA}>Мега фура</SelectItem>
-												<SelectItem value={TransportType.OTHER}>Другое</SelectItem>
+												{TransportSelector.map((item) => (
+													<SelectItem key={item.type} value={item.type}>
+														{item.name}
+													</SelectItem>
+												))}
 											</SelectContent>
 										</Select>
 									</FormControl>
@@ -117,11 +112,11 @@ export function SearchFields({ form }: SearchFieldsProps) {
 												<SelectValue className='' placeholder='Валюта' />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value={PriceCurrency.UZS}>Суммы</SelectItem>
-												<SelectItem value={PriceCurrency.EUR}>Евро</SelectItem>
-												<SelectItem value={PriceCurrency.RUB}>Рубли</SelectItem>
-												<SelectItem value={PriceCurrency.KZT}>Тенге</SelectItem>
-												<SelectItem value={PriceCurrency.USD}>Доллары</SelectItem>
+												{PriceSelector.map((item) => (
+													<SelectItem value={item.type} key={item.type}>
+														{item.name}
+													</SelectItem>
+												))}
 											</SelectContent>
 										</Select>
 									</FormControl>
@@ -260,16 +255,11 @@ export function SearchFields({ form }: SearchFieldsProps) {
 										<SelectValue className='' placeholder='Тип транспорта' />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value={TransportType.TENT}>Тент</SelectItem>
-										<SelectItem value={TransportType.CONT}>Контейнер</SelectItem>
-										<SelectItem value={TransportType.REEFER}>Рефрижератор</SelectItem>
-										<SelectItem value={TransportType.DUMP}>Самосвал</SelectItem>
-										<SelectItem value={TransportType.CARTR}>Автотранспортер</SelectItem>
-										<SelectItem value={TransportType.GRAIN}>Зерновоз</SelectItem>
-										<SelectItem value={TransportType.LOG}>Лесовоз</SelectItem>
-										<SelectItem value={TransportType.PICKUP}>Пикап</SelectItem>
-										<SelectItem value={TransportType.MEGA}>Мега фура</SelectItem>
-										<SelectItem value={TransportType.OTHER}>Другое</SelectItem>
+										{TransportSelector.map((item) => (
+											<SelectItem key={item.type} value={item.type}>
+												{item.name}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
 							</FormControl>
@@ -288,7 +278,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 											variant='outline'
 											className='justify-start text-left text-grayscale bg-grayscale-50 border-none hover:text-grayscale font-normal'
 										>
-											<CalendarIcon className='size-5' />
+											<CalendarIcon className='size-5 mr-2' />
 											{field.value ? format(new Date(field.value), 'dd MMMM yyyy', { locale: ru }) : 'Выберите дату'}
 										</Button>
 									</FormControl>
