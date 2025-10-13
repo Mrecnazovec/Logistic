@@ -13,6 +13,9 @@ export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 
+	console.log(isLoading)
+	console.log(data)
+
 	return (
 		<div className='flex h-full flex-col gap-4'>
 			<div className='w-full bg-background rounded-[32px] px-4 py-8'>
@@ -28,7 +31,9 @@ export function AnnouncementsPage() {
 						<Search className='size-5 text-brand' />
 					</div>
 					<h1 className='text-5xl font-bold'>Пусто...</h1>
-					<p className='text-xl text-grayscale max-w-2xl text-center'>Чтобы увидеть раздел Поиск Грузоперевозок, сначала надо добавить их. Вы можете это сделать нажав на кнопку снизу</p>
+					<p className='text-xl text-grayscale max-w-2xl text-center'>
+						Чтобы увидеть раздел Поиск Грузоперевозок, сначала надо добавить их. Вы можете это сделать нажав на кнопку снизу
+					</p>
 					<Link href={DASHBOARD_URL.posting()}>
 						<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
 					</Link>
