@@ -3,11 +3,11 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Button } from '@/components/ui/Button'
+import { DataTable } from '@/components/ui/table/DataTable'
 
 interface CargoTableProps {
 	data: ICargoList[]
