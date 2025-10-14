@@ -1,7 +1,7 @@
-export const Role = {
+export const RoleEnum = {
 	LOGISTIC: 'LOGISTIC',
 	CUSTOMER: 'CUSTOMER',
 	CARRIER: 'CARRIER',
 } as const
 
-export type RoleEnum = (typeof Role)[keyof typeof Role]
+export type RoleEnum = (typeof RoleEnum)[keyof typeof RoleEnum]

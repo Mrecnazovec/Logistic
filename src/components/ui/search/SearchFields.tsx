@@ -8,13 +8,13 @@ import { CitySelect } from '@/components/ui/selectors/CitySelector'
 import { useState } from 'react'
 import { City } from '@/shared/types/Geo.interface'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { TransportSelector, TransportType } from '@/shared/enums/TransportType.enum'
+import { TransportSelector } from '@/shared/enums/TransportType.enum'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/Calendar'
 import { ru } from 'date-fns/locale'
-import { PriceCurrency, PriceSelector } from '@/shared/enums/PriceCurrency.enum'
+import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 import { usePathname, useRouter } from 'next/navigation'
 import { ISearch } from '@/shared/types/Search.interface'
 
@@ -287,7 +287,11 @@ export function SearchFields({ form }: SearchFieldsProps) {
 									<Calendar
 										mode='single'
 										selected={field.value ? new Date(field.value) : undefined}
-										onSelect={(date) => field.onChange(date ? date.toISOString().split('T')[0] : '')}
+										onSelect={(date) => {
+											if (!date) return field.onChange('')
+											const localDate = date.toLocaleDateString('en-CA')
+											field.onChange(localDate)
+										}}
 										initialFocus
 									/>
 								</PopoverContent>

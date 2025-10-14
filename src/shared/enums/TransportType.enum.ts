@@ -1,4 +1,4 @@
-export const TransportType = {
+export const TransportTypeEnum = {
 	TENT: 'TENT',
 	CONT: 'CONT',
 	REEFER: 'REEFER',
@@ -11,17 +11,17 @@ export const TransportType = {
 	OTHER: 'OTHER',
 } as const
 
-export type TransportTypeEnum = (typeof TransportType)[keyof typeof TransportType]
+export type TransportTypeEnum = (typeof TransportTypeEnum)[keyof typeof TransportTypeEnum]
 
 export const TransportSelector = [
-	{ type: TransportType.TENT, name: 'Тент' },
-	{ type: TransportType.CONT, name: 'Контейнер' },
-	{ type: TransportType.REEFER, name: 'Рефрижератор' },
-	{ type: TransportType.DUMP, name: 'Самосвал' },
-	{ type: TransportType.CARTR, name: 'Автотранспортер' },
-	{ type: TransportType.GRAIN, name: 'Зерновоз' },
-	{ type: TransportType.LOG, name: 'Лесовоз' },
-	{ type: TransportType.PICKUP, name: 'Пикап' },
-	{ type: TransportType.MEGA, name: 'Мега фура' },
-	{ type: TransportType.OTHER, name: 'Другое' },
+	{ type: TransportTypeEnum.TENT, name: 'Тент' },
+	{ type: TransportTypeEnum.CONT, name: 'Контейнер' },
+	{ type: TransportTypeEnum.REEFER, name: 'Рефрижератор' },
+	{ type: TransportTypeEnum.DUMP, name: 'Самосвал' },
+	{ type: TransportTypeEnum.CARTR, name: 'Автотранспортер' },
+	{ type: TransportTypeEnum.GRAIN, name: 'Зерновоз' },
+	{ type: TransportTypeEnum.LOG, name: 'Лесовоз' },
+	{ type: TransportTypeEnum.PICKUP, name: 'Пикап' },
+	{ type: TransportTypeEnum.MEGA, name: 'Мега фура' },
+	{ type: TransportTypeEnum.OTHER, name: 'Другое' },
 ]

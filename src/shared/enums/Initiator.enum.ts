@@ -1,6 +1,6 @@
-export const Initiator = {
+export const InitiatorEnum = {
 	CUSTOMER: 'CUSTOMER',
 	CARRIER: 'CARRIER',
 } as const
 
-export type InitiatorEnum = (typeof Initiator)[keyof typeof Initiator]
+export type InitiatorEnum = (typeof InitiatorEnum)[keyof typeof InitiatorEnum]

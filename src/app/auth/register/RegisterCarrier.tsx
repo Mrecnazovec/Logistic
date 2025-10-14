@@ -3,7 +3,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/fo
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { Phone, User } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
-import { Role, RoleEnum } from '@/shared/enums/Role.enum'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useState } from 'react'
 import { CitySelect } from '@/components/ui/selectors/CitySelector'
 import { CountrySelect } from '@/components/ui/selectors/CountrySelector'
@@ -31,7 +31,7 @@ export function RegisterCarrierFields({ form, isPending, role }: RegisterFieldsP
 		form.setValue('city', selected.name)
 	}
 
-	if (role === Role.CARRIER) {
+	if (role === RoleEnum.CARRIER) {
 		return (
 			<>
 				{/* ФИО */}

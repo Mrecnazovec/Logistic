@@ -1,4 +1,4 @@
-export const Status = {
+export const StatusEnum = {
 	POSTED: 'POSTED',
 	MATCHED: 'MATCHED',
 	DELIVERED: 'DELIVERED',
@@ -6,4 +6,4 @@ export const Status = {
 	CANCELLED: 'CANCELLED',
 } as const
 
-export type StatusEnum = (typeof Status)[keyof typeof Status]
+export type StatusEnum = (typeof StatusEnum)[keyof typeof StatusEnum]

@@ -16,12 +16,12 @@ import { AsCargoSaver } from '@/app/svg/AsCargoSaver'
 import TruckIcon from '@/app/svg/TruckIcon'
 import LogistIcon from '@/app/svg/LogistIcon'
 import { RegisterRoles } from './RegisterRoles'
-import { Role, RoleEnum } from '@/shared/enums/Role.enum'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { RegisterCarrierFields } from './RegisterCarrier'
 
 const ROLES = [
 	{
-		key: Role.CUSTOMER,
+		key: RoleEnum.CUSTOMER,
 		title: 'Грузовладелец',
 		icon: AsCargoSaver,
 		color: '#1E3A8A',
@@ -29,7 +29,7 @@ const ROLES = [
 		buttonText: 'грузовладелец',
 	},
 	{
-		key: Role.CARRIER,
+		key: RoleEnum.CARRIER,
 		title: 'Перевозчик',
 		icon: TruckIcon,
 		color: '#1E3A8A',
@@ -37,7 +37,7 @@ const ROLES = [
 		buttonText: 'перевозчик',
 	},
 	{
-		key: Role.LOGISTIC,
+		key: RoleEnum.LOGISTIC,
 		title: 'Логист',
 		icon: LogistIcon,
 		color: '#1E3A8A',
@@ -154,10 +154,10 @@ export function RegisterPage() {
 									)}
 								>
 									<CardContent>
-										{role !== Role.CARRIER || step === 1 ? (
+										{role !== RoleEnum.CARRIER || step === 1 ? (
 											<>
 												<RegisterFields form={form} isPending={isPending} role={role} />
-												{role === Role.CARRIER ? (
+												{role === RoleEnum.CARRIER ? (
 													<Button type='button' className='w-full' disabled={isPending} onClick={handleNext}>
 														Продолжить
 													</Button>
@@ -191,7 +191,7 @@ export function RegisterPage() {
 					<div className='flex items-center gap-3'>
 						<div className={`w-[39px] h-[4px] rounded-[6px] ${!role ? 'bg-brand' : 'bg-brand/40'}`}></div>
 						<div className={`w-[39px] h-[4px] rounded-[6px] ${role && step !== 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>
-						{role === Role.CARRIER && <div className={`w-[39px] h-[4px] rounded-[6px] ${step === 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>}
+						{role === RoleEnum.CARRIER && <div className={`w-[39px] h-[4px] rounded-[6px] ${step === 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>}
 					</div>
 				</div>
 			</div>

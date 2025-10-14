@@ -13,9 +13,8 @@ export function usePostForm() {
 	})
 
 	const onSubmit: SubmitHandler<ICargoPublish> = (data) => {
-		// createLoad(data)
-		console.log(data);
-		
+		createLoad(data)
+		console.log(data)
 	}
 
 	return { onSubmit, form, isLoadingCreate }

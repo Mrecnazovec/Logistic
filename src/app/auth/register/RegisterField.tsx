@@ -1,6 +1,6 @@
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { Role, RoleEnum } from '@/shared/enums/Role.enum'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { LockKeyhole, Mail, User, Phone } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
@@ -102,7 +102,7 @@ export function RegisterFields({ form, isPending, role }: RegisterFieldsProps) {
 			/>
 
 			{/* Телефон */}
-			{role !== Role.CARRIER && (
+			{role !== RoleEnum.CARRIER && (
 				<FormField
 					control={form.control}
 					name='phone'

@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { City } from '@/shared/types/Geo.interface'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
-import { Banknote, CalendarIcon, FormInput, Home, Phone, SquaresIntersect } from 'lucide-react'
+import { Banknote, CalendarIcon, Home, Phone, SquaresIntersect } from 'lucide-react'
 import { ru } from 'date-fns/locale'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/Calendar'
@@ -103,7 +103,11 @@ export function PostingPage() {
 											<Calendar
 												mode='single'
 												selected={field.value ? new Date(field.value) : undefined}
-												onSelect={(date) => field.onChange(date ? date.toISOString().split('T')[0] : '')}
+												onSelect={(date) => {
+													if (!date) return field.onChange('')
+													const localDate = date.toLocaleDateString('en-CA')
+													field.onChange(localDate)
+												}}
 												initialFocus
 											/>
 										</PopoverContent>
@@ -175,7 +179,11 @@ export function PostingPage() {
 											<Calendar
 												mode='single'
 												selected={field.value ? new Date(field.value) : undefined}
-												onSelect={(date) => field.onChange(date ? date.toISOString().split('T')[0] : '')}
+												onSelect={(date) => {
+													if (!date) return field.onChange('')
+													const localDate = date.toLocaleDateString('en-CA')
+													field.onChange(localDate)
+												}}
 												initialFocus
 											/>
 										</PopoverContent>

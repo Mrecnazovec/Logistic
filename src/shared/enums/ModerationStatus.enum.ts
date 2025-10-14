@@ -1,7 +1,7 @@
-export const ModerationStatus = {
+export const ModerationStatusEnum = {
 	PENDING: 'pending',
 	APPROVED: 'approved',
 	REJECTED: 'rejected',
 } as const
 
-export type ModerationStatusEnum = (typeof ModerationStatus)[keyof typeof ModerationStatus]
+export type ModerationStatusEnum = (typeof ModerationStatusEnum)[keyof typeof ModerationStatusEnum]

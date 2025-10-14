@@ -1,22 +1,22 @@
-export const ContactPref = {
+export const ContactPrefEnum = {
 	EMAIL: 'email',
 	PHONE: 'phone',
 	BOTH: 'both',
 } as const
 
-export type ContactPrefEnum = (typeof ContactPref)[keyof typeof ContactPref]
+export type ContactPrefEnum = (typeof ContactPrefEnum)[keyof typeof ContactPrefEnum]
 
 export const ContactSelector = [
 	{
-		type: ContactPref.EMAIL,
+		type: ContactPrefEnum.EMAIL,
 		name: 'По эл. почте',
 	},
 	{
-		type: ContactPref.PHONE,
+		type: ContactPrefEnum.PHONE,
 		name: 'По телефону',
 	},
 	{
-		type: ContactPref.BOTH,
+		type: ContactPrefEnum.BOTH,
 		name: 'Оба',
 	},
 ]
