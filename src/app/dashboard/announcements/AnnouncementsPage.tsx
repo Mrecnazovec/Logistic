@@ -26,7 +26,7 @@ export function AnnouncementsPage() {
 					</form>
 				</Form>
 			</div>
-			{isLoading ? <div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
+			{data?.results.length === 0 || isLoading ? <div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
 				<div className='flex items-center justify-center flex-col gap-6'>
 					<div className='bg-background shadow-2xl p-4 rounded-full'>
 						<Search className='size-5 text-brand' />
