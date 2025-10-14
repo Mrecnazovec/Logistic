@@ -6,6 +6,7 @@ import {
 	getPaginationRowModel,
 	useReactTable,
 	ColumnDef,
+	Row,
 } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
 import { Button } from '@/components/ui/Button'
@@ -16,7 +17,7 @@ interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
 	data: TData[]
 	isLoading?: boolean
-	renderSubComponent?: (row: any) => React.ReactNode
+	renderSubComponent?: (row: Row<TData>) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
