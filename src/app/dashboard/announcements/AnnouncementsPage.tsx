@@ -1,24 +1,27 @@
 'use client'
 
-import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
-import { useSearchForm } from './Searching/useSearchForm'
-import { Form } from '@/components/ui/form-control/Form'
 import { Button } from '@/components/ui/Button'
+import { Form } from '@/components/ui/form-control/Form'
+import { SearchFields } from '@/components/ui/search/SearchFields'
+import { DataTable } from '@/components/ui/table/DataTable'
+import { DASHBOARD_URL } from '@/config/url.config'
+import { fakeCargoList } from '@/data/FakeData'
+import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { SearchFields } from '@/components/ui/search/SearchFields'
-import { CargoTable } from './table/CargoTable'
+import { useSearchForm } from './Searching/useSearchForm'
+import { cargoColumns } from './table/CargoColumns'
+import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 
 export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 
-	console.log(isLoading)
-	console.log(data)
+	const fakeData = fakeCargoList
+
 
 	return (
-		<div className='flex h-full flex-col gap-4'>
+		<div className='flex flex-col gap-4'>
 			<div className='w-full bg-background rounded-[32px] px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -26,7 +29,7 @@ export function AnnouncementsPage() {
 					</form>
 				</Form>
 			</div>
-			{data?.results.length === 0 || isLoading ? <div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
+			{fakeData?.results.length === 0 ? <div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
 				<div className='flex items-center justify-center flex-col gap-6'>
 					<div className='bg-background shadow-2xl p-4 rounded-full'>
 						<Search className='size-5 text-brand' />
@@ -39,7 +42,11 @@ export function AnnouncementsPage() {
 						<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
 					</Link>
 				</div>
-			</div> : <CargoTable data={data?.results ?? []} />}
+			</div> : <div><DataTable
+				columns={cargoColumns}
+				data={fakeData.results}
+				renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
+			/></div>}
 		</div>
 	)
 }

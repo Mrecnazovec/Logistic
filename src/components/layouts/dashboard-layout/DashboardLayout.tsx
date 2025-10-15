@@ -10,7 +10,9 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 			<div className='flex-1 flex flex-col bg-[#F9FAFB]'>
 				<Header />
 
-				<main className='flex-1 p-6 '>{children}</main>
+				<main className="flex-1 p-6">
+					{children}
+				</main>
 			</div>
 		</div>
 	)
