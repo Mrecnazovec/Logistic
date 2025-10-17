@@ -67,10 +67,6 @@ export function RegisterPage() {
 	}
 	const handleBack = () => setStep(1)
 
-	const onClick = (role: RoleEnum) => {
-		setRole(role)
-	}
-
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
 			<h1 className='sr-only'>Регистрация</h1>

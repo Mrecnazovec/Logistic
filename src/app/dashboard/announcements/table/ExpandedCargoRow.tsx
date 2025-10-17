@@ -1,10 +1,11 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { ContactSelector } from '@/shared/enums/ContactPref.enum'
 import { TransportSelector } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
 
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const transportName = TransportSelector.find(t => t.type === cargo.transport_type)?.name ?? '—'
@@ -29,13 +30,13 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 				<div className='space-y-3'>
 					<p className='font-medium text-brand'>Откуда</p>
 					<p className='flex justify-between'><span className='text-grayscale'>Место:</span> <span className='font-bold'>{cargo.origin_city}, {cargo.origin_country}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Дата погрузки:</span> <span className='font-bold'>{cargo.load_date}</span></p>
+					<p className='flex justify-between'><span className='text-grayscale'>Дата погрузки:</span> <span className='font-bold'>{format(cargo.load_date, 'dd.MM.yyyy', { locale: ru })}</span></p>
 				</div>
 
 				<div className='space-y-3'>
 					<p className='font-medium text-brand'>Куда</p>
 					<p className='flex justify-between'><span className='text-grayscale'>Место:</span> <span className='font-bold'>{cargo.destination_city}, {cargo.destination_country}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Дата отгрузки:</span> <span className='font-bold'>{cargo.delivery_date ?? '-'}</span></p>
+					<p className='flex justify-between'><span className='text-grayscale'>Дата отгрузки:</span> <span className='font-bold'>{cargo.delivery_date ? format(cargo.delivery_date, 'dd.MM.yyyy', { locale: ru }) : '-'}</span></p>
 				</div>
 
 				<div className='space-y-3'>

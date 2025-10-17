@@ -45,6 +45,7 @@ export function AnnouncementsPage() {
 			</div> : <div><DataTable
 				columns={cargoColumns}
 				data={fakeData.results}
+				isButton={true}
 				renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
 			/></div>}
 		</div>

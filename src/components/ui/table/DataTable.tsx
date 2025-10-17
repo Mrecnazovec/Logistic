@@ -18,7 +18,6 @@ import React, { useState } from 'react'
 
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
-import { ExpandedCargoRow } from '@/app/dashboard/announcements/table/ExpandedCargoRow'
 import { OfferModal } from '../modals/OfferModal'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 
@@ -26,10 +25,11 @@ interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
 	data: TData[]
 	filterKey?: string
+	isButton?: boolean
 	renderExpandedRow?: (row: TData) => React.ReactNode
 }
 
-export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpandedRow }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpandedRow, isButton = false }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -54,9 +54,6 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,
 	})
-
-	console.log(table.getFilteredSelectedRowModel().rows);
-
 
 	return (
 		<div className='rounded-4xl bg-background py-8 h-full'>
@@ -153,7 +150,7 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 					</Button>
 				</div>
 
-				<OfferModal selectedRows={table.getFilteredSelectedRowModel().rows.map(row => row.original as ICargoList)} />
+				{isButton && <OfferModal selectedRows={table.getFilteredSelectedRowModel().rows.map(row => row.original as ICargoList)} />}
 			</div>
 		</div>
 	)

@@ -1,4 +1,4 @@
-import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
+import { PUBLIC_URL } from '@/config/url.config'
 import { authService } from '@/services/auth/auth.service'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { useMutation } from '@tanstack/react-query'

@@ -8,10 +8,15 @@ import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { SearchFields } from '@/components/ui/search/SearchFields'
+import { fakeCargoList } from '@/data/FakeData'
+import { DataTable } from '@/components/ui/table/DataTable'
+import { deskColumns } from './table/DeskColumns'
 
 export function DeskPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
+
+	const fakeData = fakeCargoList
 
 	return (
 		<div className='flex h-full flex-col gap-4'>
@@ -22,7 +27,7 @@ export function DeskPage() {
 					</form>
 				</Form>
 			</div>
-			<div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
+			{fakeData?.results.length === 0 ? <div className='flex-1 bg-background rounded-[32px] bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
 				<div className='flex items-center justify-center flex-col gap-6'>
 					<div className='bg-background shadow-2xl p-4 rounded-full'>
 						<Search className='size-5 text-brand' />
@@ -35,7 +40,10 @@ export function DeskPage() {
 						<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
 					</Link>
 				</div>
-			</div>
+			</div> : <div><DataTable
+				columns={deskColumns}
+				data={fakeData.results}
+			/></div>}
 		</div>
 	)
 }

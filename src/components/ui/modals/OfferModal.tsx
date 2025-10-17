@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TransportSelector } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { DialogClose } from '@radix-ui/react-dialog'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
 import { ArrowLeftRight } from 'lucide-react'
 
 interface OfferModalProps {
@@ -26,7 +28,7 @@ export function OfferModal({ selectedRows }: OfferModalProps) {
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className='w-[900px] lg:max-w-none overflow-y-scroll rounded-3xl max-h-[463px] scrollbar-none'>
+			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl max-h-[463px]'>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>
 						Предложить
@@ -50,12 +52,11 @@ export function OfferModal({ selectedRows }: OfferModalProps) {
 									key={cargo.id}
 									className='p-6 flex flex-col'
 								>
-									<div className='flex justify-between gap-6 items-center border-b-2 pb-6'>
-										<div>SH-00004364559</div>
+									<div className='flex justify-center gap-6 items-center border-b-2 pb-6'>
 										<div className='flex justify-between gap-6 items-center'>
 											<div>
 												<p>{cargo.origin_city}, {cargo.origin_country}</p>
-												<p>{cargo.load_date}</p>
+												<p>{format(cargo.load_date, 'dd.MM.yyyy', { locale: ru })}</p>
 											</div>
 											<div className='flex flex-col items-center justify-center gap-3'>
 												<ArrowLeftRight className='size-5' />
@@ -63,7 +64,7 @@ export function OfferModal({ selectedRows }: OfferModalProps) {
 											</div>
 											<div>
 												<p>{cargo.destination_city}, {cargo.destination_country}</p>
-												<p>{cargo.delivery_date}</p>
+												<p>{cargo.delivery_date ? format(cargo.delivery_date, 'dd.MM.yyyy', { locale: ru }) : '-'}</p>
 											</div>
 										</div>
 										<div>

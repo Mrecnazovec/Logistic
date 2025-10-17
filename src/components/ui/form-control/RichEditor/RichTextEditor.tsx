@@ -18,7 +18,7 @@ interface RichTextEditorProps {
 	disabled?: boolean
 }
 
-export function RichTextEditor({ value, onChange, disabled }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 	const editor = useEditor({
 		extensions: [
 			StarterKit.configure({

@@ -5,9 +5,6 @@ import {
 	AlignLeft,
 	AlignRight,
 	Bold,
-	Heading1,
-	Heading2,
-	Heading3,
 	Highlighter,
 	Italic,
 	Link as LinkIcon,
@@ -15,7 +12,6 @@ import {
 	List,
 	ListOrdered,
 	Strikethrough,
-	ImageIcon,
 	PlaySquare,
 } from 'lucide-react'
 import { Editor } from '@tiptap/react'

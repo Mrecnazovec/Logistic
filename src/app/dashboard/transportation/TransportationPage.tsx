@@ -28,12 +28,6 @@ export function TransportationPage() {
 						<Search className='size-5 text-brand' />
 					</div>
 					<h1 className='text-5xl font-bold'>Пусто...</h1>
-					<p className='text-xl text-grayscale max-w-2xl text-center'>
-						Чтобы увидеть раздел Поиск Грузоперевозок, сначала надо добавить их. Вы можете это сделать нажав на кнопку снизу
-					</p>
-					<Link href={DASHBOARD_URL.posting()}>
-						<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
-					</Link>
 				</div>
 			</div>
 		</div>

@@ -1,43 +1,15 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
 import { TransportSelector } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ChevronsUpDown } from 'lucide-react'
+import { ChevronsUpDown, CircleCheck, EyeOff, Handshake, Minus, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
 
-export const cargoColumns: ColumnDef<ICargoList>[] = [
-	{
-		id: 'select',
-		cell: ({ row, table }) => {
-			const selectedRow = table.getSelectedRowModel().rows[0]
-			const isSelected = selectedRow?.id === row.id
-
-			return (
-				<RadioGroup
-					value={isSelected ? row.id : ''}
-					onValueChange={(value) => {
-						table.resetRowSelection()
-						if (value === row.id) {
-							row.toggleSelected(true)
-						}
-					}}
-					className='flex items-center justify-center'
-				>
-					<RadioGroupItem
-						value={row.id}
-						id={`radio-${row.id}`}
-						aria-label='Выбрать строку'
-					/>
-				</RadioGroup>
-			)
-		},
-		enableSorting: false,
-		enableHiding: false,
-	},
+export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -141,12 +113,78 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		}
 	},
 	{
-		accessorKey: 'company_name',
-		header: 'Компания',
+		accessorKey: 'has_offers',
+		header: 'Предложения',
+		cell: ({ row }) => {
+			if (row.original.has_offers)
+				return <CircleCheck className='size-5 text-success-400' />
+
+			return <Minus className='size-5 text-neutral-400' />
+		}
 	},
 	{
-		accessorKey: 'contact_value',
-		header: 'Контакты',
+		accessorKey: 'id',
+		header: 'ID',
+
+	},
+
+	{
+		id: 'actions',
+		header: '',
+		cell: ({ row }) => {
+			const cargo = row.original
+
+			return (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant='ghost'
+							className='h-8 w-8 p-0 rotate-90'
+						>
+							<span className='sr-only'>Открыть действия</span>
+							<MoreHorizontal className='size-4' />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align='end'>
+						<DropdownMenuItem
+							onClick={() => console.log('Обновить', cargo.id)}
+							className='flex items-center gap-2'
+						>
+							<RefreshCcw className='size-4 text-muted-foreground' />
+							Обновить
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+
+						<DropdownMenuItem
+							onClick={() => console.log('Изменить', cargo.id)}
+							className='flex items-center gap-2'
+						>
+							<Pencil className='size-4 text-muted-foreground' />
+							Изменить
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+
+						<DropdownMenuItem
+							onClick={() => console.log('Скрыть', cargo.id)}
+							className='flex items-center gap-2'
+						>
+							<EyeOff className='size-4 text-muted-foreground' />
+							Скрыть
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem
+							onClick={() => console.log('Сделать предложение', cargo.id)}
+							className='flex items-center gap-2'
+						>
+							<Handshake className='size-4 text-muted-foreground' />
+							Сделать предложение
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)
+		},
+		enableSorting: false,
+		enableHiding: false,
 	},
 ]
 

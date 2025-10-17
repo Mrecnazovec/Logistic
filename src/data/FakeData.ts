@@ -30,7 +30,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 		const destination = destinations[i % destinations.length]
 
 		const now = new Date()
-		const created_at = new Date(now.getTime() - (i + 1) * 60 * 60 * 1000) // каждый час назад
+		const created_at = new Date(now.getTime() - (i + 1) * 60 * 60 * 1000)
 		const refreshed_at = new Date(created_at.getTime() + 5 * 60 * 1000)
 
 		return {
