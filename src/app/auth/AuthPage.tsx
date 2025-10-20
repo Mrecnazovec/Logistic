@@ -1,15 +1,15 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardHeader } from '@/components/ui/Card'
+import { Form } from '@/components/ui/form-control/Form'
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from '@/components/ui/Select'
 import { IMG_URL, PUBLIC_URL } from '@/config/url.config'
 import { SelectValue } from '@radix-ui/react-select'
 import Image from 'next/image'
-import { useAuthForm } from './useAuthForm'
-import { Card, CardContent, CardHeader } from '@/components/ui/Card'
-import { Form } from '@/components/ui/form-control/Form'
-import { AuthFields } from './AuthField'
 import Link from 'next/link'
+import { AuthFields } from './AuthField'
+import { useAuthForm } from './useAuthForm'
 
 export function AuthPage() {
 	const { form, isPending, onSubmit } = useAuthForm()
@@ -17,18 +17,15 @@ export function AuthPage() {
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
 			<h1 className='sr-only'>Авторизация</h1>
-			<div className='bg-[url(/png/bg_auth.png)] h-full hidden lg:flex lg:flex-col items-center justify-center bg-no-repeat bg-cover bg-center px-12'>
-				<div className='bg-brand-900 rounded-6xl p-12'>
-					<h2 className='text-[32px] text-white font-raleway font-semibold'>
+			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover lg:bg-center bg-bottom px-12'>
+				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
+					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>
 						Высококачественное программное решение для управления вашим бизнес-процессом
 					</h2>
 				</div>
 			</div>
-			<div className='flex flex-col h-full sm:px-12 px-4 sm:py-8 py-4'>
-				<div className='flex sm:flex-row flex-col gap-4 items-center lg:justify-end justify-between'>
-					<Link href={PUBLIC_URL.home()} className='flex lg:hidden'>
-						На главную
-					</Link>
+			<div className='flex flex-col h-full sm:px-12 px-4 py-8'>
+				<div className='flex sm:flex-row flex-col gap-4 items-center lg:justify-end justify-center'>
 					<div className='flex items-center justify-center gap-2 flex-wrap'>
 						<Link href={PUBLIC_URL.auth('register')}>
 							<Button variant={'outline'} className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 px-4 py-3 font-medium'>
