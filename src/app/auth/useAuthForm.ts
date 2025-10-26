@@ -1,15 +1,12 @@
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { authService } from '@/services/auth/auth.service'
+import { IErrorResponse } from '@/shared/types/Error.interface'
 import { ILogin } from '@/shared/types/Login.interface'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-
-interface IErrorResponse {
-	detail: string
-}
 
 export function useAuthForm() {
 	const router = useRouter()

@@ -16,10 +16,10 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
 import React, { useState } from 'react'
 
+import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
 import { OfferModal } from '../modals/OfferModal'
-import { ICargoList } from '@/shared/types/CargoList.interface'
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 	})
 
 	return (
-		<div className='rounded-4xl bg-background py-8 h-full'>
+		<div className='rounded-4xl bg-background py-8'>
 			{filterKey && (
 				<div className='flex items-center py-4 max-w-96'>
 					<Input

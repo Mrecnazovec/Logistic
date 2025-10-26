@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { DataTable } from '@/components/ui/table/DataTable'
+import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { fakeCargoList } from '@/data/FakeData'
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchForm } from './Searching/useSearchForm'
@@ -16,13 +18,14 @@ import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
+	const isDesktop = useMediaQuery('(min-width: 768px)')
 
 	const fakeData = fakeCargoList
 
 
 	return (
-		<div className='flex flex-col gap-4'>
-			<div className='w-full bg-background rounded-[32px] px-4 py-8'>
+		<div className='flex flex-col md:gap-4'>
+			<div className='w-full bg-background md:rounded-[32px] rounded-t-[32px]  px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} />
@@ -42,12 +45,17 @@ export function AnnouncementsPage() {
 						<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
 					</Link>
 				</div>
-			</div> : <div><DataTable
-				columns={cargoColumns}
-				data={fakeData.results}
-				isButton={true}
-				renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
-			/></div>}
+			</div> :
+				(
+					isDesktop ? (
+						<DataTable
+							columns={cargoColumns}
+							data={fakeData.results}
+							isButton={true}
+							renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
+						/>
+					) : <MobileDataTable data={fakeData} />
+				)}
 		</div>
 	)
 }

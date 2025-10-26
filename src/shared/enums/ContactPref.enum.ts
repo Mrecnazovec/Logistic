@@ -9,11 +9,11 @@ export type ContactPrefEnum = (typeof ContactPrefEnum)[keyof typeof ContactPrefE
 export const ContactSelector = [
 	{
 		type: ContactPrefEnum.EMAIL,
-		name: 'По эл. почте',
+		name: 'Email',
 	},
 	{
 		type: ContactPrefEnum.PHONE,
-		name: 'По телефону',
+		name: 'Телефон',
 	},
 	{
 		type: ContactPrefEnum.BOTH,

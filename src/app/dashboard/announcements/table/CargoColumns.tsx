@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/Button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
+import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
@@ -135,7 +135,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'transport_type',
 		header: 'Тип',
 		cell: ({ row }) => {
-			const transportName = TransportSelector.find(t => t.type === row.original.transport_type)?.name ?? '—'
+			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.name ?? '—'
 
 			return transportName
 		}

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
+import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
@@ -107,7 +107,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'transport_type',
 		header: 'Тип',
 		cell: ({ row }) => {
-			const transportName = TransportSelector.find(t => t.type === row.original.transport_type)?.name ?? '—'
+			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.name ?? '—'
 
 			return transportName
 		}

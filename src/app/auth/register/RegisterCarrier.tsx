@@ -1,13 +1,13 @@
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
+import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
+import { RoleEnum } from '@/shared/enums/Role.enum'
+import { City, Country } from '@/shared/types/Geo.interface'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { Phone, User } from 'lucide-react'
-import { UseFormReturn } from 'react-hook-form'
-import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useState } from 'react'
-import { CitySelect } from '@/components/ui/selectors/CitySelector'
-import { CountrySelect } from '@/components/ui/selectors/CountrySelector'
-import { City, Country } from '@/shared/types/Geo.interface'
+import { UseFormReturn } from 'react-hook-form'
 
 interface RegisterFieldsProps {
 	form: UseFormReturn<RegisterDto, undefined>
@@ -20,13 +20,13 @@ export function RegisterCarrierFields({ form, isPending, role }: RegisterFieldsP
 	const [country, setCountry] = useState<Country | null>(null)
 	const [city, setCity] = useState<City | null>(null)
 
-	const handleCountrySelect = (selected: Country) => {
+	const handleCountrySelector = (selected: Country) => {
 		setCountry(selected)
 		form.setValue('country', selected.name)
 		form.setValue('country_code', selected.code)
 	}
 
-	const handleCitySelect = (selected: City) => {
+	const handleCitySelector = (selected: City) => {
 		setCity(selected)
 		form.setValue('city', selected.name)
 	}
@@ -79,12 +79,20 @@ export function RegisterCarrierFields({ form, isPending, role }: RegisterFieldsP
 					{/* Страна */}
 					<FormField
 						control={form.control}
-						name='country'
+						name="country"
 						render={() => (
 							<FormItem>
-								<FormLabel className='text-grayscale'>Страна</FormLabel>
+								<FormLabel>Страна</FormLabel>
 								<FormControl>
-									<CountrySelect value={country || undefined} onChange={(val) => handleCountrySelect(val)} />
+									<CountrySelector
+										value={country}
+										onChange={(selected) => {
+											setCountry(selected)
+											form.setValue('country', selected.name)
+											form.setValue('country_code', selected.code)
+										}}
+										disabled={isPending}
+									/>
 								</FormControl>
 							</FormItem>
 						)}
@@ -98,7 +106,15 @@ export function RegisterCarrierFields({ form, isPending, role }: RegisterFieldsP
 							<FormItem>
 								<FormLabel className='text-grayscale'>Город</FormLabel>
 								<FormControl>
-									<CitySelect value={city || undefined} onChange={(val) => handleCitySelect(val)} countryCode={country?.code} disabled={!country} />
+									<CitySelector
+										value={form.watch('city')}
+										onChange={(cityName) => {
+											form.setValue('city', cityName)
+										}}
+										countryCode={form.watch('country_code')}
+										placeholder='Введите город...'
+										disabled={!form.watch('country') || isPending}
+									/>
 								</FormControl>
 							</FormItem>
 						)}

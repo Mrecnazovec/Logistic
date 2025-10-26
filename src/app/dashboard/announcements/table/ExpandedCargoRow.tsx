@@ -2,13 +2,13 @@
 
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { ContactSelector } from '@/shared/enums/ContactPref.enum'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
+import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
-	const transportName = TransportSelector.find(t => t.type === cargo.transport_type)?.name ?? '—'
+	const transportName = TransportSelect.find(t => t.type === cargo.transport_type)?.name ?? '—'
 
 	const contactName = ContactSelector.find(t => t.type === cargo.contact_pref)?.name ?? '—'
 	return (

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
+import { cn } from '@/lib/utils'
+import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { DialogClose } from '@radix-ui/react-dialog'
 import { format } from 'date-fns'
@@ -13,22 +14,23 @@ import { ArrowLeftRight } from 'lucide-react'
 
 interface OfferModalProps {
 	selectedRows: ICargoList[]
+	className?: string
 }
 
-export function OfferModal({ selectedRows }: OfferModalProps) {
+export function OfferModal({ selectedRows, className }: OfferModalProps) {
 
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
 				<Button
-					className='bg-brand text-white'
+					className={cn('bg-brand text-white', className)}
 					disabled={selectedRows.length === 0}
 				>
 					Сделать предложение
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl max-h-[463px]'>
+			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>
 						Предложить
@@ -43,16 +45,16 @@ export function OfferModal({ selectedRows }: OfferModalProps) {
 					<div className='space-y-6'>
 						{selectedRows.map((cargo) => {
 							const transportName =
-								TransportSelector.find(
+								TransportSelect.find(
 									(t) => t.type === cargo.transport_type
 								)?.name ?? '—'
 
 							return (
 								<div
 									key={cargo.id}
-									className='p-6 flex flex-col'
+									className='flex flex-col'
 								>
-									<div className='flex justify-center gap-6 items-center border-b-2 pb-6'>
+									<div className='flex justify-center gap-6 items-center border-b-2 pb-6 flex-wrap'>
 										<div className='flex justify-between gap-6 items-center'>
 											<div>
 												<p>{cargo.origin_city}, {cargo.origin_country}</p>
@@ -98,13 +100,13 @@ export function OfferModal({ selectedRows }: OfferModalProps) {
 										</Select>
 									</div>
 
-									<div className='flex justify-end gap-3 mt-6'>
-										<Button className='bg-yellow-500 text-white hover:bg-yellow-600' >Торговать</Button>
-										<Button className='bg-green-600 text-white hover:bg-green-700'>
+									<div className='flex max-md:flex-col md:justify-end gap-3 mt-6'>
+										<Button className='bg-yellow-500 text-white hover:bg-yellow-600 max-md:w-full max-md:order-2' >Торговать</Button>
+										<Button className='bg-green-600 text-white hover:bg-green-700 max-md:w-full max-md:order-1'>
 											Принять
 										</Button>
 										<DialogClose asChild>
-											<Button className='bg-red-600 text-white hover:bg-red-700'>
+											<Button className='bg-red-600 text-white hover:bg-red-700 max-md:w-full max-md:order-3'>
 												Назад
 											</Button>
 										</DialogClose>

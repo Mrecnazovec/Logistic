@@ -2,21 +2,20 @@
 
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { ArrowLeftRight, CalendarIcon, Search, Settings2, SquaresIntersect } from 'lucide-react'
-import { UseFormReturn } from 'react-hook-form'
-import { CitySelect } from '@/components/ui/selectors/CitySelector'
-import { useState } from 'react'
+import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { City } from '@/shared/types/Geo.interface'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { ArrowLeftRight, Search, Settings2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
+
 import { Button } from '@/components/ui/Button'
-import { format } from 'date-fns'
-import { Calendar } from '@/components/ui/Calendar'
-import { ru } from 'date-fns/locale'
-import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
-import { usePathname, useRouter } from 'next/navigation'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { cn } from '@/lib/utils'
 import { ISearch } from '@/shared/types/Search.interface'
+import { usePathname, useRouter } from 'next/navigation'
+import { CurrencySelector } from '../selectors/CurrencySelector'
+import { DatePicker } from '../selectors/DateSelector'
+import { TransportSelector } from '../selectors/TransportSelector'
 
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
@@ -28,18 +27,20 @@ export function SearchFields({ form }: SearchFieldsProps) {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const handleOriginCitySelect = (selected: City) => {
+	const handleOriginCitySelector = (selected: City) => {
 		setOriginCity(selected)
 		form.setValue('origin_city', selected.name)
 	}
 
-	const handleDestinationCitySelect = (selected: City) => {
+	const handleDestinationCitySelector = (selected: City) => {
 		setDestinationCity(selected)
 		form.setValue('destination_city', selected.name)
 	}
 
 	const handleDeleteFilter = () => {
 		form.reset()
+		setOriginCity(null)
+		setDestinationCity(null)
 
 		router.push(pathname)
 	}
@@ -56,7 +57,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 								<InputGroup>
 									<InputGroupInput placeholder='Поиск по компании' {...field} value={field.value ?? ''} />
 									<InputGroupAddon className='pr-2'>
-										<Search className='text-grayscale size-5' />
+										<Search className={cn('text-grayscale size-5', field.value && 'text-black')} />
 									</InputGroupAddon>
 								</InputGroup>
 							</FormControl>
@@ -79,46 +80,12 @@ export function SearchFields({ form }: SearchFieldsProps) {
 						</div>
 						<FormField
 							control={form.control}
-							name='transport_type'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className='text-grayscale'>Тип транспорта</FormLabel>
-									<FormControl>
-										<Select onValueChange={field.onChange} value={field.value ?? ''}>
-											<SelectTrigger className='w-full rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale'>
-												<SelectValue className='' placeholder='Тип транспорта' />
-											</SelectTrigger>
-											<SelectContent>
-												{TransportSelector.map((item) => (
-													<SelectItem key={item.type} value={item.type}>
-														{item.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
 							name='price_currency'
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel className='text-grayscale'>Валюта</FormLabel>
 									<FormControl>
-										<Select onValueChange={field.onChange} value={field.value ?? ''}>
-											<SelectTrigger className='w-full rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale'>
-												<SelectValue className='' placeholder='Валюта' />
-											</SelectTrigger>
-											<SelectContent>
-												{PriceSelector.map((item) => (
-													<SelectItem value={item.type} key={item.type}>
-														{item.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<CurrencySelector value={field.value} onChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -184,15 +151,15 @@ export function SearchFields({ form }: SearchFieldsProps) {
 					</PopoverContent>
 				</Popover>
 			</div>
-			<div className='flex justify-between items-center gap-3'>
+			<div className='flex lg:flex-row flex-col justify-between items-center gap-3'>
 				<div className='flex gap-3 w-full'>
 					<FormField
 						control={form.control}
 						name='origin_city'
-						render={() => (
+						render={({ field }) => (
 							<FormItem className='w-full'>
 								<FormControl>
-									<CitySelect value={originCity || undefined} onChange={(val) => handleOriginCitySelect(val)} countryCode=' ' placeholder='Откуда' />
+									<CitySelector {...field} countryCode=' ' placeholder='Откуда' />
 								</FormControl>
 							</FormItem>
 						)}
@@ -216,15 +183,10 @@ export function SearchFields({ form }: SearchFieldsProps) {
 					<FormField
 						control={form.control}
 						name='destination_city'
-						render={() => (
+						render={({ field }) => (
 							<FormItem className='w-full'>
 								<FormControl>
-									<CitySelect
-										value={destinationCity || undefined}
-										onChange={(val) => handleDestinationCitySelect(val)}
-										countryCode=' '
-										placeholder='Куда'
-									/>
+									<CitySelector {...field} countryCode=' ' placeholder='Куда' />
 								</FormControl>
 							</FormItem>
 						)}
@@ -247,21 +209,9 @@ export function SearchFields({ form }: SearchFieldsProps) {
 					control={form.control}
 					name='transport_type'
 					render={({ field }) => (
-						<FormItem>
+						<FormItem className='max-lg:w-full'>
 							<FormControl>
-								<Select onValueChange={field.onChange} value={field.value ?? ''}>
-									<SelectTrigger className='rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale'>
-										<SquaresIntersect className='size-5' />
-										<SelectValue className='' placeholder='Тип транспорта' />
-									</SelectTrigger>
-									<SelectContent>
-										{TransportSelector.map((item) => (
-											<SelectItem key={item.type} value={item.type}>
-												{item.name}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								<TransportSelector value={field.value} onChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -270,36 +220,18 @@ export function SearchFields({ form }: SearchFieldsProps) {
 					control={form.control}
 					name='load_date'
 					render={({ field }) => (
-						<FormItem className='flex flex-col'>
-							<Popover>
-								<PopoverTrigger asChild>
-									<FormControl>
-										<Button
-											variant='outline'
-											className='justify-start text-left text-grayscale bg-grayscale-50 border-none hover:text-grayscale font-normal'
-										>
-											<CalendarIcon className='size-5 mr-2' />
-											{field.value ? format(new Date(field.value), 'dd MMMM yyyy', { locale: ru }) : 'Выберите дату'}
-										</Button>
-									</FormControl>
-								</PopoverTrigger>
-								<PopoverContent className='w-auto p-0' align='start'>
-									<Calendar
-										mode='single'
-										selected={field.value ? new Date(field.value) : undefined}
-										onSelect={(date) => {
-											if (!date) return field.onChange('')
-											const localDate = date.toLocaleDateString('en-CA')
-											field.onChange(localDate)
-										}}
-										initialFocus
-									/>
-								</PopoverContent>
-							</Popover>
+						<FormItem className='flex flex-col max-lg:w-full'>
+							<FormControl>
+								<DatePicker
+									value={field.value}
+									onChange={field.onChange}
+									placeholder='Выберите дату'
+								/>
+							</FormControl>
 						</FormItem>
 					)}
 				/>
-				<Button type='submit'>
+				<Button type='submit' className='max-lg:w-full'>
 					<Search className='size-5' />
 					Поиск
 				</Button>

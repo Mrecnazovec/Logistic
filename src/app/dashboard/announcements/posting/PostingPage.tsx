@@ -1,38 +1,37 @@
 'use client'
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
-import { usePostForm } from './usePostForm'
-import { CitySelect } from '@/components/ui/selectors/CitySelector'
-import { useState } from 'react'
-import { City } from '@/shared/types/Geo.interface'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { Button } from '@/components/ui/Button'
-import { Banknote, CalendarIcon, Home, Phone, SquaresIntersect } from 'lucide-react'
-import { ru } from 'date-fns/locale'
-import { format } from 'date-fns'
-import { Calendar } from '@/components/ui/Calendar'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
-import { TransportSelector } from '@/shared/enums/TransportType.enum'
-import { ContactSelector } from '@/shared/enums/ContactPref.enum'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { Label } from '@/components/ui/form-control/Label'
 import { RichTextEditor } from '@/components/ui/form-control/RichEditor/RichTextEditor'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
+
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
+import { DatePicker } from '@/components/ui/selectors/DateSelector'
+import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { cn } from '@/lib/utils'
+import { ContactSelector } from '@/shared/enums/ContactPref.enum'
+import { City } from '@/shared/types/Geo.interface'
+import { Banknote, Home, Phone } from 'lucide-react'
+import { useState } from 'react'
+import { usePostForm } from './usePostForm'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
 	const [originCity, setOriginCity] = useState<City | null>(null)
 	const [destinationCity, setDestinationCity] = useState<City | null>(null)
 
-	const handleOriginCitySelect = (selected: City) => {
+	const handleOriginCitySelector = (selected: City) => {
 		setOriginCity(selected)
 		form.setValue('origin_city', selected.name)
 		form.setValue('origin_country', selected.country)
 	}
 
-	const handleDestinationCitySelect = (selected: City) => {
+	const handleDestinationCitySelector = (selected: City) => {
 		setDestinationCity(selected)
 		form.setValue('destination_city', selected.name)
 		form.setValue('destination_country', selected.country)
@@ -46,13 +45,16 @@ export function PostingPage() {
 							control={form.control}
 							name='origin_city'
 							rules={{ required: 'Город погрузки обязателен' }}
-							render={() => (
+							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Откуда</FormLabel>
 									<FormControl>
-										<CitySelect
-											value={originCity || undefined}
-											onChange={(val) => handleOriginCitySelect(val)}
+										<CitySelector
+											value={field.value || ''}
+											onChange={(val, city) => {
+												field.onChange(val)
+												form.setValue('origin_country', city?.country ?? '')
+											}}
 											countryCode=' '
 											placeholder='Город, страна'
 											disabled={isLoadingCreate}
@@ -62,6 +64,7 @@ export function PostingPage() {
 								</FormItem>
 							)}
 						/>
+
 						<FormField
 							control={form.control}
 							name='origin_address'
@@ -72,7 +75,7 @@ export function PostingPage() {
 										<InputGroup>
 											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
 											<InputGroupAddon className='pr-2'>
-												<Home className='text-grayscale size-5' />
+												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
 										</InputGroup>
 									</FormControl>
@@ -86,32 +89,14 @@ export function PostingPage() {
 							rules={{ required: 'Дата погрузки обязательна' }}
 							render={({ field }) => (
 								<FormItem className='flex flex-col'>
-									<Popover>
-										<PopoverTrigger asChild>
-											<FormControl>
-												<Button
-													variant='outline'
-													className='justify-start text-left text-grayscale bg-grayscale-50 border-none hover:text-grayscale font-normal'
-													disabled={isLoadingCreate}
-												>
-													<CalendarIcon className='size-5 mr-2' />
-													{field.value ? format(new Date(field.value), 'dd MMMM yyyy', { locale: ru }) : 'Дата погрузки'}
-												</Button>
-											</FormControl>
-										</PopoverTrigger>
-										<PopoverContent className='w-auto p-0' align='start'>
-											<Calendar
-												mode='single'
-												selected={field.value ? new Date(field.value) : undefined}
-												onSelect={(date) => {
-													if (!date) return field.onChange('')
-													const localDate = date.toLocaleDateString('en-CA')
-													field.onChange(localDate)
-												}}
-												initialFocus
-											/>
-										</PopoverContent>
-									</Popover>
+									<FormControl>
+										<DatePicker
+											value={field.value}
+											onChange={field.onChange}
+											placeholder='Дата погрузки'
+											disabled={isLoadingCreate}
+										/>
+									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -122,13 +107,16 @@ export function PostingPage() {
 							control={form.control}
 							name='destination_city'
 							rules={{ required: 'Город разгрузки обязателен' }}
-							render={() => (
+							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Куда</FormLabel>
 									<FormControl>
-										<CitySelect
-											value={destinationCity || undefined}
-											onChange={(val) => handleDestinationCitySelect(val)}
+										<CitySelector
+											value={field.value || ''}
+											onChange={(val, city) => {
+												field.onChange(val)
+												form.setValue('destination_country', city?.country ?? '')
+											}}
 											countryCode=' '
 											placeholder='Город, страна'
 											disabled={isLoadingCreate}
@@ -138,6 +126,8 @@ export function PostingPage() {
 								</FormItem>
 							)}
 						/>
+
+
 						<FormField
 							control={form.control}
 							name='destination_address'
@@ -162,32 +152,14 @@ export function PostingPage() {
 							rules={{ required: 'Дата разгрузки обязательна' }}
 							render={({ field }) => (
 								<FormItem className='flex flex-col'>
-									<Popover>
-										<PopoverTrigger asChild>
-											<FormControl>
-												<Button
-													variant='outline'
-													className='justify-start text-left text-grayscale bg-grayscale-50 border-none hover:text-grayscale font-normal'
-													disabled={isLoadingCreate}
-												>
-													<CalendarIcon className='size-5 mr-2' />
-													{field.value ? format(new Date(field.value), 'dd MMMM yyyy', { locale: ru }) : 'Дата разгрузки'}
-												</Button>
-											</FormControl>
-										</PopoverTrigger>
-										<PopoverContent className='w-auto p-0' align='start'>
-											<Calendar
-												mode='single'
-												selected={field.value ? new Date(field.value) : undefined}
-												onSelect={(date) => {
-													if (!date) return field.onChange('')
-													const localDate = date.toLocaleDateString('en-CA')
-													field.onChange(localDate)
-												}}
-												initialFocus
-											/>
-										</PopoverContent>
-									</Popover>
+									<FormControl>
+										<DatePicker
+											value={field.value ?? undefined}
+											onChange={field.onChange}
+											placeholder='Дата разгрузки'
+											disabled={isLoadingCreate}
+										/>
+									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -204,18 +176,7 @@ export function PostingPage() {
 									<FormItem className='w-1/2'>
 										<FormLabel className='text-brand'>Валюта/Цена</FormLabel>
 										<FormControl>
-											<Select onValueChange={field.onChange} value={field.value ?? ''}>
-												<SelectTrigger className='w-full rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale'>
-													<SelectValue className='' placeholder='Валюта' />
-												</SelectTrigger>
-												<SelectContent>
-													{PriceSelector.map((item) => (
-														<SelectItem value={item.type} key={item.type}>
-															{item.name}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
+											<CurrencySelector onChange={field.onChange} disabled={isLoadingCreate} value={field.value} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -333,7 +294,7 @@ export function PostingPage() {
 						<FormField
 							control={form.control}
 							name='product'
-							rules={{ required: 'Город обязателен' }}
+							rules={{ required: 'Наименование груза обязательно' }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
@@ -350,7 +311,7 @@ export function PostingPage() {
 								</FormItem>
 							)}
 						/>
-						<FormField
+						{/* <FormField
 							control={form.control}
 							name='product'
 							render={({ field }) => (
@@ -362,28 +323,14 @@ export function PostingPage() {
 									</FormControl>
 								</FormItem>
 							)}
-						/>
+						/> */}
 						<FormField
 							control={form.control}
 							name='transport_type'
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
-										<Select onValueChange={field.onChange} value={field.value ?? ''}>
-											<SelectTrigger className='rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale w-full'>
-												<div className='flex gap-4'>
-													<SquaresIntersect className='size-5' />
-													<SelectValue className='' placeholder='Тип транспорта' />
-												</div>
-											</SelectTrigger>
-											<SelectContent>
-												{TransportSelector.map((item) => (
-													<SelectItem key={item.type} value={item.type}>
-														{item.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingCreate} />
 									</FormControl>
 								</FormItem>
 							)}
