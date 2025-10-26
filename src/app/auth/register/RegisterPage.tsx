@@ -70,7 +70,7 @@ export function RegisterPage() {
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
 			<h1 className='sr-only'>Регистрация</h1>
-			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover lg:bg-center bg-bottom px-12'>
+			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover lg:bg-center bg-bottom px-12 py-16'>
 				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
 					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>
 						Высококачественное программное решение для управления вашим бизнес-процессом

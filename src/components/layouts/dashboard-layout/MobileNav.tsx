@@ -11,7 +11,7 @@ export function MobileNav() {
 	const pathname = usePathname()
 	const filteredPathname = `${pathname}/`
 
-	return <nav className="md:hidden flex items-center justify-between w-full bg-background fixed bottom-0 pb-9">
+	return <nav className="md:hidden flex items-center justify-between w-full bg-background fixed bottom-0 pb-9 z-50">
 		{navItems.map((group, idx) => (
 			<Fragment key={idx}>
 				{group.items.map((item, i) => {
@@ -28,7 +28,7 @@ export function MobileNav() {
 							>
 								<Icon className={cn('size-5', isActive && 'text-brand')} />
 							</Button>
-							<p>{item.label}</p>
+							<p className="text-center">{item.label}</p>
 						</Link>
 					)
 				})}
