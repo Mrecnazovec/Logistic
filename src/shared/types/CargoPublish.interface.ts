@@ -3,6 +3,8 @@ import { PriceCurrencyEnum } from '../enums/PriceCurrency.enum'
 import { TransportTypeEnum } from '../enums/TransportType.enum'
 
 export interface ICargoPublish {
+	readonly uuid: string
+
 	product: string
 	description?: string
 
@@ -27,6 +29,8 @@ export interface ICargoPublish {
 	contact_pref: ContactPrefEnum
 
 	is_hidden?: boolean
+
+	message?: string
 
 	readonly route_km?: number | null
 }

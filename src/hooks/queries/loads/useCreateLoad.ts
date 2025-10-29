@@ -15,9 +15,9 @@ export const useCreateLoad = () => {
 	const { mutate: createLoad, isPending: isLoadingCreate } = useMutation({
 		mutationKey: ['load', 'create'],
 		mutationFn: (data: ICargoPublish) => loadsService.createLoad(data),
-		onSuccess() {
+		onSuccess(data) {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			toast.success('Заявка создана')
+			toast.success(`${data.message}`)
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {

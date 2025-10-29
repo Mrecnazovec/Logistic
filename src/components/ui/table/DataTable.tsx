@@ -150,7 +150,13 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 					</Button>
 				</div>
 
-				{isButton && <OfferModal selectedRows={table.getFilteredSelectedRowModel().rows.map(row => row.original as ICargoList)} />}
+				{isButton && (
+					<OfferModal
+						selectedRow={
+							table.getFilteredSelectedRowModel().rows[0]?.original as ICargoList
+						}
+					/>
+				)}
 			</div>
 		</div>
 	)

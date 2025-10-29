@@ -55,7 +55,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 			</div>
 
 			<div className='flex justify-end mt-6'>
-				<OfferModal selectedRows={[cargo]} />
+				<OfferModal selectedRow={cargo} />
 			</div>
 
 		</div>

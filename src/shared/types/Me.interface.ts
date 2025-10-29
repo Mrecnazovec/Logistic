@@ -1,5 +1,12 @@
 import { RoleEnum } from '../enums/Role.enum'
 
+interface IProfile {
+	country: string
+	country_code: string
+	region: string
+	city: string
+}
+
 export interface IMe {
 	readonly id: number
 	readonly username: string
@@ -15,6 +22,8 @@ export interface IMe {
 	readonly rating_as_customer: number
 	readonly rating_as_carrier: number
 	readonly is_email_verified: boolean
+
+	profile: IProfile
 }
 
 export type PatchedMeDto = Partial<Pick<IMe, 'first_name' | 'phone' | 'company_name' | 'photo'>>

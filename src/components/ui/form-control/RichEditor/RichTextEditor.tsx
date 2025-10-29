@@ -1,16 +1,16 @@
 // components/ui/form-element/RichTextEditor.tsx
 'use client'
 
-import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
+import TextAlign from '@tiptap/extension-text-align'
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 // import ResizeImage from 'tiptap-extension-resize-image'
+import Placeholder from '@tiptap/extension-placeholder'
 import Youtube from '@tiptap/extension-youtube'
 import { useEffect } from 'react'
 import MenuBar from './MenuBar'
-import Placeholder from '@tiptap/extension-placeholder'
 
 interface RichTextEditorProps {
 	value: string
@@ -67,7 +67,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 		content: value,
 		editorProps: {
 			attributes: {
-				class: 'min-h-[156px] rounded-[32px] bg-grayscale-50 py-4 px-6 max-w-',
+				class: 'min-h-[156px] rounded-4xl bg-grayscale-50 py-4 px-6 max-w-',
 			},
 		},
 		onUpdate: ({ editor }) => {

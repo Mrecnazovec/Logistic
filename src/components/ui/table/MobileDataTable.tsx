@@ -25,7 +25,7 @@ export function MobileDataTable({ data }: DataTableProps) {
 
 	return (
 		<div className="bg-background px-4 py-8 space-y-6 md:hidden">
-			{data.results.map((item) => {
+			{data?.results.map((item, index) => {
 				const contactName =
 					ContactSelector.find(t => t.type === item.contact_pref)?.name ?? "—"
 				const transportName =
@@ -35,7 +35,7 @@ export function MobileDataTable({ data }: DataTableProps) {
 
 				return (
 					<div
-						key={item.id}
+						key={index}
 						className="space-y-2 border-b last:border-0 pb-6 last:pb-0"
 					>
 						<Row label="Компания" value={item.company_name} />
@@ -59,7 +59,7 @@ export function MobileDataTable({ data }: DataTableProps) {
 						/>
 						<Row label="Тип транспорта" value={transportName} />
 						<div className="pt-2">
-							<OfferModal className="w-full" selectedRows={[item]} />
+							<OfferModal className="w-full" selectedRow={item} />
 						</div>
 					</div>
 				)

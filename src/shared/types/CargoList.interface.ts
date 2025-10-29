@@ -6,6 +6,7 @@ import { TransportTypeEnum } from '../enums/TransportType.enum'
 
 export interface ICargoList {
 	readonly id: number
+	readonly uuid: string
 
 	readonly product: string
 	readonly description: string
@@ -28,6 +29,7 @@ export interface ICargoList {
 
 	readonly price_value: string | null
 	readonly price_currency: PriceCurrencyEnum
+	readonly price_uzs: string
 
 	readonly contact_pref: ContactPrefEnum
 	readonly contact_value: string

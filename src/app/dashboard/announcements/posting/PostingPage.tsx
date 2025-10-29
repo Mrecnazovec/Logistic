@@ -40,7 +40,7 @@ export function PostingPage() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<div className='grid lg:grid-cols-2 gap-x-6 gap-y-4'>
-					<div className='bg-background rounded-[32px] sm:p-12 p-4 space-y-4'>
+					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>
 						<FormField
 							control={form.control}
 							name='origin_city'
@@ -102,7 +102,7 @@ export function PostingPage() {
 							)}
 						/>
 					</div>
-					<div className='bg-background rounded-[32px] sm:p-12 p-4 space-y-4'>
+					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>
 						<FormField
 							control={form.control}
 							name='destination_city'
@@ -165,7 +165,7 @@ export function PostingPage() {
 							)}
 						/>
 					</div>
-					<div className='bg-background rounded-[32px] sm:p-12 p-4 space-y-4 h-full'>
+					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4 h-full'>
 						<p className='text-xl font-bold text-brand'>Детали перевозки</p>
 						<div className='flex items-end gap-6'>
 							<FormField
@@ -289,7 +289,7 @@ export function PostingPage() {
 							)}
 						/>
 					</div>
-					<div className='bg-background rounded-[32px] sm:p-12 p-4 space-y-4'>
+					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>
 						<p className='text-xl font-bold text-brand'>Детали оборудования</p>
 						<FormField
 							control={form.control}
