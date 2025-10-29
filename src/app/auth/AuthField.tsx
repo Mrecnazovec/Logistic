@@ -26,7 +26,7 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 						<FormLabel className='text-grayscale'>Введите почту</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} autoComplete='email' />
 								<InputGroupAddon className='pr-2'>
 									<Mail className='text-grayscale size-5' />
 								</InputGroupAddon>
@@ -46,7 +46,7 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 						<FormLabel className='text-grayscale'>Введите пароль</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите пароль' type='password' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput placeholder='Введите пароль' type='password' disabled={isPending} {...field} value={field.value ?? ''} autoComplete='current-password' />
 								<InputGroupAddon className='pr-2'>
 									<LockKeyhole className='text-grayscale size-5' />
 								</InputGroupAddon>

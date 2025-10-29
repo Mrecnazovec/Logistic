@@ -7,7 +7,7 @@
 		"build": "next build",
 		"start": "next start -p 3002",
 		"lint": "eslint",
-		"gen:types": "openapi-typescript http://95.182.119.148/api/schema/ -o src/shared/types/api.ts"
+		"gen:types": "openapi-typescript https://kad-one.com/api/schema/ -o src/shared/types/api.ts"
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.4",

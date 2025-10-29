@@ -5,7 +5,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { Label } from '@/components/ui/form-control/Label'
-import { RichTextEditor } from '@/components/ui/form-control/RichEditor/RichTextEditor'
+import dynamic from 'next/dynamic'
+const RichTextEditor = dynamic(() =>
+	import('@/components/ui/form-control/RichEditor/RichTextEditor').then(m => m.RichTextEditor),
+)
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'

@@ -3,7 +3,7 @@ import { IMe } from './Me.interface'
 export interface ILogin {
 	login: string
 	password: string
-	remember_me?: boolean
+	remember_me: boolean
 }
 
 export interface ILoginResponse {

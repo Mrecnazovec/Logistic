@@ -170,6 +170,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/send-otp/phone/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_send_otp_phone_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/verify-email/": {
         parameters: {
             query?: never;
@@ -186,7 +202,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/loads/{id}/": {
+    "/api/auth/verify-otp/phone/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_verify_otp_phone_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/geo/suggest/cities/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Подсказки по городам
+         * @description Подсказки по городам через Nominatim (OpenStreetMap), ограниченные списком ALLOWED_COUNTRY_CODES.
+         */
+        get: operations["geo_suggest_cities_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/geo/suggest/countries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Подсказки по странам
+         * @description Подсказки по странам из предзаданного списка ISO_COUNTRIES.
+         */
+        get: operations["geo_suggest_countries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/loads/{uuid}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -202,7 +274,7 @@ export interface paths {
         patch: operations["loads_partial_update"];
         trace?: never;
     };
-    "/api/loads/{id}/cancel/": {
+    "/api/loads/{uuid}/cancel/": {
         parameters: {
             query?: never;
             header?: never;
@@ -211,10 +283,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Отмена активной перевозки:
-         *     - право: автор груза ИЛИ назначенный перевозчик
-         *     - доступна только для статусов: POSTED, MATCHED
-         *     - ставит статус CANCELLED и деактивирует офферы */
         post: operations["loads_cancel_create"];
         delete?: never;
         options?: never;
@@ -222,7 +290,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/loads/{id}/refresh/": {
+    "/api/loads/{uuid}/refresh/": {
         parameters: {
             query?: never;
             header?: never;
@@ -245,10 +313,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Борда моих активных заявок.
-         *     - select_related('customer')
-         *     - offers_active для has_offers
-         *     - path_km для price_per_km (фолбэк) */
         get: operations["loads_board_list"];
         put?: never;
         post?: never;
@@ -281,9 +345,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description - select_related('customer') для company_name/contact_value
-         *     - annotate offers_active для has_offers без N+1
-         *     - annotate path_km для расчёта price_per_km (фолбэк) */
         get: operations["loads_mine_list"];
         put?: never;
         post?: never;
@@ -300,16 +361,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Публичная доска: видна Перевозчику/Логисту.
-         *     Показывает только одобренные, не скрытые и активные заявки.
-         *
-         *     Поддерживаемые query params:
-         *     - origin_city, destination_city, load_date, transport_type, id
-         *     - min_weight, max_weight, min_price, max_price, price_currency
-         *     - has_offers = true|false
-         *     - origin_lat, origin_lng, origin_radius_km
-         *     - dest_lat,   dest_lng,   dest_radius_km
-         *     - order = path_km|-path_km|origin_dist_km|-origin_dist_km|price_value|-price_value|load_date|-load_date */
         get: operations["loads_public_list"];
         put?: never;
         post?: never;
@@ -519,6 +570,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/orders/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["orders_list"];
+        put?: never;
+        post: operations["orders_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["orders_retrieve"];
+        put: operations["orders_update"];
+        post?: never;
+        delete: operations["orders_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["orders_partial_update"];
+        trace?: never;
+    };
+    "/api/orders/{id}/documents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET  /orders/{id}/documents/ → список документов
+         *     POST /orders/{id}/documents/ → загрузка файла (multipart/form-data) */
+        get: operations["orders_documents_retrieve"];
+        put?: never;
+        /** @description GET  /orders/{id}/documents/ → список документов
+         *     POST /orders/{id}/documents/ → загрузка файла (multipart/form-data) */
+        post: operations["orders_documents_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/status/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Обновление статуса (валидация через OrderStatusUpdateSerializer). */
+        patch: operations["orders_status_partial_update"];
+        trace?: never;
+    };
     "/api/schema/": {
         parameters: {
             query?: never;
@@ -559,18 +679,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Листинг/борда. Поля рассчитываются так:
-         *     - route_km       — по трассе (кэш/провайдер), фолбэк на path_km
-         *     - path_km        — приходит из аннотации queryset'а (прямая дистанция в км)
-         *     - origin_dist_km — аннотация радиуса (если есть фильтр), иначе None
-         *     - has_offers     — активные офферы
-         *     - company_name   — берём из профиля заказчика (customer)
-         *     - contact_value  — в зависимости от contact_pref (телефон/email/иначе)
-         *     - weight_t       — вес в тоннах (из weight_kg)
-         *     - price_per_km   — price_value / (route_km или path_km) */
         CargoList: {
-            readonly id: number;
+            /** Format: uuid */
+            readonly uuid: string;
+            /** Название груза */
             readonly product: string;
+            /** Описание */
             readonly description: string;
             readonly origin_country: string;
             readonly origin_city: string;
@@ -578,24 +692,73 @@ export interface components {
             readonly destination_country: string;
             readonly destination_city: string;
             readonly destination_address: string;
-            /** Format: date */
+            /**
+             * Дата загрузки
+             * Format: date
+             */
             readonly load_date: string;
-            /** Format: date */
+            /**
+             * Дата доставки
+             * Format: date
+             */
             readonly delivery_date: string | null;
-            readonly transport_type: components["schemas"]["TransportTypeEnum"];
+            /**
+             * @description * `TENT` - Тент
+             *     * `CONT` - Контейнер
+             *     * `REEFER` - Рефрижератор
+             *     * `DUMP` - Самосвал
+             *     * `CARTR` - Автотранспортер
+             *     * `GRAIN` - Зерновоз
+             *     * `LOG` - Лесовоз
+             *     * `PICKUP` - Пикап
+             *     * `MEGA` - Мега фура
+             *     * `OTHER` - Другое
+             * @enum {string}
+             */
+            readonly transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             readonly weight_kg: string;
             /** Format: double */
             readonly weight_t: number;
             /** Format: decimal */
             readonly price_value: string | null;
-            readonly price_currency: components["schemas"]["PriceCurrencyEnum"];
-            readonly contact_pref: components["schemas"]["ContactPrefEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            readonly price_uzs: string;
+            /**
+             * @description * `email` - Email
+             *     * `phone` - Телефон
+             *     * `both` - Оба
+             * @enum {string}
+             */
+            readonly contact_pref: "email" | "phone" | "both";
             readonly contact_value: string;
             readonly is_hidden: boolean;
             readonly company_name: string;
-            readonly moderation_status: components["schemas"]["ModerationStatusEnum"];
-            readonly status: components["schemas"]["StatusEnum"];
+            /**
+             * @description * `pending` - На модерации
+             *     * `approved` - Одобрено
+             *     * `rejected` - Отклонено
+             * @enum {string}
+             */
+            readonly moderation_status: "pending" | "approved" | "rejected";
+            /**
+             * @description * `POSTED` - Опубликована
+             *     * `MATCHED` - В работе
+             *     * `DELIVERED` - Доставлено
+             *     * `COMPLETED` - Завершено
+             *     * `CANCELLED` - Отменена
+             * @enum {string}
+             */
+            readonly status: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
             readonly age_minutes: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -606,22 +769,17 @@ export interface components {
             readonly path_km: number;
             /** Format: double */
             readonly route_km: number | null;
-            /**
-             * Format: double
-             * @description Возвращаем Decimal(2 знака) для денежного значения.
-             *     Если дистанция отсутствует или <= 0 — None.
-             *     Для дистанции используем приоритет: route_km -> path_km.
-             */
+            /** Format: double */
             readonly price_per_km: number;
             /** Format: double */
             readonly origin_dist_km: number;
         };
-        /** @description Создание/обновление заявки.
-         *     - Пользователь вводит только страну/город/адрес (координаты не требуются).
-         *     - Сервер сам геокодит и заполняет origin_point/dest_point.
-         *     - В ответе отдаём route_km (по трассе), если удалось посчитать/закэшировать. */
         CargoPublish: {
+            /** Format: uuid */
+            readonly uuid: string;
+            /** Название груза */
             product: string;
+            /** Описание */
             description?: string;
             origin_country?: string;
             origin_city: string;
@@ -629,42 +787,136 @@ export interface components {
             destination_country?: string;
             destination_city: string;
             destination_address: string;
-            /** Format: date */
+            /**
+             * Дата загрузки
+             * Format: date
+             */
             load_date: string;
-            /** Format: date */
+            /**
+             * Дата доставки
+             * Format: date
+             */
             delivery_date?: string | null;
-            transport_type: components["schemas"]["TransportTypeEnum"];
+            /**
+             * @description * `TENT` - Тент
+             *     * `CONT` - Контейнер
+             *     * `REEFER` - Рефрижератор
+             *     * `DUMP` - Самосвал
+             *     * `CARTR` - Автотранспортер
+             *     * `GRAIN` - Зерновоз
+             *     * `LOG` - Лесовоз
+             *     * `PICKUP` - Пикап
+             *     * `MEGA` - Мега фура
+             *     * `OTHER` - Другое
+             * @enum {string}
+             */
+            transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg: string;
             /** Format: decimal */
             price_value?: string | null;
-            price_currency?: components["schemas"]["PriceCurrencyEnum"];
-            contact_pref: components["schemas"]["ContactPrefEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            readonly price_uzs: string;
+            /**
+             * @description * `email` - Email
+             *     * `phone` - Телефон
+             *     * `both` - Оба
+             * @enum {string}
+             */
+            contact_pref: "email" | "phone" | "both";
             is_hidden?: boolean;
             /** Format: double */
             readonly route_km: number | null;
         };
-        /**
-         * @description * `email` - Email
-         *     * `phone` - Телефон
-         *     * `both` - Оба
-         * @enum {string}
-         */
-        ContactPrefEnum: "email" | "phone" | "both";
-        ForgotPassword: {
+        CargoPublishRequest: {
+            /** Название груза */
+            product: string;
+            /** Описание */
+            description?: string;
+            origin_country?: string;
+            origin_city: string;
+            origin_address: string;
+            destination_country?: string;
+            destination_city: string;
+            destination_address: string;
+            /**
+             * Дата загрузки
+             * Format: date
+             */
+            load_date: string;
+            /**
+             * Дата доставки
+             * Format: date
+             */
+            delivery_date?: string | null;
+            /**
+             * @description * `TENT` - Тент
+             *     * `CONT` - Контейнер
+             *     * `REEFER` - Рефрижератор
+             *     * `DUMP` - Самосвал
+             *     * `CARTR` - Автотранспортер
+             *     * `GRAIN` - Зерновоз
+             *     * `LOG` - Лесовоз
+             *     * `PICKUP` - Пикап
+             *     * `MEGA` - Мега фура
+             *     * `OTHER` - Другое
+             * @enum {string}
+             */
+            transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
+            /** Format: decimal */
+            weight_kg: string;
+            /** Format: decimal */
+            price_value?: string | null;
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /**
+             * @description * `email` - Email
+             *     * `phone` - Телефон
+             *     * `both` - Оба
+             * @enum {string}
+             */
+            contact_pref: "email" | "phone" | "both";
+            is_hidden?: boolean;
+        };
+        City: {
+            name: string;
+            country: string;
+            country_code: string;
+        };
+        CitySuggestResponse: {
+            results: components["schemas"]["City"][];
+        };
+        Country: {
+            code: string;
+            name: string;
+        };
+        CountrySuggestResponse: {
+            results: components["schemas"]["Country"][];
+        };
+        ForgotPasswordRequest: {
             /** Format: email */
             email: string;
         };
         ForgotPasswordResponse: {
             detail: string;
         };
-        /**
-         * @description * `CUSTOMER` - Заказчик
-         *     * `CARRIER` - Перевозчик
-         * @enum {string}
-         */
-        InitiatorEnum: "CUSTOMER" | "CARRIER";
-        Login: {
+        LoginRequest: {
             login: string;
             password: string;
             /** @default false */
@@ -675,7 +927,7 @@ export interface components {
             access: string;
             refresh: string;
         };
-        LogoutRequest: {
+        LogoutRequestRequest: {
             refresh?: string;
         };
         LogoutResponse: {
@@ -696,49 +948,70 @@ export interface components {
             company_name?: string;
             /** Format: uri */
             photo?: string | null;
-            readonly role: components["schemas"]["RoleEnum"];
+            /**
+             * @description * `LOGISTIC` - Логист
+             *     * `CUSTOMER` - Заказчик
+             *     * `CARRIER` - Перевозчик
+             * @enum {string}
+             */
+            readonly role: "LOGISTIC" | "CUSTOMER" | "CARRIER";
             /** Format: double */
             readonly rating_as_customer: number;
             /** Format: double */
             readonly rating_as_carrier: number;
             readonly is_email_verified: boolean;
+            readonly profile: components["schemas"]["Profile"];
         };
-        /**
-         * @description * `pending` - На модерации
-         *     * `approved` - Одобрено
-         *     * `rejected` - Отклонено
-         * @enum {string}
-         */
-        ModerationStatusEnum: "pending" | "approved" | "rejected";
         OfferAcceptResponse: {
             detail: string;
             accepted_by_customer: boolean;
             accepted_by_carrier: boolean;
         };
-        OfferCounter: {
+        OfferCounterRequest: {
             /** Format: decimal */
             price_value: string;
             price_currency?: string;
             message?: string;
         };
         /** @description Создание оффера ПЕРЕВОЗЧИКОМ на чужую заявку. */
-        OfferCreate: {
+        OfferCreateRequest: {
             cargo: number;
             /** Format: decimal */
             price_value?: string | null;
-            /** @default UZS */
-            price_currency: components["schemas"]["PriceCurrencyEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @default UZS
+             * @enum {string}
+             */
+            price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
         };
         OfferDetail: {
             readonly id: number;
             /** Format: decimal */
             price_value?: string | null;
-            price_currency?: components["schemas"]["PriceCurrencyEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
-            readonly initiator: components["schemas"]["InitiatorEnum"];
+            /**
+             * @description * `CUSTOMER` - Заказчик
+             *     * `CARRIER` - Перевозчик
+             * @enum {string}
+             */
+            readonly initiator: "CUSTOMER" | "CARRIER";
             /** @default true */
             readonly is_active: boolean;
             /** Format: date-time */
@@ -748,14 +1021,37 @@ export interface components {
             cargo: number;
             readonly carrier: number;
         };
+        OfferDetailRequest: {
+            /** Format: decimal */
+            price_value?: string | null;
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            message?: string;
+            cargo: number;
+        };
         /** @description Создание оффера-ИНВАЙТА ЗАКАЗЧИКОМ конкретному перевозчику. */
-        OfferInvite: {
+        OfferInviteRequest: {
             cargo: number;
             carrier_id: number;
             /** Format: decimal */
             price_value?: string | null;
-            /** @default UZS */
-            price_currency: components["schemas"]["PriceCurrencyEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @default UZS
+             * @enum {string}
+             */
+            price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
         };
         OfferRejectResponse: {
@@ -769,13 +1065,138 @@ export interface components {
             readonly cargo_customer_id: number;
             /** Format: decimal */
             readonly price_value: string | null;
-            readonly price_currency: components["schemas"]["PriceCurrencyEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             readonly message: string;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
             readonly is_active: boolean;
             /** Format: date-time */
             readonly created_at: string;
+        };
+        OrderDetail: {
+            readonly id: number;
+            cargo: number;
+            readonly cargo_id: number;
+            customer: number;
+            carrier?: number | null;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status: "pending" | "en_route" | "delivered" | "no_driver";
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            price_total?: string;
+            /** Format: decimal */
+            route_distance_km?: string;
+            /** Format: double */
+            readonly price_per_km: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly documents: components["schemas"]["OrderDocument"][];
+        };
+        OrderDetailRequest: {
+            cargo: number;
+            customer: number;
+            carrier?: number | null;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status: "pending" | "en_route" | "delivered" | "no_driver";
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            price_total?: string;
+            /** Format: decimal */
+            route_distance_km?: string;
+        };
+        OrderDocument: {
+            readonly id: number;
+            title?: string;
+            /** Format: uri */
+            file: string;
+            readonly file_name: string | null;
+            readonly file_size: number | null;
+            readonly uploaded_by: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        OrderDocumentRequest: {
+            title?: string;
+            /** Format: binary */
+            file: string;
+        };
+        OrderList: {
+            readonly id: number;
+            cargo: number;
+            readonly cargo_id: number;
+            customer: number;
+            carrier?: number | null;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status: "pending" | "en_route" | "delivered" | "no_driver";
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            price_total?: string;
+            /** Format: decimal */
+            route_distance_km?: string;
+            /** Format: double */
+            readonly price_per_km: number;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        OrderStatusUpdate: {
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status: "pending" | "en_route" | "delivered" | "no_driver";
         };
         PaginatedCargoListList: {
             /** @example 123 */
@@ -807,12 +1228,25 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["OfferShort"][];
         };
-        /** @description Создание/обновление заявки.
-         *     - Пользователь вводит только страну/город/адрес (координаты не требуются).
-         *     - Сервер сам геокодит и заполняет origin_point/dest_point.
-         *     - В ответе отдаём route_km (по трассе), если удалось посчитать/закэшировать. */
-        PatchedCargoPublish: {
+        PaginatedOrderListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["OrderList"][];
+        };
+        PatchedCargoPublishRequest: {
+            /** Название груза */
             product?: string;
+            /** Описание */
             description?: string;
             origin_country?: string;
             origin_city?: string;
@@ -820,61 +1254,139 @@ export interface components {
             destination_country?: string;
             destination_city?: string;
             destination_address?: string;
-            /** Format: date */
+            /**
+             * Дата загрузки
+             * Format: date
+             */
             load_date?: string;
-            /** Format: date */
+            /**
+             * Дата доставки
+             * Format: date
+             */
             delivery_date?: string | null;
-            transport_type?: components["schemas"]["TransportTypeEnum"];
+            /**
+             * @description * `TENT` - Тент
+             *     * `CONT` - Контейнер
+             *     * `REEFER` - Рефрижератор
+             *     * `DUMP` - Самосвал
+             *     * `CARTR` - Автотранспортер
+             *     * `GRAIN` - Зерновоз
+             *     * `LOG` - Лесовоз
+             *     * `PICKUP` - Пикап
+             *     * `MEGA` - Мега фура
+             *     * `OTHER` - Другое
+             * @enum {string}
+             */
+            transport_type?: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg?: string;
             /** Format: decimal */
             price_value?: string | null;
-            price_currency?: components["schemas"]["PriceCurrencyEnum"];
-            contact_pref?: components["schemas"]["ContactPrefEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /**
+             * @description * `email` - Email
+             *     * `phone` - Телефон
+             *     * `both` - Оба
+             * @enum {string}
+             */
+            contact_pref?: "email" | "phone" | "both";
             is_hidden?: boolean;
-            /** Format: double */
-            readonly route_km?: number | null;
         };
-        PatchedOfferDetail: {
-            readonly id?: number;
+        PatchedOfferDetailRequest: {
             /** Format: decimal */
             price_value?: string | null;
-            price_currency?: components["schemas"]["PriceCurrencyEnum"];
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
-            readonly accepted_by_customer?: boolean;
-            readonly accepted_by_carrier?: boolean;
-            readonly initiator?: components["schemas"]["InitiatorEnum"];
-            /** @default true */
-            readonly is_active: boolean;
-            /** Format: date-time */
-            readonly created_at?: string;
-            /** Format: date-time */
-            readonly updated_at?: string;
             cargo?: number;
-            readonly carrier?: number;
         };
-        PatchedUpdateMe: {
+        PatchedOrderDetailRequest: {
+            cargo?: number;
+            customer?: number;
+            carrier?: number | null;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status?: "pending" | "en_route" | "delivered" | "no_driver";
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** Format: decimal */
+            price_total?: string;
+            /** Format: decimal */
+            route_distance_km?: string;
+        };
+        PatchedOrderStatusUpdateRequest: {
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            status?: "pending" | "en_route" | "delivered" | "no_driver";
+        };
+        PatchedUpdateMeRequest: {
             /** Имя */
             first_name?: string;
             phone?: string | null;
             company_name?: string;
-            /** Format: uri */
+            /** Format: binary */
             photo?: string | null;
+            profile?: components["schemas"]["ProfileRequest"];
         };
-        /**
-         * @description * `UZS` - сум
-         *     * `KZT` - тнг
-         *     * `RUB` - руб
-         *     * `USD` - USD
-         *     * `EUR` - EUR
-         * @enum {string}
-         */
-        PriceCurrencyEnum: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-        /** @description Простой сериализатор для ответа refresh. */
+        Profile: {
+            /** Страна */
+            country?: string;
+            /** Код страны (ISO-2) */
+            country_code?: string;
+            /** Регион/область */
+            region?: string;
+            /** Город */
+            city?: string;
+        };
+        ProfileRequest: {
+            /** Страна */
+            country?: string;
+            /** Код страны (ISO-2) */
+            country_code?: string;
+            /** Регион/область */
+            region?: string;
+            /** Город */
+            city?: string;
+        };
         RefreshResponse: {
             detail: string;
         };
-        Register: {
+        RefreshResponseRequest: {
+            detail: string;
+        };
+        RegisterRequest: {
             /**
              * Имя пользователя
              * @description Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.
@@ -888,19 +1400,29 @@ export interface components {
             first_name?: string;
             phone: string;
             company_name?: string;
-            role?: components["schemas"]["RoleEnum"];
+            /**
+             * @description * `LOGISTIC` - Логист
+             *     * `CUSTOMER` - Заказчик
+             *     * `CARRIER` - Перевозчик
+             * @enum {string}
+             */
+            role?: "LOGISTIC" | "CUSTOMER" | "CARRIER";
+            country?: string;
+            country_code?: string;
+            region?: string;
+            city?: string;
         };
         RegisterResponse: {
             detail: string;
         };
-        ResendVerify: {
+        ResendVerifyRequest: {
             /** Format: email */
             email: string;
         };
         ResendVerifyResponse: {
             detail: string;
         };
-        ResetPassword: {
+        ResetPasswordRequest: {
             /** Format: email */
             email: string;
             code: string;
@@ -909,30 +1431,34 @@ export interface components {
         ResetPasswordResponse: {
             detail: string;
         };
-        RoleChange: {
-            role: components["schemas"]["RoleEnum"];
+        RoleChangeRequest: {
+            /**
+             * @description * `LOGISTIC` - Логист
+             *     * `CUSTOMER` - Заказчик
+             *     * `CARRIER` - Перевозчик
+             * @enum {string}
+             */
+            role: "LOGISTIC" | "CUSTOMER" | "CARRIER";
         };
         RoleChangeResponse: {
             detail: string;
             role?: string;
         };
-        /**
-         * @description * `LOGISTIC` - Логист
-         *     * `CUSTOMER` - Заказчик
-         *     * `CARRIER` - Перевозчик
-         * @enum {string}
-         */
-        RoleEnum: "LOGISTIC" | "CUSTOMER" | "CARRIER";
-        /**
-         * @description * `POSTED` - Опубликована
-         *     * `MATCHED` - В работе
-         *     * `DELIVERED` - Доставлено
-         *     * `COMPLETED` - Завершено
-         *     * `CANCELLED` - Отменена
-         * @enum {string}
-         */
-        StatusEnum: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
-        TokenRefreshRequest: {
+        SendPhoneOTPRequest: {
+            phone: string;
+            /**
+             * @description * `verify` - verify
+             *     * `reset` - reset
+             * @default verify
+             * @enum {string}
+             */
+            purpose: "verify" | "reset";
+        };
+        SendPhoneOTPResponse: {
+            detail: string;
+            seconds_left: number;
+        };
+        TokenRefreshRequestRequest: {
             refresh: string;
             remember_me?: boolean;
         };
@@ -940,29 +1466,16 @@ export interface components {
             access: string;
             refresh: string;
         };
-        /**
-         * @description * `TENT` - Тент
-         *     * `CONT` - Контейнер
-         *     * `REEFER` - Рефрижератор
-         *     * `DUMP` - Самосвал
-         *     * `CARTR` - Автотранспортер
-         *     * `GRAIN` - Зерновоз
-         *     * `LOG` - Лесовоз
-         *     * `PICKUP` - Пикап
-         *     * `MEGA` - Мега фура
-         *     * `OTHER` - Другое
-         * @enum {string}
-         */
-        TransportTypeEnum: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
-        UpdateMe: {
+        UpdateMeRequest: {
             /** Имя */
             first_name?: string;
             phone?: string | null;
             company_name?: string;
-            /** Format: uri */
+            /** Format: binary */
             photo?: string | null;
+            profile?: components["schemas"]["ProfileRequest"];
         };
-        VerifyEmail: {
+        VerifyEmailRequest: {
             /** Format: email */
             email: string;
             code: string;
@@ -971,6 +1484,20 @@ export interface components {
             detail: string;
             access: string;
             refresh: string;
+        };
+        VerifyPhoneOTPRequest: {
+            phone: string;
+            code: string;
+            /**
+             * @description * `verify` - verify
+             *     * `reset` - reset
+             * @default verify
+             * @enum {string}
+             */
+            purpose: "verify" | "reset";
+        };
+        VerifyPhoneOTPResponse: {
+            verified: boolean;
         };
     };
     responses: never;
@@ -990,9 +1517,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RoleChange"];
-                "application/x-www-form-urlencoded": components["schemas"]["RoleChange"];
-                "multipart/form-data": components["schemas"]["RoleChange"];
+                "application/json": components["schemas"]["RoleChangeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RoleChangeRequest"];
+                "multipart/form-data": components["schemas"]["RoleChangeRequest"];
             };
         };
         responses: {
@@ -1015,9 +1542,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ForgotPassword"];
-                "application/x-www-form-urlencoded": components["schemas"]["ForgotPassword"];
-                "multipart/form-data": components["schemas"]["ForgotPassword"];
+                "application/json": components["schemas"]["ForgotPasswordRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ForgotPasswordRequest"];
+                "multipart/form-data": components["schemas"]["ForgotPasswordRequest"];
             };
         };
         responses: {
@@ -1040,9 +1567,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Login"];
-                "application/x-www-form-urlencoded": components["schemas"]["Login"];
-                "multipart/form-data": components["schemas"]["Login"];
+                "application/json": components["schemas"]["LoginRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LoginRequest"];
+                "multipart/form-data": components["schemas"]["LoginRequest"];
             };
         };
         responses: {
@@ -1065,9 +1592,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["LogoutRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["LogoutRequest"];
-                "multipart/form-data": components["schemas"]["LogoutRequest"];
+                "application/json": components["schemas"]["LogoutRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LogoutRequestRequest"];
+                "multipart/form-data": components["schemas"]["LogoutRequestRequest"];
             };
         };
         responses: {
@@ -1109,9 +1636,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["UpdateMe"];
-                "application/x-www-form-urlencoded": components["schemas"]["UpdateMe"];
-                "multipart/form-data": components["schemas"]["UpdateMe"];
+                "application/json": components["schemas"]["UpdateMeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UpdateMeRequest"];
+                "multipart/form-data": components["schemas"]["UpdateMeRequest"];
             };
         };
         responses: {
@@ -1134,9 +1661,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedUpdateMe"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedUpdateMe"];
-                "multipart/form-data": components["schemas"]["PatchedUpdateMe"];
+                "application/json": components["schemas"]["PatchedUpdateMeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUpdateMeRequest"];
+                "multipart/form-data": components["schemas"]["PatchedUpdateMeRequest"];
             };
         };
         responses: {
@@ -1159,9 +1686,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TokenRefreshRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["TokenRefreshRequest"];
-                "multipart/form-data": components["schemas"]["TokenRefreshRequest"];
+                "application/json": components["schemas"]["TokenRefreshRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TokenRefreshRequestRequest"];
+                "multipart/form-data": components["schemas"]["TokenRefreshRequestRequest"];
             };
         };
         responses: {
@@ -1184,9 +1711,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Register"];
-                "application/x-www-form-urlencoded": components["schemas"]["Register"];
-                "multipart/form-data": components["schemas"]["Register"];
+                "application/json": components["schemas"]["RegisterRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RegisterRequest"];
+                "multipart/form-data": components["schemas"]["RegisterRequest"];
             };
         };
         responses: {
@@ -1209,9 +1736,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ResendVerify"];
-                "application/x-www-form-urlencoded": components["schemas"]["ResendVerify"];
-                "multipart/form-data": components["schemas"]["ResendVerify"];
+                "application/json": components["schemas"]["ResendVerifyRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResendVerifyRequest"];
+                "multipart/form-data": components["schemas"]["ResendVerifyRequest"];
             };
         };
         responses: {
@@ -1234,9 +1761,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ResetPassword"];
-                "application/x-www-form-urlencoded": components["schemas"]["ResetPassword"];
-                "multipart/form-data": components["schemas"]["ResetPassword"];
+                "application/json": components["schemas"]["ResetPasswordRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResetPasswordRequest"];
+                "multipart/form-data": components["schemas"]["ResetPasswordRequest"];
             };
         };
         responses: {
@@ -1250,6 +1777,31 @@ export interface operations {
             };
         };
     };
+    auth_send_otp_phone_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendPhoneOTPRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SendPhoneOTPRequest"];
+                "multipart/form-data": components["schemas"]["SendPhoneOTPRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendPhoneOTPResponse"];
+                };
+            };
+        };
+    };
     auth_verify_email_create: {
         parameters: {
             query?: never;
@@ -1259,9 +1811,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VerifyEmail"];
-                "application/x-www-form-urlencoded": components["schemas"]["VerifyEmail"];
-                "multipart/form-data": components["schemas"]["VerifyEmail"];
+                "application/json": components["schemas"]["VerifyEmailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["VerifyEmailRequest"];
+                "multipart/form-data": components["schemas"]["VerifyEmailRequest"];
             };
         };
         responses: {
@@ -1275,12 +1827,87 @@ export interface operations {
             };
         };
     };
+    auth_verify_otp_phone_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyPhoneOTPRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["VerifyPhoneOTPRequest"];
+                "multipart/form-data": components["schemas"]["VerifyPhoneOTPRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyPhoneOTPResponse"];
+                };
+            };
+        };
+    };
+    geo_suggest_cities_retrieve: {
+        parameters: {
+            query: {
+                /** @description ISO-2 код страны для фильтра (необязательно). Допустимые: AF, AM, AZ, BG, BY, CN, GE, GR, HU, IN, IR, KG, KZ, MN, PK, PL, RO, RS, RU, TJ, TM, TR, UA, UZ */
+                country?: string;
+                /** @description Максимум результатов (1..50, по умолчанию 10) */
+                limit?: number;
+                /** @description Строка поиска (минимум 2 символа) */
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CitySuggestResponse"];
+                };
+            };
+        };
+    };
+    geo_suggest_countries_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Максимум результатов (1..50, по умолчанию 10) */
+                limit?: number;
+                /** @description Код страны (ISO-2) или часть названия */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountrySuggestResponse"];
+                };
+            };
+        };
+    };
     loads_retrieve: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                uuid: string;
             };
             cookie?: never;
         };
@@ -1301,15 +1928,15 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                uuid: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CargoPublish"];
-                "application/x-www-form-urlencoded": components["schemas"]["CargoPublish"];
-                "multipart/form-data": components["schemas"]["CargoPublish"];
+                "application/json": components["schemas"]["CargoPublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CargoPublishRequest"];
+                "multipart/form-data": components["schemas"]["CargoPublishRequest"];
             };
         };
         responses: {
@@ -1328,15 +1955,15 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                uuid: string;
             };
             cookie?: never;
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedCargoPublish"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedCargoPublish"];
-                "multipart/form-data": components["schemas"]["PatchedCargoPublish"];
+                "application/json": components["schemas"]["PatchedCargoPublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCargoPublishRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCargoPublishRequest"];
             };
         };
         responses: {
@@ -1355,15 +1982,15 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                uuid: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RefreshResponse"];
-                "application/x-www-form-urlencoded": components["schemas"]["RefreshResponse"];
-                "multipart/form-data": components["schemas"]["RefreshResponse"];
+                "application/json": components["schemas"]["RefreshResponseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RefreshResponseRequest"];
+                "multipart/form-data": components["schemas"]["RefreshResponseRequest"];
             };
         };
         responses: {
@@ -1382,15 +2009,15 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                uuid: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RefreshResponse"];
-                "application/x-www-form-urlencoded": components["schemas"]["RefreshResponse"];
-                "multipart/form-data": components["schemas"]["RefreshResponse"];
+                "application/json": components["schemas"]["RefreshResponseRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RefreshResponseRequest"];
+                "multipart/form-data": components["schemas"]["RefreshResponseRequest"];
             };
         };
         responses: {
@@ -1435,9 +2062,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CargoPublish"];
-                "application/x-www-form-urlencoded": components["schemas"]["CargoPublish"];
-                "multipart/form-data": components["schemas"]["CargoPublish"];
+                "application/json": components["schemas"]["CargoPublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CargoPublishRequest"];
+                "multipart/form-data": components["schemas"]["CargoPublishRequest"];
             };
         };
         responses: {
@@ -1528,9 +2155,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OfferCreate"];
-                "application/x-www-form-urlencoded": components["schemas"]["OfferCreate"];
-                "multipart/form-data": components["schemas"]["OfferCreate"];
+                "application/json": components["schemas"]["OfferCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferCreateRequest"];
+                "multipart/form-data": components["schemas"]["OfferCreateRequest"];
             };
         };
         responses: {
@@ -1578,9 +2205,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OfferDetail"];
-                "application/x-www-form-urlencoded": components["schemas"]["OfferDetail"];
-                "multipart/form-data": components["schemas"]["OfferDetail"];
+                "application/json": components["schemas"]["OfferDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferDetailRequest"];
+                "multipart/form-data": components["schemas"]["OfferDetailRequest"];
             };
         };
         responses: {
@@ -1627,9 +2254,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedOfferDetail"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedOfferDetail"];
-                "multipart/form-data": components["schemas"]["PatchedOfferDetail"];
+                "application/json": components["schemas"]["PatchedOfferDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOfferDetailRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOfferDetailRequest"];
             };
         };
         responses: {
@@ -1691,9 +2318,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OfferCounter"];
-                "application/x-www-form-urlencoded": components["schemas"]["OfferCounter"];
-                "multipart/form-data": components["schemas"]["OfferCounter"];
+                "application/json": components["schemas"]["OfferCounterRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferCounterRequest"];
+                "multipart/form-data": components["schemas"]["OfferCounterRequest"];
             };
         };
         responses: {
@@ -1774,9 +2401,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OfferInvite"];
-                "application/x-www-form-urlencoded": components["schemas"]["OfferInvite"];
-                "multipart/form-data": components["schemas"]["OfferInvite"];
+                "application/json": components["schemas"]["OfferInviteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferInviteRequest"];
+                "multipart/form-data": components["schemas"]["OfferInviteRequest"];
             };
         };
         responses: {
@@ -1808,6 +2435,236 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedOfferShortList"];
+                };
+            };
+        };
+    };
+    orders_list: {
+        parameters: {
+            query?: {
+                cargo?: number;
+                date_from?: string;
+                date_to?: string;
+                load?: number;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                role?: string;
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOrderListList"];
+                };
+            };
+        };
+    };
+    orders_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    orders_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_documents_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_documents_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDocumentRequest"];
+                "multipart/form-data": components["schemas"]["OrderDocumentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDocumentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDocument"];
+                };
+            };
+        };
+    };
+    orders_status_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOrderStatusUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrderStatusUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderStatusUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderStatusUpdate"];
                 };
             };
         };
