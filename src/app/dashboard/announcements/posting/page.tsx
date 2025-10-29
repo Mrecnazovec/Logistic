@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { PostingPage } from './PostingPage'
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 }
 
 export default function page() {
-	return <PostingPage />
+	return (
+		<Suspense fallback={null}>
+			<PostingPage />
+		</Suspense>
+	)
 }

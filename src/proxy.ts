@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { DASHBOARD_URL, PUBLIC_URL } from './config/url.config'
 import { Tokens } from './services/auth/auth-token.service'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const accessToken = request.cookies.get(Tokens.ACCESS_TOKEN)?.value
 	const { pathname } = request.nextUrl
 
@@ -23,3 +23,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
 	matcher: ['/dashboard/:path*', '/auth/:path*'],
 }
+
+
