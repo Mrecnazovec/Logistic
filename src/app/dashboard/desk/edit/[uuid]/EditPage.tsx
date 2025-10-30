@@ -20,21 +20,58 @@ import { cn } from '@/lib/utils'
 import { ContactSelector } from '@/shared/enums/ContactPref.enum'
 import { City } from '@/shared/types/Geo.interface'
 import { Banknote, Home, Phone } from 'lucide-react'
-import { useState } from 'react'
-import { usePostForm } from './usePostForm'
+import { useEffect, useState } from 'react'
+import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
+import { useEditForm } from './useEditForm'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 
-export function PostingPage() {
-	const { form, isLoadingCreate, onSubmit } = usePostForm()
+
+export function EditPage() {
+	const { form, isLoadingPatch, onSubmit } = useEditForm()
 	const [originCity, setOriginCity] = useState<City | null>(null)
 	const [destinationCity, setDestinationCity] = useState<City | null>(null)
+	const { load, isLoading } = useGetLoad()
 
 	const navItems = [
-		{ label: 'Поиск грузоперевозок', href: DASHBOARD_URL.announcements() },
-		{ label: 'Публикация заявки', href: DASHBOARD_URL.posting(), active: true },
+		{ label: 'Доска заявок', href: DASHBOARD_URL.desk() },
+		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my') },
 	]
 
+	useEffect(() => {
+		if (!load) return
+
+		form.reset({
+			origin_city: load.origin_city ?? '',
+			origin_address: load.origin_address ?? '',
+			destination_city: load.destination_city ?? '',
+			destination_address: load.destination_address ?? '',
+			load_date: load.load_date ?? '',
+			delivery_date: load.delivery_date ?? '',
+			price_currency: load.price_currency ?? 'UZS',
+			price_value: load.price_value ?? '',
+			weight_kg: load.weight_kg ?? '',
+			product: load.product ?? '',
+			transport_type: load.transport_type ?? '',
+			contact_pref: load.contact_pref ?? '',
+			is_hidden: load.is_hidden ?? false,
+			description: load.description ?? '',
+		})
+
+		setOriginCity({
+			name: load.origin_city ?? '',
+			country: load.origin_country ?? '',
+			country_code: '',
+		})
+
+		setDestinationCity({
+			name: load.destination_city ?? '',
+			country: load.destination_country ?? '',
+			country_code: '',
+		})
+	}, [load, form])
+
+	console.log(load)
 	return (
 		<Form {...form}>
 			<NavInitializer items={navItems} />
@@ -57,7 +94,7 @@ export function PostingPage() {
 											}}
 											countryCode=' '
 											placeholder='Город, страна'
-											disabled={isLoadingCreate}
+											disabled={isLoadingPatch}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -73,7 +110,7 @@ export function PostingPage() {
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
+											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
@@ -94,7 +131,7 @@ export function PostingPage() {
 											value={field.value}
 											onChange={field.onChange}
 											placeholder='Дата погрузки'
-											disabled={isLoadingCreate}
+											disabled={isLoadingPatch}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -119,7 +156,7 @@ export function PostingPage() {
 											}}
 											countryCode=' '
 											placeholder='Город, страна'
-											disabled={isLoadingCreate}
+											disabled={isLoadingPatch}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -136,7 +173,7 @@ export function PostingPage() {
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
+											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
 											<InputGroupAddon className='pr-2'>
 												<Home className='text-grayscale size-5' />
 											</InputGroupAddon>
@@ -157,7 +194,7 @@ export function PostingPage() {
 											value={field.value ?? undefined}
 											onChange={field.onChange}
 											placeholder='Дата разгрузки'
-											disabled={isLoadingCreate}
+											disabled={isLoadingPatch}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -176,7 +213,7 @@ export function PostingPage() {
 									<FormItem className='w-1/2'>
 										<FormLabel className='text-brand'>Валюта/Цена</FormLabel>
 										<FormControl>
-											<CurrencySelector onChange={field.onChange} disabled={isLoadingCreate} value={field.value} />
+											<CurrencySelector onChange={field.onChange} disabled={isLoadingPatch} value={field.value} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -190,7 +227,7 @@ export function PostingPage() {
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
+												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
 												<InputGroupAddon className='pr-2'>
 													<Banknote className='text-grayscale size-5' />
 												</InputGroupAddon>
@@ -216,7 +253,7 @@ export function PostingPage() {
 													{...field}
 													value={field.value ?? ''}
 													className='pl-4'
-													disabled={isLoadingCreate}
+													disabled={isLoadingPatch}
 												/>
 											</InputGroup>
 										</FormControl>
@@ -232,7 +269,7 @@ export function PostingPage() {
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
 											</InputGroup>
 										</FormControl>
 										<FormMessage />
@@ -304,7 +341,7 @@ export function PostingPage() {
 												{...field}
 												value={field.value ?? ''}
 												className='pl-4'
-												disabled={isLoadingCreate}
+												disabled={isLoadingPatch}
 											/>
 										</InputGroup>
 									</FormControl>
@@ -318,7 +355,7 @@ export function PostingPage() {
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Товар' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+											<InputGroupInput placeholder='Товар' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
 										</InputGroup>
 									</FormControl>
 								</FormItem>
@@ -330,7 +367,7 @@ export function PostingPage() {
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
-										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingCreate} />
+										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingPatch} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -342,7 +379,7 @@ export function PostingPage() {
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Вес(тонна)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+											<InputGroupInput placeholder='Вес(тонна)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
 										</InputGroup>
 									</FormControl>
 								</FormItem>

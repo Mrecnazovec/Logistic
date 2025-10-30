@@ -4,10 +4,10 @@
 	import { useMemo } from 'react'
 
 	export const useGetLoad = () => {
-		const param = useParams<{ id: string }>()
+		const param = useParams<{ uuid: string }>()
 		const { data: load, isLoading } = useQuery({
 			queryKey: ['get load'],
-			queryFn: () => loadsService.getLoad(param.id),
+			queryFn: () => loadsService.getLoad(param.uuid),
 		})
 
 		return useMemo(() => ({ load, isLoading }), [load, isLoading])

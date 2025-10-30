@@ -4,13 +4,17 @@ import { TransportSelect } from "@/shared/enums/TransportType.enum"
 import { IPaginatedCargoListList } from "@/shared/types/PaginatedList.interface"
 import { format } from "date-fns"
 import { ru } from "date-fns/locale"
+import { Activity } from "react"
+import { CargoActionsDropdown } from "../actions/CargoActionsDropdown"
 import { OfferModal } from "../modals/OfferModal"
 
 interface DataTableProps {
 	data: IPaginatedCargoListList
+	isOffer?: boolean
+	isActions?: boolean
 }
 
-export function MobileDataTable({ data }: DataTableProps) {
+export function MobileDataTable({ data, isActions = false, isOffer = false }: DataTableProps) {
 	const getTimeAgo = (dateStr: string) => {
 		const createdAt = new Date(dateStr)
 		const diffMs = Date.now() - createdAt.getTime()
@@ -58,8 +62,9 @@ export function MobileDataTable({ data }: DataTableProps) {
 							value={format(item.load_date, "dd/MM/yyyy", { locale: ru })}
 						/>
 						<Row label="Тип транспорта" value={transportName} />
-						<div className="pt-2">
-							<OfferModal className="w-full" selectedRow={item} />
+						<div className="flex justify-end">
+							<Activity mode={isOffer ? 'visible' : 'hidden'}><OfferModal className="w-full" selectedRow={item} /></Activity>
+							<Activity mode={isActions ? 'visible' : 'hidden'}><CargoActionsDropdown cargo={item} /></Activity>
 						</div>
 					</div>
 				)

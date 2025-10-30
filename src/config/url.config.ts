@@ -11,11 +11,13 @@ export const DASHBOARD_URL = {
 	root: (url = '') => `${url ? url : ''}`,
 
 	home: (url = '') => `/dashboard/${url}`,
+	cabinet: () => `/dashboard/cabinet/`,
 	announcements: (url = '') => `/dashboard/announcements/${url}`,
 	desk: (url = '') => `/dashboard/desk/${url}`,
 	transportation: (url = '') => `/dashboard/transportation/${url}`,
 
 	posting: (url = '') => `/dashboard/announcements/posting/${url}`,
+	edit: (url = '') => `/dashboard/desk/edit/${url}`,
 }
 
 export const IMG_URL = {

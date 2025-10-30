@@ -9,9 +9,9 @@ import { ISearch } from '@/shared/types/Search.interface'
 class LoadsService {
 	/* GET */
 
-	async getLoad(id: string) {
+	async getLoad(uuid: string) {
 		const { data } = await axiosWithAuth<ICargoPublish>({
-			url: API_URL.loads(`${id}`),
+			url: API_URL.loads(`${uuid}`),
 			method: 'GET',
 		})
 
@@ -58,9 +58,9 @@ class LoadsService {
 		return data
 	}
 
-	async refreshLoad(id: string, detail: string) {
+	async refreshLoad(uuid: string, detail: string) {
 		const { data } = await axiosWithAuth<IRefreshResponse>({
-			url: API_URL.loads(`${id}/refresh`),
+			url: API_URL.loads(`${uuid}/refresh`),
 			method: 'POST',
 			data: { detail },
 		})

@@ -1,13 +1,34 @@
 'use client'
 
+import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { Button } from '@/components/ui/Button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/DropdownMenu'
+import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
+import { DASHBOARD_URL } from '@/config/url.config'
+import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ChevronsUpDown, CircleCheck, EyeOff, Handshake, Minus, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
+import {
+	ChevronsUpDown,
+	CircleCheck,
+	EyeOff,
+	Handshake,
+	Minus,
+	MoreHorizontal,
+	Pencil,
+	RefreshCcw,
+} from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -44,12 +65,21 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+			<Button
+				variant='ghost'
+				className='hover:bg-transparent p-0'
+				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+			>
 				Цена
 				<ChevronsUpDown className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		sortingFn: (a, b) => {
+			const priceA = Number(a.original.price_uzs || 0)
+			const priceB = Number(b.original.price_uzs || 0)
+			return priceA - priceB
+		},
 	},
 	{
 		accessorKey: 'price_currency',
@@ -58,7 +88,11 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'path_km',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+			<Button
+				variant='ghost'
+				className='hover:bg-transparent p-0'
+				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+			>
 				Путь (км)
 				<ChevronsUpDown className='ml-2 size-4' />
 			</Button>
@@ -107,10 +141,11 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'transport_type',
 		header: 'Тип',
 		cell: ({ row }) => {
-			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.name ?? '—'
-
+			const transportName =
+				TransportSelect.find((t) => t.type === row.original.transport_type)
+					?.name ?? '—'
 			return transportName
-		}
+		},
 	},
 	{
 		accessorKey: 'has_offers',
@@ -118,73 +153,18 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		cell: ({ row }) => {
 			if (row.original.has_offers)
 				return <CircleCheck className='size-5 text-success-400' />
-
 			return <Minus className='size-5 text-neutral-400' />
-		}
+		},
 	},
 	{
 		accessorKey: 'id',
 		header: 'ID',
-
 	},
-
 	{
 		id: 'actions',
 		header: '',
-		cell: ({ row }) => {
-			const cargo = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							variant='ghost'
-							className='h-8 w-8 p-0 rotate-90'
-						>
-							<span className='sr-only'>Открыть действия</span>
-							<MoreHorizontal className='size-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align='end'>
-						<DropdownMenuItem
-							onClick={() => console.log('Обновить', cargo.id)}
-							className='flex items-center gap-2'
-						>
-							<RefreshCcw className='size-4 text-muted-foreground' />
-							Обновить
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-
-						<DropdownMenuItem
-							onClick={() => console.log('Изменить', cargo.id)}
-							className='flex items-center gap-2'
-						>
-							<Pencil className='size-4 text-muted-foreground' />
-							Изменить
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-
-						<DropdownMenuItem
-							onClick={() => console.log('Скрыть', cargo.id)}
-							className='flex items-center gap-2'
-						>
-							<EyeOff className='size-4 text-muted-foreground' />
-							Скрыть
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem
-							onClick={() => console.log('Сделать предложение', cargo.id)}
-							className='flex items-center gap-2'
-						>
-							<Handshake className='size-4 text-muted-foreground' />
-							Сделать предложение
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		},
+		cell: ({ row }) => <CargoActionsDropdown cargo={row.original} />,
 		enableSorting: false,
 		enableHiding: false,
 	},
 ]
-

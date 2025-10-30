@@ -8,7 +8,7 @@ export const useRefreshLoad = () => {
 
 	const { mutate: refreshLoad, isPending: isLoadingRefresh } = useMutation({
 		mutationKey: ['load', 'refresh'],
-		mutationFn: ({ id, detail }: { id: string; detail: string }) => loadsService.refreshLoad(id, detail),
+		mutationFn: ({ uuid, detail }: { uuid: string; detail: string }) => loadsService.refreshLoad(uuid, detail),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			toast.success('Заявка обновлена')

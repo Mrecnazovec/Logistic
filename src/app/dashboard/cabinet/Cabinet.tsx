@@ -1,10 +1,12 @@
 'use client'
 
+import { NavInitializer } from "@/components/layouts/dashboard-layout/NavInitializer"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/form-control/Input"
 import { Label } from "@/components/ui/form-control/Label"
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { DASHBOARD_URL } from "@/config/url.config"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
 import Image from "next/image"
@@ -13,8 +15,13 @@ export function Cabinet() {
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
 
+	const navItems = [
+		{ label: 'Профиль', href: DASHBOARD_URL.cabinet(), active: true },
+	]
+
 	return (
 		<div className="h-full flex max-md:flex-col gap-3">
+			<NavInitializer items={navItems} />
 			<h1 className="sr-only">Профиль пользователя</h1>
 			<div className="h-full xl:w-[30%] md:w-1/2 bg-background rounded-4xl py-16 px-4 flex flex-col items-center justify-center gap-6">
 				<div className="centred flex-col gap-3">

@@ -72,16 +72,21 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+			<Button
+				variant='ghost'
+				className='hover:bg-transparent p-0'
+				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+			>
 				Цена
 				<ChevronsUpDown className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
-	},
-	{
-		accessorKey: 'price_currency',
-		header: 'Валюта',
+		sortingFn: (a, b) => {
+			const priceA = Number(a.original.price_uzs || 0)
+			const priceB = Number(b.original.price_uzs || 0)
+			return priceA - priceB
+		},
 	},
 	{
 		accessorKey: 'path_km',

@@ -14,11 +14,17 @@ import Link from 'next/link'
 import { useSearchForm } from './Searching/useSearchForm'
 import { cargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
+import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 
 export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+
+	const navItems = [
+		{ label: 'Поиск грузоперевозок', href: DASHBOARD_URL.announcements(), active: true },
+		{ label: 'Публикация заявки', href: DASHBOARD_URL.posting() },
+	]
 
 	// const fakeData = fakeCargoList
 
@@ -26,7 +32,10 @@ export function AnnouncementsPage() {
 
 	return (
 		<div className='flex flex-col md:gap-4 h-full'>
-			<div className='w-full bg-background md:rounded-4xl rounded-t-[32px]  px-4 py-8'>
+			<NavInitializer
+				items={navItems}
+			/>
+			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} />
@@ -61,7 +70,7 @@ export function AnnouncementsPage() {
 						renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
 					/>
 				) : (
-					<MobileDataTable data={data} />
+					<MobileDataTable data={data} isOffer={true} />
 				)
 			) : null}
 
