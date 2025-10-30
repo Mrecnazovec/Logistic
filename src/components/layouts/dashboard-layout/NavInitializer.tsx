@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { useNavStore, NavItem } from '@/stores/useNavStore'
 
 interface NavInitializerProps {
@@ -10,7 +10,7 @@ interface NavInitializerProps {
 export function NavInitializer({ items }: NavInitializerProps) {
 	const { setItems, clearItems } = useNavStore()
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		setItems(items)
 
 		return () => {

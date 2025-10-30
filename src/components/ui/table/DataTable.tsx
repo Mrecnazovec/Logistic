@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState } from 'react'
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -14,12 +15,8 @@ import {
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
-import React, { useState } from 'react'
-
-import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
-import { OfferModal } from '../modals/OfferModal'
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
@@ -27,19 +24,29 @@ interface DataTableProps<TData, TValue> {
 	filterKey?: string
 	isButton?: boolean
 	renderExpandedRow?: (row: TData) => React.ReactNode
+	renderFooterActions?: (selectedRow?: TData) => React.ReactNode
 }
 
-export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpandedRow, isButton = false }: DataTableProps<TData, TValue>) {
+/**
+ * Универсальная таблица данных
+ * Поддерживает сортировку, фильтрацию, пагинацию и раскрывающиеся строки
+ * Можно использовать с любым интерфейсом данных (generic)
+ */
+export function DataTable<TData, TValue>({
+	columns,
+	data,
+	filterKey,
+	renderExpandedRow,
+	renderFooterActions,
+	isButton = false,
+}: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-
 	const [rowSelection, setRowSelection] = useState({})
-
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 9,
 	})
-
 	const [expandedRow, setExpandedRow] = useState<string | null>(null)
 
 	const table = useReactTable({
@@ -55,33 +62,43 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 		onSortingChange: setSorting,
 	})
 
+	const selectedRow = table.getFilteredSelectedRowModel().rows[0]?.original
+
 	return (
 		<div className='rounded-4xl bg-background py-8'>
+			{/* 🔍 Фильтр поиска */}
 			{filterKey && (
 				<div className='flex items-center py-4 max-w-96'>
 					<Input
 						placeholder='Поиск'
 						value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ''}
-						onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)}
-						className=''
+						onChange={(event) =>
+							table.getColumn(filterKey)?.setFilterValue(event.target.value)
+						}
 					/>
 				</div>
 			)}
+
+			{/* 📊 Таблица */}
 			<div>
 				<Table>
 					<TableHeader className='[&_tr]:border-b-0 [&_th]:first:pl-12 [&_th]:py-2'>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => {
-									return (
-										<TableHead className='' key={header.id}>
-											{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-										</TableHead>
-									)
-								})}
+								{headerGroup.headers.map((header) => (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+												header.column.columnDef.header,
+												header.getContext()
+											)}
+									</TableHead>
+								))}
 							</TableRow>
 						))}
 					</TableHeader>
+
 					<TableBody className='[&_tr]:border-b-0 [&_td]:first:pl-12 [&_td]:py-5'>
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
@@ -93,15 +110,23 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 												setExpandedRow(expandedRow === row.id ? null : row.id)
 											}
 										}}
-										className={renderExpandedRow ? 'cursor-pointer hover:bg-muted/40 transition-colors' : ''}
+										className={
+											renderExpandedRow
+												? 'cursor-pointer hover:bg-muted/40 transition-colors'
+												: ''
+										}
 									>
 										{row.getVisibleCells().map((cell) => (
 											<TableCell key={cell.id}>
-												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)}
 											</TableCell>
 										))}
 									</TableRow>
 
+									{/* Раскрывающаяся строка */}
 									{renderExpandedRow && expandedRow === row.id && (
 										<TableRow className='bg-muted/20'>
 											<TableCell colSpan={columns.length} className='py-6 px-12'>
@@ -110,8 +135,6 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 										</TableRow>
 									)}
 								</React.Fragment>
-
-
 							))
 						) : (
 							<TableRow>
@@ -123,11 +146,14 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 					</TableBody>
 				</Table>
 			</div>
+
+			{/* 📄 Пагинация и действия */}
 			<div className='flex items-center justify-between px-6 py-4 border-t border-border'>
 				<p className='text-sm text-muted-foreground'>
-					Показано: {table.getPaginationRowModel().rows.length} объявлений
+					Показано: {table.getPaginationRowModel().rows.length} элементов
 				</p>
 
+				{/* Пагинация */}
 				<div className='flex items-center gap-2'>
 					<Button
 						variant='ghost'
@@ -150,13 +176,8 @@ export function DataTable<TData, TValue>({ columns, data, filterKey, renderExpan
 					</Button>
 				</div>
 
-				{isButton && (
-					<OfferModal
-						selectedRow={
-							table.getFilteredSelectedRowModel().rows[0]?.original as ICargoList
-						}
-					/>
-				)}
+				{/* Действия внизу (например, OfferModal) */}
+				{renderFooterActions?.(selectedRow)}
 			</div>
 		</div>
 	)

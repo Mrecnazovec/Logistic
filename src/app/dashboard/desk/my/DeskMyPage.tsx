@@ -6,7 +6,6 @@ import { SearchFields } from '@/components/ui/search/SearchFields'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
-import { useSearchForm } from './Searching/useSearchForm'
 // import { fakeCargoList } from '@/data/FakeData'
 import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 import { DataTable } from '@/components/ui/table/DataTable'
@@ -15,19 +14,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Activity } from 'react'
-import { deskColumns } from './table/DeskColumns'
-import { useGetLoadsMine } from '@/hooks/queries/loads/useGet/useGetLoadsMine'
+import { useSearchForm } from '../Searching/useSearchForm'
+import { deskCarrierColumns } from './table/DeskCarrierColumns'
+import { deskMyColumns } from './table/DeskMyColumns'
+import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
+import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 
 
-export function DeskPage() {
+export function DeskMyPage() {
 	const { data, isLoading } = useGetLoadsPublic()
-	const { data: mine, isLoading: isLoadingMine } = useGetLoadsMine()
+	const { data: mine, isLoading: isLoadingMine } = useGetMyOffers()
+	const { data: incoming, isLoading: isLoadingIncoming } = useGetIncomingOffers()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 
 	const navItems = [
-		{ label: 'Доска заявок', href: DASHBOARD_URL.desk(), active: true },
-		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my') },
+		{ label: 'Доска заявок', href: DASHBOARD_URL.desk() },
+		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my'), active: true },
 	]
 
 	// const fakeData = fakeCargoList
@@ -70,13 +73,13 @@ export function DeskPage() {
 				isDesktop ? (
 					<Tabs defaultValue='desk'>
 						<TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Я предложил</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Предложили мне</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
 							<Activity>
 								<DataTable
-									columns={deskColumns}
+									columns={deskMyColumns}
 									data={data.results}
 								/>
 							</Activity>
@@ -84,7 +87,7 @@ export function DeskPage() {
 						<TabsContent value='drivers'>
 							<Activity>
 								<DataTable
-									columns={deskColumns}
+									columns={deskCarrierColumns}
 									data={data.results}
 								/>
 							</Activity>

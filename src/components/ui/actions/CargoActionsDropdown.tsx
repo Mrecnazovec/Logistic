@@ -18,15 +18,18 @@ import {
 	MoreHorizontal,
 	Pencil,
 	RefreshCcw,
+	Trash2,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { OfferModal } from '../modals/OfferModal'
 
 interface CargoActionsDropdownProps {
 	cargo: ICargoList
+	isOffer?: boolean
 }
 
-export function CargoActionsDropdown({ cargo }: CargoActionsDropdownProps) {
+export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDropdownProps) {
 	const { refreshLoad } = useRefreshLoad()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
@@ -42,7 +45,7 @@ export function CargoActionsDropdown({ cargo }: CargoActionsDropdownProps) {
 				</DropdownMenuTrigger>
 
 				<DropdownMenuContent align='end'>
-					<DropdownMenuItem
+					{!isOffer ? <><DropdownMenuItem
 						onClick={() => {
 							refreshLoad({ uuid: cargo.uuid, detail: 'Обновить' })
 							setOpen(false)
@@ -53,49 +56,72 @@ export function CargoActionsDropdown({ cargo }: CargoActionsDropdownProps) {
 						Обновить
 					</DropdownMenuItem>
 
-					<DropdownMenuSeparator />
+						<DropdownMenuSeparator />
 
-					<DropdownMenuItem
-						onClick={() => setOpen(false)}
-						className='flex items-center gap-2'
-					>
-						<Pencil className='size-4 text-muted-foreground' />
-						<Link href={DASHBOARD_URL.edit(cargo.uuid)}>Изменить</Link>
-					</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => setOpen(false)}
+							className='flex items-center gap-2'
+						>
+							<Pencil className='size-4 text-muted-foreground' />
+							<Link href={DASHBOARD_URL.edit(cargo.uuid)}>Изменить</Link>
+						</DropdownMenuItem>
 
-					<DropdownMenuSeparator />
+						<DropdownMenuSeparator />
 
-					<DropdownMenuItem
-						onClick={() => {
-							console.log('Скрыть', cargo.id)
-							setOpen(false)
-						}}
-						className='flex items-center gap-2'
-					>
-						<EyeOff className='size-4 text-muted-foreground' />
-						Скрыть
-					</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => {
+								console.log('Скрыть', cargo.id)
+								setOpen(false)
+							}}
+							className='flex items-center gap-2'
+						>
+							<EyeOff className='size-4 text-muted-foreground' />
+							Скрыть
+						</DropdownMenuItem>
 
-					<DropdownMenuSeparator />
+						<DropdownMenuSeparator />
 
-					<DropdownMenuItem
-						onClick={() => {
-							setOpen(false)
-							setOfferOpen(true)
-						}}
-						className='flex items-center gap-2'
-					>
-						<Handshake className='size-4 text-muted-foreground' />
-						Сделать предложение
-					</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => {
+								setOpen(false)
+								setOfferOpen(true)
+							}}
+							className='flex items-center gap-2'
+						>
+							<Handshake className='size-4 text-muted-foreground' />
+							Сделать предложение
+						</DropdownMenuItem></> : <>
+						<DropdownMenuItem
+							onClick={() => {
+								setOfferOpen(true)
+								setOpen(false)
+							}}
+							className='flex items-center gap-2'
+						>
+							<Pencil className='size-4 text-muted-foreground' />
+							Изменить
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => {
+								console.log('Скрыть', cargo.id)
+								setOpen(false)
+							}}
+							className='flex items-center gap-2 text-red-500 focus:text-red-500'
+						>
+							<Trash2 className='size-4 text-red-500' />
+							Удалить
+						</DropdownMenuItem>
+					</>}
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<DeskOfferModal
+			{!isOffer ? <DeskOfferModal
 				open={offerOpen}
 				onOpenChange={setOfferOpen}
 				selectedRow={cargo}
-			/>
+			/> : <OfferModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} isAction />}
+
+
 		</>
 	)
 }

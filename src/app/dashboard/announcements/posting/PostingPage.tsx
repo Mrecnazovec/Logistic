@@ -138,7 +138,7 @@ export function PostingPage() {
 										<InputGroup>
 											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
 											<InputGroupAddon className='pr-2'>
-												<Home className='text-grayscale size-5' />
+												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
 										</InputGroup>
 									</FormControl>

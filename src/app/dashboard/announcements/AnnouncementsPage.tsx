@@ -15,6 +15,7 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { cargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
+import { OfferModal } from '@/components/ui/modals/OfferModal'
 
 export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
@@ -68,6 +69,9 @@ export function AnnouncementsPage() {
 						data={data.results}
 						isButton
 						renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
+						renderFooterActions={(selected) =>
+							<OfferModal selectedRow={selected} />
+						}
 					/>
 				) : (
 					<MobileDataTable data={data} isOffer={true} />

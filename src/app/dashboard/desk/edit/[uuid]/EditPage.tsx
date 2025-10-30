@@ -25,6 +25,7 @@ import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
 import { useEditForm } from './useEditForm'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
+import { useRouter } from 'next/navigation'
 
 
 export function EditPage() {
@@ -32,6 +33,8 @@ export function EditPage() {
 	const [originCity, setOriginCity] = useState<City | null>(null)
 	const [destinationCity, setDestinationCity] = useState<City | null>(null)
 	const { load, isLoading } = useGetLoad()
+
+	const router = useRouter()
 
 	const navItems = [
 		{ label: 'Доска заявок', href: DASHBOARD_URL.desk() },
@@ -175,7 +178,7 @@ export function EditPage() {
 										<InputGroup>
 											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
 											<InputGroupAddon className='pr-2'>
-												<Home className='text-grayscale size-5' />
+												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
 										</InputGroup>
 									</FormControl>
@@ -405,19 +408,19 @@ export function EditPage() {
 							<Button variant={'outline'}>Отменить</Button>
 						</DialogTrigger>
 						<DialogContent>
-							<DialogTitle>Вы уверены что хотите отменить публикацию?</DialogTitle>
-							<DialogDescription>Это действие нельзя отменить. Все поля будут очищены</DialogDescription>
+							<DialogTitle>Вы уверены что хотите отменить изменение?</DialogTitle>
+							<DialogDescription>Несохранённые данные будут удалены</DialogDescription>
 							<DialogFooter>
 								<DialogClose asChild>
 									<Button variant='outline'>Закрыть</Button>
 								</DialogClose>
 								<DialogClose asChild>
-									<Button onClick={() => form.reset()}>Очистить</Button>
+									<Button onClick={() => router.back()}>Отмена</Button>
 								</DialogClose>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
-					<Button type='submit'>Опубликовать</Button>
+					<Button type='submit'>Изменить</Button>
 				</div>
 			</form>
 		</Form>

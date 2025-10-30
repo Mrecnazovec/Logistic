@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/Button'
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-	DialogClose,
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
 import {
@@ -27,23 +27,31 @@ import { ArrowLeftRight } from 'lucide-react'
 interface OfferModalProps {
 	selectedRow?: ICargoList
 	className?: string
+	open?: boolean
+	onOpenChange?: (open: boolean) => void
+	isAction?: boolean
 }
 
-export function OfferModal({ selectedRow, className }: OfferModalProps) {
+export function OfferModal({
+	selectedRow,
+	className,
+	open,
+	onOpenChange,
+	isAction = false
+}: OfferModalProps) {
 	const transportName =
 		selectedRow &&
 		(TransportSelect.find((t) => t.type === selectedRow.transport_type)?.name ?? '—')
 
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<Button
-					className={cn('bg-brand text-white', className)}
-					disabled={!selectedRow}
-				>
-					Сделать предложение
-				</Button>
-			</DialogTrigger>
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			{!isAction && (
+				<DialogTrigger asChild>
+					<Button className={cn('bg-brand text-white', className)} disabled={!selectedRow}>
+						Сделать предложение
+					</Button>
+				</DialogTrigger>
+			)}
 
 			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
 				<DialogHeader>

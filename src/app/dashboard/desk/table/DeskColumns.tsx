@@ -2,16 +2,6 @@
 
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { Button } from '@/components/ui/Button'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu'
-import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -20,15 +10,8 @@ import { ru } from 'date-fns/locale'
 import {
 	ChevronsUpDown,
 	CircleCheck,
-	EyeOff,
-	Handshake,
 	Minus,
-	MoreHorizontal,
-	Pencil,
-	RefreshCcw,
 } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{

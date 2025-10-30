@@ -32,16 +32,13 @@ export function CitySelector({
 	const { data, isLoading } = useCitySuggest(query, countryCode)
 	const cities = data?.results ?? []
 
-	// синхронизация только при очистке формы
 	useEffect(() => {
 		if (!value) setQuery('')
 	}, [value])
 
 	const handleSelect = (city: City) => {
-		// показываем в инпуте "Город, Страна"
 		setQuery(`${city.name}, ${city.country}`)
 
-		// в форму записываем только город
 		onChange(city.name, city)
 
 		setIsFocused(false)
