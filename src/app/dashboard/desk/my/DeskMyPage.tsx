@@ -12,13 +12,13 @@ import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
+import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
+import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Activity } from 'react'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { deskCarrierColumns } from './table/DeskCarrierColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
-import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
-import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 
 
 export function DeskMyPage() {
