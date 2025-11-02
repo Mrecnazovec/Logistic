@@ -8,7 +8,6 @@ import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchForm } from './Searching/useSearchForm'
 // import { fakeCargoList } from '@/data/FakeData'
-import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
@@ -25,11 +24,6 @@ export function DeskPage() {
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 
-	const navItems = [
-		{ label: 'Доска заявок', href: DASHBOARD_URL.desk(), active: true },
-		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my') },
-	]
-
 	// const fakeData = fakeCargoList
 
 	console.log(data);
@@ -37,7 +31,6 @@ export function DeskPage() {
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<NavInitializer items={navItems} />
 			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>

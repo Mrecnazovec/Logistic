@@ -7,7 +7,6 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
 // import { fakeCargoList } from '@/data/FakeData'
-import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
@@ -28,10 +27,6 @@ export function DeskMyPage() {
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 
-	const navItems = [
-		{ label: 'Доска заявок', href: DASHBOARD_URL.desk() },
-		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my'), active: true },
-	]
 
 	// const fakeData = fakeCargoList
 
@@ -40,7 +35,6 @@ export function DeskMyPage() {
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<NavInitializer items={navItems} />
 			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>

@@ -23,21 +23,15 @@ import { Banknote, Home, Phone } from 'lucide-react'
 import { useState } from 'react'
 import { usePostForm } from './usePostForm'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
 	const [originCity, setOriginCity] = useState<City | null>(null)
 	const [destinationCity, setDestinationCity] = useState<City | null>(null)
 
-	const navItems = [
-		{ label: 'Поиск грузоперевозок', href: DASHBOARD_URL.announcements() },
-		{ label: 'Публикация заявки', href: DASHBOARD_URL.posting(), active: true },
-	]
 
 	return (
 		<Form {...form}>
-			<NavInitializer items={navItems} />
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<div className='grid lg:grid-cols-2 gap-x-6 gap-y-4'>
 					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>

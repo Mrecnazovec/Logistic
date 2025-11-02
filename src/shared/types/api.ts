@@ -639,6 +639,44 @@ export interface paths {
         patch: operations["orders_status_partial_update"];
         trace?: never;
     };
+    "/api/ratings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        get: operations["ratings_list"];
+        put?: never;
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        post: operations["ratings_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ratings/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        get: operations["ratings_retrieve"];
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        put: operations["ratings_update"];
+        post?: never;
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        delete: operations["ratings_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD API для оценок пользователей (рейтингов). */
+        patch: operations["ratings_partial_update"];
+        trace?: never;
+    };
     "/api/schema/": {
         parameters: {
             query?: never;
@@ -1243,6 +1281,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["OrderList"][];
         };
+        PaginatedUserRatingList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["UserRating"][];
+        };
         PatchedCargoPublishRequest: {
             /** Название груза */
             product?: string;
@@ -1360,6 +1413,16 @@ export interface components {
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
         };
+        PatchedUserRatingRequest: {
+            /** Оцениваемый пользователь */
+            rated_user?: number;
+            /** Заказ, в рамках которого выставлена оценка */
+            order?: number;
+            /** Оценка (1–5) */
+            score?: number;
+            /** Комментарий */
+            comment?: string | null;
+        };
         Profile: {
             /** Страна */
             country?: string;
@@ -1474,6 +1537,30 @@ export interface components {
             /** Format: binary */
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
+        };
+        UserRating: {
+            readonly id: number;
+            /** Оцениваемый пользователь */
+            rated_user: number;
+            readonly rated_by: string;
+            /** Заказ, в рамках которого выставлена оценка */
+            order: number;
+            /** Оценка (1–5) */
+            score: number;
+            /** Комментарий */
+            comment?: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        UserRatingRequest: {
+            /** Оцениваемый пользователь */
+            rated_user: number;
+            /** Заказ, в рамках которого выставлена оценка */
+            order: number;
+            /** Оценка (1–5) */
+            score: number;
+            /** Комментарий */
+            comment?: string | null;
         };
         VerifyEmailRequest: {
             /** Format: email */
@@ -2665,6 +2752,152 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusUpdate"];
+                };
+            };
+        };
+    };
+    ratings_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedUserRatingList"];
+                };
+            };
+        };
+    };
+    ratings_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserRatingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserRatingRequest"];
+                "multipart/form-data": components["schemas"]["UserRatingRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRating"];
+                };
+            };
+        };
+    };
+    ratings_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Оценка пользователя. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRating"];
+                };
+            };
+        };
+    };
+    ratings_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Оценка пользователя. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserRatingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserRatingRequest"];
+                "multipart/form-data": components["schemas"]["UserRatingRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRating"];
+                };
+            };
+        };
+    };
+    ratings_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Оценка пользователя. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ratings_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Оценка пользователя. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUserRatingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUserRatingRequest"];
+                "multipart/form-data": components["schemas"]["PatchedUserRatingRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRating"];
                 };
             };
         };

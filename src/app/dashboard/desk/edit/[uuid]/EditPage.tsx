@@ -23,8 +23,6 @@ import { Banknote, Home, Phone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
 import { useEditForm } from './useEditForm'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { NavInitializer } from '@/components/layouts/dashboard-layout/NavInitializer'
 import { useRouter } from 'next/navigation'
 
 
@@ -36,10 +34,6 @@ export function EditPage() {
 
 	const router = useRouter()
 
-	const navItems = [
-		{ label: 'Доска заявок', href: DASHBOARD_URL.desk() },
-		{ label: 'Мои предложения', href: DASHBOARD_URL.desk('my') },
-	]
 
 	useEffect(() => {
 		if (!load) return
@@ -77,7 +71,6 @@ export function EditPage() {
 	console.log(load)
 	return (
 		<Form {...form}>
-			<NavInitializer items={navItems} />
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<div className='grid lg:grid-cols-2 gap-x-6 gap-y-4'>
 					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>

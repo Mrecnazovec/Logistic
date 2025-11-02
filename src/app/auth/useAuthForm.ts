@@ -28,7 +28,7 @@ export function useAuthForm() {
 			}
 
 			toast.success('Успешная авторизация')
-			router.replace(DASHBOARD_URL.announcements())
+			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>
