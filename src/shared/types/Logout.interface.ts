@@ -1,7 +1,4 @@
-export interface ILogoutRequest {
-	refresh?: string
-}
+import type { components } from './api'
 
-export interface ILogoutResponse {
-	detail: string
-}
+export type ILogoutRequest = components['schemas']['LogoutRequestRequest']
+export type ILogoutResponse = components['schemas']['LogoutResponse']

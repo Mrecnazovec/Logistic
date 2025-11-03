@@ -218,9 +218,9 @@ export function PostingPage() {
 									</FormItem>
 								)}
 							/>
-							<FormField
+							{/* <FormField
 								control={form.control}
-								name='route_km'
+								name=''
 								rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
@@ -232,7 +232,7 @@ export function PostingPage() {
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 						</div>
 						<FormField
 							control={form.control}

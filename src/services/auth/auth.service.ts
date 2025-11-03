@@ -13,7 +13,7 @@ import {
 import { removeFromStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
 import { ILogoutResponse } from '@/shared/types/Logout.interface'
-import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto } from '@/shared/types/Registration.interface'
+import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto, RegisterRequestPayload } from '@/shared/types/Registration.interface'
 
 class AuthService {
 	/* POST */
@@ -31,10 +31,12 @@ class AuthService {
 	}
 
 	async register(data: RegisterDto) {
+		const { transport_name: _transport, car_number: _car, trailer_number: _trailer, ...payload } = data
+
 		const { data: result } = await axiosClassic<IRegisterResponse>({
 			url: API_URL.auth('register'),
 			method: 'POST',
-			data,
+			data: payload as RegisterRequestPayload,
 		})
 
 		return result

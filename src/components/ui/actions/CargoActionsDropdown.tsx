@@ -70,7 +70,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 
 						<DropdownMenuItem
 							onClick={() => {
-								console.log('Скрыть', cargo.id)
+								console.log('Скрыть', cargo.uuid)
 								setOpen(false)
 							}}
 							className='flex items-center gap-2'
@@ -103,7 +103,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						</DropdownMenuItem>
 						<DropdownMenuItem
 							onClick={() => {
-								console.log('Скрыть', cargo.id)
+								console.log('Скрыть', cargo.uuid)
 								setOpen(false)
 							}}
 							className='flex items-center gap-2 text-red-500 focus:text-red-500'
@@ -125,3 +125,4 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 		</>
 	)
 }
+

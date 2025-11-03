@@ -1,7 +1,7 @@
 import { DASHBOARD_URL } from '@/config/url.config'
 import { loadsService } from '@/services/loads.service'
-import { ICargoPublish } from '@/shared/types/CargoPublish.interface'
-import { IErrorResponse } from '@/shared/types/Error.interface'
+import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
+import { FieldError, IErrorResponse } from '@/shared/types/Error.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
@@ -14,22 +14,34 @@ export const useCreateLoad = () => {
 
 	const { mutate: createLoad, isPending: isLoadingCreate } = useMutation({
 		mutationKey: ['load', 'create'],
-		mutationFn: (data: ICargoPublish) => loadsService.createLoad(data),
+		mutationFn: (data: CargoPublishRequestDto) => loadsService.createLoad(data),
 		onSuccess(data) {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			toast.success(`${data.message}`)
+			toast.success('Заявка отправлена на модерацию')
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>
 
 			if (err.response) {
-				toast.error(err.response.data.load_date || err.response.data.delivery_date)
+				const formatError = (value?: FieldError) => {
+					if (!value) return undefined
+					return Array.isArray(value) ? value.join(' ') : value
+				}
+
+				const { load_date, delivery_date, detail } = err.response.data
+				const message = formatError(load_date) ?? formatError(delivery_date) ?? detail
+
+				toast.error(message)
 			} else {
-				toast.error('Ошибка при создании заявки')
+				toast.error('Failed to create load')
 			}
 		},
 	})
 
 	return useMemo(() => ({ createLoad, isLoadingCreate }), [createLoad, isLoadingCreate])
 }
+
+
+
+

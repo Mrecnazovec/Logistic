@@ -1,7 +1,7 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 
 import { API_URL } from '@/config/api.config'
-import { ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
+import { CargoPublishRequestDto, ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { IPaginatedCargoListList } from '@/shared/types/PaginatedList.interface'
 import { IRefreshResponse } from '@/shared/types/Registration.interface'
 import { ISearch } from '@/shared/types/Search.interface'
@@ -68,7 +68,7 @@ class LoadsService {
 		return data
 	}
 
-	async createLoad(data: ICargoPublish) {
+	async createLoad(data: CargoPublishRequestDto) {
 		const { data: createdLoad } = await axiosWithAuth<ICargoPublish>({
 			url: API_URL.loads('create'),
 			method: 'POST',
@@ -80,7 +80,7 @@ class LoadsService {
 
 	/* PUT */
 
-	async putLoad(id: string, data: ICargoPublish) {
+	async putLoad(id: string, data: CargoPublishRequestDto) {
 		const { data: putLoad } = await axiosWithAuth<ICargoPublish>({
 			url: API_URL.loads(`${id}`),
 			method: 'PUT',

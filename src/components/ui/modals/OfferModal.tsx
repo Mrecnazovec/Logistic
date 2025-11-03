@@ -67,7 +67,7 @@ export function OfferModal({
 				) : (
 					<div className='space-y-6'>
 						<div
-							key={selectedRow.id}
+							key={selectedRow.uuid}
 							className='flex flex-col'
 						>
 							<div className='flex justify-between gap-6 items-center border-b-2 pb-6 flex-wrap'>
@@ -153,3 +153,4 @@ export function OfferModal({
 		</Dialog>
 	)
 }
+

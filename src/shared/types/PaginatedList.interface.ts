@@ -1,16 +1,4 @@
-import { ICargoList } from './CargoList.interface'
-import { IOfferShort } from './Offer.interface'
+import type { components } from './api'
 
-export interface IPaginatedCargoListList {
-	count: number
-	next?: string | null
-	previous?: string | null
-	results: ICargoList[]
-}
-
-export interface IPaginatedOfferShortList {
-	count: number
-	next?: string | null
-	previous?: string | null
-	results: IOfferShort[]
-}
+export type IPaginatedCargoListList = components['schemas']['PaginatedCargoListList']
+export type IPaginatedOfferShortList = components['schemas']['PaginatedOfferShortList']

@@ -1,18 +1,6 @@
-export interface City {
-	name: string
-	country: string
-	country_code: string
-}
+import type { components } from './api'
 
-export interface CitySuggestResponse {
-	results: City[]
-}
-
-export interface Country {
-	code: string
-	name: string
-}
-
-export interface CountrySuggestResponse {
-	results: Country[]
-}
+export type City = components['schemas']['City']
+export type CitySuggestResponse = components['schemas']['CitySuggestResponse']
+export type Country = components['schemas']['Country']
+export type CountrySuggestResponse = components['schemas']['CountrySuggestResponse']

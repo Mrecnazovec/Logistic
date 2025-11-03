@@ -2,16 +2,13 @@
 
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { Button } from '@/components/ui/Button'
+import { UuidCell } from '@/components/ui/table/UuidCell'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import {
-	ChevronsUpDown,
-	CircleCheck,
-	Minus,
-} from 'lucide-react'
+import { ChevronsUpDown, CircleCheck, Minus } from 'lucide-react'
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -140,8 +137,9 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		},
 	},
 	{
-		accessorKey: 'id',
+		accessorKey: 'uuid',
 		header: 'ID',
+		cell: ({ row }) => <UuidCell uuid={row.original.uuid} />,
 	},
 	{
 		id: 'actions',
@@ -151,3 +149,5 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		enableHiding: false,
 	},
 ]
+
+

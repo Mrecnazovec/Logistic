@@ -1,6 +1,15 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
-import { IOfferAcceptResponse, IOfferCounter, IOfferDetail, IOfferInvite, IOfferRejectResponse, OfferCreateDto } from '@/shared/types/Offer.interface'
+import {
+	IOfferAcceptResponse,
+	IOfferCounter,
+	IOfferDetail,
+	IOfferInvite,
+	IOfferRejectResponse,
+	OfferCreateDto,
+	OfferDetailDto,
+	PatchedOfferDetailDto,
+} from '@/shared/types/Offer.interface'
 import { IPaginatedOfferShortList } from '@/shared/types/PaginatedList.interface'
 
 class OffersService {
@@ -93,7 +102,7 @@ class OffersService {
 
 	/* PUT */
 
-	async putOffer(id: string, data: IOfferDetail) {
+	async putOffer(id: string, data: OfferDetailDto) {
 		const { data: putOffer } = await axiosWithAuth<IOfferDetail>({
 			url: API_URL.offers(`${id}`),
 			method: 'PUT',
@@ -104,7 +113,7 @@ class OffersService {
 
 	/* PATCH */
 
-	async patchOffer(id: string, data: IOfferDetail) {
+	async patchOffer(id: string, data: PatchedOfferDetailDto) {
 		const { data: patchedOffer } = await axiosWithAuth<IOfferDetail>({
 			url: API_URL.offers(`${id}`),
 			method: 'PATCH',

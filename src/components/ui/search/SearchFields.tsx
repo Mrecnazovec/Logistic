@@ -27,16 +27,6 @@ export function SearchFields({ form }: SearchFieldsProps) {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const handleOriginCitySelector = (selected: City) => {
-		setOriginCity(selected)
-		form.setValue('origin_city', selected.name)
-	}
-
-	const handleDestinationCitySelector = (selected: City) => {
-		setDestinationCity(selected)
-		form.setValue('destination_city', selected.name)
-	}
-
 	const handleDeleteFilter = () => {
 		form.reset()
 		setOriginCity(null)

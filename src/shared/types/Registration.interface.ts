@@ -1,50 +1,17 @@
-import { RoleEnum } from '../enums/Role.enum'
+import type { components } from './api'
 
-export interface IRefreshResponse {
-	detail: string
-}
-
-export interface RegisterDto {
-	username: string
-	email: string
-
-	password: string
-	password2: string
-
-	first_name?: string
-	phone: string
-	company_name?: string
-
-	role: RoleEnum
-
-	country: string
-	country_code: string
-	region: string
-	city: string
-
+type ApiRegisterRequest = components['schemas']['RegisterRequest']
+export type RegisterRequestPayload = ApiRegisterRequest
+type CarrierExtras = Partial<{
 	transport_name: string
 	car_number: string
 	trailer_number: string
-}
+}>
 
-export interface IRegisterResponse {
-	detail: string
-}
-
-export interface IResendVerify {
-	email: string
-}
-
-export interface IResendVerifyResponse {
-	detail: string
-}
-
-export interface IVerifyEmail {
-	email: string
-	code: string
-}
-export interface IVerifyEmailResponse {
-	detail: string
-	access: string
-	refresh: string
-}
+export type IRefreshResponse = components['schemas']['RefreshResponse']
+export type RegisterDto = ApiRegisterRequest & CarrierExtras
+export type IRegisterResponse = components['schemas']['RegisterResponse']
+export type IResendVerify = components['schemas']['ResendVerifyRequest']
+export type IResendVerifyResponse = components['schemas']['ResendVerifyResponse']
+export type IVerifyEmail = components['schemas']['VerifyEmailRequest']
+export type IVerifyEmailResponse = components['schemas']['VerifyEmailResponse']

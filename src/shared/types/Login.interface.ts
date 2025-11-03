@@ -1,41 +1,10 @@
-import { IMe } from './Me.interface'
+import type { components } from './api'
 
-export interface ILogin {
-	login: string
-	password: string
-	remember_me: boolean
-}
-
-export interface ILoginResponse {
-	user: IMe
-	access: string
-	refresh: string
-}
-
-export interface IForgotPassword {
-	email: string
-}
-
-export interface IForgotPasswordResponse {
-	detail: string
-}
-
-export interface IResetPassword {
-	email: string
-	code: string
-	new_password: string
-}
-
-export interface IResetPasswordResponse {
-	detail: string
-}
-
-export interface ITokenRefreshRequest {
-	refresh: string
-	remember_me?: boolean
-}
-
-export interface ITokenRefreshResponse {
-	access: string
-	refresh: string
-}
+export type ILogin = components['schemas']['LoginRequest']
+export type ILoginResponse = components['schemas']['LoginResponse']
+export type IForgotPassword = components['schemas']['ForgotPasswordRequest']
+export type IForgotPasswordResponse = components['schemas']['ForgotPasswordResponse']
+export type IResetPassword = components['schemas']['ResetPasswordRequest']
+export type IResetPasswordResponse = components['schemas']['ResetPasswordResponse']
+export type ITokenRefreshRequest = components['schemas']['TokenRefreshRequestRequest']
+export type ITokenRefreshResponse = components['schemas']['TokenRefreshResponse']

@@ -9,6 +9,17 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ChevronsUpDown } from 'lucide-react'
 
+const parsePriceToNumber = (value: string | number | null | undefined) => {
+	if (value == null) return null
+	if (typeof value === 'number') return Number.isFinite(value) ? value : null
+
+	const sanitized = value.replace(/[^\d.-]/g, '')
+	if (!sanitized) return null
+
+	const numeric = Number(sanitized)
+	return Number.isFinite(numeric) ? numeric : null
+}
+
 export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		id: 'select',
@@ -81,10 +92,18 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 				<ChevronsUpDown className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		cell: ({ row }) => {
+			const { price_value, price_currency } = row.original
+			const parsedValue = parsePriceToNumber(price_value)
+			const formatted =
+				parsedValue !== null
+					? parsedValue.toLocaleString('ru-RU')
+					: price_value ?? ''
+			return [formatted, price_currency].filter(Boolean).join(' ').trim()
+		},
 		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_uzs || 0)
-			const priceB = Number(b.original.price_uzs || 0)
+			const priceA = parsePriceToNumber(a.original.price_uzs) ?? 0
+			const priceB = parsePriceToNumber(b.original.price_uzs) ?? 0
 			return priceA - priceB
 		},
 	},

@@ -3,6 +3,7 @@
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { Button } from '@/components/ui/Button'
 import { BadgeSelector } from '@/components/ui/selectors/BadgeSelector'
+import { UuidCell } from '@/components/ui/table/UuidCell'
 import { StatusEnum } from '@/shared/enums/Status.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
@@ -58,6 +59,7 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
+		cell: ({ row }) => <UuidCell uuid={row.original.uuid} />,
 	},
 	{
 		accessorKey: 'company_name',

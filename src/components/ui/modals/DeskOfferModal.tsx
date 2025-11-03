@@ -42,7 +42,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 					</p>
 				) : (
 					<div className='space-y-6'>
-						<div key={selectedRow.id} className='flex flex-col'>
+						<div key={selectedRow.uuid} className='flex flex-col'>
 							<div className='flex justify-between gap-6 items-center border-b-2 pb-6 flex-wrap'>
 								<div>
 									<p>
@@ -123,3 +123,4 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 		</Dialog>
 	)
 }
+

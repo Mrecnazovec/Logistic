@@ -257,7 +257,7 @@ export function EditPage() {
 									</FormItem>
 								)}
 							/>
-							<FormField
+							{/* <FormField
 								control={form.control}
 								name='route_km'
 								rules={{ required: 'Оси обязательны' }}
@@ -271,7 +271,7 @@ export function EditPage() {
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 						</div>
 						<FormField
 							control={form.control}

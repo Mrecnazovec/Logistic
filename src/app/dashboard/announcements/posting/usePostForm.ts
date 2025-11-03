@@ -1,18 +1,18 @@
 import { useCreateLoad } from '@/hooks/queries/loads/useCreateLoad'
-import { ICargoPublish } from '@/shared/types/CargoPublish.interface'
+import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 export function usePostForm() {
 	const { createLoad, isLoadingCreate } = useCreateLoad()
 
-	const form = useForm<ICargoPublish>({
+	const form = useForm<CargoPublishRequestDto>({
 		mode: 'onChange',
 		defaultValues: {
 			is_hidden: false,
 		},
 	})
 
-	const onSubmit: SubmitHandler<ICargoPublish> = (data) => {
+	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
 		createLoad(data)
 		// console.log(data)
 	}

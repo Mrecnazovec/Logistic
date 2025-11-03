@@ -1,5 +1,10 @@
-export interface IErrorResponse {
-	detail: string
-	load_date: string
-	delivery_date: string
+import type { components } from './api'
+
+export type FieldError = string | string[]
+
+export type IErrorResponse = components['schemas']['RefreshResponse'] & {
+	load_date?: FieldError
+	delivery_date?: FieldError
+	[key: string]: unknown
 }
+

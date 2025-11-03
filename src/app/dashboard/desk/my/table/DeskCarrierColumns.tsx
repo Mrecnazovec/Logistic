@@ -3,6 +3,7 @@
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { UuidCell } from '@/components/ui/table/UuidCell'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -46,6 +47,7 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
+		cell: ({ row }) => <UuidCell uuid={row.original.uuid} />,
 	},
 	{
 		accessorKey: 'company_name',
