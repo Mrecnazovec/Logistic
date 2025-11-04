@@ -1,48 +1,54 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { Loader2, Search } from 'lucide-react'
-import Link from 'next/link'
-// import { fakeCargoList } from '@/data/FakeData'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
-import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
-import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { Activity } from 'react'
-import { useSearchForm } from '../Searching/useSearchForm'
-import { deskCarrierColumns } from './table/DeskCarrierColumns'
-import { deskMyColumns } from './table/DeskMyColumns'
+import { Loader2, Search } from 'lucide-react'
+import { Activity, useCallback } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSearchForm } from './Searching/useSearchForm'
+import { transportationColumns } from './table/TransportationColumns'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 
-
-export function DeskMyPage() {
+export function TransportationMyPage() {
 	const { data, isLoading } = useGetLoadsPublic()
-	const { data: mine, isLoading: isLoadingMine } = useGetMyOffers()
-	const { data: incoming, isLoading: isLoadingIncoming } = useGetIncomingOffers()
+	const { data: orders, isLoading: isLoadingOrders } = useGetOrders()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
+	const status = searchParams.get('status') ?? 'no_driver'
 
+	const handleStatusChange = useCallback(
+		(nextStatus: string) => {
+			if (nextStatus === status) return
 
-	// const fakeData = fakeCargoList
+			const params = new URLSearchParams(searchParams.toString())
+			params.set('status', nextStatus)
 
-	console.log(data);
+			const queryString = params.toString()
+			const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
+
+			router.replace(nextRoute)
+		},
+		[pathname, router, searchParams, status],
+	)
 
 
 	return (
-		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
+		<div className='flex h-full flex-col gap-4'>
+			<div className='w-full bg-background rounded-4xl px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} />
 					</form>
 				</Form>
 			</div>
-
 			{isLoading ? (
 				<div className='flex-1 bg-background rounded-4xl flex items-center justify-center h-full'>
 					<Loader2 className='size-10 animate-spin' />
@@ -58,27 +64,38 @@ export function DeskMyPage() {
 						<p className='text-xl text-grayscale max-w-2xl text-center'>
 							Чтобы увидеть раздел Поиск Грузоперевозок, сначала надо добавить их. Вы можете это сделать нажав на кнопку снизу
 						</p>
-						<Link href={DASHBOARD_URL.posting()}>
-							<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
-						</Link>
 					</div>
 				</div>
 			) : data?.results ? (
 				isDesktop ? (
-					<Tabs defaultValue='desk'>
+					<Tabs value={status} onValueChange={handleStatusChange}>
 						<TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Я предложил</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Предложили мне</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='no_driver'>Без водителя</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='pending'>В ожидании</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='en_route'>В пути</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='delivered'>Доставлен</TabsTrigger>
 						</TabsList>
-						<TabsContent value='desk'>
+						<TabsContent value='no_driver'>
 							<DataTable
-								columns={deskMyColumns}
+								columns={transportationColumns}
 								data={data.results}
 							/>
 						</TabsContent>
-						<TabsContent value='drivers'>
+						<TabsContent value='pending'>
 							<DataTable
-								columns={deskCarrierColumns}
+								columns={transportationColumns}
+								data={data.results}
+							/>
+						</TabsContent>
+						<TabsContent value='en_route'>
+							<DataTable
+								columns={transportationColumns}
+								data={data.results}
+							/>
+						</TabsContent>
+						<TabsContent value='delivered'>
+							<DataTable
+								columns={transportationColumns}
 								data={data.results}
 							/>
 						</TabsContent>

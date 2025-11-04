@@ -1,14 +1,16 @@
 'use client'
 
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
-import { UuidCell } from '@/components/ui/table/UuidCell'
+import { SortIcon } from '@/components/ui/table/SortIcon'
+import { cycleColumnSort } from '@/components/ui/table/utils'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ChevronsUpDown, CircleCheck, Minus } from 'lucide-react'
+import { CircleCheck, Minus } from 'lucide-react'
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -17,10 +19,10 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Опубл. время
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
@@ -48,10 +50,10 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Цена
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
@@ -66,18 +68,18 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		header: 'Валюта',
 	},
 	{
-		accessorKey: 'path_km',
+		accessorKey: 'route_km',
 		header: ({ column }) => (
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Путь (км)
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => `${row.original.path_km} км`,
+		cell: ({ row }) => `${row.original.route_km} км`,
 	},
 	{
 		accessorKey: 'weight_t',
@@ -101,10 +103,10 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Дата
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
@@ -139,7 +141,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
-		cell: ({ row }) => <UuidCell uuid={row.original.uuid} />,
+		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
 	},
 	{
 		id: 'actions',

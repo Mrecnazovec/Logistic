@@ -7,13 +7,27 @@ export interface HeaderNavItem {
 
 interface HeaderNavDefinition {
 	matcher: (pathname: string) => boolean
-	items: HeaderNavItem[]
+	items: HeaderNavItem[] | ((pathname: string) => HeaderNavItem[])
 }
 
 const normalizePath = (path: string) => {
 	if (!path) return '/'
 	const trimmed = path.replace(/\/+$/, '')
 	return trimmed.length > 0 ? trimmed : '/'
+}
+
+const getOrderIdFromPath = (pathname: string) => {
+	const normalizedPath = normalizePath(pathname)
+	const segments = normalizedPath.split('/').filter(Boolean)
+
+	if (segments.length < 3) return null
+
+	const [section, resource, orderId] = segments
+
+	if (section !== 'dashboard' || resource !== 'order') return null
+	if (!orderId || orderId === '[id]') return null
+
+	return orderId
 }
 
 const headerNavDefinitions: HeaderNavDefinition[] = [
@@ -44,6 +58,44 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		],
 	},
 	{
+		matcher: (pathname) => Boolean(getOrderIdFromPath(pathname)),
+		items: (pathname) => {
+			const orderId = getOrderIdFromPath(pathname)
+
+			if (!orderId) return []
+
+			const basePath = orderId
+
+			return [
+				{
+					label: 'Детали',
+					href: DASHBOARD_URL.order(basePath),
+				},
+				{
+					label: 'Документы',
+					href: DASHBOARD_URL.order(`${basePath}/docs`),
+				},
+				{
+					label: 'Статусы',
+					href: DASHBOARD_URL.order(`${basePath}/status`),
+				},
+			]
+		},
+	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
+		items: [
+			{
+				label: 'Заказы',
+				href: DASHBOARD_URL.transportation(),
+			},
+			{
+				label: 'Везу',
+				href: DASHBOARD_URL.transportation('my'),
+			},
+		],
+	},
+	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/cabinet'),
 		items: [
 			{
@@ -60,11 +112,15 @@ export const resolveHeaderNavItems = (pathname: string) => {
 
 	if (!matchedDefinition) return []
 
-	const itemsWithMatch = matchedDefinition.items.map((item) => {
+	const resolvedItems = Array.isArray(matchedDefinition.items)
+		? matchedDefinition.items
+		: matchedDefinition.items(normalizedPath)
+
+	if (!resolvedItems.length) return []
+
+	const itemsWithMatch = resolvedItems.map((item) => {
 		const normalizedHref = normalizePath(item.href)
-		const matches =
-			normalizedPath === normalizedHref ||
-			normalizedPath.startsWith(`${normalizedHref}/`)
+		const matches = normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`)
 
 		return {
 			...item,
@@ -79,3 +135,4 @@ export const resolveHeaderNavItems = (pathname: string) => {
 		active: matchLength >= 0 && matchLength === maxMatchLength,
 	}))
 }
+

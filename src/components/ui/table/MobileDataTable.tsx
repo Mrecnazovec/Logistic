@@ -47,7 +47,7 @@ export function MobileDataTable({ data, isActions = false, isOffer = false }: Da
 						<Row label="Опубл. вр" value={getTimeAgo(item.created_at)} />
 						<Row label="Цена" value={item.price_value ?? "—"} />
 						<Row label="Валюта" value={priceName} />
-						<Row label="Путь (км)" value={item.path_km} />
+						<Row label="Путь (км)" value={item.route_km} />
 						<Row label="Вес (т)" value={item.weight_t} />
 						<Row
 							label="Погрузка"

@@ -1,15 +1,17 @@
 'use client'
 
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { UuidCell } from '@/components/ui/table/UuidCell'
+import { SortIcon } from '@/components/ui/table/SortIcon'
+import { cycleColumnSort } from '@/components/ui/table/utils'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Check, ChevronsUpDown, X } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 
 export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 
@@ -47,7 +49,7 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
-		cell: ({ row }) => <UuidCell uuid={row.original.uuid} />,
+		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
 	},
 	{
 		accessorKey: 'company_name',
@@ -71,10 +73,10 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Откуда / Дата погрузки
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
@@ -101,10 +103,10 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Куда / Дата разгрузки
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
@@ -154,10 +156,10 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Цена
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),

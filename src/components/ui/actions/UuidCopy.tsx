@@ -3,7 +3,12 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Button } from "../Button"
 
-export const UuidCell = ({ uuid }: { uuid: string }) => {
+interface UuidCopy {
+	uuid: string
+	isPlaceholder?: boolean
+}
+
+export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
 	const [copied, setCopied] = useState(false)
 
 	useEffect(() => {
@@ -42,6 +47,7 @@ export const UuidCell = ({ uuid }: { uuid: string }) => {
 			) : (
 				<Copy className='size-4 shrink-0' aria-hidden='true' />
 			)}
+			<span className={copied ? 'text-brand' : ''}>{isPlaceholder && uuid}</span>
 			<span className='sr-only'>{copied ? 'UUID copied' : 'Copy UUID'}</span>
 		</Button>
 	)

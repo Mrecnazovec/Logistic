@@ -1,63 +1,17 @@
 'use client'
 
-import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
+import { OrdersActionsDropdown } from '@/components/ui/actions/OrdersActionsDropdown'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
-import { BadgeSelector } from '@/components/ui/selectors/BadgeSelector'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { StatusEnum } from '@/shared/enums/Status.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Check, Handshake, X } from 'lucide-react'
 
-export const deskMyColumns: ColumnDef<ICargoList>[] = [
-
-	{
-		id: 'fast_actions',
-		header: 'Быстрые действия',
-		cell: ({ row }) => {
-			const cargo = row.original
-
-			const handleAccept = () => console.log('✅ Принять', cargo)
-			const handleOffer = () => console.log('🤝 Предложить', cargo)
-			const handleReject = () => console.log('❌ Отменить', cargo)
-
-			return (
-				<div className='flex items-center gap-3'>
-					<Button
-						variant='outline'
-						size='icon'
-						onClick={handleAccept}
-						className='rounded-full bg-green-50 hover:bg-green-100 border-none text-green-600'
-					>
-						<Check className='size-4' />
-					</Button>
-
-					<Button
-						variant='outline'
-						size='icon'
-						onClick={handleOffer}
-						className='rounded-full bg-yellow-50 hover:bg-yellow-100 border-none text-yellow-700'
-					>
-						<Handshake className='size-4' />
-					</Button>
-
-					<Button
-						variant='outline'
-						size='icon'
-						onClick={handleReject}
-						className='rounded-full bg-red-50 hover:bg-red-100 border-none text-red-600'
-					>
-						<X className='size-4' />
-					</Button>
-				</div>
-			)
-		},
-	},
+export const transportationColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -65,19 +19,11 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'company_name',
-		header: 'Перевозчик',
+		header: 'Заказчик',
 	},
 	{
-		accessorKey: 'status',
-		header: 'Статус',
-		cell: ({ row }) => {
-			const status = row.original.status as StatusEnum
-
-			return (
-				<BadgeSelector status={status} />
-			)
-
-		},
+		accessorKey: '',
+		header: 'Посредник',
 	},
 	{
 		id: 'origin',
@@ -182,14 +128,21 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 		},
 	},
 	{
-		accessorKey: 'contact_value',
-		header: 'Контакты',
+		accessorKey: '',
+		header: 'Документы'
+	},
+	{
+		accessorKey: '',
+		header: 'Соотношение'
 	},
 	{
 		id: 'actions',
 		header: '',
-		cell: ({ row }) => <CargoActionsDropdown cargo={row.original} isOffer />,
+		cell: ({ row }) => <OrdersActionsDropdown cargo={row.original} />,
 		enableSorting: false,
 		enableHiding: false,
 	},
+
 ]
+
+

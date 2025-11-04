@@ -1,24 +1,14 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
+import { SortIcon } from '@/components/ui/table/SortIcon'
+import { cycleColumnSort } from '@/components/ui/table/utils'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ChevronsUpDown } from 'lucide-react'
-
-const parsePriceToNumber = (value: string | number | null | undefined) => {
-	if (value == null) return null
-	if (typeof value === 'number') return Number.isFinite(value) ? value : null
-
-	const sanitized = value.replace(/[^\d.-]/g, '')
-	if (!sanitized) return null
-
-	const numeric = Number(sanitized)
-	return Number.isFinite(numeric) ? numeric : null
-}
 
 export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -55,10 +45,10 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Опубл. время
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
@@ -86,36 +76,32 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Цена
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => {
-			const { price_value, price_currency } = row.original
-			const parsedValue = parsePriceToNumber(price_value)
-			const formatted =
-				parsedValue !== null
-					? parsedValue.toLocaleString('ru-RU')
-					: price_value ?? ''
-			return [formatted, price_currency].filter(Boolean).join(' ').trim()
-		},
+		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
 		sortingFn: (a, b) => {
-			const priceA = parsePriceToNumber(a.original.price_uzs) ?? 0
-			const priceB = parsePriceToNumber(b.original.price_uzs) ?? 0
+			const priceA = Number(a.original.price_uzs || 0)
+			const priceB = Number(b.original.price_uzs || 0)
 			return priceA - priceB
 		},
 	},
 	{
-		accessorKey: 'path_km',
+		accessorKey: 'price_currency',
+		header: 'Валюта',
+	},
+	{
+		accessorKey: 'route_km',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
 				Путь (км)
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => `${row.original.path_km} км`,
+		cell: ({ row }) => `${row.original.route_km} км`,
 	},
 	{
 		accessorKey: 'weight_t',
@@ -139,10 +125,10 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent'
-				onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Дата
-				<ChevronsUpDown className='ml-2 size-4' />
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {

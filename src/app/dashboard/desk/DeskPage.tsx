@@ -67,20 +67,16 @@ export function DeskPage() {
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
-							<Activity>
-								<DataTable
-									columns={deskColumns}
-									data={data.results}
-								/>
-							</Activity>
+							<DataTable
+								columns={deskColumns}
+								data={data.results}
+							/>
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<Activity>
-								<DataTable
-									columns={deskColumns}
-									data={data.results}
-								/>
-							</Activity>
+							<DataTable
+								columns={deskColumns}
+								data={data.results}
+							/>
 						</TabsContent>
 					</Tabs>
 				) : (

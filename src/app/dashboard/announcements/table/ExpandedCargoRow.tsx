@@ -42,7 +42,6 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 				<div className='space-y-3'>
 					<p className='font-medium text-brand'>Детали оборудования</p>
 					<p className='flex justify-between'><span className='text-grayscale'>Наименование груза:</span> <span className='font-bold'>{cargo.product}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Товар:</span> <span className='font-bold'>{cargo.product}</span></p>
 					<p className='flex justify-between'><span className='text-grayscale'>Тип транспорта:</span> <span className='font-bold'>{transportName}</span></p>
 				</div>
 
@@ -50,6 +49,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					<p className='font-medium text-brand'>Детали перевозки</p>
 					<p className='flex justify-between'><span className='text-grayscale'>Способ связи:</span> <span className='font-bold'>{contactName}</span></p>
 					<p className='flex justify-between'><span className='text-grayscale'>Контакт:</span> <span className='font-bold'>{cargo.contact_value}</span></p>
+
 					<p className='flex justify-between'><span className='text-grayscale'>Цена:</span> <span className='font-bold'>{cargo.price_value} {cargo.price_currency}</span></p>
 				</div>
 			</div>

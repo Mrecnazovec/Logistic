@@ -25,5 +25,6 @@ This project is a web application with a React frontend, a Node.js backend using
 - For UI changes, prioritize accessibility and responsive design.
 - When refactoring, aim for clear, modular code and update relevant documentation.
 - Always use shadcn/ui components
+- Use strict mode typescript
 
 

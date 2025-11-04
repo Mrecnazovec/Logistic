@@ -101,6 +101,9 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 							<Pencil className='size-4 text-muted-foreground' />
 							Изменить
 						</DropdownMenuItem>
+
+						<DropdownMenuSeparator />
+
 						<DropdownMenuItem
 							onClick={() => {
 								console.log('Скрыть', cargo.uuid)

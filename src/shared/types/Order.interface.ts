@@ -1,0 +1,15 @@
+import type { components, paths } from './api'
+
+export type IOrderList = components['schemas']['OrderList']
+export type IOrderDetail = components['schemas']['OrderDetail']
+export type OrderDetailRequestDto = components['schemas']['OrderDetailRequest']
+export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailRequest']
+export type IOrderDocument = components['schemas']['OrderDocument']
+export type OrderDocumentRequestDto = components['schemas']['OrderDocumentRequest']
+export type IOrderStatusUpdate = components['schemas']['OrderStatusUpdate']
+export type PatchedOrderStatusUpdateDto = components['schemas']['PatchedOrderStatusUpdateRequest']
+
+export type OrdersListQuery =
+	paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
+
+export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
