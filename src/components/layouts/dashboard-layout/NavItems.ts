@@ -5,11 +5,11 @@ export const navItems = [
 	{
 		group: 'Главная',
 		items: [
-			{
-				href: DASHBOARD_URL.home('cabinet'),
-				icon: SquareKanban,
-				label: 'Аналитика',
-			},
+			// {
+			// 	href: DASHBOARD_URL.home('cabinet'),
+			// 	icon: SquareKanban,
+			// 	label: 'Аналитика',
+			// },
 			{
 				href: DASHBOARD_URL.announcements(),
 				icon: Search,

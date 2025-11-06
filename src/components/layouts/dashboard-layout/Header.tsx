@@ -2,26 +2,34 @@
 
 import { Button } from '@/components/ui/Button'
 import { NoPhoto } from '@/components/ui/NoPhoto'
-import { resolveHeaderNavItems } from './HeaderNavConfig'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { cn } from '@/lib/utils'
-import { Loader2, Mail } from 'lucide-react'
+import { ChevronLeft, Loader2, Mail } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useMemo } from 'react'
 import { usePathname } from 'next/navigation'
+import { useMemo } from 'react'
+import { resolveHeaderNavItems } from './HeaderNavConfig'
 
 export function Header() {
 	const pathname = usePathname()
-	const navItems = useMemo(() => resolveHeaderNavItems(pathname), [pathname])
+	const { items: navItems, backLink } = useMemo(() => resolveHeaderNavItems(pathname), [pathname])
 	const { me, isLoading } = useGetMe()
 
 	return (
 		<header className='h-24 flex items-center xs:justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg px-4 max-xs:pt-4 max-xs:flex-col-reverse gap-4'>
-			<div className='flex items-center gap-6 xs:self-end self-start'>
+			<div className='flex flex-col items-center gap-3 xs:self-end self-start'>
+				{backLink && (
+					<Link
+						className='flex justify-center self-start items-center gap-2.5 text-brand text-xl font-medium hover:text-brand/70 transition-colors'
+						href={backLink.href}
+					>
+						<ChevronLeft /> {backLink.label}
+					</Link>
+				)}
 				{navItems.length > 0 && (
-					<nav className='flex gap-6 font-medium text-gray-700'>
+					<nav className='flex self-start gap-6 font-medium text-gray-700'>
 						{navItems.map((item) => (
 							<Link
 								key={item.href}
@@ -70,7 +78,7 @@ export function Header() {
 								<NoPhoto />
 							)}
 							<p className='font-medium text-base max-md:hidden'>
-								{me?.first_name || 'Пользователь'}
+								{me?.first_name || 'Р В РЎСџР В РЎвЂўР В Р’В»Р РЋР Р‰Р В Р’В·Р В РЎвЂўР В Р вЂ Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰'}
 							</p>
 						</Link></>
 				)}
