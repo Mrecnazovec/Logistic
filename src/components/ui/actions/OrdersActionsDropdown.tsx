@@ -51,7 +51,7 @@ export function OrdersActionsDropdown({ cargo }: CargoActionsDropdownProps) {
 						onClick={() => {
 							setOpen(false)
 						}}
-						className='flex items-center gap-2 text-red-500'
+						className='flex items-center gap-2 text-red-500 hover:text-red-500'
 					>
 						<Trash2 className='size-4 text-red-500' />
 						Удалить
