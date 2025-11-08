@@ -12,7 +12,7 @@ export const usePutLoad = () => {
 		mutationFn: ({ id, data }: { id: string; data: CargoPublishRequestDto }) => loadsService.putLoad(id, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
-			toast.success('Заявка обновлена')
+			toast.success('Статус изменён')
 		},
 		onError() {
 			toast.error('Ошибка при обновлении заявки')

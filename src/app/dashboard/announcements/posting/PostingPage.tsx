@@ -17,12 +17,13 @@ import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { cn } from '@/lib/utils'
-import { ContactSelector } from '@/shared/enums/ContactPref.enum'
+import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
 import { City } from '@/shared/types/Geo.interface'
 import { Banknote, Home, Phone } from 'lucide-react'
 import { useState } from 'react'
 import { usePostForm } from './usePostForm'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
@@ -186,7 +187,7 @@ export function PostingPage() {
 											<InputGroup>
 												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
 												<InputGroupAddon className='pr-2'>
-													<Banknote className='text-grayscale size-5' />
+													<Banknote className={cn('text-grayscale size-5', field.value && 'text-black')} />
 												</InputGroupAddon>
 											</InputGroup>
 										</FormControl>
@@ -241,21 +242,7 @@ export function PostingPage() {
 							render={({ field }) => (
 								<FormItem className='mb-6'>
 									<FormControl>
-										<Select onValueChange={field.onChange} value={field.value ?? ''}>
-											<SelectTrigger className='rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale w-full'>
-												<div className='flex gap-4'>
-													<Phone className='size-5' />
-													<SelectValue placeholder='Способ связи' />
-												</div>
-											</SelectTrigger>
-											<SelectContent>
-												{ContactSelector.map((item) => (
-													<SelectItem key={item.type} value={item.type}>
-														{item.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<ContactSelector onChange={field.onChange} value={field.value} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -321,6 +308,8 @@ export function PostingPage() {
 						<FormField
 							control={form.control}
 							name='transport_type'
+							rules={{ required: 'Тип транспорта обязателен' }}
+
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
@@ -332,11 +321,13 @@ export function PostingPage() {
 						<FormField
 							control={form.control}
 							name='weight_kg'
+							rules={{ required: 'Вес обязателен' }}
+
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Вес(тонна)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+											<InputGroupInput placeholder='Вес(кг)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
 										</InputGroup>
 									</FormControl>
 								</FormItem>

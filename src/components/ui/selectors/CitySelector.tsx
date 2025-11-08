@@ -9,6 +9,7 @@ import { Input } from '../form-control/Input'
 
 interface CitySelectorProps {
 	value?: string
+	displayValue?: string
 	onChange: (value: string, city?: City | null) => void
 	countryCode?: string
 	placeholder?: string
@@ -18,26 +19,43 @@ interface CitySelectorProps {
 
 export function CitySelector({
 	value = '',
+	displayValue,
 	onChange,
 	countryCode,
 	placeholder = 'Введите город...',
 	disabled,
 	className,
 }: CitySelectorProps) {
-	const [query, setQuery] = useState(value)
+	const [query, setQuery] = useState(displayValue ?? value)
 	const [isFocused, setIsFocused] = useState(false)
 	const [activeIndex, setActiveIndex] = useState(-1)
 	const listRef = useRef<HTMLDivElement | null>(null)
+	const lastSyncedValue = useRef(value ?? '')
 
+	const lastDisplayValue = useRef<string | undefined>(displayValue)
 	const { data, isLoading } = useCitySuggest(query, countryCode)
 	const cities = data?.results ?? []
 
 	useEffect(() => {
-		if (!value) setQuery('')
-	}, [value])
+		const nextValue = value ?? ''
+		if (nextValue === lastSyncedValue.current) return
+
+		lastSyncedValue.current = nextValue
+		if (!displayValue) {
+			setQuery(nextValue)
+		}
+	}, [value, displayValue])
+
+	useEffect(() => {
+		if (displayValue === undefined || displayValue === lastDisplayValue.current) return
+
+		lastDisplayValue.current = displayValue
+		setQuery(displayValue)
+	}, [displayValue])
 
 	const handleSelect = (city: City) => {
 		setQuery(`${city.name}, ${city.country}`)
+		lastSyncedValue.current = city.name
 
 		onChange(city.name, city)
 
@@ -61,7 +79,7 @@ export function CitySelector({
 
 	return (
 		<div className={cn('relative w-full', className)}>
-			<MapPin className='absolute left-3 top-1/2 -translate-y-1/2 text-grayscale size-5' />
+			<MapPin className={cn('absolute left-3 top-1/2 -translate-y-1/2 text-grayscale size-5', value && 'text-black')} />
 			<Input
 				type='text'
 				value={query}
@@ -75,7 +93,7 @@ export function CitySelector({
 				onKeyDown={handleKeyDown}
 				placeholder={placeholder}
 				disabled={disabled || !countryCode}
-				className={cn('pl-10 bg-grayscale-50 border-none text-sm', disabled && 'cursor-not-allowed opacity-70')}
+				className={cn('pl-12 bg-grayscale-50 border-none text-sm', disabled && 'cursor-not-allowed opacity-70')}
 			/>
 
 			{isFocused && query && (

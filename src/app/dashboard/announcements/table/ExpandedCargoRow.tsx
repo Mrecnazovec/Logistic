@@ -1,7 +1,7 @@
 'use client'
 
 import { OfferModal } from '@/components/ui/modals/OfferModal'
-import { ContactSelector } from '@/shared/enums/ContactPref.enum'
+import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
@@ -10,7 +10,7 @@ import { ru } from 'date-fns/locale'
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const transportName = TransportSelect.find(t => t.type === cargo.transport_type)?.name ?? '—'
 
-	const contactName = ContactSelector.find(t => t.type === cargo.contact_pref)?.name ?? '—'
+	const contactName = ContactPrefSelector.find(t => t.type === cargo.contact_pref)?.name ?? '—'
 	return (
 		<div className='flex flex-col gap-4'>
 			{/* Верхняя часть */}

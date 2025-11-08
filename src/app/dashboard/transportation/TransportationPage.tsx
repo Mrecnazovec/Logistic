@@ -83,7 +83,19 @@ export function TransportationPage() {
 		if (!hasResults) return renderEmptyState()
 
 		return (
-			<DataTable columns={transportationColumns} data={data?.results ?? []} />
+			<DataTable
+				columns={transportationColumns}
+				data={data?.results ?? []}
+				serverPagination={
+					data
+						? {
+							next: data.next,
+							previous: data.previous,
+							totalCount: data.count,
+						}
+						: undefined
+				}
+			/>
 		)
 	}
 
@@ -98,7 +110,6 @@ export function TransportationPage() {
 			</Activity>
 		)
 	}
-
 
 	return (
 		<div className='flex h-full flex-col gap-4'>
@@ -159,4 +170,3 @@ export function TransportationPage() {
 		</div>
 	)
 }
-

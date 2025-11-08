@@ -14,7 +14,6 @@ export function useEditForm() {
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
 		patchLoad({ uuid: param.uuid, data })
-		// console.log(data)
 	}
 
 	return { onSubmit, form, isLoadingPatch }

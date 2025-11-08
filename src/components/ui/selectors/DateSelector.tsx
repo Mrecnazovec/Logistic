@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/Button'
 import { Calendar } from '@/components/ui/Calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
-import { CalendarIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { cn } from '@/lib/utils'
+import { CalendarIcon } from 'lucide-react'
 import { useState } from 'react'
 
 interface DatePickerProps {
@@ -26,8 +26,8 @@ export function DatePicker({ value, onChange, placeholder = 'Выберите д
 					variant='outline'
 					disabled={disabled}
 					className={cn(
-						'justify-start text-left bg-grayscale-50 border-none font-normal',
-						!value && 'text-grayscale hover:text-grayscale'
+						'justify-start text-left bg-grayscale-50 border-none font-normal px-3',
+						!value && 'text-grayscale hover:text-grayscale '
 					)}
 				>
 					<CalendarIcon className='size-5 mr-2' />

@@ -1,5 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { ArrowLeftRight } from 'lucide-react'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
+
 import { Button } from '@/components/ui/Button'
 import {
 	Dialog,
@@ -18,11 +23,9 @@ import {
 	SelectValue,
 } from '@/components/ui/Select'
 import { cn } from '@/lib/utils'
+import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
-import { ArrowLeftRight } from 'lucide-react'
 
 interface OfferModalProps {
 	selectedRow?: ICargoList
@@ -37,11 +40,55 @@ export function OfferModal({
 	className,
 	open,
 	onOpenChange,
-	isAction = false
+	isAction = false,
 }: OfferModalProps) {
+	const [priceValue, setPriceValue] = useState('')
+	const [currency, setCurrency] = useState('')
+	const { createOffer, isLoadingCreate } = useCreateOffer()
+
+	const cargoId = (selectedRow as (ICargoList & { id?: number }) | undefined)?.id
+
+	
+
 	const transportName =
 		selectedRow &&
 		(TransportSelect.find((t) => t.type === selectedRow.transport_type)?.name ?? '—')
+
+	useEffect(() => {
+		if (!selectedRow) {
+			setPriceValue('')
+			setCurrency('')
+			return
+		}
+
+		setPriceValue(selectedRow.price_value ? String(selectedRow.price_value) : '')
+		setCurrency(selectedRow.price_currency ?? '')
+	}, [selectedRow])
+
+	const isCounterDisabled = !cargoId || !priceValue || !currency || isLoadingCreate
+
+	const isAcceptDisabled =
+		!cargoId || !selectedRow?.price_value || !selectedRow?.price_currency || isLoadingCreate
+
+	const handleCounterOffer = () => {
+		if (isCounterDisabled || !cargoId) return
+
+		createOffer({
+			cargo: cargoId,
+			price_value: priceValue,
+			price_currency: currency as NonNullable<ICargoList['price_currency']>,
+		})
+	}
+
+	const handleAcceptOffer = () => {
+		if (isAcceptDisabled || !cargoId || !selectedRow?.price_value || !selectedRow?.price_currency) return
+
+		createOffer({
+			cargo: cargoId,
+			price_value: selectedRow.price_value,
+			price_currency: selectedRow.price_currency,
+		})
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -55,29 +102,20 @@ export function OfferModal({
 
 			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>
-						Предложить
-					</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>Предложить</DialogTitle>
 				</DialogHeader>
 
 				{!selectedRow ? (
-					<p className='text-center text-muted-foreground py-6'>
-						Не выбрано ни одного объявления.
-					</p>
+					<p className='text-center text-muted-foreground py-6'>Не выбрано ни одного объявления.</p>
 				) : (
 					<div className='space-y-6'>
-						<div
-							key={selectedRow.uuid}
-							className='flex flex-col'
-						>
+						<div key={selectedRow.uuid} className='flex flex-col'>
 							<div className='flex justify-between gap-6 items-center border-b-2 pb-6 flex-wrap'>
 								<div>
 									<p>
 										{selectedRow.origin_city}, {selectedRow.origin_country}
 									</p>
-									<p>
-										{format(selectedRow.load_date, 'dd.MM.yyyy', { locale: ru })}
-									</p>
+									<p>{format(selectedRow.load_date, 'dd.MM.yyyy', { locale: ru })}</p>
 								</div>
 								<div className='flex flex-col items-center justify-center gap-3'>
 									<ArrowLeftRight className='size-5' />
@@ -113,15 +151,20 @@ export function OfferModal({
 								<div>
 									<p>
 										<span className='font-semibold'>Предложение: </span>
-										{selectedRow.price_value} {selectedRow.price_currency} (
-										{selectedRow.price_per_km} на км)
+										{selectedRow.price_value} {selectedRow.price_currency} ({selectedRow.price_per_km} на км)
 									</p>
 								</div>
 							</div>
 
 							<div className='flex flex-col pt-6 md:flex-row gap-3'>
-								<Input placeholder='Введите цену' />
-								<Select>
+								<Input
+									placeholder='Введите цену'
+									value={priceValue}
+									onChange={(event) => setPriceValue(event.target.value)}
+									inputMode='decimal'
+									type='number'
+								/>
+								<Select value={currency || undefined} onValueChange={setCurrency}>
 									<SelectTrigger className='w-full rounded-full border-none shadow-none bg-grayscale-50'>
 										<SelectValue placeholder='Выберите валюту' />
 									</SelectTrigger>
@@ -134,14 +177,22 @@ export function OfferModal({
 							</div>
 
 							<div className='flex max-md:flex-col md:justify-end gap-3 mt-6'>
-								<Button className='bg-yellow-500 text-white hover:bg-yellow-600 max-md:w-full max-md:order-2'>
+								<Button
+									className='bg-warning-400 text-white hover:bg-warning-500 max-md:w-full max-md:order-2'
+									onClick={handleCounterOffer}
+									disabled={isCounterDisabled}
+								>
 									Торговать
 								</Button>
-								<Button className='bg-green-600 text-white hover:bg-green-700 max-md:w-full max-md:order-1'>
+								<Button
+									className='bg-success-400 text-white hover:bg-success-500 max-md:w-full max-md:order-1'
+									onClick={handleAcceptOffer}
+									disabled={isAcceptDisabled}
+								>
 									Принять
 								</Button>
 								<DialogClose asChild>
-									<Button className='bg-red-600 text-white hover:bg-red-700 max-md:w-full max-md:order-3'>
+									<Button className='bg-error-400 text-white hover:bg-error-500 max-md:w-full max-md:order-3'>
 										Назад
 									</Button>
 								</DialogClose>
@@ -153,4 +204,3 @@ export function OfferModal({
 		</Dialog>
 	)
 }
-

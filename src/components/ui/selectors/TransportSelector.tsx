@@ -30,7 +30,7 @@ export function TransportSelector({ value, onChange, placeholder = 'Тип тр�
 			<SelectContent>
 				{TransportSelect.map((item) => (
 					<SelectItem key={item.type} value={item.type}>
-						{item.name}
+						{item.name} {item.symb}
 					</SelectItem>
 				))}
 			</SelectContent>

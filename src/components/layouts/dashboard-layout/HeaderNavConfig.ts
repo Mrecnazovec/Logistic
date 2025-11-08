@@ -1,4 +1,5 @@
 import { DASHBOARD_URL } from '@/config/url.config'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 
 export interface HeaderNavItem {
 	label: string
@@ -14,6 +15,7 @@ interface HeaderNavDefinition {
 	matcher: (pathname: string) => boolean
 	items: HeaderNavItem[] | ((pathname: string) => HeaderNavItem[])
 	backLink?: HeaderNavBackLink | ((pathname: string) => HeaderNavBackLink | null)
+	roles?: RoleEnum[] | ((role?: RoleEnum) => boolean)
 }
 
 export interface ResolvedHeaderNavItems {
@@ -42,6 +44,71 @@ const getOrderIdFromPath = (pathname: string) => {
 }
 
 const headerNavDefinitions: HeaderNavDefinition[] = [
+	// Customer start
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/announcements/posting'),
+		roles: [RoleEnum.CUSTOMER],
+		items: [
+			{
+				label: 'Доска заявок',
+				href: DASHBOARD_URL.desk(),
+			},
+			{
+				label: 'Публикация заявки',
+				href: DASHBOARD_URL.posting(),
+			},
+		],
+	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
+		roles: [RoleEnum.CUSTOMER],
+		items: [
+			{
+				label: 'Доска заявок',
+				href: DASHBOARD_URL.desk(),
+			},
+			{
+				label: 'Публикация заявки',
+				href: DASHBOARD_URL.posting(),
+			},
+			{
+				label: 'Мои предложения',
+				href: DASHBOARD_URL.desk('my'),
+			},
+		],
+	},
+	// Customer end
+
+	// Carrier start
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/announcements'),
+		roles: [RoleEnum.CARRIER],
+		items: [
+			{
+				label: 'Поиск грузоперевозок',
+				href: DASHBOARD_URL.announcements(),
+			},
+			{
+				label: 'Мои предложения',
+				href: DASHBOARD_URL.desk('my'),
+			},
+		],
+	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
+		roles: [RoleEnum.CARRIER],
+		items: [
+			{
+				label: 'Поиск грузоперевозок',
+				href: DASHBOARD_URL.announcements(),
+			},
+			{
+				label: 'Мои предложения',
+				href: DASHBOARD_URL.desk('my'),
+			},
+		],
+	},
+	// Carrier end
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/announcements'),
 		items: [
@@ -55,6 +122,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			},
 		],
 	},
+
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
 		items: [
@@ -125,9 +193,19 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 	},
 ]
 
-export const resolveHeaderNavItems = (pathname: string): ResolvedHeaderNavItems => {
+export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): ResolvedHeaderNavItems => {
 	const normalizedPath = normalizePath(pathname)
-	const matchedDefinition = headerNavDefinitions.find((config) => config.matcher(normalizedPath))
+	const matchedDefinition = headerNavDefinitions.find((config) => {
+		if (config.roles) {
+			const allowed = Array.isArray(config.roles) ? (role ? config.roles.includes(role) : false) : config.roles(role)
+
+			if (!allowed) {
+				return false
+			}
+		}
+
+		return config.matcher(normalizedPath)
+	})
 
 	if (!matchedDefinition) {
 		return {

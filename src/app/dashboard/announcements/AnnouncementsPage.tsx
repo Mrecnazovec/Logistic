@@ -15,12 +15,21 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { cargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
+import { useRoleStore } from '@/store/useRoleStore'
+import { useRouter } from 'next/navigation'
+import { RoleEnum } from '@/shared/enums/Role.enum'
+import { useEffect } from 'react'
 
 export function AnnouncementsPage() {
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const { role } = useRoleStore()
+	const router = useRouter()
 
+	useEffect(() => {
+		if (role === RoleEnum.CUSTOMER) router.push(DASHBOARD_URL.desk())
+	})
 
 	// const fakeData = fakeCargoList
 
@@ -60,6 +69,11 @@ export function AnnouncementsPage() {
 						columns={cargoColumns}
 						data={data.results}
 						isButton
+						serverPagination={{
+							next: data.next,
+							previous: data.previous,
+							totalCount: data.count,
+						}}
 						renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
 						renderFooterActions={(selected) =>
 							<OfferModal selectedRow={selected} />

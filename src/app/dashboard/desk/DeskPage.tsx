@@ -11,18 +11,21 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
+import { useGetLoadsBoard } from '@/hooks/queries/loads/useGet/useGetLoadsBoard'
+import { useGetLoadsMine } from '@/hooks/queries/loads/useGet/useGetLoadsMine'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Activity } from 'react'
 import { deskColumns } from './table/DeskColumns'
-import { useGetLoadsMine } from '@/hooks/queries/loads/useGet/useGetLoadsMine'
+import { useRoleStore } from '@/store/useRoleStore'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 
 
 export function DeskPage() {
-	const { data, isLoading } = useGetLoadsPublic()
+	const { data, isLoading } = useGetLoadsBoard()
 	const { data: mine, isLoading: isLoadingMine } = useGetLoadsMine()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const { role } = useRoleStore()
 
 	// const fakeData = fakeCargoList
 
@@ -62,20 +65,30 @@ export function DeskPage() {
 			) : data?.results ? (
 				isDesktop ? (
 					<Tabs defaultValue='desk'>
-						<TabsList className='bg-transparent -mb-2'>
+						{role === RoleEnum.LOGISTIC && <TabsList className='bg-transparent -mb-2'>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-						</TabsList>
+						</TabsList>}
 						<TabsContent value='desk'>
 							<DataTable
 								columns={deskColumns}
 								data={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+								}}
 							/>
 						</TabsContent>
 						<TabsContent value='drivers'>
 							<DataTable
 								columns={deskColumns}
 								data={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+								}}
 							/>
 						</TabsContent>
 					</Tabs>

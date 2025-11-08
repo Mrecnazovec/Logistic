@@ -6,7 +6,7 @@ export const ContactPrefEnum = {
 
 export type ContactPrefEnum = (typeof ContactPrefEnum)[keyof typeof ContactPrefEnum]
 
-export const ContactSelector = [
+export const ContactPrefSelector = [
 	{
 		type: ContactPrefEnum.EMAIL,
 		name: 'Email',

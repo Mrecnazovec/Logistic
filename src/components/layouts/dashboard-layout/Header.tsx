@@ -5,6 +5,7 @@ import { NoPhoto } from '@/components/ui/NoPhoto'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { cn } from '@/lib/utils'
+import { useRoleStore } from '@/store/useRoleStore'
 import { ChevronLeft, Loader2, Mail } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -14,7 +15,11 @@ import { resolveHeaderNavItems } from './HeaderNavConfig'
 
 export function Header() {
 	const pathname = usePathname()
-	const { items: navItems, backLink } = useMemo(() => resolveHeaderNavItems(pathname), [pathname])
+	const role = useRoleStore((state) => state.role)
+	const { items: navItems, backLink } = useMemo(
+		() => resolveHeaderNavItems(pathname, role),
+		[pathname, role]
+	)
 	const { me, isLoading } = useGetMe()
 
 	return (
@@ -78,7 +83,7 @@ export function Header() {
 								<NoPhoto />
 							)}
 							<p className='font-medium text-base max-md:hidden'>
-								{me?.first_name || 'Р В РЎСџР В РЎвЂўР В Р’В»Р РЋР Р‰Р В Р’В·Р В РЎвЂўР В Р вЂ Р В Р’В°Р РЋРІР‚С™Р В Р’ВµР В Р’В»Р РЋР Р‰'}
+								{me?.first_name || 'Пользователь'}
 							</p>
 						</Link></>
 				)}

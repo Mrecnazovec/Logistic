@@ -30,7 +30,7 @@ export function DeskMyPage() {
 
 	// const fakeData = fakeCargoList
 
-	console.log(data);
+	console.log(mine);
 
 
 	return (
@@ -74,12 +74,22 @@ export function DeskMyPage() {
 							<DataTable
 								columns={deskMyColumns}
 								data={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+								}}
 							/>
 						</TabsContent>
 						<TabsContent value='drivers'>
 							<DataTable
 								columns={deskCarrierColumns}
 								data={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+								}}
 							/>
 						</TabsContent>
 					</Tabs>

@@ -11,20 +11,25 @@ const RichTextEditor = dynamic(() =>
 )
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
 import { cn } from '@/lib/utils'
-import { ContactSelector } from '@/shared/enums/ContactPref.enum'
 import { City } from '@/shared/types/Geo.interface'
 import { Banknote, Home, Phone } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
-import { useEditForm } from './useEditForm'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useEditForm } from './useEditForm'
+import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 
+const formatCityLabel = (city: City | null) => {
+	if (!city) return undefined
+
+	return [city.name, city.country].filter(Boolean).join(', ')
+}
 
 export function EditPage() {
 	const { form, isLoadingPatch, onSubmit } = useEditForm()
@@ -40,8 +45,10 @@ export function EditPage() {
 
 		form.reset({
 			origin_city: load.origin_city ?? '',
+			origin_country: load.origin_country ?? '',
 			origin_address: load.origin_address ?? '',
 			destination_city: load.destination_city ?? '',
+			destination_country: load.destination_country ?? '',
 			destination_address: load.destination_address ?? '',
 			load_date: load.load_date ?? '',
 			delivery_date: load.delivery_date ?? '',
@@ -84,9 +91,11 @@ export function EditPage() {
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
+											displayValue={formatCityLabel(originCity)}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('origin_country', city?.country ?? '')
+												setOriginCity(city ?? null)
 											}}
 											countryCode=' '
 											placeholder='Город, страна'
@@ -146,9 +155,11 @@ export function EditPage() {
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
+											displayValue={formatCityLabel(destinationCity)}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('destination_country', city?.country ?? '')
+												setDestinationCity(city ?? null)
 											}}
 											countryCode=' '
 											placeholder='Город, страна'
@@ -225,7 +236,7 @@ export function EditPage() {
 											<InputGroup>
 												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
 												<InputGroupAddon className='pr-2'>
-													<Banknote className='text-grayscale size-5' />
+													<Banknote className={cn('text-grayscale size-5', field.value && 'text-black')} />
 												</InputGroupAddon>
 											</InputGroup>
 										</FormControl>
@@ -280,21 +291,7 @@ export function EditPage() {
 							render={({ field }) => (
 								<FormItem className='mb-6'>
 									<FormControl>
-										<Select onValueChange={field.onChange} value={field.value ?? ''}>
-											<SelectTrigger className='rounded-full text-grayscale bg-grayscale-50 border-none [&_span]:text-grayscale w-full'>
-												<div className='flex gap-4'>
-													<Phone className='size-5' />
-													<SelectValue placeholder='Способ связи' />
-												</div>
-											</SelectTrigger>
-											<SelectContent>
-												{ContactSelector.map((item) => (
-													<SelectItem key={item.type} value={item.type}>
-														{item.name}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<ContactSelector onChange={field.onChange} disabled={isLoadingPatch} value={field.value} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -360,6 +357,7 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='transport_type'
+							rules={{ required: 'Тип транспорта обязателен' }}
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
@@ -371,11 +369,12 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='weight_kg'
+							rules={{ required: 'Вес обязателен' }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Вес(тонна)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
+											<InputGroupInput placeholder='Вес(кг)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
 										</InputGroup>
 									</FormControl>
 								</FormItem>

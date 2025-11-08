@@ -1,4 +1,4 @@
-import { ContactSelector } from "@/shared/enums/ContactPref.enum"
+import { ContactPrefSelector } from "@/shared/enums/ContactPref.enum"
 import { PriceSelector } from "@/shared/enums/PriceCurrency.enum"
 import { TransportSelect } from "@/shared/enums/TransportType.enum"
 import { IPaginatedCargoListList } from "@/shared/types/PaginatedList.interface"
@@ -31,7 +31,7 @@ export function MobileDataTable({ data, isActions = false, isOffer = false }: Da
 		<div className="bg-background px-4 py-8 space-y-6 md:hidden">
 			{data?.results.map((item, index) => {
 				const contactName =
-					ContactSelector.find(t => t.type === item.contact_pref)?.name ?? "—"
+					ContactPrefSelector.find(t => t.type === item.contact_pref)?.name ?? "—"
 				const transportName =
 					TransportSelect.find(t => t.type === item.transport_type)?.name ?? "—"
 				const priceName =

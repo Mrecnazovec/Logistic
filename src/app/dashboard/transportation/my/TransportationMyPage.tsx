@@ -84,7 +84,19 @@ export function TransportationMyPage() {
 		if (!hasResults) return renderEmptyState()
 
 		return (
-			<DataTable columns={transportationColumns} data={data?.results ?? []} />
+			<DataTable
+				columns={transportationColumns}
+				data={data?.results ?? []}
+				serverPagination={
+					data
+						? {
+							next: data.next,
+							previous: data.previous,
+							totalCount: data.count,
+						}
+						: undefined
+				}
+			/>
 		)
 	}
 
@@ -160,4 +172,3 @@ export function TransportationMyPage() {
 		</div>
 	)
 }
-
