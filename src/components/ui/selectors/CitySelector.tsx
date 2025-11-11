@@ -1,129 +1,134 @@
-'use client'
+﻿'use client'
 
+import { Button } from '@/components/ui/Button'
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/Command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { useCitySuggest } from '@/hooks/queries/geo/useGetCitySuggest'
 import { cn } from '@/lib/utils'
 import { City } from '@/shared/types/Geo.interface'
 import { Loader2, MapPin } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Input } from '../form-control/Input'
 
 interface CitySelectorProps {
-	value?: string
-	displayValue?: string
-	onChange: (value: string, city?: City | null) => void
-	countryCode?: string
-	placeholder?: string
-	disabled?: boolean
-	className?: string
+    value?: string
+    displayValue?: string
+    onChange: (value: string, city?: City | null) => void
+    countryCode?: string
+    placeholder?: string
+    disabled?: boolean
+    className?: string
 }
 
 export function CitySelector({
-	value = '',
-	displayValue,
-	onChange,
-	countryCode,
-	placeholder = 'Введите город...',
-	disabled,
-	className,
+    value = '',
+    displayValue,
+    onChange,
+    countryCode,
+    placeholder = 'Select city',
+    disabled,
+    className,
 }: CitySelectorProps) {
-	const [query, setQuery] = useState(displayValue ?? value)
-	const [isFocused, setIsFocused] = useState(false)
-	const [activeIndex, setActiveIndex] = useState(-1)
-	const listRef = useRef<HTMLDivElement | null>(null)
-	const lastSyncedValue = useRef(value ?? '')
+    const isDisabled = disabled || !countryCode
+    const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState(displayValue ?? value ?? '')
+    const lastSyncedValueRef = useRef(value ?? '')
+    const lastDisplayValueRef = useRef(displayValue)
 
-	const lastDisplayValue = useRef<string | undefined>(displayValue)
-	const { data, isLoading } = useCitySuggest(query, countryCode)
-	const cities = data?.results ?? []
+    const { data, isLoading } = useCitySuggest(search, countryCode)
+    const cities = data?.results ?? []
 
-	useEffect(() => {
-		const nextValue = value ?? ''
-		if (nextValue === lastSyncedValue.current) return
+    useEffect(() => {
+        const nextValue = value ?? ''
+        if (nextValue === lastSyncedValueRef.current) return
 
-		lastSyncedValue.current = nextValue
-		if (!displayValue) {
-			setQuery(nextValue)
-		}
-	}, [value, displayValue])
+        lastSyncedValueRef.current = nextValue
+        if (!displayValue) {
+            setSearch(nextValue)
+        }
+    }, [value, displayValue])
 
-	useEffect(() => {
-		if (displayValue === undefined || displayValue === lastDisplayValue.current) return
+    useEffect(() => {
+        if (displayValue === undefined || displayValue === lastDisplayValueRef.current) return
 
-		lastDisplayValue.current = displayValue
-		setQuery(displayValue)
-	}, [displayValue])
+        lastDisplayValueRef.current = displayValue
+        setSearch(displayValue)
+    }, [displayValue])
 
-	const handleSelect = (city: City) => {
-		setQuery(`${city.name}, ${city.country}`)
-		lastSyncedValue.current = city.name
+    const handleInputChange = (nextValue: string) => {
+        setSearch(nextValue)
+        lastSyncedValueRef.current = nextValue
+        onChange(nextValue, null)
+    }
 
-		onChange(city.name, city)
+    const handleSelect = (city: City) => {
+        lastSyncedValueRef.current = city.name
+        onChange(city.name, city)
+        setSearch(`${city.name}, ${city.country}`)
+        setOpen(false)
+    }
 
-		setIsFocused(false)
-		setActiveIndex(-1)
-	}
+    return (
+        <div className={cn('w-full', className)}>
+            <Popover open={isDisabled ? false : open} onOpenChange={(next) => !isDisabled && setOpen(next)}>
+                <PopoverTrigger asChild>
+                    <Button
+                        type='button'
+                        variant='outline'
+                        role='combobox'
+                        aria-expanded={open}
+                        disabled={isDisabled}
+                        className={cn(
+                            'flex w-full items-center justify-start gap-3 rounded-full border-none bg-grayscale-50 px-4 text-sm font-normal text-grayscale hover:bg-grayscale-100',
+                            search && 'text-black',
+                            isDisabled && 'cursor-not-allowed opacity-70'
+                        )}
+                    >
+                        <MapPin className={cn('size-5 text-grayscale', search && 'text-black')} />
+                        <span className='truncate'>{search || placeholder}</span>
+                    </Button>
+                </PopoverTrigger>
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (!cities.length) return
-		if (e.key === 'ArrowDown') {
-			e.preventDefault()
-			setActiveIndex((prev) => (prev + 1) % cities.length)
-		} else if (e.key === 'ArrowUp') {
-			e.preventDefault()
-			setActiveIndex((prev) => (prev <= 0 ? cities.length - 1 : prev - 1))
-		} else if (e.key === 'Enter' && activeIndex >= 0) {
-			e.preventDefault()
-			handleSelect(cities[activeIndex])
-		}
-	}
-
-	return (
-		<div className={cn('relative w-full', className)}>
-			<MapPin className={cn('absolute left-3 top-1/2 -translate-y-1/2 text-grayscale size-5', value && 'text-black')} />
-			<Input
-				type='text'
-				value={query}
-				onChange={(e) => {
-					setQuery(e.target.value)
-					onChange(e.target.value)
-					setIsFocused(true)
-				}}
-				onFocus={() => setIsFocused(true)}
-				onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-				onKeyDown={handleKeyDown}
-				placeholder={placeholder}
-				disabled={disabled || !countryCode}
-				className={cn('pl-12 bg-grayscale-50 border-none text-sm', disabled && 'cursor-not-allowed opacity-70')}
-			/>
-
-			{isFocused && query && (
-				<div
-					ref={listRef}
-					className='absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-[240px] overflow-auto z-50'
-				>
-					{isLoading ? (
-						<div className='flex items-center justify-center py-3 text-sm text-muted-foreground'>
-							<Loader2 className='h-4 w-4 animate-spin mr-2' />
-							Загрузка...
-						</div>
-					) : cities.length ? (
-						cities.map((city, i) => (
-							<div
-								key={`${city.name}-${city.country_code}`}
-								className={cn(
-									'px-4 py-2 text-sm text-gray-700 cursor-pointer transition-colors',
-									i === activeIndex ? 'bg-gray-100' : 'hover:bg-gray-100'
-								)}
-								onClick={() => handleSelect(city)}
-							>
-								{city.name}, {city.country}
-							</div>
-						))
-					) : (
-						<div className='py-3 text-center text-sm text-muted-foreground'>Ничего не найдено</div>
-					)}
-				</div>
-			)}
-		</div>
-	)
+                <PopoverContent className='w-[var(--radix-popover-trigger-width)] p-0' align='start'>
+                    <Command shouldFilter={false}>
+                        <CommandInput
+                            placeholder='Город'
+                            value={search}
+                            onValueChange={handleInputChange}
+                            disabled={isDisabled}
+                        />
+                        <CommandList className='max-h-60'>
+                            {isLoading ? (
+                                <div className='flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground'>
+                                    <Loader2 className='size-4 animate-spin' />
+                                    Loading...
+                                </div>
+                            ) : (
+                                <>
+                                    <CommandEmpty>Ничего не найдено</CommandEmpty>
+                                    <CommandGroup>
+                                        {cities.map((city) => (
+                                            <CommandItem
+                                                key={`${city.name}-${city.country_code}`}
+                                                value={`${city.name}, ${city.country}`}
+                                                onSelect={() => handleSelect(city)}
+                                            >
+                                                {city.name}, {city.country}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </>
+                            )}
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        </div>
+    )
 }

@@ -6,13 +6,13 @@ import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Loader2, Search } from 'lucide-react'
-import { Activity, useCallback } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Activity, useCallback } from 'react'
 import { useSearchForm } from './Searching/useSearchForm'
 import { transportationColumns } from './table/TransportationColumns'
-import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 
 const STATUS_TABS = [
 	{
@@ -44,6 +44,9 @@ export function TransportationPage() {
 	const searchParams = useSearchParams()
 	const status = searchParams.get('status') ?? 'no_driver'
 
+	console.log(orders);
+
+
 	const handleStatusChange = useCallback(
 		(nextStatus: string) => {
 			if (nextStatus === status) return
@@ -68,7 +71,7 @@ export function TransportationPage() {
 	)
 
 	const renderEmptyState = () => (
-		<div className='flex-1 bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
+		<div className='h-full bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
 			<div className='flex items-center justify-center flex-col gap-6'>
 				<div className='bg-background shadow-2xl p-4 rounded-full'>
 					<Search className='size-5 text-brand' />
