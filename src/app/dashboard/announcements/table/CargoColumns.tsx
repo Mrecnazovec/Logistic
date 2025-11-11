@@ -124,7 +124,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		header: ({ column }) => (
 			<Button
 				variant='ghost'
-				className='hover:bg-transparent'
+				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Дата

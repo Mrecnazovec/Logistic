@@ -3,6 +3,7 @@
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
+import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
@@ -11,8 +12,14 @@ import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CircleCheck, Minus } from 'lucide-react'
+import { useState } from 'react'
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
+	{
+		accessorKey: 'uuid',
+		header: 'ID',
+		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
+	},
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -132,17 +139,9 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'has_offers',
 		header: 'Предложения',
-		cell: ({ row }) => {
-			if (row.original.has_offers)
-				return <CircleCheck className='size-5 text-success-400' />
-			return <Minus className='size-5 text-neutral-400' />
-		},
+		cell: ({ row }) => <DeskOffersCell cargo={row.original} />,
 	},
-	{
-		accessorKey: 'uuid',
-		header: 'ID',
-		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
-	},
+
 	{
 		id: 'actions',
 		header: '',
@@ -151,5 +150,34 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		enableHiding: false,
 	},
 ]
+
+function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
+	const [open, setOpen] = useState(false)
+	const hasOffers = Boolean(cargo.has_offers)
+
+	return (
+		<>
+			<div className='flex items-center gap-2'>
+
+
+				<Button
+					type='button'
+					variant='link'
+					className='px-0 h-auto font-medium disabled:text-muted-foreground'
+					onClick={() => setOpen(true)}
+					disabled={!hasOffers}
+				>
+					{hasOffers ? (
+						<CircleCheck className='size-5 text-success-400' />
+					) : (
+						<Minus className='size-5 text-neutral-400' />
+					)}
+				</Button>
+			</div>
+
+			<DeskOffersModal selectedRow={cargo} open={open} onOpenChange={setOpen} />
+		</>
+	)
+}
 
 

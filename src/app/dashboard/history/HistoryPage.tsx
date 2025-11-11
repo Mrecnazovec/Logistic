@@ -10,19 +10,25 @@ import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
-import { useSearchForm } from './Searching/useSearchForm'
-import { cargoColumns } from './table/CargoColumns'
-import { ExpandedCargoRow } from './table/ExpandedCargoRow'
-import { useRoleStore } from '@/store/useRoleStore'
 import { useRouter } from 'next/navigation'
-import { RoleEnum } from '@/shared/enums/Role.enum'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useSearchForm } from './Searching/useSearchForm'
+import { historyColumns } from './table/HistoryColumns'
+import { ICargoList } from '@/shared/types/CargoList.interface'
 
-export function AnnouncementsPage() {
+export function HistoryPage() {
 	const data = fakeCargoList
 	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const router = useRouter()
+
+	const handleRowClick = useCallback(
+		(cargo: ICargoList) => {
+			router.push(DASHBOARD_URL.order(`${cargo.uuid}?status=finished`))
+		},
+		[router],
+	)
 
 
 	return (
@@ -56,15 +62,15 @@ export function AnnouncementsPage() {
 			) : data?.results ? (
 				isDesktop ? (
 					<DataTable
-						columns={cargoColumns}
+						columns={historyColumns}
 						data={data.results}
 						isButton
+						onRowClick={handleRowClick}
 						serverPagination={{
 							next: data.next,
 							previous: data.previous,
 							totalCount: data.count,
 						}}
-						renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
 					/>
 				) : (
 					<MobileDataTable data={data} isOffer={true} />

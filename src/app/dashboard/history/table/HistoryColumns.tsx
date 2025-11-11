@@ -1,33 +1,36 @@
 'use client'
 
-import { OrdersActionsDropdown } from '@/components/ui/actions/OrdersActionsDropdown'
-import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { cn } from '@/lib/utils'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { Star } from 'lucide-react'
 
-export const transportationColumns: ColumnDef<ICargoList>[] = [
-	{
-		accessorKey: 'uuid',
-		header: 'ID',
-		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
-	},
+export const historyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'company_name',
 		header: 'Заказчик',
 	},
 	{
-		accessorKey: 'created_at',
+		accessorKey: '',
 		header: 'Посредник',
-		cell: ({ row }) =>
-			<p>{row.original.company_name}</p>
-
+	},
+	{
+		accessorKey: 'route_km',
+		header: ({ column }) => (
+			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+				Путь (км)
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
+			</Button>
+		),
+		cell: ({ row }) => `${row.original.route_km} км`,
+	},
+	{
+		accessorKey: 'weight_t',
+		header: 'Вес (т)',
 	},
 	{
 		id: 'origin',
@@ -95,24 +98,6 @@ export const transportationColumns: ColumnDef<ICargoList>[] = [
 		},
 	},
 	{
-		accessorKey: 'transport_type',
-		header: 'Тип',
-		cell: ({ row }) => {
-			const transportName =
-				TransportSelect.find((t) => t.type === row.original.transport_type)
-					?.name ?? '—'
-			return transportName
-		},
-	},
-	{
-		accessorKey: 'weight_t',
-		header: 'Вес (т)',
-	},
-	{
-		accessorKey: 'price_currency',
-		header: 'Валюта',
-	},
-	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
 			<Button
@@ -131,16 +116,42 @@ export const transportationColumns: ColumnDef<ICargoList>[] = [
 			return priceA - priceB
 		},
 	},
+
 	{
-		accessorKey: 'is_hidden',
-		header: 'Документы',
-		cell: ({ row }) => <div className={cn('rounded-full size-7 border-2 flex items-center justify-center font-medium', Number(row.id) % 4 !== 0 && 'bg-purple-200/50 border-purple-200 text-purple-700')}><span className=''>{Number(row.id) % 4}</span></div>
+		accessorKey: 'price_currency',
+		header: 'Валюта',
 	},
 	{
-		accessorKey: 'price_per_km',
-		header: 'Цена/Км'
+		accessorKey: 'path_km',
+		header: 'Рейтинг',
+		cell: () => <span className='flex items-center gap-2 font-medium'>
+			<Star className='size-4 text-yellow-400 fill-yellow-400' />
+			5
+		</span>
 	},
+	{
+		accessorKey: 'load_date',
+		header: ({ column }) => (
+			<Button
+				variant='ghost'
+				className='hover:bg-transparent p-0'
+				onClick={(event) => cycleColumnSort(event, column)}
+			>
+				Дата завершения
+				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
+			</Button>
+		),
+		cell: ({ row }) => {
+			const date = new Date(row.original.load_date)
+			return format(date, 'dd/MM/yyyy', { locale: ru })
+		},
+		sortingFn: (a, b) => {
+			const dateA = new Date(a.original.load_date).getTime()
+			const dateB = new Date(b.original.load_date).getTime()
+			return dateA - dateB
+		},
+	},
+
 
 ]
-
 

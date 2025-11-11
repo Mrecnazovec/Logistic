@@ -1,11 +1,6 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
-import {
-	IUserRating,
-	PatchedUserRatingRequestDto,
-	RatingsListQuery,
-	UserRatingRequestDto,
-} from '@/shared/types/Rating.interface'
+import { IUserRating, PatchedUserRatingRequestDto, RatingsListQuery, UserRatingRequestDto } from '@/shared/types/Rating.interface'
 import { IPaginatedUserRatingList } from '@/shared/types/PaginatedList.interface'
 
 export type { RatingsListQuery } from '@/shared/types/Rating.interface'

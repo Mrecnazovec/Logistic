@@ -5,6 +5,7 @@ import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
+import { cn } from '@/lib/utils'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -22,8 +23,11 @@ export const transportationColumns: ColumnDef<ICargoList>[] = [
 		header: 'Заказчик',
 	},
 	{
-		accessorKey: '',
+		accessorKey: 'created_at',
 		header: 'Посредник',
+		cell: ({ row }) =>
+			<p>{row.original.company_name}</p>
+
 	},
 	{
 		id: 'origin',
@@ -128,19 +132,13 @@ export const transportationColumns: ColumnDef<ICargoList>[] = [
 		},
 	},
 	{
-		accessorKey: '',
-		header: 'Документы'
+		accessorKey: 'is_hidden',
+		header: 'Документы',
+		cell: ({ row }) => <div className={cn('rounded-full size-7 border-2 flex items-center justify-center font-medium', Number(row.id) % 4 !== 0 && 'bg-purple-200/50 border-purple-200 text-purple-700')}><span className=''>{Number(row.id) % 4}</span></div>
 	},
 	{
-		accessorKey: '',
-		header: 'Соотношение'
-	},
-	{
-		id: 'actions',
-		header: '',
-		cell: ({ row }) => <OrdersActionsDropdown cargo={row.original} />,
-		enableSorting: false,
-		enableHiding: false,
+		accessorKey: 'price_per_km',
+		header: 'Цена/Км'
 	},
 
 ]

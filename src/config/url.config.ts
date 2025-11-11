@@ -16,6 +16,8 @@ export const DASHBOARD_URL = {
 	desk: (url = '') => `/dashboard/desk/${url}`,
 	transportation: (url = '') => `/dashboard/transportation/${url}`,
 	order: (url = '') => `/dashboard/order/${url}`,
+	rating: (url = '') => `/dashboard/rating/${url}`,
+	history: (url = '') => `/dashboard/history/${url}`,
 
 	posting: (url = '') => `/dashboard/announcements/posting/${url}`,
 	edit: (url = '') => `/dashboard/desk/edit/${url}`,

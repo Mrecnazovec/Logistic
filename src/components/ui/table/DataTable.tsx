@@ -16,6 +16,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
+import { cn } from '@/lib/utils'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
 
@@ -34,6 +35,7 @@ interface DataTableProps<TData, TValue> {
 	renderExpandedRow?: (row: TData) => React.ReactNode
 	renderFooterActions?: (selectedRow?: TData) => React.ReactNode
 	serverPagination?: ServerPaginationMeta
+	onRowClick?: (record: TData) => void
 }
 
 type PaginationItem = number | 'ellipsis'
@@ -120,6 +122,7 @@ export function DataTable<TData, TValue>({
 	renderFooterActions,
 	isButton = false,
 	serverPagination,
+	onRowClick,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -254,19 +257,23 @@ export function DataTable<TData, TValue>({
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<React.Fragment key={row.id}>
-									<TableRow
-										data-state={row.getIsSelected() && 'selected'}
-										onClick={() => {
-											if (renderExpandedRow) {
-												setExpandedRow(expandedRow === row.id ? null : row.id)
-											}
-										}}
-										className={
-											renderExpandedRow
-												? 'cursor-pointer hover:bg-muted/40 transition-colors'
-												: ''
-										}
-									>
+							<TableRow
+								data-state={row.getIsSelected() && 'selected'}
+								onClick={() => {
+									if (onRowClick) {
+										onRowClick(row.original)
+										return
+									}
+
+									if (renderExpandedRow) {
+										setExpandedRow(expandedRow === row.id ? null : row.id)
+									}
+								}}
+								className={cn(
+									(renderExpandedRow || onRowClick) &&
+										'cursor-pointer hover:bg-muted/40 transition-colors',
+								)}
+							>
 										{row.getVisibleCells().map((cell) => (
 											<TableCell key={cell.id}>
 												{flexRender(

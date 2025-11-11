@@ -5,12 +5,13 @@ import { SearchFields } from '@/components/ui/search/SearchFields'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
-import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
+import { DASHBOARD_URL } from '@/config/url.config'
+import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Loader2, Search } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Activity, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useSearchForm } from './Searching/useSearchForm'
 import { transportationColumns } from './table/TransportationColumns'
 
@@ -35,17 +36,14 @@ const STATUS_TABS = [
 
 
 export function TransportationPage() {
-	const { data, isLoading } = useGetLoadsPublic()
-	const { data: orders, isLoading: isLoadingOrders } = useGetOrders()
+	const data = fakeCargoList
+	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const status = searchParams.get('status') ?? 'no_driver'
-
-	console.log(orders);
-
 
 	const handleStatusChange = useCallback(
 		(nextStatus: string) => {
@@ -60,6 +58,13 @@ export function TransportationPage() {
 			router.replace(nextRoute)
 		},
 		[pathname, router, searchParams, status],
+	)
+
+	const handleRowClick = useCallback(
+		(cargo: ICargoList) => {
+			router.push(DASHBOARD_URL.order(`${cargo.uuid}`))
+		},
+		[router],
 	)
 
 	const hasResults = Boolean(data?.results?.length)
@@ -89,6 +94,7 @@ export function TransportationPage() {
 			<DataTable
 				columns={transportationColumns}
 				data={data?.results ?? []}
+				onRowClick={handleRowClick}
 				serverPagination={
 					data
 						? {
@@ -107,11 +113,7 @@ export function TransportationPage() {
 		if (!hasResults) return renderEmptyState()
 		if (!data) return null
 
-		return (
-			<Activity>
-				<MobileDataTable data={data} isActions={true} />
-			</Activity>
-		)
+		return <MobileDataTable data={data} isActions={true} />
 	}
 
 	return (

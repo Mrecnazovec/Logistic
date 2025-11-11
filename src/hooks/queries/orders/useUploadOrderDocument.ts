@@ -1,4 +1,3 @@
-import { ordersService } from '@/services/orders.service'
 import type { OrderDocumentUploadDto } from '@/shared/types/Order.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -12,18 +11,36 @@ type UploadPayload = {
 export const useUploadOrderDocument = () => {
 	const queryClient = useQueryClient()
 
-	const { mutate: uploadOrderDocument, isPending: isLoadingUpload } = useMutation({
+	const {
+		mutate: uploadOrderDocument,
+		mutateAsync: uploadOrderDocumentAsync,
+		isPending: isLoadingUpload,
+	} = useMutation({
 		mutationKey: ['order', 'documents', 'upload'],
-		mutationFn: ({ id, data }: UploadPayload) => ordersService.uploadOrderDocument(id, data),
-		onSuccess(_, { id }) {
-			queryClient.invalidateQueries({ queryKey: ['get order documents', id] })
-			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			toast.success('Document uploaded')
+		mutationFn: async ({ id, data }: UploadPayload) => {
+			console.log('[Mock upload payload]', {
+				orderId: id,
+				title: data.title,
+				file: {
+					name: data.file.name,
+					size: data.file.size,
+					type: data.file.type,
+				},
+			})
+
+			await new Promise((resolve) => setTimeout(resolve, 1200))
+		},
+		onSuccess() {
+			toast.success('Document prepared (mock)')
+			queryClient.invalidateQueries({ queryKey: ['get order documents'] })
 		},
 		onError() {
-			toast.error('Unable to upload document')
+			toast.error('Unable to mock upload document')
 		},
 	})
 
-	return useMemo(() => ({ uploadOrderDocument, isLoadingUpload }), [uploadOrderDocument, isLoadingUpload])
+	return useMemo(
+		() => ({ uploadOrderDocument, uploadOrderDocumentAsync, isLoadingUpload }),
+		[uploadOrderDocument, uploadOrderDocumentAsync, isLoadingUpload]
+	)
 }

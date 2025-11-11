@@ -51,6 +51,9 @@
 	--color-error-400: #f87171;
 	--color-error-500: #ef4444;
 	--color-neutral-400: #9ca3af;
+	--color-neutral-500: #f9fafb;
+	--color-purple-200: #d9d6fe;
+	--color-purple-700: #5925dc;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

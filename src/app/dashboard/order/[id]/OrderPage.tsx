@@ -1,18 +1,59 @@
 'use client'
 
+import toast from "react-hot-toast"
+import { Share2 } from "lucide-react"
+
 import { UuidCopy } from "@/components/ui/actions/UuidCopy"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { AddDriver } from "@/components/ui/modals/AddDriver"
 import { useGetOrder } from "@/hooks/queries/orders/useGet/useGetOrder"
-import { useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { useCallback, useState } from "react"
 
 export function OrderPage() {
 	const { order, isLoading } = useGetOrder()
+	const searchParams = useSearchParams()
+	const status = searchParams.get('status')
+	console.log(status);
+
 	const [isDriver, setIsDriver] = useState<boolean>(true)
+	const handleShareClick = useCallback(async () => {
+		if (typeof window === 'undefined') return
+
+		const shareUrl = window.location.href
+
+		const fallbackCopy = () => {
+			const textarea = document.createElement('textarea')
+			textarea.value = shareUrl
+			textarea.style.position = 'fixed'
+			textarea.style.opacity = '0'
+			document.body.appendChild(textarea)
+			textarea.focus()
+			textarea.select()
+			document.execCommand('copy')
+			document.body.removeChild(textarea)
+		}
+
+		try {
+			if (navigator?.clipboard?.writeText) {
+				await navigator.clipboard.writeText(shareUrl)
+			} else {
+				fallbackCopy()
+			}
+			toast.success('Ссылка скопирована')
+		} catch (error) {
+			try {
+				fallbackCopy()
+				toast.success('Ссылка скопирована')
+			} catch {
+				toast.error('Не удалось скопировать ссылку')
+			}
+		}
+	}, [])
 	return <div className="w-full h-full rounded-4xl bg-background p-8 space-y-6">
 		<div className="flex items-center gap-3">
-			<Badge variant={'warning'}>В пути</Badge>
+			{status === 'finished' ? <Badge variant={'success'}>Завершен</Badge> : <Badge variant={'warning'}>В пути</Badge>}
 			<UuidCopy uuid="123" isPlaceholder />
 		</div>
 		<div className="grid lg:grid-cols-3 gap-15">
@@ -71,7 +112,7 @@ export function OrderPage() {
 				<p className='font-medium text-brand'>Детали поездки</p>
 				<p className='flex justify-between gap-3'><span className='text-grayscale'>Общий путь</span> <span className='font-medium text-end'>2 800 км</span></p>
 				<p className='flex justify-between gap-3'><span className='text-grayscale'>Цена поездки</span> <span className='font-medium text-end'>2 800 км</span></p>
-				<Badge variant={'danger'}>Остановился</Badge>
+				{status === 'finished' ? <Badge variant={'success'}>Завершен</Badge> : <Badge variant={'danger'}>Остановился</Badge>}
 			</div>
 		</div>}
 		{isDriver && <div className="w-full h-[1px] bg-grayscale"></div>}
@@ -83,9 +124,12 @@ export function OrderPage() {
 			</div>
 		</div>
 		<div className="flex items-center justify-end gap-3">
-			{isDriver ? <Button className="bg-black/90 hover:bg-black">Скрыть контакт Заказчика</Button> : <AddDriver />}
-			<Button className="bg-warning-500/90 hover:bg-warning-500">Поделится</Button>
-			<Button className="bg-error-500/90 hover:bg-error-500">Отмена перевозки</Button>
+			{status === 'finished' ? '' : isDriver ? <Button className="bg-black/90 hover:bg-black">Скрыть контакт Заказчика</Button> : <AddDriver />}
+			<Button onClick={handleShareClick} className="bg-warning-500/90 hover:bg-warning-500">
+				<Share2 className="size-4" aria-hidden="true" />
+				Поделиться
+			</Button>
+			{status !== 'finished' && <Button className="bg-error-500/90 hover:bg-error-500">Отмена перевозки</Button>}
 		</div>
 	</div>
 }

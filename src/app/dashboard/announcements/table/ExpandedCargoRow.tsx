@@ -2,12 +2,15 @@
 
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
+	const { role } = useRoleStore()
 	const transportName = TransportSelect.find(t => t.type === cargo.transport_type)?.name ?? '—'
 
 	const contactName = ContactPrefSelector.find(t => t.type === cargo.contact_pref)?.name ?? '—'
@@ -54,9 +57,9 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 				</div>
 			</div>
 
-			<div className='flex justify-end mt-6'>
+			{role !== RoleEnum.CUSTOMER && <div className='flex justify-end mt-6'>
 				<OfferModal selectedRow={cargo} />
-			</div>
+			</div>}
 
 		</div>
 	)

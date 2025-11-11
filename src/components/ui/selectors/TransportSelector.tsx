@@ -1,9 +1,9 @@
 'use client'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { cn } from '@/lib/utils'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { SquaresIntersect } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 interface TransportSelectProps {
 	value?: string
@@ -29,8 +29,8 @@ export function TransportSelector({ value, onChange, placeholder = 'Тип тр�
 			</SelectTrigger>
 			<SelectContent>
 				{TransportSelect.map((item) => (
-					<SelectItem key={item.type} value={item.type}>
-						{item.name} {item.symb}
+					<SelectItem className='*:[span]:last:w-full *:[span]:last:flex *:[span]:last:justify-between *:[span]:last:gap-2' key={item.type} value={item.type}>
+						<span>{item.name}</span> {item.symb}
 					</SelectItem>
 				))}
 			</SelectContent>

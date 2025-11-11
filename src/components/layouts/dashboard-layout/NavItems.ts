@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Layers3, Package, Search, Settings } from 'lucide-react'
+import { CircleStar, Clock, Layers3, Package, Search, Settings } from 'lucide-react'
 
 import { DASHBOARD_URL } from '@/config/url.config'
 import { RoleEnum } from '@/shared/enums/Role.enum'
@@ -27,18 +27,26 @@ export const navItems: NavGroup[] = [
 				href: DASHBOARD_URL.announcements(),
 				icon: Search,
 				label: 'Доска объявлений',
-				roles: (role) => role !== RoleEnum.CUSTOMER,
 			},
 			{
 				href: DASHBOARD_URL.desk(),
 				icon: Package,
 				label: 'Заявки',
-				roles: (role) => role !== RoleEnum.CARRIER,
 			},
 			{
 				href: DASHBOARD_URL.transportation(),
 				icon: Layers3,
 				label: 'Мои грузы',
+			},
+			{
+				href: DASHBOARD_URL.rating(),
+				icon: CircleStar,
+				label: 'Рейтинг',
+			},
+			{
+				href: DASHBOARD_URL.history(),
+				icon: Clock,
+				label: 'История',
 			},
 		],
 	},

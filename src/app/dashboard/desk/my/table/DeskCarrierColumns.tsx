@@ -60,10 +60,13 @@ export const deskCarrierColumns: ColumnDef<ICargoList>[] = [
 		header: 'Статус',
 		cell: ({ row }) => {
 			return (
-				<Badge variant='outline' className='border-amber-500 text-amber-600 bg-amber-50'>
+				<>{Number(row.id) % 2 === 0 ? <Badge variant='warning' >
 					Предложение от посредника
-				</Badge>
+				</Badge> : <Badge variant='info' >
+					Предложение от заказчика
+				</Badge>}</>
 			)
+
 
 		},
 	},

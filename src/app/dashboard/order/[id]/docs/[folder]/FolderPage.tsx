@@ -1,0 +1,587 @@
+'use client'
+
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import {
+	CheckCircle2,
+	Clock,
+	Download,
+	FileText,
+	FileWarning,
+	Image as ImageIcon,
+	Loader2,
+	Trash2,
+	UploadCloud,
+} from 'lucide-react'
+import { useParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { useGetOrderDocuments } from '@/hooks/queries/orders/useGet/useGetOrderDocuments'
+import { useUploadOrderDocument } from '@/hooks/queries/orders/useUploadOrderDocument'
+import { cn } from '@/lib/utils'
+import type { IOrderDocument } from '@/shared/types/Order.interface'
+
+type UploadStatus = 'pending' | 'uploading' | 'success' | 'error'
+
+type UploadQueueItem = {
+	id: string
+	file: File
+	progress: number
+	status: UploadStatus
+	error?: string
+}
+
+const ACCEPTED_MIME_TYPES = [
+	'application/pdf',
+	'image/png',
+	'image/gif',
+	'application/msword',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	'application/vnd.ms-powerpoint',
+	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+] as const
+
+const ACCEPTED_EXTENSIONS = ['.pdf', '.png', '.gif', '.doc', '.docx', '.ppt', '.pptx'] as const
+const FILE_INPUT_ACCEPT = [...ACCEPTED_MIME_TYPES, ...ACCEPTED_EXTENSIONS].join(',')
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+
+const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']
+
+const STATUS_LABELS: Record<UploadStatus, string> = {
+	pending: 'В очереди',
+	uploading: 'Загружается',
+	success: 'Готово',
+	error: 'Ошибка',
+}
+
+const FOLDER_LABELS: Record<string, string> = {
+	licenses: 'Лицензии',
+	agreements: 'Договоры',
+	loading: 'Погрузка',
+	unloading: 'Разгрузка',
+	others: 'Прочие документы',
+}
+
+const BADGE_VARIANT_BY_EXTENSION: Record<
+	string,
+	'info' | 'success' | 'warning' | 'danger' | 'secondary'
+> = {
+	pdf: 'danger',
+	doc: 'info',
+	docx: 'info',
+	png: 'warning',
+	gif: 'warning',
+	ppt: 'warning',
+	pptx: 'warning',
+}
+
+const numberFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
+
+export function FolderPage() {
+	const params = useParams<{ id: string; folder: string }>()
+	const orderId = params.id
+	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
+	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Документы'
+
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	const uploadTimersRef = useRef<Record<string, number>>({})
+	const removalTimersRef = useRef<Record<string, number>>({})
+
+	const [isDragActive, setIsDragActive] = useState(false)
+	const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
+
+	const { orderDocuments, isLoading } = useGetOrderDocuments()
+	const { uploadOrderDocumentAsync } = useUploadOrderDocument()
+
+	const documentsForFolder = useMemo(() => {
+		const docs = orderDocuments?.documents ?? []
+		const filtered = docs.filter(
+			(document) => (document.title ?? '').toLowerCase() === normalizedFolder
+		)
+
+		return [...filtered].sort((a, b) => {
+			const first = a.created_at ? new Date(a.created_at).getTime() : 0
+			const second = b.created_at ? new Date(b.created_at).getTime() : 0
+			return second - first
+		})
+	}, [orderDocuments, normalizedFolder])
+
+	const clearUploadTimer = useCallback((uploadId: string) => {
+		const timerId = uploadTimersRef.current[uploadId]
+		if (timerId) {
+			window.clearInterval(timerId)
+			delete uploadTimersRef.current[uploadId]
+		}
+	}, [])
+
+	const formatFileSize = useCallback((bytes?: number | null) => {
+		if (!bytes || bytes <= 0) {
+			return '0 Б'
+		}
+
+		const kb = bytes / 1024
+		if (kb < 1024) {
+			return `${numberFormatter.format(kb)} КБ`
+		}
+
+		const mb = kb / 1024
+		if (mb < 1024) {
+			return `${numberFormatter.format(mb)} МБ`
+		}
+
+		const gb = mb / 1024
+		return `${numberFormatter.format(gb)} ГБ`
+	}, [])
+
+	const beginUpload = useCallback(
+		(item: UploadQueueItem) => {
+			if (!orderId) {
+				toast.error('Не удалось определить номер заказа')
+				return
+			}
+
+			setUploadQueue((current) =>
+				current.map((queueItem) =>
+					queueItem.id === item.id
+						? { ...queueItem, status: 'uploading', progress: Math.max(queueItem.progress, 12) }
+						: queueItem
+				)
+			)
+
+			const timerId = window.setInterval(() => {
+				setUploadQueue((current) =>
+					current.map((queueItem) => {
+						if (queueItem.id !== item.id || queueItem.status !== 'uploading') {
+							return queueItem
+						}
+
+						const nextProgress = Math.min(queueItem.progress + 8 + Math.random() * 10, 95)
+						return { ...queueItem, progress: nextProgress }
+					})
+				)
+			}, 450)
+
+			uploadTimersRef.current[item.id] = timerId
+
+			uploadOrderDocumentAsync({
+				id: orderId,
+				data: {
+					title: normalizedFolder,
+					file: item.file,
+				},
+			})
+				.then(() => {
+					clearUploadTimer(item.id)
+					setUploadQueue((current) =>
+						current.map((queueItem) =>
+							queueItem.id === item.id
+								? { ...queueItem, status: 'success', progress: 100 }
+								: queueItem
+						)
+					)
+
+					removalTimersRef.current[item.id] = window.setTimeout(() => {
+						setUploadQueue((current) => current.filter((queueItem) => queueItem.id !== item.id))
+						delete removalTimersRef.current[item.id]
+					}, 1500)
+				})
+				.catch(() => {
+					clearUploadTimer(item.id)
+					setUploadQueue((current) =>
+						current.map((queueItem) =>
+							queueItem.id === item.id
+								? {
+									...queueItem,
+									status: 'error',
+									error: 'Не удалось загрузить файл. Попробуйте ещё раз.',
+								}
+								: queueItem
+						)
+					)
+				})
+		},
+		[clearUploadTimer, normalizedFolder, orderId, uploadOrderDocumentAsync]
+	)
+
+	useEffect(() => {
+		return () => {
+			Object.values(uploadTimersRef.current).forEach((timerId) => window.clearInterval(timerId))
+			Object.values(removalTimersRef.current).forEach((timerId) => window.clearTimeout(timerId))
+		}
+	}, [])
+
+	const handleFiles = useCallback(
+		(files: FileList | File[] | null) => {
+			const parsedFiles = files ? Array.from(files) : []
+			if (!parsedFiles.length) return
+
+			const newQueueItems: UploadQueueItem[] = []
+
+			parsedFiles.forEach((file) => {
+				const validationError = validateFile(file)
+				if (validationError) {
+					toast.error(`${file.name}: ${validationError}`)
+					return
+				}
+
+				const uploadId =
+					typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+						? crypto.randomUUID()
+						: `${file.name}-${Date.now()}-${Math.random() * 1000}`
+
+				newQueueItems.push({
+					id: uploadId,
+					file,
+					progress: 0,
+					status: 'pending',
+				})
+			})
+
+			if (!newQueueItems.length) return
+
+			setUploadQueue((current) => [...current, ...newQueueItems])
+			newQueueItems.forEach(beginUpload)
+		},
+		[beginUpload]
+	)
+
+	const handleInputChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			handleFiles(event.target.files)
+			event.target.value = ''
+		},
+		[handleFiles]
+	)
+
+	const handleDrop = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			event.preventDefault()
+			setIsDragActive(false)
+			handleFiles(event.dataTransfer.files)
+		},
+		[handleFiles]
+	)
+
+	const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault()
+			fileInputRef.current?.click()
+		}
+	}, [])
+
+	const handleRemoveFromQueue = useCallback(
+		(uploadId: string) => {
+			clearUploadTimer(uploadId)
+			const timeoutId = removalTimersRef.current[uploadId]
+			if (timeoutId) {
+				window.clearTimeout(timeoutId)
+				delete removalTimersRef.current[uploadId]
+			}
+
+			setUploadQueue((current) => current.filter((item) => item.id !== uploadId))
+		},
+		[clearUploadTimer]
+	)
+
+	const hasNoContent = !isLoading && !uploadQueue.length && !documentsForFolder.length
+
+	return (
+		<><section className='rounded-4xl bg-background p-8 space-y-8 mb-4'>
+			<header className='flex flex-wrap items-center justify-between gap-4'>
+				<div>
+					<p className='text-xs uppercase tracking-[0.2em] text-muted-foreground'>Папка</p>
+					<h1 className='text-2xl font-semibold tracking-tight'>{folderLabel}</h1>
+				</div>
+				<Badge variant='secondary' className='text-sm font-medium px-3 py-1 rounded-full'>
+					{documentsForFolder.length} файлов
+				</Badge>
+			</header>
+
+			<div
+				role='button'
+				tabIndex={0}
+				aria-label='Загрузить документы'
+				aria-busy={uploadQueue.some((item) => item.status === 'uploading')}
+				onClick={() => fileInputRef.current?.click()}
+				onKeyDown={handleKeyDown}
+				onDragOver={(event) => {
+					event.preventDefault()
+					setIsDragActive(true)
+				}}
+				onDragLeave={(event) => {
+					event.preventDefault()
+					setIsDragActive(false)
+				}}
+				onDrop={handleDrop}
+				className={cn(
+					'border-2 border-dashed border-border rounded-3xl px-6 py-10 text-center flex flex-col items-center gap-3 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50 bg-card/60',
+					isDragActive && 'border-brand bg-brand/5 shadow-[0_0_0_1px] shadow-brand/30'
+				)}
+			>
+				<UploadCloud className='size-12 text-muted-foreground' aria-hidden />
+				<p className='text-lg font-medium text-primary'>
+					<span className='text-brand'>Кликните чтобы загрузить</span> или перетащите сюда
+				</p>
+				<p className='text-sm text-muted-foreground'>
+					DOC, PNG, PDF или GIF (макс. 5 МБ)
+				</p>
+				<Button type='button' variant='outline' size='sm' className='mt-2'>
+					Выбрать файлы
+				</Button>
+				<input
+					ref={fileInputRef}
+					id='order-documents-input'
+					type='file'
+					multiple
+					accept={FILE_INPUT_ACCEPT}
+					className='sr-only'
+					onChange={handleInputChange}
+				/>
+			</div>
+
+
+		</section>
+			<section className='space-y-4'>
+				<div className='flex items-center justify-between'>
+					{uploadQueue.length ? (
+						<span className='text-sm text-muted-foreground'>
+							В очереди: {uploadQueue.length}
+						</span>
+					) : null}
+				</div>
+
+				<div className='space-y-3' aria-live='polite'>
+					{uploadQueue.map((item) => (
+						<UploadingFileRow
+							key={item.id}
+							item={item}
+							onRemove={handleRemoveFromQueue}
+							formatFileSize={formatFileSize}
+						/>
+					))}
+				</div>
+
+				{isLoading ? (
+					<DocumentListSkeleton />
+				) : (
+					<div className='space-y-3'>
+						{documentsForFolder.map((document) => (
+							<DocumentListItem
+								key={document.id}
+								document={document}
+								formatFileSize={formatFileSize}
+							/>
+						))}
+					</div>
+				)}
+
+				{hasNoContent ? <EmptyState /> : null}
+			</section></>
+	)
+}
+
+type UploadingFileRowProps = {
+	item: UploadQueueItem
+	onRemove: (id: string) => void
+	formatFileSize: (bytes?: number | null) => string
+}
+
+function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowProps) {
+	const extension = getExtension(item.file.name)
+	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
+
+	return (
+		<div className='rounded-2xl px-5 py-4 bg-background space-y-3'>
+			<div className='flex flex-wrap items-start gap-4'>
+				<FileThumbnail fileName={item.file.name} />
+				<div className='flex-1 min-w-[220px] space-y-1'>
+					<div className='flex flex-wrap items-center gap-2'>
+						<p className='font-medium text-base'>{item.file.name}</p>
+						<Badge variant={variant} className='uppercase tracking-wide'>
+							{extension || 'FILE'}
+						</Badge>
+					</div>
+					<p className='text-sm text-muted-foreground'>{formatFileSize(item.file.size)}</p>
+				</div>
+				<div className='flex items-center gap-3'>
+					<StatusPill status={item.status} />
+					<Button
+						type='button'
+						size='icon'
+						variant='ghost'
+						disabled={item.status === 'uploading'}
+						onClick={() => onRemove(item.id)}
+					>
+						<Trash2 className='size-4' />
+						<span className='sr-only'>Удалить файл {item.file.name}</span>
+					</Button>
+				</div>
+			</div>
+
+			<div className='h-1.5 w-full rounded-full bg-muted overflow-hidden'>
+				<div
+					className={cn(
+						'h-full rounded-full transition-all duration-300',
+						item.status === 'error' ? 'bg-destructive' : 'bg-brand'
+					)}
+					style={{ width: `${Math.min(item.progress, 100)}%` }}
+				/>
+			</div>
+
+			<p
+				className={cn(
+					'text-sm',
+					item.status === 'error' ? 'text-destructive' : 'text-muted-foreground'
+				)}
+			>
+				{item.error ?? STATUS_LABELS[item.status]}
+			</p>
+		</div>
+	)
+}
+
+type DocumentListItemProps = {
+	document: IOrderDocument
+	formatFileSize: (bytes?: number | null) => string
+}
+
+function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
+	const extension = getExtension(document.file_name ?? document.title ?? '')
+	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
+	const displayName = document.file_name ?? document.title ?? 'Документ'
+
+	return (
+		<div className='rounded-2xl border px-5 py-4 bg-card/40 flex flex-col gap-3 md:flex-row md:items-center'>
+			<div className='flex flex-1 items-start gap-4'>
+				<FileThumbnail fileName={displayName} />
+				<div className='space-y-1'>
+					<div className='flex flex-wrap items-center gap-2'>
+						<p className='font-semibold text-base'>{displayName}</p>
+						<Badge variant={variant} className='uppercase tracking-wide'>
+							{extension || 'FILE'}
+						</Badge>
+					</div>
+					<p className='text-sm text-muted-foreground'>
+						{formatFileSize(document.file_size)} · загружено {document.uploaded_by}
+					</p>
+				</div>
+			</div>
+
+			<div className='flex items-center gap-3 md:ml-auto'>
+				<p className='text-sm text-muted-foreground'>
+					{document.created_at ? formatDate(document.created_at) : '—'}
+				</p>
+				<Button asChild variant='ghost' size='sm' className='gap-2'>
+					<a href={document.file} download target='_blank' rel='noreferrer'>
+						<Download className='size-4' />
+						Скачать
+					</a>
+				</Button>
+			</div>
+		</div>
+	)
+}
+
+function FileThumbnail({ fileName }: { fileName: string }) {
+	const extension = getExtension(fileName)
+	const IconComponent = IMAGE_EXTENSIONS.includes(extension) ? ImageIcon : FileText
+
+	return (
+		<div className='size-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground'>
+			<IconComponent className='size-6' aria-hidden />
+		</div>
+	)
+}
+
+function StatusPill({ status }: { status: UploadStatus }) {
+	if (status === 'success') {
+		return (
+			<span className='inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600'>
+				<CheckCircle2 className='size-4' /> {STATUS_LABELS[status]}
+			</span>
+		)
+	}
+
+	if (status === 'error') {
+		return (
+			<span className='inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1 text-sm font-medium text-destructive'>
+				<FileWarning className='size-4' /> {STATUS_LABELS[status]}
+			</span>
+		)
+	}
+
+	if (status === 'uploading') {
+		return (
+			<span className='inline-flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-sm font-medium text-brand'>
+				<Loader2 className='size-4 animate-spin' /> {STATUS_LABELS[status]}
+			</span>
+		)
+	}
+
+	return (
+		<span className='inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground'>
+			<Clock className='size-4' /> {STATUS_LABELS[status]}
+		</span>
+	)
+}
+
+function DocumentListSkeleton() {
+	return (
+		<div className='space-y-3'>
+			{Array.from({ length: 3 }).map((_, index) => (
+				<div key={index} className='rounded-2xl px-5 py-4 bg-background'>
+					<div className='flex items-center gap-4'>
+						<Skeleton className='size-12 rounded-2xl' />
+						<div className='flex-1 space-y-2'>
+							<Skeleton className='h-4 w-1/3' />
+							<Skeleton className='h-3 w-1/4' />
+						</div>
+						<Skeleton className='h-9 w-24 rounded-full' />
+					</div>
+				</div>
+			))}
+		</div>
+	)
+}
+
+function EmptyState() {
+	return (
+		<div className='rounded-3xl border border-dashed px-6 py-14 text-center text-muted-foreground space-y-2'>
+			<p className='text-base font-medium'>В этой папке пока нет документов</p>
+			<p className='text-sm'>Добавьте файлы через форму выше — они появятся здесь автоматически.</p>
+		</div>
+	)
+}
+
+function formatDate(value: string) {
+	try {
+		return format(new Date(value), 'dd MMM yyyy, HH:mm', { locale: ru })
+	} catch {
+		return value
+	}
+}
+
+function getExtension(fileName?: string) {
+	if (!fileName?.includes('.')) return ''
+	return fileName.split('.').pop()?.toLowerCase() ?? ''
+}
+
+function validateFile(file: File) {
+	const extension = getExtension(file.name)
+	const isMimeAllowed = ACCEPTED_MIME_TYPES.includes(file.type as (typeof ACCEPTED_MIME_TYPES)[number])
+	const isExtensionAllowed = ACCEPTED_EXTENSIONS.includes(`.${extension}` as (typeof ACCEPTED_EXTENSIONS)[number])
+
+	if (!isMimeAllowed && !isExtensionAllowed) {
+		return 'Неподдерживаемый формат файла'
+	}
+
+	if (file.size > MAX_FILE_SIZE_BYTES) {
+		return 'Файл превышает 5 МБ'
+	}
+
+	return null
+}

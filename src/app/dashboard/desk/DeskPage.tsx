@@ -7,29 +7,30 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchForm } from './Searching/useSearchForm'
-// import { fakeCargoList } from '@/data/FakeData'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { useGetLoadsBoard } from '@/hooks/queries/loads/useGet/useGetLoadsBoard'
-import { useGetLoadsMine } from '@/hooks/queries/loads/useGet/useGetLoadsMine'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { Activity } from 'react'
 import { deskColumns } from './table/DeskColumns'
 import { useRoleStore } from '@/store/useRoleStore'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 
 export function DeskPage() {
-	const { data, isLoading } = useGetLoadsBoard()
-	const { data: mine, isLoading: isLoadingMine } = useGetLoadsMine()
+	const data = fakeCargoList
+	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
 
-	// const fakeData = fakeCargoList
+	const router = useRouter()
 
-	console.log(data);
+	useEffect(() => {
+		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
+	}, [])
 
 
 	return (
@@ -99,14 +100,10 @@ export function DeskPage() {
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
-							<Activity>
-								<MobileDataTable data={data} isActions={true} />
-							</Activity>
+							<MobileDataTable data={data} isActions={true} />
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<Activity>
-								<MobileDataTable data={data} isActions={true} />
-							</Activity>
+							<MobileDataTable data={data} isActions={true} />
 						</TabsContent>
 					</Tabs>
 				)

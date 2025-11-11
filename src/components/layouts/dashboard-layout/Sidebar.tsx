@@ -1,14 +1,14 @@
 'use client'
 
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 import { Logo } from '@/components/ui/Logo'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
+import { cn } from '@/lib/utils'
+import { useRoleStore } from '@/store/useRoleStore'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 import { navItems, type NavItem } from './NavItems'
-import { useRoleStore } from '@/store/useRoleStore'
 
 export function Sidebar() {
 	const pathname = usePathname()
@@ -59,7 +59,7 @@ export function Sidebar() {
 											</Button>
 										</Link>
 									</TooltipTrigger>
-									<TooltipContent side='bottom' sideOffset={8}>
+									<TooltipContent side='bottom' sideOffset={8} alignOffset={8}>
 										{item.label}
 									</TooltipContent>
 								</Tooltip>

@@ -43,6 +43,38 @@ const getOrderIdFromPath = (pathname: string) => {
 	return orderId
 }
 
+const getOrderDocsFolderInfo = (pathname: string) => {
+	const normalizedPath = normalizePath(pathname)
+	const match = normalizedPath.match(/^\/dashboard\/order\/([^/]+)\/docs\/([^/]+)$/)
+
+	if (!match) return null
+
+	const [, orderId, folder] = match
+
+	if (!orderId || orderId === '[id]' || !folder || folder === '[folder]') return null
+
+	return { orderId, folder }
+}
+
+const getOrderNavItems = (orderId: string): HeaderNavItem[] => {
+	const basePath = orderId
+
+	return [
+		{
+			label: 'Детали',
+			href: DASHBOARD_URL.order(basePath),
+		},
+		{
+			label: 'Документы',
+			href: DASHBOARD_URL.order(`${basePath}/docs`),
+		},
+		{
+			label: 'Статусы',
+			href: DASHBOARD_URL.order(`${basePath}/status`),
+		},
+	]
+}
+
 const headerNavDefinitions: HeaderNavDefinition[] = [
 	// Customer start
 	{
@@ -71,9 +103,15 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 				label: 'Публикация заявки',
 				href: DASHBOARD_URL.posting(),
 			},
+		],
+	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
+		roles: [RoleEnum.CUSTOMER],
+		items: [
 			{
-				label: 'Мои предложения',
-				href: DASHBOARD_URL.desk('my'),
+				label: 'Заказы',
+				href: DASHBOARD_URL.transportation(),
 			},
 		],
 	},
@@ -88,20 +126,12 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 				label: 'Поиск грузоперевозок',
 				href: DASHBOARD_URL.announcements(),
 			},
-			{
-				label: 'Мои предложения',
-				href: DASHBOARD_URL.desk('my'),
-			},
 		],
 	},
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
 		roles: [RoleEnum.CARRIER],
 		items: [
-			{
-				label: 'Поиск грузоперевозок',
-				href: DASHBOARD_URL.announcements(),
-			},
 			{
 				label: 'Мои предложения',
 				href: DASHBOARD_URL.desk('my'),
@@ -137,28 +167,33 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		],
 	},
 	{
+		matcher: (pathname) => Boolean(getOrderDocsFolderInfo(pathname)),
+		items: (pathname) => {
+			const orderId = getOrderIdFromPath(pathname)
+
+			if (!orderId) return []
+
+			return getOrderNavItems(orderId)
+		},
+		backLink: (pathname) => {
+			const info = getOrderDocsFolderInfo(pathname)
+
+			if (!info) return null
+
+			return {
+				label: 'Назад к документам',
+				href: DASHBOARD_URL.order(`${info.orderId}/docs`),
+			}
+		},
+	},
+	{
 		matcher: (pathname) => Boolean(getOrderIdFromPath(pathname)),
 		items: (pathname) => {
 			const orderId = getOrderIdFromPath(pathname)
 
 			if (!orderId) return []
 
-			const basePath = orderId
-
-			return [
-				{
-					label: 'Детали',
-					href: DASHBOARD_URL.order(basePath),
-				},
-				{
-					label: 'Документы',
-					href: DASHBOARD_URL.order(`${basePath}/docs`),
-				},
-				{
-					label: 'Статусы',
-					href: DASHBOARD_URL.order(`${basePath}/status`),
-				},
-			]
+			return getOrderNavItems(orderId)
 		},
 		backLink: {
 			label: 'Назад к моим грузам',
@@ -178,6 +213,24 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			},
 		],
 	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
+		items: [
+			{
+				label: 'Грузовладельцы',
+				href: DASHBOARD_URL.rating('customers'),
+			},
+			{
+				label: 'Логисты',
+				href: DASHBOARD_URL.rating('logistics'),
+			},
+			{
+				label: 'Перевозчики',
+				href: DASHBOARD_URL.rating('carriers'),
+			},
+		],
+	},
+
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/cabinet'),
 		items: [

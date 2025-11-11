@@ -6,31 +6,22 @@ import { SearchFields } from '@/components/ui/search/SearchFields'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { Loader2, Search } from 'lucide-react'
 import Link from 'next/link'
-// import { fakeCargoList } from '@/data/FakeData'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
-import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
-import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { Activity } from 'react'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { deskCarrierColumns } from './table/DeskCarrierColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
 
 
 export function DeskMyPage() {
-	const { data, isLoading } = useGetLoadsPublic()
-	const { data: mine, isLoading: isLoadingMine } = useGetMyOffers()
-	const { data: incoming, isLoading: isLoadingIncoming } = useGetIncomingOffers()
+	const data = fakeCargoList
+	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 
-
-	// const fakeData = fakeCargoList
-
-	console.log(mine);
 
 
 	return (
@@ -100,14 +91,10 @@ export function DeskMyPage() {
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
-							<Activity>
-								<MobileDataTable data={data} isActions={true} />
-							</Activity>
+							<MobileDataTable data={data} isActions={true} />
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<Activity>
-								<MobileDataTable data={data} isActions={true} />
-							</Activity>
+							<MobileDataTable data={data} isActions={true} />
 						</TabsContent>
 					</Tabs>
 				)
