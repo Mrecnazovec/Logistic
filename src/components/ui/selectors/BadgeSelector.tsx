@@ -31,14 +31,14 @@ export function BadgeSelector({ status }: BadgeProps) {
 		case StatusEnum.COMPLETED:
 			return (
 				<Badge variant='success'>
-					Завершено
+					Ответ получен
 				</Badge>
 			)
 
 		case StatusEnum.CANCELLED:
 			return (
 				<Badge variant='danger'>
-					Отменено
+					Ожидает ответа
 				</Badge>
 			)
 

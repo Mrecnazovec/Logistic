@@ -3,10 +3,7 @@ import { ModerationStatusEnum } from '@/shared/enums/ModerationStatus.enum'
 import { PriceCurrencyEnum } from '@/shared/enums/PriceCurrency.enum'
 import { StatusEnum } from '@/shared/enums/Status.enum'
 import { TransportTypeEnum } from '@/shared/enums/TransportType.enum'
-import {
-	IPaginatedCargoListList,
-	IPaginatedUserRatingList,
-} from '@/shared/types/PaginatedList.interface'
+import { IPaginatedCargoListList, IPaginatedUserRatingList } from '@/shared/types/PaginatedList.interface'
 import { IRatingTableRow } from '@/shared/types/RatingTableRow.interface'
 
 const origins = [
@@ -25,45 +22,15 @@ const destinations = [
 	{ city: 'Riga', country: 'Latvia', address: 'Elizabetes 87' },
 ]
 
-const transportTypes = [
-	TransportTypeEnum.TENT,
-	TransportTypeEnum.REEFER,
-	TransportTypeEnum.MEGA,
-	TransportTypeEnum.DUMP,
-	TransportTypeEnum.PICKUP,
-]
+const transportTypes = [TransportTypeEnum.TENT, TransportTypeEnum.REEFER, TransportTypeEnum.MEGA, TransportTypeEnum.DUMP, TransportTypeEnum.PICKUP]
 
-const priceCurrencies = [
-	PriceCurrencyEnum.USD,
-	PriceCurrencyEnum.EUR,
-	PriceCurrencyEnum.USD,
-	PriceCurrencyEnum.UZS,
-	PriceCurrencyEnum.USD,
-]
+const priceCurrencies = [PriceCurrencyEnum.USD, PriceCurrencyEnum.EUR, PriceCurrencyEnum.USD, PriceCurrencyEnum.UZS, PriceCurrencyEnum.USD]
 
-const products = [
-	'Consumer electronics',
-	'Fresh fruit',
-	'Pharma supplies',
-	'Building materials',
-	'Textile rolls',
-]
+const products = ['Consumer electronics', 'Fresh fruit', 'Pharma supplies', 'Building materials', 'Textile rolls']
 
-const companies = [
-	'Steppe Logistics',
-	'Nomad Freight',
-	'Atlas Cargo',
-	'Transit Line',
-	'Velocity Trade',
-]
+const companies = ['Steppe Logistics', 'Nomad Freight', 'Atlas Cargo', 'Transit Line', 'Velocity Trade']
 
-const statuses = [
-	StatusEnum.POSTED,
-	StatusEnum.MATCHED,
-	StatusEnum.DELIVERED,
-	StatusEnum.COMPLETED,
-	StatusEnum.CANCELLED,
-]
+const statuses = [StatusEnum.COMPLETED, StatusEnum.CANCELLED]
 
 const moderationStatuses = [
 	ModerationStatusEnum.APPROVED,
@@ -73,8 +40,7 @@ const moderationStatuses = [
 	ModerationStatusEnum.APPROVED,
 ]
 
-const fakeUuid = (index: number) =>
-	`00000000-0000-4000-8000-${String(100000000000 + index).padStart(12, '0')}`
+const fakeUuid = (index: number) => `00000000-0000-4000-8000-${String(100000000000 + index).padStart(12, '0')}`
 
 export const fakeCargoList: IPaginatedCargoListList = {
 	count: 12,
@@ -92,10 +58,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 		const createdAt = new Date(now.getTime() - (index + 1) * 60 * 60 * 1000)
 		const refreshedAt = new Date(createdAt.getTime() + 30 * 60 * 1000)
 		const loadDate = new Date(now.getTime() + (index + 1) * 24 * 60 * 60 * 1000)
-		const deliveryDate =
-			index % 3 === 0
-				? new Date(loadDate.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString()
-				: null
+		const deliveryDate = index % 3 === 0 ? new Date(loadDate.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString() : null
 
 		const weightTons = 18 + index
 		const weightKg = weightTons * 1000
@@ -128,7 +91,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			is_hidden: false,
 			company_name: company,
 			moderation_status: moderationStatuses[index % moderationStatuses.length],
-			status: statuses[index % statuses.length],
+			status: statuses[(index % statuses.length)],
 			age_minutes: (index + 1) * 20,
 			created_at: createdAt.toISOString(),
 			refreshed_at: refreshedAt.toISOString(),
@@ -153,13 +116,7 @@ const carriers = [
 	{ company: 'Steppe Movers', login: 'michael22' },
 ]
 
-const drivers = [
-	'Зубрев Александр',
-	'Плаксина Ирина',
-	'Садыков Тимур',
-	'Абдуллаев Рустам',
-	'Миннибаев Илья',
-]
+const drivers = ['Зубрев Александр', 'Плаксина Ирина', 'Садыков Тимур', 'Абдуллаев Рустам', 'Миннибаев Илья']
 
 export const fakeRatingsList: FakePaginatedRatings = {
 	count: 10,
@@ -170,11 +127,7 @@ export const fakeRatingsList: FakePaginatedRatings = {
 		const driver = drivers[index % drivers.length]
 		const now = new Date()
 
-		const registeredAt = new Date(
-			now.getFullYear(),
-			0,
-			28 - (index % 5),
-		).toISOString()
+		const registeredAt = new Date(now.getFullYear(), 0, 28 - (index % 5)).toISOString()
 
 		return {
 			id: index + 1,

@@ -11,25 +11,19 @@ const RichTextEditor = dynamic(() =>
 )
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { cn } from '@/lib/utils'
-import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
-import { City } from '@/shared/types/Geo.interface'
-import { Banknote, Home, Phone } from 'lucide-react'
-import { useState } from 'react'
+import { Banknote, Home, } from 'lucide-react'
 import { usePostForm } from './usePostForm'
-import { DASHBOARD_URL } from '@/config/url.config'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
+import { handleNumericInput } from '@/lib/InputValidation'
+import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
-	const [originCity, setOriginCity] = useState<City | null>(null)
-	const [destinationCity, setDestinationCity] = useState<City | null>(null)
-
 
 	return (
 		<Form {...form}>
@@ -180,12 +174,21 @@ export function PostingPage() {
 							<FormField
 								control={form.control}
 								name='price_value'
-								rules={{ required: 'Цена обязательна' }}
+								rules={{
+									required: 'Цена обязательна',
+								}}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingCreate} />
+												<InputGroupInput
+													placeholder='Цена'
+													{...field}
+													value={field.value ?? ''}
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													inputMode='decimal'
+													disabled={isLoadingCreate}
+												/>
 												<InputGroupAddon className='pr-2'>
 													<Banknote className={cn('text-grayscale size-5', field.value && 'text-black')} />
 												</InputGroupAddon>
@@ -200,7 +203,10 @@ export function PostingPage() {
 							<FormField
 								control={form.control}
 								name='weight_kg'
-								rules={{ required: 'Габариты обязательны' }}
+								rules={{
+									required: 'Габариты обязательны',
+
+								}}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormLabel className='text-brand'>Габариты</FormLabel>
@@ -210,6 +216,8 @@ export function PostingPage() {
 													placeholder='Объем(Куб. М)'
 													{...field}
 													value={field.value ?? ''}
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													inputMode='decimal'
 													className='pl-4'
 													disabled={isLoadingCreate}
 												/>
@@ -275,7 +283,13 @@ export function PostingPage() {
 						<FormField
 							control={form.control}
 							name='product'
-							rules={{ required: 'Наименование груза обязательно' }}
+							rules={{
+								required: 'Наименование груза обязательно',
+								maxLength: {
+									value: PRODUCT_MAX_LENGTH,
+									message: 'Название продукта максимум 120 символов',
+								},
+							}}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
@@ -284,6 +298,7 @@ export function PostingPage() {
 												placeholder='Наименование груза'
 												{...field}
 												value={field.value ?? ''}
+												maxLength={PRODUCT_MAX_LENGTH}
 												className='pl-4'
 												disabled={isLoadingCreate}
 											/>
@@ -321,13 +336,27 @@ export function PostingPage() {
 						<FormField
 							control={form.control}
 							name='weight_kg'
-							rules={{ required: 'Вес обязателен' }}
+							rules={{
+								required: 'Вес обязателен',
+								pattern: {
+									value: NUMERIC_REGEX,
+									message: 'Weight must be up to 10 digits with 2 decimals',
+								},
+							}}
 
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Вес(кг)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+											<InputGroupInput
+												placeholder='Вес(кг)'
+												{...field}
+												value={field.value ?? ''}
+												onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												inputMode='decimal'
+												className='pl-4'
+												disabled={isLoadingCreate}
+											/>
 										</InputGroup>
 									</FormControl>
 								</FormItem>

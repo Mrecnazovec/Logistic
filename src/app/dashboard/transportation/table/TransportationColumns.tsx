@@ -1,16 +1,18 @@
 'use client'
 
-import { OrdersActionsDropdown } from '@/components/ui/actions/OrdersActionsDropdown'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { cn } from '@/lib/utils'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+
 
 export const transportationColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -20,11 +22,20 @@ export const transportationColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'company_name',
-		header: 'Заказчик',
+		header: () => {
+			const { role } = useRoleStore()
+			if (role !== RoleEnum.CUSTOMER) return 'Заказчик'
+			return 'Посредник'
+		},
 	},
 	{
 		accessorKey: 'created_at',
-		header: 'Посредник',
+
+		header: () => {
+			const { role } = useRoleStore()
+			if (role !== RoleEnum.CARRIER) return 'Водитель'
+			return 'Посредник'
+		},
 		cell: ({ row }) =>
 			<p>{row.original.company_name}</p>
 

@@ -34,7 +34,7 @@ export function Sidebar() {
 	}, [role])
 
 	return (
-		<aside className='w-[9vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0'>
+		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0'>
 			<Logo />
 			<nav className='flex-1 flex flex-col items-center gap-2 mt-8'>
 				{visibleNavGroups.map((group, idx) => (

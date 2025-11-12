@@ -28,6 +28,7 @@ export function useAuthForm() {
 			}
 
 			toast.success('Успешная авторизация')
+			router.refresh()
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {

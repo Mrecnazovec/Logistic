@@ -5,12 +5,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/fo
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { City } from '@/shared/types/Geo.interface'
 import { ArrowLeftRight, Search, Settings2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/Button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
+import { NUMERIC_REGEX } from '@/shared/regex/regex'
 import { ISearch } from '@/shared/types/Search.interface'
 import { usePathname, useRouter } from 'next/navigation'
 import { CurrencySelector } from '../selectors/CurrencySelector'
@@ -89,7 +91,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 										<FormLabel className='text-grayscale'>Цена</FormLabel>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -102,7 +104,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 									<FormItem>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -118,7 +120,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 										<FormLabel className='text-grayscale'>Габариты</FormLabel>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -131,7 +133,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 									<FormItem>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -161,7 +163,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 							<FormItem>
 								<FormControl>
 									<InputGroup>
-										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' />
+										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 									</InputGroup>
 								</FormControl>
 							</FormItem>
@@ -188,7 +190,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 							<FormItem>
 								<FormControl>
 									<InputGroup>
-										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' />
+										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
 									</InputGroup>
 								</FormControl>
 							</FormItem>
