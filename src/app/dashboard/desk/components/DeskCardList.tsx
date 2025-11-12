@@ -3,6 +3,7 @@
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
 import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
@@ -32,9 +33,6 @@ import {
 	formatPriceValue,
 	formatWeightValue
 } from './cardFormatters'
-import { DropdownMenuItem } from '@/components/ui/DropdownMenu'
-import { OfferModal } from '@/components/ui/modals/OfferModal'
-import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
 
 type DeskCardListProps = {
 	cargos: ICargoList[]
@@ -50,7 +48,7 @@ export function DeskCardList({ cargos, serverPagination }: DeskCardListProps) {
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
-			<div className='flex-1 overflow-hidden rounded-4xl bg-background xs:p-4'>
+			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>
 				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
 					{cargos.map((cargo) => (
 						<DeskCard key={cargo.uuid} cargo={cargo} />
@@ -162,8 +160,8 @@ function DeskCard({ cargo }: DeskCardProps) {
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
 					<RefreshCcw /> Обновить
 				</Button>
-				<Link href={DASHBOARD_URL.edit(cargo.uuid)}>
-					<Button variant='outline' className='flex-1 min-w-[140px]'>
+				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(cargo.uuid)}>
+					<Button variant='outline' className='w-full'>
 						<Pen /> Изменить
 					</Button>
 				</Link>

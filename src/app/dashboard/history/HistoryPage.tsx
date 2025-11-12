@@ -107,7 +107,7 @@ export function HistoryPage() {
 				</Form>
 			</div>
 
-			<div className='flex justify-end'>
+			<div className='md:flex hidden justify-end'>
 				<TableTypeSelector />
 			</div>
 

@@ -122,7 +122,7 @@ export function DeskPage() {
 						</TabsContent>
 					</Tabs>
 				) : (
-					<Tabs defaultValue='desk' className='bg-background'>
+					<Tabs defaultValue='desk' className='xs:bg-background'>
 						<TabsList className='bg-transparent -mb-2'>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>

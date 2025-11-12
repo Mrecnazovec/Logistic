@@ -158,7 +158,7 @@ export function TransportationMyPage() {
 					))}
 				</Tabs>
 			) : (
-				<Tabs value={status} onValueChange={handleStatusChange} className='bg-background rounded-4xl p-4'>
+				<Tabs value={status} onValueChange={handleStatusChange} className='xs:bg-background rounded-4xl p-4'>
 					<TabsList className='bg-transparent -mb-2'>
 						{STATUS_TABS.map((tab) => (
 							<TabsTrigger
