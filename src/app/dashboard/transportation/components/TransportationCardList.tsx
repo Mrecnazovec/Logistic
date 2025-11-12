@@ -150,9 +150,11 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button className='flex-1 bg-warning-400 hover:bg-warning-500 min-w-[140px] text-white'>
-					<Link href={DASHBOARD_URL.order(cargo.uuid)}>Посмотреть</Link>
-				</Button>
+				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.order(cargo.uuid)}>
+					<Button className='w-full bg-warning-400 hover:bg-warning-500  text-white'>
+						Посмотреть
+					</Button>
+				</Link>
 				<Button className='flex-1 min-w-[140px] bg-error-400 hover:bg-error-500 text-white'>
 					Отменить
 				</Button>

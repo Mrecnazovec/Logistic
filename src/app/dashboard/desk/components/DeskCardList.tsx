@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { DASHBOARD_URL } from '@/config/url.config'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import {
@@ -21,6 +22,7 @@ import {
 	Truck,
 	Wallet,
 } from 'lucide-react'
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { CardPaginationControls, useDeskCardPagination } from '../my/components/DeskCardPagination'
 import {
@@ -30,6 +32,9 @@ import {
 	formatPriceValue,
 	formatWeightValue
 } from './cardFormatters'
+import { DropdownMenuItem } from '@/components/ui/DropdownMenu'
+import { OfferModal } from '@/components/ui/modals/OfferModal'
+import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
 
 type DeskCardListProps = {
 	cargos: ICargoList[]
@@ -107,6 +112,10 @@ function DeskCard({ cargo }: DeskCardProps) {
 		[cargo, transportName],
 	)
 
+	const [open, setOpen] = useState(false)
+	const [offerOpen, setOfferOpen] = useState(false)
+
+
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
@@ -153,17 +162,33 @@ function DeskCard({ cargo }: DeskCardProps) {
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
 					<RefreshCcw /> Обновить
 				</Button>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
-					<Pen /> Изменить
-				</Button>
+				<Link href={DASHBOARD_URL.edit(cargo.uuid)}>
+					<Button variant='outline' className='flex-1 min-w-[140px]'>
+						<Pen /> Изменить
+					</Button>
+				</Link>
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
 					<EyeOff /> Скрыть
 				</Button>
-				<Button variant='outline' className='flex-1 min-w-[240px]'>
-					<Handshake /> Сделать предложение
+				<Button
+					variant='outline'
+					onClick={() => {
+						setOpen(false)
+						setOfferOpen(true)
+					}}
+					className='flex items-center gap-2 flex-1 min-w-[240px]'
+				>
+					<Handshake className='size-4 text-muted-foreground' />
+					Сделать предложение
 				</Button>
 			</CardFooter>
-		</Card>
+
+			<DeskOfferModal
+				open={offerOpen}
+				onOpenChange={setOfferOpen}
+				selectedRow={cargo}
+			/>
+		</Card >
 	)
 }
 

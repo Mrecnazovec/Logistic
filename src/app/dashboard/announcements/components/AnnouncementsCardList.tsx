@@ -11,6 +11,7 @@ import {
 import { CardPaginationControls, useDeskCardPagination } from '@/app/dashboard/desk/my/components/DeskCardPagination'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { OfferModal } from '@/components/ui/modals/OfferModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
@@ -137,9 +138,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
 					Подробнее
 				</Button>
-				<Button className='flex-1 min-w-[140px] bg-brand text-white hover:bg-brand/90'>
-					Сделать предложение
-				</Button>
+				<OfferModal className='flex-1 min-w-[140px]' selectedRow={cargo} />
 			</CardFooter>
 		</Card>
 	)
