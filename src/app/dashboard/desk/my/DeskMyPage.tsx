@@ -3,15 +3,18 @@
 import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { Loader2, Search } from 'lucide-react'
-import Link from 'next/link'
+import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
-import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { DASHBOARD_URL } from '@/config/url.config'
 import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { Loader2, Search } from 'lucide-react'
+import Link from 'next/link'
 import { useSearchForm } from '../Searching/useSearchForm'
+import { DeskDriverCardList } from './components/DeskDriverCardList'
+import { DeskMyCardList } from './components/DeskMyCardList'
 import { deskCarrierColumns } from './table/DeskCarrierColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
 
@@ -21,12 +24,13 @@ export function DeskMyPage() {
 	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const tableType = useTableTypeStore((state) => state.tableType)
 
 
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} />
@@ -56,45 +60,88 @@ export function DeskMyPage() {
 				</div>
 			) : data?.results ? (
 				isDesktop ? (
-					<Tabs defaultValue='desk'>
-						<TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Я предложил</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Предложили мне</TabsTrigger>
-						</TabsList>
-						<TabsContent value='desk'>
-							<DataTable
-								columns={deskMyColumns}
-								data={data.results}
-								serverPagination={{
-									next: data.next,
-									previous: data.previous,
-									totalCount: data.count,
-								}}
-							/>
+					<Tabs defaultValue='desk' className='flex-1'>
+						<div className='flex items-end justify-between'>
+							<TabsList className='bg-transparent -mb-2'>
+								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Я предложил</TabsTrigger>
+								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Предложили мне</TabsTrigger>
+							</TabsList>
+							<TableTypeSelector />
+						</div>
+						<TabsContent value='desk' className='flex-1'>
+							{tableType === 'card' ? (
+								<DeskMyCardList
+									cargos={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+										pageSize: data.results.length,
+									}}
+								/>
+							) : (
+								<DataTable
+									columns={deskMyColumns}
+									data={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+									}}
+								/>
+							)}
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<DataTable
-								columns={deskCarrierColumns}
-								data={data.results}
-								serverPagination={{
-									next: data.next,
-									previous: data.previous,
-									totalCount: data.count,
-								}}
-							/>
+							{tableType === 'card' ? (
+								<DeskDriverCardList
+									cargos={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+										pageSize: data.results.length,
+									}}
+								/>
+							) : (
+								<DataTable
+									columns={deskCarrierColumns}
+									data={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+									}}
+								/>
+							)}
 						</TabsContent>
 					</Tabs>
 				) : (
 					<Tabs defaultValue='desk' className='bg-background'>
 						<TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Я предложил</TabsTrigger>
+							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Предложили мне</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
-							<MobileDataTable data={data} isActions={true} />
+							<DeskMyCardList
+								cargos={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+									pageSize: data.results.length,
+								}}
+							/>
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<MobileDataTable data={data} isActions={true} />
+							<DeskDriverCardList
+								cargos={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+									pageSize: data.results.length,
+								}}
+							/>
 						</TabsContent>
 					</Tabs>
 				)

@@ -3,17 +3,20 @@
 import { Button } from "@/components/ui/Button"
 import { Form } from "@/components/ui/form-control/Form"
 import { SearchRatingFields } from "@/components/ui/search/SearchRatingFields"
+import { TableTypeSelector } from "@/components/ui/selectors/TableTypeSelector"
 import { DataTable } from "@/components/ui/table/DataTable"
 import { DASHBOARD_URL } from "@/config/url.config"
 import { fakeRatingsList } from "@/data/FakeData"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
+import { useTableTypeStore } from "@/store/useTableTypeStore"
 import { Loader2, Search } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { RatingCardList } from "../../rating/components/RatingCardList"
 import { useSearchForm } from "./Searching/useSearchForm"
-import { ratingColumns } from "./table/RatingColumns"
 import { ExpandedRatingRow } from "./table/ExpandedRatingRow"
+import { ratingColumns } from "./table/RatingColumns"
 
 export function Rating() {
 	const router = useRouter()
@@ -22,6 +25,7 @@ export function Rating() {
 	const isLoading = false
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const tableType = useTableTypeStore((state) => state.tableType)
 
 
 
@@ -30,11 +34,14 @@ export function Rating() {
 	}, [param.role, router])
 
 	return <div className="flex flex-col md:gap-4 h-full">
-		<div className="w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8"><Form {...form}>
+		<div className="w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8"><Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<SearchRatingFields form={form} />
 			</form>
 		</Form></div>
+		<div className="items-end justify-end md:flex hidden">
+			<TableTypeSelector />
+		</div>
 		{isLoading ? (
 			<div className='flex-1 bg-background rounded-4xl flex items-center justify-center h-full'>
 				<Loader2 className='size-10 animate-spin' />
@@ -56,20 +63,42 @@ export function Rating() {
 			</div>
 		) : data?.results ? (
 			isDesktop ? (
-				<DataTable
-					columns={ratingColumns}
-					data={data.results}
-					isButton
+				tableType === 'card' ? (
+					<RatingCardList
+						items={data.results}
+						serverPagination={{
+							next: data.next,
+							previous: data.previous,
+							totalCount: data.count,
+							pageSize: data.results.length,
+						}}
+						roleLabel={param.role ?? 'carriers'}
+					/>
+				) : (
+					<DataTable
+						columns={ratingColumns}
+						data={data.results}
+						isButton
+						serverPagination={{
+							next: data.next,
+							previous: data.previous,
+							totalCount: data.count,
+						}}
+						renderExpandedRow={(row) => <ExpandedRatingRow user={row} />}
+
+					/>
+				)
+			) : (
+				<RatingCardList
+					items={data.results}
 					serverPagination={{
 						next: data.next,
 						previous: data.previous,
 						totalCount: data.count,
+						pageSize: data.results.length,
 					}}
-					renderExpandedRow={(row) => <ExpandedRatingRow user={row} />}
-
+					roleLabel={param.role ?? 'carriers'}
 				/>
-			) : (
-				<div></div>
 			)
 		) : null}
 	</div>

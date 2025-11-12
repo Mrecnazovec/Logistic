@@ -23,12 +23,12 @@ export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
 			if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
 				await navigator.clipboard.writeText(uuid)
 			} else {
-				throw new Error('Clipboard not supported')
+				throw new Error('Буфер обмена не поддерживается')
 			}
 			setCopied(true)
-			toast.success('UUID copied to clipboard')
+			toast.success('ID скопировано в буфер обмена')
 		} catch (error) {
-			toast.error('Failed to copy UUID')
+			toast.error('Ошибка при копировании ID')
 		}
 	}
 
@@ -48,7 +48,7 @@ export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
 				<Copy className='size-4 shrink-0' aria-hidden='true' />
 			)}
 			<span className={copied ? 'text-brand' : ''}>{isPlaceholder && uuid}</span>
-			<span className='sr-only'>{copied ? 'UUID copied' : 'Copy UUID'}</span>
+			<span className='sr-only'>{copied ? 'ID скопировано' : 'Скопировать ID'}</span>
 		</Button>
 	)
 }

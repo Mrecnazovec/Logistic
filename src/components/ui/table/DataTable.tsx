@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
 
-interface ServerPaginationMeta {
+export interface ServerPaginationMeta {
 	next?: string | null
 	previous?: string | null
 	totalCount?: number
@@ -38,9 +38,9 @@ interface DataTableProps<TData, TValue> {
 	onRowClick?: (record: TData) => void
 }
 
-type PaginationItem = number | 'ellipsis'
+export type PaginationItem = number | 'ellipsis'
 
-const getPageNumberFromUrl = (url?: string | null) => {
+export const getPageNumberFromUrl = (url?: string | null) => {
 	if (!url) return null
 
 	try {
@@ -56,7 +56,7 @@ const getPageNumberFromUrl = (url?: string | null) => {
 	}
 }
 
-const buildPaginationItems = (
+export const buildPaginationItems = (
 	totalPages: number,
 	currentPage: number,
 	siblingCount = 1,

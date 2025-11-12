@@ -3,20 +3,22 @@
 import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { Loader2, Search } from 'lucide-react'
-import Link from 'next/link'
-import { useSearchForm } from './Searching/useSearchForm'
+import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
-import { MobileDataTable } from '@/components/ui/table/MobileDataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { DASHBOARD_URL } from '@/config/url.config'
 import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { deskColumns } from './table/DeskColumns'
-import { useRoleStore } from '@/store/useRoleStore'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import { useRoleStore } from '@/store/useRoleStore'
+import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { Loader2, Search } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { DeskCardList } from './components/DeskCardList'
+import { useSearchForm } from './Searching/useSearchForm'
+import { deskColumns } from './table/DeskColumns'
 
 
 export function DeskPage() {
@@ -25,17 +27,28 @@ export function DeskPage() {
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
+	const tableType = useTableTypeStore((state) => state.tableType)
+	const serverPaginationMeta = data?.results
+		? {
+			next: data.next,
+			previous: data.previous,
+			totalCount: data.count,
+			pageSize: data.results.length,
+		}
+		: undefined
 
 	const router = useRouter()
 
 	useEffect(() => {
-		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
-	}, [])
+		if (role === RoleEnum.CARRIER) {
+			router.push(DASHBOARD_URL.desk('my'))
+		}
+	}, [role, router])
 
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background md:rounded-4xl rounded-t-4xl px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} />
@@ -54,43 +67,58 @@ export function DeskPage() {
 						<div className='bg-background shadow-2xl p-4 rounded-full'>
 							<Search className='size-5 text-brand' />
 						</div>
-						<h1 className='text-5xl font-bold'>Пусто...</h1>
+						<h1 className='text-5xl font-bold'>Ничего не найдено</h1>
 						<p className='text-xl text-grayscale max-w-2xl text-center'>
-							Чтобы увидеть раздел Поиск Грузоперевозок, сначала надо добавить их. Вы можете это сделать нажав на кнопку снизу
+							Мы не нашли подходящих результатов, попробуйте изменить фильтры
 						</p>
 						<Link href={DASHBOARD_URL.posting()}>
-							<Button className='w-[260px] h-[54px] text-base'>Добавить</Button>
+							<Button className='w-[260px] h-[54px] text-base'>Создать заявку</Button>
 						</Link>
 					</div>
 				</div>
 			) : data?.results ? (
 				isDesktop ? (
-					<Tabs defaultValue='desk'>
-						{role === RoleEnum.LOGISTIC && <TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-						</TabsList>}
-						<TabsContent value='desk'>
-							<DataTable
-								columns={deskColumns}
-								data={data.results}
-								serverPagination={{
-									next: data.next,
-									previous: data.previous,
-									totalCount: data.count,
-								}}
-							/>
+					<Tabs defaultValue='desk' className='flex-1'>
+						<div className='flex flex-wrap items-end gap-4'>
+							{role === RoleEnum.LOGISTIC && (
+								<TabsList className='bg-transparent -mb-2'>
+									<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
+									<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
+								</TabsList>
+							)}
+							<div className='ml-auto'>
+								<TableTypeSelector />
+							</div>
+						</div>
+						<TabsContent value='desk' className='flex-1'>
+							{tableType === 'card' ? (
+								<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
+							) : (
+								<DataTable
+									columns={deskColumns}
+									data={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+									}}
+								/>
+							)}
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<DataTable
-								columns={deskColumns}
-								data={data.results}
-								serverPagination={{
-									next: data.next,
-									previous: data.previous,
-									totalCount: data.count,
-								}}
-							/>
+							{tableType === 'card' ? (
+								<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
+							) : (
+								<DataTable
+									columns={deskColumns}
+									data={data.results}
+									serverPagination={{
+										next: data.next,
+										previous: data.previous,
+										totalCount: data.count,
+									}}
+								/>
+							)}
 						</TabsContent>
 					</Tabs>
 				) : (
@@ -100,10 +128,10 @@ export function DeskPage() {
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
 						</TabsList>
 						<TabsContent value='desk'>
-							<MobileDataTable data={data} isActions={true} />
+							<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
 						</TabsContent>
 						<TabsContent value='drivers'>
-							<MobileDataTable data={data} isActions={true} />
+							<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
 						</TabsContent>
 					</Tabs>
 				)
