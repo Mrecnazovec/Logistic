@@ -106,6 +106,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
+		cell: ({row}) => `${row.original.weight_t} т`
 	},
 	{
 		accessorKey: 'origin_city',
@@ -145,7 +146,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'transport_type',
 		header: 'Тип',
 		cell: ({ row }) => {
-			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.name ?? '—'
+			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.symb ?? '—'
 
 			return transportName
 		}

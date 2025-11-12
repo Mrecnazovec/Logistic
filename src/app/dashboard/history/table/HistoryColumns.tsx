@@ -31,6 +31,8 @@ export const historyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
+		cell: ({row}) => `${row.original.weight_t} т`
+
 	},
 	{
 		id: 'origin',

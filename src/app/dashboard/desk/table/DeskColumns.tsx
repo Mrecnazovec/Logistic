@@ -91,6 +91,8 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
+		cell: ({row}) => `${row.original.weight_t} т`
+
 	},
 	{
 		accessorKey: 'origin_city',
@@ -132,7 +134,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		cell: ({ row }) => {
 			const transportName =
 				TransportSelect.find((t) => t.type === row.original.transport_type)
-					?.name ?? '—'
+					?.symb ?? '—'
 			return transportName
 		},
 	},

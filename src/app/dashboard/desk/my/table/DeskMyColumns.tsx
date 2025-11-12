@@ -150,13 +150,15 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 		cell: ({ row }) => {
 			const transportName =
 				TransportSelect.find((t) => t.type === row.original.transport_type)
-					?.name ?? '—'
+					?.symb ?? '—'
 			return transportName
 		},
 	},
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
+		cell: ({row}) => `${row.original.weight_t} т`
+
 	},
 	{
 		accessorKey: 'price_currency',
