@@ -8,12 +8,11 @@ import { Label } from "@/components/ui/form-control/Label"
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { DASHBOARD_URL } from "@/config/url.config"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
-import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
 import { BusFront, DoorOpen, PackageCheck, Star } from "lucide-react"
+import Image from "next/image"
 
 type AnalyticsCard = {
 	id: string
@@ -74,9 +73,9 @@ export function Cabinet() {
 
 
 	return (
-		<div className="h-full flex max-md:flex-col gap-3">
+		<div className="h-full flex max-lg:flex-col gap-3">
 			<h1 className="sr-only">Профиль пользователя</h1>
-			<div className="h-full xl:w-[30%] md:w-1/2 bg-background rounded-4xl py-16 px-4 flex flex-col items-center justify-center gap-6">
+			<div className="h-full xl:w-[30%] lg:w-1/2 bg-background rounded-4xl py-16 px-4 flex flex-col items-center justify-center gap-6">
 				<div className="centred flex-col gap-3">
 					{isLoading ? (
 						<>
@@ -141,21 +140,21 @@ export function Cabinet() {
 				</div>
 			</div>
 
-			<div className="h-full xl:w-[70%] md:w-1/2 bg-background rounded-4xl xs:p-12 p-6 flex flex-col gap-6">
+			<div className="h-full xl:w-[70%] lg:w-1/2 bg-background rounded-4xl xs:p-12 p-6 flex flex-col gap-6">
 				<div className="flex flex-col gap-2">
 					<h2 className="text-brand font-bold text-xl">Аналитика</h2>
 					<p className="text-sm text-muted-foreground">
-						Краткая сводка по активности перевозчика за выбранный период.
+						Краткая сводка по активности пользователя за выбранный период.
 					</p>
 				</div>
 
 				<Tabs defaultValue="current" className="flex flex-col gap-6">
-					<TabsList className="bg-transparent border border-border rounded-full h-auto flex-wrap gap-1 px-1 py-1">
+					<TabsList className="bg-transparent  xl:rounded-full rounded-3xl h-auto gap-1 px-1 py-1 max-xl:flex-col max-xl:w-full">
 						{analyticsFilters.map((filter) => (
 							<TabsTrigger
 								key={filter.value}
 								value={filter.value}
-								className="rounded-full px-4 py-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-brand/40"
+								className="rounded-full px-4 py-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-brand/40 h-fit max-xl:w-full"
 							>
 								<span className="flex items-center gap-2">
 									{filter.indicatorClass ? (
@@ -172,7 +171,7 @@ export function Cabinet() {
 
 					{analyticsFilters.map((filter) => (
 						<TabsContent key={filter.value} value={filter.value} className="flex-1">
-							<div className="grid gap-4 md:gap-6 sm:grid-cols-2">
+							<div className="grid gap-4 md:gap-6 xl:grid-cols-2">
 								{analyticsCards.map((card) => (
 									<Card
 										key={`${filter.value}-${card.id}`}
