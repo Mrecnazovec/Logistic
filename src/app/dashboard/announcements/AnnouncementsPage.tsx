@@ -17,6 +17,7 @@ import { useRoleStore } from '@/store/useRoleStore'
 import { useRouter } from 'next/navigation'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useEffect } from 'react'
+import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 
 export function AnnouncementsPage() {
 	const data = fakeCargoList
@@ -34,6 +35,7 @@ export function AnnouncementsPage() {
 					</form>
 				</Form>
 			</div>
+			<TableTypeSelector />
 			{isLoading ? (
 				<div className='flex-1 bg-background rounded-4xl flex items-center justify-center h-full'>
 					<Loader2 className='size-10 animate-spin' />
