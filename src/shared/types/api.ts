@@ -87,6 +87,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/me/analytics/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/auth/me/analytics/ — данные для карточек аналитики в профиле. */
+        get: operations["auth_me_analytics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/me/update/": {
         parameters: {
             query?: never;
@@ -225,10 +242,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Подсказки по городам
-         * @description Подсказки по городам через Nominatim (OpenStreetMap), ограниченные списком ALLOWED_COUNTRY_CODES.
-         */
+        /** Подсказки по городам */
         get: operations["geo_suggest_cities_retrieve"];
         put?: never;
         post?: never;
@@ -245,10 +259,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Подсказки по странам
-         * @description Подсказки по странам из предзаданного списка ISO_COUNTRIES.
-         */
+        /** Подсказки по странам */
         get: operations["geo_suggest_countries_retrieve"];
         put?: never;
         post?: never;
@@ -384,12 +395,14 @@ export interface paths {
          *     **scope=mine** — как Перевозчик (carrier);
          *     **scope=incoming** — входящие: для Заказчика/Логиста — офферы от перевозчиков; для Перевозчика — инвайты от заказчиков (initiator=CUSTOMER);
          *     **scope=all** — все (только для staff).
+         *
+         *     Доп. query: cargo_id, cargo_uuid, carrier_id, customer_id, initiator, is_active, accepted_by_customer, accepted_by_carrier, created_from/to, load_date_from/to, delivery_date_from/to, origin_city, destination_city, company|q, customer_email/phone, carrier_email/phone, order
          */
         get: operations["offers_list"];
         put?: never;
         /**
          * Создать оффер
-         * @description Доступно только Перевозчику/Логисту.
+         * @description Доступно только Перевозчику.
          */
         post: operations["offers_create"];
         delete?: never;
@@ -411,7 +424,7 @@ export interface paths {
          */
         get: operations["offers_retrieve"];
         /** @description Эндпоинты:
-         *       POST   /api/offers/                  — создать (Перевозчик/Логист)
+         *       POST   /api/offers/                  — создать (Перевозчик)
          *       GET    /api/offers/                  — список, видимый текущему пользователю (scope=…)
          *       GET    /api/offers/my/               — мои офферы как Перевозчик (alias)
          *       GET    /api/offers/incoming/         — входящие (alias): заказчик/логист — офферы от перевозчиков; перевозчик — инвайты
@@ -423,7 +436,7 @@ export interface paths {
         put: operations["offers_update"];
         post?: never;
         /** @description Эндпоинты:
-         *       POST   /api/offers/                  — создать (Перевозчик/Логист)
+         *       POST   /api/offers/                  — создать (Перевозчик)
          *       GET    /api/offers/                  — список, видимый текущему пользователю (scope=…)
          *       GET    /api/offers/my/               — мои офферы как Перевозчик (alias)
          *       GET    /api/offers/incoming/         — входящие (alias): заказчик/логист — офферы от перевозчиков; перевозчик — инвайты
@@ -436,7 +449,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** @description Эндпоинты:
-         *       POST   /api/offers/                  — создать (Перевозчик/Логист)
+         *       POST   /api/offers/                  — создать (Перевозчик)
          *       GET    /api/offers/                  — список, видимый текущему пользователю (scope=…)
          *       GET    /api/offers/my/               — мои офферы как Перевозчик (alias)
          *       GET    /api/offers/incoming/         — входящие (alias): заказчик/логист — офферы от перевозчиков; перевозчик — инвайты
@@ -459,7 +472,7 @@ export interface paths {
         put?: never;
         /**
          * Принять оффер
-         * @description Акцепт оффера текущим пользователем. При взаимном акцепте создаётся Shipment.
+         * @description Акцепт оффера текущим пользователем. При взаимном акцепте создаётся заказ.
          */
         post: operations["offers_accept_create"];
         delete?: never;
@@ -635,8 +648,27 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** @description Обновление статуса (валидация через OrderStatusUpdateSerializer). */
+        /** @description Обновление статуса (валидация через OrderStatusUpdateSerializer)
+         *     + запись в историю статусов. */
         patch: operations["orders_status_partial_update"];
+        trace?: never;
+    };
+    "/api/orders/{id}/status-history/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /api/orders/{id}/status-history/ → история смены статусов
+         *     для таймлайна на вкладке «Статусы». */
+        get: operations["orders_status_history_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/ratings/": {
@@ -717,6 +749,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Analytics: {
+            successful_deliveries: number;
+            /** Format: double */
+            successful_deliveries_change: number;
+            /** Format: date */
+            registered_since: string;
+            days_since_registered: number;
+            /** Format: double */
+            rating: number;
+            /** Format: double */
+            distance_km: number;
+            deals_count: number;
+        };
         CargoList: {
             /** Format: uuid */
             readonly uuid: string;
@@ -758,6 +803,13 @@ export interface components {
             readonly weight_kg: string;
             /** Format: double */
             readonly weight_t: number;
+            /** @description Количество осей (3–10) */
+            readonly axles: number | null;
+            /**
+             * Format: decimal
+             * @description Объём, м³
+             */
+            readonly volume_m3: string | null;
             /** Format: decimal */
             readonly price_value: string | null;
             /**
@@ -803,6 +855,7 @@ export interface components {
             /** Format: date-time */
             readonly refreshed_at: string;
             readonly has_offers: boolean;
+            readonly offers_count: number;
             /** Format: double */
             readonly path_km: number;
             /** Format: double */
@@ -851,6 +904,13 @@ export interface components {
             transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg: string;
+            /** @description Количество осей (3–10) */
+            axles?: number | null;
+            /**
+             * Format: decimal
+             * @description Объём, м³
+             */
+            volume_m3?: string | null;
             /** Format: decimal */
             price_value?: string | null;
             /**
@@ -912,6 +972,15 @@ export interface components {
             transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg: string;
+            /** Format: double */
+            weight_tons?: number;
+            /** @description Количество осей (3–10) */
+            axles?: number | null;
+            /**
+             * Format: decimal
+             * @description Объём, м³
+             */
+            volume_m3?: string | null;
             /** Format: decimal */
             price_value?: string | null;
             /**
@@ -998,6 +1067,11 @@ export interface components {
             /** Format: double */
             readonly rating_as_carrier: number;
             readonly is_email_verified: boolean;
+            /**
+             * Дата регистрации
+             * Format: date-time
+             */
+            date_joined?: string;
             readonly profile: components["schemas"]["Profile"];
         };
         OfferAcceptResponse: {
@@ -1005,10 +1079,19 @@ export interface components {
             accepted_by_customer: boolean;
             accepted_by_carrier: boolean;
         };
+        /** @description Контр-предложение (любой стороной). */
         OfferCounterRequest: {
             /** Format: decimal */
             price_value: string;
-            price_currency?: string;
+            /**
+             * @description * `UZS` - сум
+             *     * `KZT` - тнг
+             *     * `RUB` - руб
+             *     * `USD` - USD
+             *     * `EUR` - EUR
+             * @enum {string}
+             */
+            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
         };
         /** @description Создание оффера ПЕРЕВОЗЧИКОМ на чужую заявку. */
@@ -1074,7 +1157,7 @@ export interface components {
             message?: string;
             cargo: number;
         };
-        /** @description Создание оффера-ИНВАЙТА ЗАКАЗЧИКОМ конкретному перевозчику. */
+        /** @description Инвайт от ЗАКАЗЧИКА конкретному перевозчику. */
         OfferInviteRequest: {
             cargo: number;
             carrier_id: number;
@@ -1095,12 +1178,34 @@ export interface components {
         OfferRejectResponse: {
             detail: string;
         };
+        /** @description Короткая карточка оффера для списков
+         *     (экраны «Мои предложения → Я предложил / Предложили мне»). */
         OfferShort: {
             readonly id: number;
             readonly cargo: number;
-            readonly cargo_origin: string;
-            readonly cargo_destination: string;
-            readonly cargo_customer_id: number;
+            /** Format: uuid */
+            readonly cargo_uuid: string;
+            readonly origin_city: string;
+            readonly origin_country: string;
+            /** Format: date */
+            readonly load_date: string;
+            readonly destination_city: string;
+            readonly destination_country: string;
+            /** Format: date */
+            readonly delivery_date: string | null;
+            readonly transport_type: string;
+            /** @description Для колонки «Тип» в макете (Т, Р, М, С, П...).
+             *     Если в Cargo есть choices, берём label и первую букву. */
+            readonly transport_type_display: string;
+            /**
+             * Format: double
+             * @description Вес в тоннах для колонки «Вес (т)».
+             */
+            readonly weight_t: number | null;
+            /** @description Название перевозчика для колонки «Перевозчик». */
+            readonly carrier_name: string;
+            /** @description Телефон / email для колонки «Контакты». */
+            readonly carrier_contact: string;
             /** Format: decimal */
             readonly price_value: string | null;
             /**
@@ -1112,10 +1217,16 @@ export interface components {
              * @enum {string}
              */
             readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            readonly message: string;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
             readonly is_active: boolean;
+            /** @description Человекочитаемый статус под макет.
+             *     Можно потом подправить формулировки под точные ТЗ. */
+            readonly status_display: string;
+            /** @description Флаг, что оффер принят обеими сторонами
+             *     (для зелёной галочки / завершённой сделки). */
+            readonly is_handshake: boolean;
+            readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -1181,6 +1292,17 @@ export interface components {
         OrderDocument: {
             readonly id: number;
             title?: string;
+            /**
+             * @description * `licenses` - Лицензии
+             *     * `contracts` - Договора
+             *     * `loading` - Документы о погрузке
+             *     * `unloading` - Документы о разгрузке
+             *     * `other` - Дополнительно
+             * @default other
+             * @enum {string}
+             */
+            category: "licenses" | "contracts" | "loading" | "unloading" | "other";
+            readonly category_display: string;
             /** Format: uri */
             file: string;
             readonly file_name: string | null;
@@ -1191,6 +1313,16 @@ export interface components {
         };
         OrderDocumentRequest: {
             title?: string;
+            /**
+             * @description * `licenses` - Лицензии
+             *     * `contracts` - Договора
+             *     * `loading` - Документы о погрузке
+             *     * `unloading` - Документы о разгрузке
+             *     * `other` - Дополнительно
+             * @default other
+             * @enum {string}
+             */
+            category: "licenses" | "contracts" | "loading" | "unloading" | "other";
             /** Format: binary */
             file: string;
         };
@@ -1223,6 +1355,30 @@ export interface components {
             route_distance_km?: string;
             /** Format: double */
             readonly price_per_km: number;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        OrderStatusHistory: {
+            readonly id: number;
+            readonly user_name: string;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string|null}
+             */
+            old_status?: "pending" | "en_route" | "delivered" | "no_driver" | "" | null;
+            readonly old_status_label: string;
+            /**
+             * @description * `pending` - В ожидании
+             *     * `en_route` - В пути
+             *     * `delivered` - Доставлен
+             *     * `no_driver` - Без водителя
+             * @enum {string}
+             */
+            new_status: "pending" | "en_route" | "delivered" | "no_driver";
+            readonly new_status_label: string;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -1333,6 +1489,15 @@ export interface components {
             transport_type?: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg?: string;
+            /** Format: double */
+            weight_tons?: number;
+            /** @description Количество осей (3–10) */
+            axles?: number | null;
+            /**
+             * Format: decimal
+             * @description Объём, м³
+             */
+            volume_m3?: string | null;
             /** Format: decimal */
             price_value?: string | null;
             /**
@@ -1714,6 +1879,25 @@ export interface operations {
             };
         };
     };
+    auth_me_analytics_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Analytics"];
+                };
+            };
+        };
+    };
     auth_me_update_update: {
         parameters: {
             query?: never;
@@ -1942,8 +2126,10 @@ export interface operations {
     geo_suggest_cities_retrieve: {
         parameters: {
             query: {
-                /** @description ISO-2 код страны для фильтра (необязательно). Допустимые: AF, AM, AZ, BG, BY, CN, GE, GR, HU, IN, IR, KG, KZ, MN, PK, PL, RO, RS, RU, TJ, TM, TR, UA, UZ */
+                /** @description ISO-2 код страны для фильтра (необязательно) */
                 country?: string;
+                /** @description Язык результата: ru | uz | en (по умолчанию ru) */
+                lang?: string;
                 /** @description Максимум результатов (1..50, по умолчанию 10) */
                 limit?: number;
                 /** @description Строка поиска (минимум 2 символа) */
@@ -2212,9 +2398,37 @@ export interface operations {
     offers_list: {
         parameters: {
             query?: {
+                /** @description true|false */
+                accepted_by_carrier?: string;
+                /** @description true|false */
+                accepted_by_customer?: string;
+                cargo_id?: string;
+                cargo_uuid?: string;
+                carrier_email?: string;
+                carrier_id?: string;
+                carrier_phone?: string;
+                /** @description или q */
+                company?: string;
+                created_from?: string;
+                created_to?: string;
+                customer_email?: string;
+                customer_id?: string;
+                customer_phone?: string;
+                delivery_date_from?: string;
+                delivery_date_to?: string;
+                destination_city?: string;
+                /** @description CUSTOMER | CARRIER */
+                initiator?: string;
+                /** @description true|false */
+                is_active?: string;
+                load_date_from?: string;
+                load_date_to?: string;
+                order?: string;
+                origin_city?: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
-                /** @description mine | incoming | all (только staff) */
+                q?: string;
+                /** @description mine | incoming | all */
                 scope?: string;
             };
             header?: never;
@@ -2752,6 +2966,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusUpdate"];
+                };
+            };
+        };
+    };
+    orders_status_history_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderStatusHistory"];
                 };
             };
         };

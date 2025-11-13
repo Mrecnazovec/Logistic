@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Button } from '@/components/ui/Button'
 import {
@@ -14,7 +14,7 @@ import { useCountrySuggest } from '@/hooks/queries/geo/useGetCountrySuggest'
 import { cn } from '@/lib/utils'
 import { Country } from '@/shared/types/Geo.interface'
 import { Globe2, Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 interface CountrySelectorProps {
     value?: Country | null
@@ -24,7 +24,12 @@ interface CountrySelectorProps {
     className?: string
 }
 
-export function CountrySelector({
+export function CountrySelector(props: CountrySelectorProps) {
+    const remountKey = props.value?.code ?? props.value?.name ?? 'empty'
+    return <CountrySelectorInner key={remountKey} {...props} />
+}
+
+function CountrySelectorInner({
     value = null,
     onChange,
     placeholder = 'Select country',
@@ -42,10 +47,6 @@ export function CountrySelector({
         const normalized = search.toLowerCase()
         return countries.filter((country) => country.name.toLowerCase().includes(normalized))
     }, [countries, search])
-
-    useEffect(() => {
-        setSearch(value?.name ?? '')
-    }, [value])
 
     const handleSelect = (country: Country) => {
         onChange(country)
@@ -77,7 +78,7 @@ export function CountrySelector({
                 <PopoverContent className='w-[var(--radix-popover-trigger-width)] p-0' align='start'>
                     <Command shouldFilter={false}>
                         <CommandInput
-                            placeholder='Страна'
+                            placeholder='��࠭�'
                             value={search}
                             onValueChange={(nextValue) => setSearch(nextValue)}
                         />
@@ -89,7 +90,7 @@ export function CountrySelector({
                                 </div>
                             ) : (
                                 <>
-                                    <CommandEmpty>Ничего не найдено</CommandEmpty>
+                                    <CommandEmpty>��祣� �� �������</CommandEmpty>
                                     <CommandGroup>
                                         {filteredCountries.map((country) => (
                                             <CommandItem

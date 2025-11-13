@@ -40,11 +40,11 @@ type DeskCardListProps = {
 }
 
 export function DeskCardList({ cargos, serverPagination }: DeskCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -220,4 +220,3 @@ function HasOffersField({ cargo }: { cargo: ICargoList }) {
 		</>
 	)
 }
-

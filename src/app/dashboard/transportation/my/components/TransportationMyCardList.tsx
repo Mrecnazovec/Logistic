@@ -16,6 +16,7 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { getTransportationStatusMeta } from '@/app/dashboard/transportation/constants/statusMeta'
 import { CalendarDays, FileText, Home, MapPin, Scale, Truck, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
@@ -27,11 +28,11 @@ type TransportationMyCardListProps = {
 }
 
 export function TransportationMyCardList({ cargos, serverPagination, statusLabel }: TransportationMyCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -54,6 +55,7 @@ type TransportationMyCardProps = {
 }
 
 function TransportationMyCard({ cargo, statusLabel }: TransportationMyCardProps) {
+	const { badgeVariant, label: normalizedStatusLabel } = getTransportationStatusMeta(statusLabel)
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
 
@@ -108,7 +110,7 @@ function TransportationMyCard({ cargo, statusLabel }: TransportationMyCardProps)
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<Badge variant={'danger'}>Без водителя</Badge>
+					<Badge variant={badgeVariant}>{normalizedStatusLabel}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						{cargo.company_name || cargo.product || 'Без названия'}
 					</CardTitle>
@@ -152,4 +154,3 @@ function TransportationMyCard({ cargo, statusLabel }: TransportationMyCardProps)
 		</Card>
 	)
 }
-

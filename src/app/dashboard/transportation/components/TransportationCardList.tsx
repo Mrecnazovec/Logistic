@@ -16,6 +16,7 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { getTransportationStatusMeta } from '@/app/dashboard/transportation/constants/statusMeta'
 import {
 	CalendarDays,
 	FileText,
@@ -36,18 +37,18 @@ type TransportationCardListProps = {
 }
 
 export function TransportationCardList({ cargos, serverPagination, statusValue }: TransportationCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
 			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>
 				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
 					{cargos.map((cargo) => (
-						<TransportationCard key={cargo.uuid} cargo={cargo} />
+						<TransportationCard key={cargo.uuid} cargo={cargo} statusValue={statusValue} />
 					))}
 				</div>
 			</div>
@@ -59,9 +60,11 @@ export function TransportationCardList({ cargos, serverPagination, statusValue }
 
 type TransportationCardProps = {
 	cargo: ICargoList
+	statusValue: string
 }
 
-function TransportationCard({ cargo }: TransportationCardProps) {
+function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
+	const { badgeVariant, label: statusLabel } = getTransportationStatusMeta(statusValue)
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
 
@@ -116,7 +119,7 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<Badge variant={'danger'}>Без водителя</Badge>
+					<Badge variant={badgeVariant}>{statusLabel}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						{cargo.company_name || cargo.product || 'Без названия'}
 					</CardTitle>

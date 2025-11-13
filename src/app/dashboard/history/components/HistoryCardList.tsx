@@ -32,9 +32,9 @@ type HistoryCardListProps = {
 }
 
 export function HistoryCardList({ cargos, serverPagination, onView }: HistoryCardListProps) {
-	if (!cargos.length) return null
-
 	const pagination = useDeskCardPagination(serverPagination)
+
+	if (!cargos.length) return null
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>

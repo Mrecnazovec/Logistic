@@ -10,10 +10,11 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Loader2, Search } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSearchForm } from './Searching/useSearchForm'
-import { transportationColumns } from './table/TransportationColumns'
+import { createTransportationColumns } from './table/TransportationColumns'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
+import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { TransportationMyCardList } from './components/TransportationMyCardList'
 
@@ -34,6 +35,8 @@ export function TransportationMyPage() {
 	const searchParams = useSearchParams()
 	const status = searchParams.get('status') ?? 'no_driver'
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const role = useRoleStore((state) => state.role)
+	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
 
 	const serverPaginationMeta = data?.results
 		? {
@@ -101,7 +104,7 @@ export function TransportationMyPage() {
 
 		return (
 			<DataTable
-				columns={transportationColumns}
+				columns={tableColumns}
 				data={data.results}
 				onRowClick={handleRowClick}
 				serverPagination={serverPaginationMeta}

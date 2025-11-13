@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { City } from '@/shared/types/Geo.interface'
 import { Banknote, Home, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useEditForm } from './useEditForm'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 
@@ -31,13 +31,31 @@ const formatCityLabel = (city: City | null) => {
 	return [city.name, city.country].filter(Boolean).join(', ')
 }
 
+const createCityFromValues = (name?: string | null, country?: string | null): City | null => {
+	if (!name) {
+		return null
+	}
+
+	return {
+		name,
+		country: country ?? '',
+		country_code: '',
+	}
+}
+
 export function EditPage() {
 	const { form, isLoadingPatch, onSubmit } = useEditForm()
-	const [originCity, setOriginCity] = useState<City | null>(null)
-	const [destinationCity, setDestinationCity] = useState<City | null>(null)
 	const { load, isLoading } = useGetLoad()
 
 	const router = useRouter()
+
+	const originCityValue = form.watch('origin_city')
+	const originCountryValue = form.watch('origin_country')
+	const destinationCityValue = form.watch('destination_city')
+	const destinationCountryValue = form.watch('destination_country')
+
+	const originCityLabel = formatCityLabel(createCityFromValues(originCityValue, originCountryValue))
+	const destinationCityLabel = formatCityLabel(createCityFromValues(destinationCityValue, destinationCountryValue))
 
 
 	useEffect(() => {
@@ -61,21 +79,8 @@ export function EditPage() {
 			is_hidden: load.is_hidden ?? false,
 			description: load.description ?? '',
 		})
-
-		setOriginCity({
-			name: load.origin_city ?? '',
-			country: load.origin_country ?? '',
-			country_code: '',
-		})
-
-		setDestinationCity({
-			name: load.destination_city ?? '',
-			country: load.destination_country ?? '',
-			country_code: '',
-		})
 	}, [load, form])
 
-	console.log(load)
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
@@ -89,15 +94,14 @@ export function EditPage() {
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Откуда</FormLabel>
 									<FormControl>
-										<CitySelector
-											value={field.value || ''}
-											displayValue={formatCityLabel(originCity)}
-											onChange={(val, city) => {
-												field.onChange(val)
-												form.setValue('origin_country', city?.country ?? '')
-												setOriginCity(city ?? null)
-											}}
-											countryCode=' '
+											<CitySelector
+												value={field.value || ''}
+												displayValue={originCityLabel}
+												onChange={(val, city) => {
+													field.onChange(val)
+													form.setValue('origin_country', city?.country ?? '')
+												}}
+												countryCode=' '
 											placeholder='Город, страна'
 											disabled={isLoadingPatch}
 										/>
@@ -153,14 +157,13 @@ export function EditPage() {
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Куда</FormLabel>
 									<FormControl>
-										<CitySelector
-											value={field.value || ''}
-											displayValue={formatCityLabel(destinationCity)}
-											onChange={(val, city) => {
-												field.onChange(val)
-												form.setValue('destination_country', city?.country ?? '')
-												setDestinationCity(city ?? null)
-											}}
+											<CitySelector
+												value={field.value || ''}
+												displayValue={destinationCityLabel}
+												onChange={(val, city) => {
+													field.onChange(val)
+													form.setValue('destination_country', city?.country ?? '')
+												}}
 											countryCode=' '
 											placeholder='Город, страна'
 											disabled={isLoadingPatch}

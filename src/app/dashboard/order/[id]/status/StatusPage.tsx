@@ -133,9 +133,11 @@ export function StatusPage() {
 														<p className="text-base font-semibold text-foreground">{event.author}</p></div>
 
 													<p className="text-sm text-muted-foreground">
-														Пользователь поменял свой статус на <span className="font-semibold text-foreground">"
-															{event.statusTo}"</span> с <span className="font-semibold text-foreground">"
-															{event.statusFrom}"</span>
+														Status changed to &quot;<span className="font-semibold text-foreground">
+															{event.statusTo}
+														</span>&quot; from &quot;<span className="font-semibold text-foreground">
+															{event.statusFrom}
+														</span>&quot;
 													</p>
 
 													{event.note ? (
@@ -154,3 +156,4 @@ export function StatusPage() {
 		</div>
 	)
 }
+

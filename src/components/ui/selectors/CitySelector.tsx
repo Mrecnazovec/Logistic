@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Button } from '@/components/ui/Button'
 import {
@@ -14,7 +14,7 @@ import { useCitySuggest } from '@/hooks/queries/geo/useGetCitySuggest'
 import { cn } from '@/lib/utils'
 import { City } from '@/shared/types/Geo.interface'
 import { Loader2, MapPin } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 interface CitySelectorProps {
     value?: string
@@ -37,40 +37,18 @@ export function CitySelector({
 }: CitySelectorProps) {
     const isDisabled = disabled || !countryCode
     const [open, setOpen] = useState(false)
-    const [search, setSearch] = useState(displayValue ?? value ?? '')
-    const lastSyncedValueRef = useRef(value ?? '')
-    const lastDisplayValueRef = useRef(displayValue)
+    const searchQuery = value ?? ''
+    const displayText = displayValue ?? value ?? ''
 
-    const { data, isLoading } = useCitySuggest(search, countryCode)
+    const { data, isLoading } = useCitySuggest(searchQuery, countryCode)
     const cities = data?.results ?? []
 
-    useEffect(() => {
-        const nextValue = value ?? ''
-        if (nextValue === lastSyncedValueRef.current) return
-
-        lastSyncedValueRef.current = nextValue
-        if (!displayValue) {
-            setSearch(nextValue)
-        }
-    }, [value, displayValue])
-
-    useEffect(() => {
-        if (displayValue === undefined || displayValue === lastDisplayValueRef.current) return
-
-        lastDisplayValueRef.current = displayValue
-        setSearch(displayValue)
-    }, [displayValue])
-
     const handleInputChange = (nextValue: string) => {
-        setSearch(nextValue)
-        lastSyncedValueRef.current = nextValue
         onChange(nextValue, null)
     }
 
     const handleSelect = (city: City) => {
-        lastSyncedValueRef.current = city.name
         onChange(city.name, city)
-        setSearch(`${city.name}, ${city.country}`)
         setOpen(false)
     }
 
@@ -86,12 +64,12 @@ export function CitySelector({
                         disabled={isDisabled}
                         className={cn(
                             'flex w-full items-center justify-start gap-3 rounded-full border-none bg-grayscale-50 px-4 text-sm font-normal text-grayscale hover:bg-grayscale-100',
-                            search && 'text-black',
+                            displayText && 'text-black',
                             isDisabled && 'cursor-not-allowed opacity-70'
                         )}
                     >
-                        <MapPin className={cn('size-5 text-grayscale', search && 'text-black')} />
-                        <span className='truncate'>{search || placeholder}</span>
+                        <MapPin className={cn('size-5 text-grayscale', displayText && 'text-black')} />
+                        <span className='truncate'>{displayText || placeholder}</span>
                     </Button>
                 </PopoverTrigger>
 
@@ -99,7 +77,7 @@ export function CitySelector({
                     <Command shouldFilter={false}>
                         <CommandInput
                             placeholder='Город'
-                            value={search}
+                            value={displayText}
                             onValueChange={handleInputChange}
                             disabled={isDisabled}
                         />

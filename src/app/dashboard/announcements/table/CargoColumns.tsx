@@ -9,36 +9,37 @@ import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { Minus } from 'lucide-react'
 
 export const cargoColumns: ColumnDef<ICargoList>[] = [
-	{
-		id: 'select',
-		cell: ({ row, table }) => {
-			const selectedRow = table.getSelectedRowModel().rows[0]
-			const isSelected = selectedRow?.id === row.id
+	// {
+	// 	id: 'select',
+	// 	cell: ({ row, table }) => {
+	// 		const selectedRow = table.getSelectedRowModel().rows[0]
+	// 		const isSelected = selectedRow?.id === row.id
 
-			return (
-				<RadioGroup
-					value={isSelected ? row.id : ''}
-					onValueChange={(value) => {
-						table.resetRowSelection()
-						if (value === row.id) {
-							row.toggleSelected(true)
-						}
-					}}
-					className='flex items-center justify-center'
-				>
-					<RadioGroupItem
-						value={row.id}
-						id={`radio-${row.id}`}
-						aria-label='Выбрать строку'
-					/>
-				</RadioGroup>
-			)
-		},
-		enableSorting: false,
-		enableHiding: false,
-	},
+	// 		return (
+	// 			<RadioGroup
+	// 				value={isSelected ? row.id : ''}
+	// 				onValueChange={(value) => {
+	// 					table.resetRowSelection()
+	// 					if (value === row.id) {
+	// 						row.toggleSelected(true)
+	// 					}
+	// 				}}
+	// 				className='flex items-center justify-center'
+	// 			>
+	// 				<RadioGroupItem
+	// 					value={row.id}
+	// 					id={`radio-${row.id}`}
+	// 					aria-label='Выбрать строку'
+	// 				/>
+	// 			</RadioGroup>
+	// 		)
+	// 	},
+	// 	enableSorting: false,
+	// 	enableHiding: false,
+	// },
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -106,7 +107,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
-		cell: ({row}) => `${row.original.weight_t} т`
+		cell: ({ row }) => `${row.original.weight_t} т`
 	},
 	{
 		accessorKey: 'origin_city',
@@ -157,7 +158,19 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'contact_value',
-		header: 'Контакты',
+		header: 'Телефон',
+		cell: ({ row }) => {
+			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return '+998 99 999 99 99'
+			return <Minus className='size-5' />
+		}
+	},
+	{
+		accessorKey: 'contact_pref',
+		header: 'Email',
+		cell: ({ row }) => {
+			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.contact_value
+			return <Minus className='size-5' />
+		}
 	},
 ]
 

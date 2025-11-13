@@ -12,7 +12,7 @@ import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Check, Handshake, X } from 'lucide-react'
+import { Check, Handshake, Minus, X } from 'lucide-react'
 
 export const deskMyColumns: ColumnDef<ICargoList>[] = [
 
@@ -157,7 +157,7 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
-		cell: ({row}) => `${row.original.weight_t} т`
+		cell: ({ row }) => `${row.original.weight_t} т`
 
 	},
 	{
@@ -185,7 +185,19 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'contact_value',
-		header: 'Контакты',
+		header: 'Телефон',
+		cell: ({ row }) => {
+			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return '+998 99 999 99 99'
+			return <Minus className='size-5' />
+		}
+	},
+	{
+		accessorKey: 'contact_pref',
+		header: 'Email',
+		cell: ({ row }) => {
+			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.contact_value
+			return <Minus className='size-5' />
+		}
 	},
 	{
 		id: 'actions',

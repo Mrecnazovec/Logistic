@@ -32,11 +32,11 @@ type DeskDriverCardListProps = {
 }
 
 export function DeskDriverCardList({ cargos, serverPagination }: DeskDriverCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -137,4 +137,3 @@ function getOfferMeta(index: number) {
 			badgeClass: 'bg-orange-50 text-orange-600',
 		}
 }
-

@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils'
 import { useRoleStore } from '@/store/useRoleStore'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
 import { navItems, type NavItem } from './NavItems'
 
 export function Sidebar() {
@@ -23,15 +22,13 @@ export function Sidebar() {
 		return roles(role)
 	}
 
-	const visibleNavGroups = useMemo(() => {
-		return navItems
-			.filter((group) => isAllowed(group.roles))
-			.map((group) => ({
-				...group,
-				items: group.items.filter((item) => isAllowed(item.roles)),
-			}))
-			.filter((group) => group.items.length > 0)
-	}, [role])
+	const visibleNavGroups = navItems
+		.filter((group) => isAllowed(group.roles))
+		.map((group) => ({
+			...group,
+			items: group.items.filter((item) => isAllowed(item.roles)),
+		}))
+		.filter((group) => group.items.length > 0)
 
 	return (
 		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0'>

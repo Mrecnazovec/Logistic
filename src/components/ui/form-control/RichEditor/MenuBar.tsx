@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { Editor } from '@tiptap/react'
 import { Toggle } from '../../Toggle'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Button } from '@/components/ui/Button'
 import { Input } from '../Input'
@@ -29,12 +29,13 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 	const [videoOpen, setVideoOpen] = useState(false)
 	const [videoUrl, setVideoUrl] = useState('')
 
-	useEffect(() => {
-		if (open && editor) {
+	const handleLinkDialogChange = (nextOpen: boolean) => {
+		if (nextOpen && editor) {
 			const existingUrl = editor.getAttributes('link')?.href || ''
 			setUrl(existingUrl)
 		}
-	}, [open, editor])
+		setOpen(nextOpen)
+	}
 
 	if (!editor) return null
 
@@ -113,9 +114,9 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 				</Toggle>
 			))}
 
-			<Dialog open={open} onOpenChange={setOpen}>
+			<Dialog open={open} onOpenChange={handleLinkDialogChange}>
 				<DialogTrigger asChild>
-					<Toggle pressed={editor.isActive('link')} onPressedChange={() => setOpen(true)}>
+					<Toggle pressed={editor.isActive('link')} onPressedChange={() => handleLinkDialogChange(true)}>
 						<LinkIcon className='size-4' />
 					</Toggle>
 				</DialogTrigger>

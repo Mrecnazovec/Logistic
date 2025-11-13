@@ -24,11 +24,11 @@ type AnnouncementsCardListProps = {
 }
 
 export function AnnouncementsCardList({ cargos, serverPagination }: AnnouncementsCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -143,4 +143,3 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 		</Card>
 	)
 }
-

@@ -2,7 +2,7 @@ import { ContactPrefSelector } from "@/shared/enums/ContactPref.enum"
 import { PriceSelector } from "@/shared/enums/PriceCurrency.enum"
 import { TransportSelect } from "@/shared/enums/TransportType.enum"
 import { IPaginatedCargoListList } from "@/shared/types/PaginatedList.interface"
-import { format } from "date-fns"
+import { format, formatDistanceToNow } from "date-fns"
 import { ru } from "date-fns/locale"
 import { Activity } from "react"
 import { CargoActionsDropdown } from "../actions/CargoActionsDropdown"
@@ -15,17 +15,8 @@ interface DataTableProps {
 }
 
 export function MobileDataTable({ data, isActions = false, isOffer = false }: DataTableProps) {
-	const getTimeAgo = (dateStr: string) => {
-		const createdAt = new Date(dateStr)
-		const diffMs = Date.now() - createdAt.getTime()
-		const minutes = Math.floor(diffMs / (1000 * 60))
-		const hours = Math.floor(minutes / 60)
-		const days = Math.floor(hours / 24)
-
-		if (days >= 1) return `${days} дн. назад`
-		if (hours >= 1) return `${hours} ч. назад`
-		return `${minutes} мин. назад`
-	}
+	const getTimeAgo = (dateStr: string) =>
+	formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: ru })
 
 	return (
 		<div className="bg-background px-4 py-8 space-y-6 md:hidden">
@@ -89,3 +80,4 @@ function Row({
 		</p>
 	)
 }
+

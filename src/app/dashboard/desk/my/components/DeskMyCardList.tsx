@@ -33,11 +33,11 @@ type DeskMyCardListProps = {
 }
 
 export function DeskMyCardList({ cargos, serverPagination }: DeskMyCardListProps) {
+	const pagination = useDeskCardPagination(serverPagination)
+
 	if (!cargos.length) {
 		return null
 	}
-
-	const pagination = useDeskCardPagination(serverPagination)
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -111,11 +111,10 @@ function DeskMyCard({ cargo }: DeskMyCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<ActionButton label='Изменить' className='bg-warning-400 text-white hover:bg-warning-400 hover:text-white' />
-				<ActionButton label='Отказать' className='bg-error-400 text-white hover:bg-error-500 hover:text-white' />
-				<ActionButton label='Принять' className='bg-success-400 text-white hover:bg-success-500 hover:text-white' />
+				<ActionButton label='Изменить' className='bg-warning-400 text-white hover:bg-warning-400 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
+				<ActionButton label='Отказать' className='bg-error-400 text-white hover:bg-error-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
+				<ActionButton label='Принять' className='bg-success-400 text-white hover:bg-success-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
 			</CardFooter>
 		</Card>
 	)
 }
-

@@ -18,9 +18,9 @@ type RatingCardListProps = {
 }
 
 export function RatingCardList({ items, serverPagination, roleLabel }: RatingCardListProps) {
-	if (!items.length) return null
-
 	const pagination = useDeskCardPagination(serverPagination)
+
+	if (!items.length) return null
 
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
@@ -131,4 +131,3 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 		</Card>
 	)
 }
-

@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/form-control/Label"
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { useGetAnalytics } from "@/hooks/queries/me/useGetAnalytics"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
 import type { LucideIcon } from "lucide-react"
 import { BusFront, DoorOpen, PackageCheck, Star } from "lucide-react"
 import Image from "next/image"
+import { useMemo } from "react"
 
 type AnalyticsCard = {
 	id: string
@@ -24,42 +26,22 @@ type AnalyticsCard = {
 	description?: string
 }
 
-const analyticsCards: AnalyticsCard[] = [
-	{
-		id: "shipments",
-		title: "Успешные перевозки",
-		value: "1 431",
-		trend: "+13%",
-		description: "с прошлого месяца",
-		icon: PackageCheck,
-		accentClass: "text-sky-600 bg-sky-100",
-	},
-	{
-		id: "registration",
-		title: "Зарегистрирован с",
-		value: "8 мая 2025 г.",
-		description: "472 дня",
-		icon: DoorOpen,
-		accentClass: "text-indigo-600 bg-indigo-100",
-	},
-	{
-		id: "rating",
-		title: "Рейтинг",
-		value: "4.5",
-		trend: "+13%",
-		description: "с прошлого месяца",
-		icon: Star,
-		accentClass: "text-amber-500 bg-amber-50",
-	},
-	{
-		id: "distance",
-		title: "Пройдено расстояния",
-		value: "7 200 км",
-		description: "за 128 сделок",
-		icon: BusFront,
-		accentClass: "text-blue-700 bg-blue-100",
-	},
-]
+const integerFormatter = new Intl.NumberFormat("ru-RU")
+const decimalFormatter = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+const fullDateFormatter = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" })
+
+const formatTrend = (value?: number | null) => {
+	if (typeof value !== "number") return undefined
+	const normalized = Math.abs(value) < 1 && value !== 0 ? value * 100 : value
+	const absoluteValue = Math.abs(normalized)
+
+	if (absoluteValue === 0) {
+		return "0%"
+	}
+
+	const sign = normalized > 0 ? "+" : "-"
+	return `${sign}${decimalFormatter.format(absoluteValue)}%`
+}
 
 const analyticsFilters = [
 	{ value: "current", label: "Этот месяц", indicatorClass: "bg-emerald-500" },
@@ -70,6 +52,57 @@ const analyticsFilters = [
 export function Cabinet() {
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
+	const { analytics, isLoading: isLoadingAnalytics } = useGetAnalytics()
+
+	const analyticsCards = useMemo<AnalyticsCard[]>(() => {
+		const fallbackValue = "—"
+		const shipmentsValue = analytics ? integerFormatter.format(analytics.successful_deliveries) : fallbackValue
+		const registrationValue = analytics ? fullDateFormatter.format(new Date(analytics.registered_since)) : fallbackValue
+		const ratingValue = analytics ? decimalFormatter.format(analytics.rating) : fallbackValue
+		const distanceValue = analytics ? `${integerFormatter.format(Math.round(analytics.distance_km))} км` : fallbackValue
+
+		return [
+			{
+				id: "shipments",
+				title: "Успешные перевозки",
+				value: shipmentsValue,
+				trend: formatTrend(analytics?.successful_deliveries_change),
+				description: analytics
+					? `Завершено сделок: ${integerFormatter.format(analytics.successful_deliveries)}`
+					: fallbackValue,
+				icon: PackageCheck,
+				accentClass: "text-sky-600 bg-sky-100",
+			},
+			{
+				id: "registration",
+				title: "Зарегистрирован с",
+				value: registrationValue,
+				description: analytics ? `${analytics.days_since_registered} дней` : fallbackValue,
+				icon: DoorOpen,
+				accentClass: "text-indigo-600 bg-indigo-100",
+			},
+			{
+				id: "rating",
+				title: "Рейтинг",
+				value: ratingValue,
+				description: analytics
+					? `по ${integerFormatter.format(analytics.deals_count)} сделкам`
+					: fallbackValue,
+				icon: Star,
+				accentClass: "text-amber-500 bg-amber-50",
+			},
+			{
+				id: "distance",
+				title: "Пройдено расстояния",
+				value: distanceValue,
+				description: analytics
+					? `за ${integerFormatter.format(analytics.deals_count)} сделок`
+					: fallbackValue,
+				icon: BusFront,
+				accentClass: "text-blue-700 bg-blue-100",
+			},
+		]
+	}, [analytics])
 
 
 	return (
@@ -180,9 +213,13 @@ export function Cabinet() {
 										<div className="flex items-start justify-between gap-4">
 											<div className="space-y-2">
 												<p className="text-sm text-muted-foreground">{card.title}</p>
-												<p className="text-3xl font-bold tracking-tight text-foreground">
-													{card.value}
-												</p>
+												{isLoadingAnalytics ? (
+													<Skeleton className="h-9 w-24 rounded-2xl" />
+												) : (
+													<p className="text-3xl font-bold tracking-tight text-foreground">
+														{card.value}
+													</p>
+												)}
 											</div>
 											<div
 												className={`size-12 rounded-full flex items-center justify-center ${card.accentClass}`}
@@ -191,12 +228,16 @@ export function Cabinet() {
 											</div>
 										</div>
 										<div className="mt-4 space-y-2">
-											{card.trend ? (
+											{isLoadingAnalytics && card.id === "shipments" ? (
+												<Skeleton className="h-6 w-16 rounded-full" />
+											) : card.trend ? (
 												<Badge className="before:hidden bg-emerald-50 text-emerald-600">
 													{card.trend}
 												</Badge>
 											) : null}
-											{card.description ? (
+											{isLoadingAnalytics ? (
+												<Skeleton className="h-4 w-32 rounded-full" />
+											) : card.description ? (
 												<p className="text-sm text-muted-foreground">{card.description}</p>
 											) : null}
 										</div>
