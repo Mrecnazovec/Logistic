@@ -168,7 +168,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'contact_pref',
 		header: 'Email',
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.contact_value
+			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return 'example@example.com'
 			return <Minus className='size-5' />
 		}
 	},
