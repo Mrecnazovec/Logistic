@@ -31,23 +31,27 @@ export function CitySelector({
     displayValue,
     onChange,
     countryCode,
-    placeholder = 'Select city',
+    placeholder = 'Выберите город',
     disabled,
     className,
 }: CitySelectorProps) {
     const isDisabled = disabled
     const [open, setOpen] = useState(false)
+    const [selectedCity, setSelectedCity] = useState<City | null>(null)
     const searchQuery = value ?? ''
-    const displayText = displayValue ?? value ?? ''
+    const displayText =
+        displayValue ?? (selectedCity?.name === value && selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : value ?? '')
 
     const { data, isLoading } = useCitySuggest(searchQuery, countryCode)
     const cities = data?.results ?? []
 
     const handleInputChange = (nextValue: string) => {
+        setSelectedCity(null)
         onChange(nextValue, null)
     }
 
     const handleSelect = (city: City) => {
+        setSelectedCity(city)
         onChange(city.name, city)
         setOpen(false)
     }
@@ -85,7 +89,7 @@ export function CitySelector({
                             {isLoading ? (
                                 <div className='flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground'>
                                     <Loader2 className='size-4 animate-spin' />
-                                    Loading...
+                                    Загрузка...
                                 </div>
                             ) : (
                                 <>
