@@ -151,7 +151,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 						render={({ field }) => (
 							<FormItem className='w-full'>
 								<FormControl>
-									<CitySelector {...field} countryCode=' ' placeholder='Откуда' />
+									<CitySelector {...field} countryCode={undefined} placeholder='Откуда' />
 								</FormControl>
 							</FormItem>
 						)}
@@ -178,7 +178,7 @@ export function SearchFields({ form }: SearchFieldsProps) {
 						render={({ field }) => (
 							<FormItem className='w-full'>
 								<FormControl>
-									<CitySelector {...field} countryCode=' ' placeholder='Куда' />
+									<CitySelector {...field} countryCode={' '} placeholder='Куда' />
 								</FormControl>
 							</FormItem>
 						)}

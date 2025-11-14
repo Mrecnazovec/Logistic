@@ -13,17 +13,17 @@ const RichTextEditor = dynamic(() =>
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
 import { cn } from '@/lib/utils'
 import { City } from '@/shared/types/Geo.interface'
-import { Banknote, Home, Phone } from 'lucide-react'
+import { Banknote, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useEditForm } from './useEditForm'
-import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 
 const formatCityLabel = (city: City | null) => {
 	if (!city) return undefined
@@ -94,14 +94,14 @@ export function EditPage() {
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Откуда</FormLabel>
 									<FormControl>
-											<CitySelector
-												value={field.value || ''}
-												displayValue={originCityLabel}
-												onChange={(val, city) => {
-													field.onChange(val)
-													form.setValue('origin_country', city?.country ?? '')
-												}}
-												countryCode=' '
+										<CitySelector
+											value={field.value || ''}
+											displayValue={originCityLabel}
+											onChange={(val, city) => {
+												field.onChange(val)
+												form.setValue('origin_country', city?.country ?? '')
+											}}
+											countryCode={undefined}
 											placeholder='Город, страна'
 											disabled={isLoadingPatch}
 										/>
@@ -157,14 +157,14 @@ export function EditPage() {
 								<FormItem className='w-full'>
 									<FormLabel className='text-brand mb-6 font-bold text-xl'>Куда</FormLabel>
 									<FormControl>
-											<CitySelector
-												value={field.value || ''}
-												displayValue={destinationCityLabel}
-												onChange={(val, city) => {
-													field.onChange(val)
-													form.setValue('destination_country', city?.country ?? '')
-												}}
-											countryCode=' '
+										<CitySelector
+											value={field.value || ''}
+											displayValue={destinationCityLabel}
+											onChange={(val, city) => {
+												field.onChange(val)
+												form.setValue('destination_country', city?.country ?? '')
+											}}
+											countryCode={undefined}
 											placeholder='Город, страна'
 											disabled={isLoadingPatch}
 										/>

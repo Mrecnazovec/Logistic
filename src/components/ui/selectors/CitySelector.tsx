@@ -35,7 +35,7 @@ export function CitySelector({
     disabled,
     className,
 }: CitySelectorProps) {
-    const isDisabled = disabled || !countryCode
+    const isDisabled = disabled
     const [open, setOpen] = useState(false)
     const searchQuery = value ?? ''
     const displayText = displayValue ?? value ?? ''

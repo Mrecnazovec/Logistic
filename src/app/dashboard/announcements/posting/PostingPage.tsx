@@ -12,15 +12,15 @@ const RichTextEditor = dynamic(() =>
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
+import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 import { Banknote, Home, } from 'lucide-react'
 import { usePostForm } from './usePostForm'
-import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
-import { handleNumericInput } from '@/lib/InputValidation'
-import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
@@ -44,7 +44,7 @@ export function PostingPage() {
 												field.onChange(val)
 												form.setValue('origin_country', city?.country ?? '')
 											}}
-											countryCode=' '
+											countryCode={undefined}
 											placeholder='Город, страна'
 											disabled={isLoadingCreate}
 										/>
@@ -106,7 +106,7 @@ export function PostingPage() {
 												field.onChange(val)
 												form.setValue('destination_country', city?.country ?? '')
 											}}
-											countryCode=' '
+											countryCode={undefined}
 											placeholder='Город, страна'
 											disabled={isLoadingCreate}
 										/>

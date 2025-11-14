@@ -15,7 +15,7 @@ export const useCitySuggest = (query: string, countryCode?: string) => {
 			})
 			return data
 		},
-		enabled: !!debouncedQuery && !!countryCode,
+		enabled: !!debouncedQuery,
 		staleTime: 300_000, // 5 minutes
 		gcTime: 3_600_000, // 60 minutes
 		placeholderData: (prev) => prev,
