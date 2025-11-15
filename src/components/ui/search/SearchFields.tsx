@@ -24,16 +24,11 @@ interface SearchFieldsProps {
 }
 
 export function SearchFields({ form }: SearchFieldsProps) {
-	const [originCity, setOriginCity] = useState<City | null>(null)
-	const [destinationCity, setDestinationCity] = useState<City | null>(null)
 	const router = useRouter()
 	const pathname = usePathname()
 
 	const handleDeleteFilter = () => {
 		form.reset()
-		setOriginCity(null)
-		setDestinationCity(null)
-
 		router.push(pathname)
 	}
 

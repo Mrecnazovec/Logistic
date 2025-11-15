@@ -202,7 +202,7 @@ export function PostingPage() {
 						<div className='flex items-end gap-6'>
 							<FormField
 								control={form.control}
-								name='weight_kg'
+								name='volume_m3'
 								rules={{
 									required: 'Габариты обязательны',
 
@@ -227,21 +227,21 @@ export function PostingPage() {
 									</FormItem>
 								)}
 							/>
-							{/* <FormField
+							<FormField
 								control={form.control}
-								name=''
+								name='axles'
 								rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingCreate} />
+												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} className='pl-4' disabled={isLoadingCreate} />
 											</InputGroup>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
-							/> */}
+							/>
 						</div>
 						<FormField
 							control={form.control}

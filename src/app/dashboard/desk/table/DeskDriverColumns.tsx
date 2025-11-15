@@ -1,45 +1,26 @@
 'use client'
 
+import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
+import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Minus } from 'lucide-react'
+import { CircleCheck, Minus } from 'lucide-react'
+import { useState } from 'react'
 
-export const cargoColumns: ColumnDef<ICargoList>[] = [
-	// {
-	// 	id: 'select',
-	// 	cell: ({ row, table }) => {
-	// 		const selectedRow = table.getSelectedRowModel().rows[0]
-	// 		const isSelected = selectedRow?.id === row.id
-
-	// 		return (
-	// 			<RadioGroup
-	// 				value={isSelected ? row.id : ''}
-	// 				onValueChange={(value) => {
-	// 					table.resetRowSelection()
-	// 					if (value === row.id) {
-	// 						row.toggleSelected(true)
-	// 					}
-	// 				}}
-	// 				className='flex items-center justify-center'
-	// 			>
-	// 				<RadioGroupItem
-	// 					value={row.id}
-	// 					id={`radio-${row.id}`}
-	// 					aria-label='Выбрать строку'
-	// 				/>
-	// 			</RadioGroup>
-	// 		)
-	// 	},
-	// 	enableSorting: false,
-	// 	enableHiding: false,
-	// },
+export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
+	{
+		accessorKey: 'uuid',
+		header: 'ID',
+		cell: ({ row }) => <UuidCopy id={row.original.id} />,
+	},
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -85,8 +66,8 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
 		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_uzs || 0)
-			const priceB = Number(b.original.price_uzs || 0)
+			const priceA = Number(a.original.price_value || 0)
+			const priceB = Number(b.original.price_value || 0)
 			return priceA - priceB
 		},
 	},
@@ -94,20 +75,25 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'price_currency',
 		header: 'Валюта',
 	},
-	{
-		accessorKey: 'route_km',
-		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
-				Путь (км)
-				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
-			</Button>
-		),
-		cell: ({ row }) => `${row.original.route_km} км`,
-	},
+	// {
+	// 	accessorKey: 'route_km',
+	// 	header: ({ column }) => (
+	// 		<Button
+	// 			variant='ghost'
+	// 			className='hover:bg-transparent p-0'
+	// 			onClick={(event) => cycleColumnSort(event, column)}
+	// 		>
+	// 			Путь (км)
+	// 			<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
+	// 		</Button>
+	// 	),
+	// 	cell: ({ row }) => `${row.original.route_km} км`,
+	// },
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
 		cell: ({ row }) => `${row.original.weight_t} т`
+
 	},
 	{
 		accessorKey: 'origin_city',
@@ -126,7 +112,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		header: ({ column }) => (
 			<Button
 				variant='ghost'
-				className='hover:bg-transparent p-0'
+				className='hover:bg-transparent'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
 				Дата
@@ -147,30 +133,54 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'transport_type',
 		header: 'Тип',
 		cell: ({ row }) => {
-			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.symb ?? '—'
-
+			const transportName =
+				TransportSelect.find((t) => t.type === row.original.transport_type)
+					?.symb ?? '—'
 			return transportName
-		}
+		},
 	},
-	{
-		accessorKey: 'company_name',
-		header: 'Компания',
-	},
-	{
-		accessorKey: 'contact_value',
-		header: 'Телефон',
-		cell: ({ row }) => {
-			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.contact_value
-			return <Minus className='size-5' />
-		}
-	},
-	{
-		accessorKey: 'contact_pref',
-		header: 'Email',
-		cell: ({ row }) => {
-			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.contact_value
-			return <Minus className='size-5' />
-		}
-	},
+	// {
+	// 	accessorKey: 'has_offers',
+	// 	header: 'Предложения',
+	// 	cell: ({ row }) => <DeskOffersCell cargo={row.original} />,
+	// },
+
+	// {
+	// 	id: 'actions',
+	// 	header: '',
+	// 	cell: ({ row }) => <CargoActionsDropdown cargo={row.original} />,
+	// 	enableSorting: false,
+	// 	enableHiding: false,
+	// },
 ]
+
+function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
+	const [open, setOpen] = useState(false)
+	const hasOffers = Boolean(cargo.has_offers)
+
+	return (
+		<>
+			<div className='flex items-center gap-2'>
+
+
+				<Button
+					type='button'
+					variant='link'
+					className='px-0 h-auto font-medium disabled:text-muted-foreground'
+					onClick={() => setOpen(true)}
+					disabled={!hasOffers}
+				>
+					{hasOffers ? (
+						<CircleCheck className='size-5 text-success-400' />
+					) : (
+						<Minus className='size-5 text-neutral-400' />
+					)}
+				</Button>
+			</div>
+
+			<DeskOffersModal selectedRow={cargo} open={open} onOpenChange={setOpen} />
+		</>
+	)
+}
+
 

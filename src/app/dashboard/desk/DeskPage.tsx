@@ -7,7 +7,8 @@ import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { fakeCargoList } from '@/data/FakeData'
+import { useGetLoadsBoard } from '@/hooks/queries/loads/useGet/useGetLoadsBoard'
+import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
@@ -19,11 +20,15 @@ import { useEffect } from 'react'
 import { DeskCardList } from './components/DeskCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { deskColumns } from './table/DeskColumns'
+import { DeskCardDriverList } from './components/DeskCardDriverList'
+import { deskDriverColumns } from './table/DeskDriverColumns'
 
 
 export function DeskPage() {
-	const data = fakeCargoList
-	const isLoading = false
+	const { data, isLoading } = useGetLoadsBoard()
+	const { data: dataOffers, isLoading: isLoadingOffers } = useGetIncomingOffers()
+
+
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
@@ -80,12 +85,10 @@ export function DeskPage() {
 				isDesktop ? (
 					<Tabs defaultValue='desk' className='flex-1'>
 						<div className='flex flex-wrap items-end gap-4'>
-							{role === RoleEnum.LOGISTIC && (
-								<TabsList className='bg-transparent -mb-2'>
-									<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-									<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-								</TabsList>
-							)}
+							<TabsList className='bg-transparent -mb-2'>
+								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
+								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
+							</TabsList>
 							<div className='ml-auto'>
 								<TableTypeSelector />
 							</div>
@@ -107,11 +110,11 @@ export function DeskPage() {
 						</TabsContent>
 						<TabsContent value='drivers'>
 							{tableType === 'card' ? (
-								<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
+								<DeskCardDriverList cargos={dataOffers?.results || []} serverPagination={serverPaginationMeta} />
 							) : (
 								<DataTable
-									columns={deskColumns}
-									data={data.results}
+									columns={deskDriverColumns}
+									data={dataOffers?.results || []}
 									serverPagination={{
 										next: data.next,
 										previous: data.previous,

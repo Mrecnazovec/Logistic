@@ -6,9 +6,8 @@ import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { Loader2, Search } from 'lucide-react'
@@ -17,6 +16,7 @@ import { useCallback, useMemo } from 'react'
 import { TransportationCardList } from './components/TransportationCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { createTransportationColumns } from './table/TransportationColumns'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 
 const STATUS_TABS = [
 	{ value: 'no_driver', label: 'Без водителя' },
@@ -26,8 +26,7 @@ const STATUS_TABS = [
 ] as const
 
 export function TransportationPage() {
-	const data = fakeCargoList
-	const isLoading = false
+	const { data, isLoading } = useGetOrders()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
@@ -63,8 +62,8 @@ export function TransportationPage() {
 	)
 
 	const handleRowClick = useCallback(
-		(cargo: ICargoList) => {
-			router.push(DASHBOARD_URL.order(`${cargo.uuid}`))
+		(order: IOrderList) => {
+			router.push(DASHBOARD_URL.order(`${order.id}`))
 		},
 		[router],
 	)

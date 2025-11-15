@@ -7,12 +7,13 @@ import {
 import { CardPaginationControls, useDeskCardPagination } from '@/app/dashboard/desk/my/components/DeskCardPagination'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { IUserRating } from '@/shared/types/Rating.interface'
 import type { IRatingTableRow } from '@/shared/types/RatingTableRow.interface'
 import { BadgeCheck, PhoneCall, Star, UserRound } from 'lucide-react'
 import { useMemo } from 'react'
 
 type RatingCardListProps = {
-	items: IRatingTableRow[]
+	items: IUserRating[]
 	serverPagination?: ServerPaginationMeta
 	roleLabel: string
 }
@@ -37,7 +38,7 @@ export function RatingCardList({ items, serverPagination, roleLabel }: RatingCar
 }
 
 type RatingCardProps = {
-	rating: IRatingTableRow
+	rating: IUserRating
 	roleLabel: string
 }
 
@@ -49,12 +50,12 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 				items: [
 					{
 						icon: BadgeCheck,
-						primary: rating.carrier_name ?? '—',
+						primary: rating.rated_user ?? '—',
 						secondary: roleLabel === 'carriers' ? 'Перевозчик' : 'Компания',
 					},
 					{
 						icon: UserRound,
-						primary: rating.driver_name ?? '—',
+						primary: rating.rated_user ?? '—',
 						secondary: 'Водитель',
 					},
 				],
@@ -64,26 +65,26 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 				items: [
 					{
 						icon: PhoneCall,
-						primary: rating.login ?? '—',
+						primary: rating.rated_user ?? '—',
 						secondary: 'Логин/контакт',
 					},
 				],
 			},
-			{
-				title: 'Активность',
-				items: [
-					{
-						icon: BadgeCheck,
-						primary: formatDateValue(rating.registered_at),
-						secondary: 'Дата регистрации',
-					},
-					{
-						icon: BadgeCheck,
-						primary: rating.orders_completed?.toLocaleString('ru-RU') ?? '—',
-						secondary: 'Завершено заказов',
-					},
-				],
-			},
+			// {
+			// 	title: 'Активность',
+			// 	items: [
+			// 		{
+			// 			icon: BadgeCheck,
+			// 			primary: formatDateValue(rating.registered_at),
+			// 			secondary: 'Дата регистрации',
+			// 		},
+			// 		{
+			// 			icon: BadgeCheck,
+			// 			primary: rating.orders_completed?.toLocaleString('ru-RU') ?? '—',
+			// 			secondary: 'Завершено заказов',
+			// 		},
+			// 	],
+			// },
 		],
 		[roleLabel, rating],
 	)
@@ -93,7 +94,7 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						#{rating.id} — {rating.carrier_name ?? rating.driver_name ?? 'Без имени'}
+						#{rating.id} — {rating.rated_user}
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
 						<Star className='size-4 fill-yellow-400 text-yellow-400' aria-hidden />
@@ -101,7 +102,7 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 					</span>
 				</div>
 				<p className='text-sm text-muted-foreground'>
-					Обновлено: {formatRelativeDate(rating.registered_at)}
+					Обновлено:
 				</p>
 			</CardHeader>
 

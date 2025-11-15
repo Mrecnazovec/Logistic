@@ -15,10 +15,10 @@ import { AnnouncementsCardList } from './components/AnnouncementsCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { cargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
+import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
 
 export function AnnouncementsPage() {
-	const data = fakeCargoList
-	const isLoading = false
+	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)

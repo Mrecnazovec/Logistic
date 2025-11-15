@@ -4,12 +4,14 @@ import toast from "react-hot-toast"
 import { Button } from "../Button"
 
 interface UuidCopy {
-	uuid: string
+	uuid?: string
+	id?: number
 	isPlaceholder?: boolean
 }
 
-export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
+export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 	const [copied, setCopied] = useState(false)
+	const displayId = uuid || String(id)
 
 	useEffect(() => {
 		if (!copied) return
@@ -21,7 +23,7 @@ export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
 	const handleCopy = async () => {
 		try {
 			if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-				await navigator.clipboard.writeText(uuid)
+				await navigator.clipboard.writeText(displayId)
 			} else {
 				throw new Error('Буфер обмена не поддерживается')
 			}
@@ -47,7 +49,7 @@ export const UuidCopy = ({ uuid, isPlaceholder = false }: UuidCopy) => {
 			) : (
 				<Copy className='size-4 shrink-0' aria-hidden='true' />
 			)}
-			<span className={copied ? 'text-brand' : ''}>{isPlaceholder && uuid}</span>
+			<span className={copied ? 'text-brand' : ''}>{isPlaceholder && displayId}</span>
 			<span className='sr-only'>{copied ? 'ID скопировано' : 'Скопировать ID'}</span>
 		</Button>
 	)

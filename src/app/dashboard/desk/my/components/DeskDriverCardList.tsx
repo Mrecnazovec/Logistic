@@ -25,9 +25,10 @@ import {
 	formatPricePerKm,
 	formatWeight,
 } from './DeskCardShared'
+import { IOfferShort } from '@/shared/types/Offer.interface'
 
 type DeskDriverCardListProps = {
-	cargos: ICargoList[]
+	cargos: IOfferShort[]
 	serverPagination?: ServerPaginationMeta
 }
 
@@ -43,7 +44,7 @@ export function DeskDriverCardList({ cargos, serverPagination }: DeskDriverCardL
 			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background p-4'>
 				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
 					{cargos.map((cargo, index) => (
-						<DeskDriverCard key={cargo.uuid} cargo={cargo} index={index} />
+						<DeskDriverCard key={cargo.id} cargo={cargo} index={index} />
 					))}
 				</div>
 			</div>
@@ -54,7 +55,7 @@ export function DeskDriverCardList({ cargos, serverPagination }: DeskDriverCardL
 }
 
 type DeskDriverCardProps = {
-	cargo: ICargoList
+	cargo: IOfferShort
 	index: number
 }
 
@@ -74,22 +75,22 @@ function DeskDriverCard({ cargo, index }: DeskDriverCardProps) {
 						Предложение от заказчика
 					</Badge>}
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.company_name}
+						Название компании
 					</CardTitle>
-					<UuidCopy uuid={cargo.uuid} />
+					<UuidCopy id={cargo.id} />
 				</div>
-				<p className='text-sm text-muted-foreground'>Товар: {cargo.product}</p>
+				<p className='text-sm text-muted-foreground'>Товар: Название товара</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<InfoSection title='Откуда'>
 					<InfoChip icon={MapPin} primary={`${cargo.origin_city}, ${cargo.origin_country}`} secondary='Город / страна' />
-					<InfoChip icon={Home} primary={cargo.origin_address || '—'} secondary='Адрес' />
+					<InfoChip icon={Home} primary={cargo.origin_city || '—'} secondary='Адрес' />
 				</InfoSection>
 
 				<InfoSection title='Куда'>
 					<InfoChip icon={MapPin} primary={`${cargo.destination_city}, ${cargo.destination_country}`} secondary='Город / страна' />
-					<InfoChip icon={Home} primary={cargo.destination_address || '—'} secondary='Адрес' />
+					<InfoChip icon={Home} primary={cargo.destination_city || '—'} secondary='Адрес' />
 				</InfoSection>
 
 				<InfoSection title='Когда'>
@@ -106,13 +107,13 @@ function DeskDriverCard({ cargo, index }: DeskDriverCardProps) {
 					<InfoChip icon={Wallet} primary={formatPrice(cargo.price_value, cargo.price_currency)} secondary='Стоимость' />
 					<InfoChip
 						icon={Wallet}
-						primary={formatPricePerKm(cargo.price_per_km, cargo.price_currency)}
+						primary={formatPricePerKm(300, cargo.price_currency)}
 						secondary='Цена за км'
 					/>
 				</InfoSection>
 
 				<InfoSection title='Контакты'>
-					<InfoChip icon={Phone} primary={cargo.contact_value || '—'} secondary='Телефон' className='flex-1' />
+					<InfoChip icon={Phone} primary={cargo.carrier_contact || '—'} secondary='Телефон' className='flex-1' />
 				</InfoSection>
 			</CardContent>
 

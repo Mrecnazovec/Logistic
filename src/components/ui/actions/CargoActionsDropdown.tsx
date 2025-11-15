@@ -75,7 +75,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 				</DropdownMenuTrigger>
 
 				<DropdownMenuContent align='end'>
-					{!isOffer ? <><DropdownMenuItem
+					<DropdownMenuItem
 						onClick={() => {
 							refreshLoad({ uuid: cargo.uuid, detail: 'Обновить' })
 							setOpen(false)
@@ -86,63 +86,63 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						Обновить
 					</DropdownMenuItem>
 
-						<DropdownMenuSeparator />
+					<DropdownMenuSeparator />
 
-						<DropdownMenuItem
-							onClick={() => setOpen(false)}
-							className='flex items-center gap-2'
-						>
-							<Pencil className='size-4 text-muted-foreground' />
-							<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>Изменить</Link>
-						</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => setOpen(false)}
+						className='flex items-center gap-2'
+					>
+						<Pencil className='size-4 text-muted-foreground' />
+						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>Изменить</Link>
+					</DropdownMenuItem>
 
-						<DropdownMenuSeparator />
+					<DropdownMenuSeparator />
 
-						<DropdownMenuItem
-							onClick={handleToggleVisibility}
-							className='flex items-center gap-2'
-							disabled={isLoadingPut}
-						>
-							<VisibilityIcon className='size-4 text-muted-foreground' />
-							{visibilityActionLabel}
-						</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={handleToggleVisibility}
+						className='flex items-center gap-2'
+						disabled={isLoadingPut}
+					>
+						<VisibilityIcon className='size-4 text-muted-foreground' />
+						{visibilityActionLabel}
+					</DropdownMenuItem>
 
-						<DropdownMenuSeparator />
+					<DropdownMenuSeparator />
 
-						<DropdownMenuItem
-							onClick={() => {
-								setOpen(false)
-								setOfferOpen(true)
-							}}
-							className='flex items-center gap-2'
-						>
-							<Handshake className='size-4 text-muted-foreground' />
-							Сделать предложение
-						</DropdownMenuItem></> : <>
-						<DropdownMenuItem
-							onClick={() => {
-								setOfferOpen(true)
-								setOpen(false)
-							}}
-							className='flex items-center gap-2'
-						>
-							<Pencil className='size-4 text-muted-foreground' />
-							Изменить
-						</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => {
+							setOpen(false)
+							setOfferOpen(true)
+						}}
+						className='flex items-center gap-2'
+					>
+						<Handshake className='size-4 text-muted-foreground' />
+						Сделать предложение
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => {
+							setOfferOpen(true)
+							setOpen(false)
+						}}
+						className='flex items-center gap-2'
+					>
+						<Pencil className='size-4 text-muted-foreground' />
+						Изменить
+					</DropdownMenuItem>
 
-						<DropdownMenuSeparator />
+					<DropdownMenuSeparator />
 
-						<DropdownMenuItem
-							onClick={() => {
-								console.log('Скрыть', cargo.uuid)
-								setOpen(false)
-							}}
-							className='flex items-center gap-2 text-red-500 focus:text-red-500'
-						>
-							<Trash2 className='size-4 text-red-500' />
-							Удалить
-						</DropdownMenuItem>
-					</>}
+					<DropdownMenuItem
+						onClick={() => {
+							console.log('Скрыть', cargo.uuid)
+							setOpen(false)
+						}}
+						className='flex items-center gap-2 text-red-500 focus:text-red-500'
+					>
+						<Trash2 className='size-4 text-red-500' />
+						Удалить
+					</DropdownMenuItem>
+
 				</DropdownMenuContent>
 			</DropdownMenu>
 

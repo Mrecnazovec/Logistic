@@ -78,6 +78,8 @@ export function EditPage() {
 			contact_pref: load.contact_pref ?? '',
 			is_hidden: load.is_hidden ?? false,
 			description: load.description ?? '',
+			axles: load.axles ?? null,
+			volume_m3: load.volume_m3 ?? '',
 		})
 	}, [load, form])
 
@@ -251,7 +253,7 @@ export function EditPage() {
 						<div className='flex items-end gap-6'>
 							<FormField
 								control={form.control}
-								name='weight_kg'
+								name='volume_m3'
 								rules={{ required: 'Габариты обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
@@ -271,9 +273,9 @@ export function EditPage() {
 									</FormItem>
 								)}
 							/>
-							{/* <FormField
+							<FormField
 								control={form.control}
-								name='route_km'
+								name='axles'
 								rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
@@ -285,7 +287,7 @@ export function EditPage() {
 										<FormMessage />
 									</FormItem>
 								)}
-							/> */}
+							/>
 						</div>
 						<FormField
 							control={form.control}

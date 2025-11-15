@@ -30,10 +30,27 @@ export function useDeskCardPagination(serverPagination?: ServerPaginationMeta): 
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const currentPage = Math.max(Number(searchParams.get('page')) || 1, 1)
-	const pageSize = serverPagination?.pageSize ?? 10
 	const totalCount = serverPagination?.totalCount ?? 0
+	const parsedPageSizeParam = Number(searchParams.get('page_size'))
+	const pageSizeFromQuery = Number.isFinite(parsedPageSizeParam) && parsedPageSizeParam > 0 ? parsedPageSizeParam : null
+	const currentPageItemCount = serverPagination?.pageSize && serverPagination.pageSize > 0 ? serverPagination.pageSize : null
+	let resolvedPageSize = currentPageItemCount ?? pageSizeFromQuery ?? 10
+
+	if (
+		enabled &&
+		!serverPagination?.next &&
+		currentPage > 1 &&
+		currentPageItemCount &&
+		totalCount > currentPageItemCount
+	) {
+		const inferredPageSize = Math.round((totalCount - currentPageItemCount) / (currentPage - 1))
+		if (Number.isFinite(inferredPageSize) && inferredPageSize > 0) {
+			resolvedPageSize = inferredPageSize
+		}
+	}
+
 	const effectiveTotalPages = enabled && totalCount
-		? Math.max(Math.ceil(totalCount / pageSize), 1)
+		? Math.max(Math.ceil(totalCount / resolvedPageSize), currentPage, 1)
 		: 1
 	const serverNextPage = enabled ? getPageNumberFromUrl(serverPagination?.next) : null
 	const serverPreviousPage = enabled
@@ -167,4 +184,3 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 		</nav>
 	)
 }
-

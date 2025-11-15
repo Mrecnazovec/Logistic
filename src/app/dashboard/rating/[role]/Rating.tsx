@@ -17,12 +17,12 @@ import { RatingCardList } from "../../rating/components/RatingCardList"
 import { useSearchForm } from "./Searching/useSearchForm"
 import { ExpandedRatingRow } from "./table/ExpandedRatingRow"
 import { ratingColumns } from "./table/RatingColumns"
+import { useGetRatings } from "@/hooks/queries/ratings/useGet/useGetRatings"
 
 export function Rating() {
 	const router = useRouter()
 	const param = useParams<{ role: string }>()
-	const data = fakeRatingsList
-	const isLoading = false
+	const { ratings: data, isLoading } = useGetRatings()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)

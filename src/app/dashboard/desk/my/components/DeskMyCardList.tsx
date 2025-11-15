@@ -26,9 +26,10 @@ import {
 	formatPricePerKm,
 	formatWeight,
 } from './DeskCardShared'
+import { IOfferShort } from '@/shared/types/Offer.interface'
 
 type DeskMyCardListProps = {
-	cargos: ICargoList[]
+	cargos: IOfferShort[]
 	serverPagination?: ServerPaginationMeta
 }
 
@@ -44,7 +45,7 @@ export function DeskMyCardList({ cargos, serverPagination }: DeskMyCardListProps
 			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>
 				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
 					{cargos.map((cargo) => (
-						<DeskMyCard key={cargo.uuid} cargo={cargo} />
+						<DeskMyCard key={cargo.id} cargo={cargo} />
 					))}
 				</div>
 			</div>
@@ -55,7 +56,7 @@ export function DeskMyCardList({ cargos, serverPagination }: DeskMyCardListProps
 }
 
 type DeskMyCardProps = {
-	cargo: ICargoList
+	cargo: IOfferShort
 }
 
 function DeskMyCard({ cargo }: DeskMyCardProps) {
@@ -66,24 +67,24 @@ function DeskMyCard({ cargo }: DeskMyCardProps) {
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<BadgeSelector status={cargo.status as StatusEnum} />
+					<BadgeSelector status={cargo.status_display as StatusEnum} />
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.company_name}
+						Название компании
 					</CardTitle>
-					<UuidCopy uuid={cargo.uuid} />
+					<UuidCopy uuid={String(cargo.id)} />
 				</div>
-				<p className='text-sm text-muted-foreground'>Товар: {cargo.product}</p>
+				<p className='text-sm text-muted-foreground'>Товар: Название товара</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<InfoSection title='Откуда'>
 					<InfoChip icon={MapPin} primary={`${cargo.origin_city}, ${cargo.origin_country}`} secondary='Город / страна' />
-					<InfoChip icon={Home} primary={cargo.origin_address || '—'} secondary='Адрес' />
+					<InfoChip icon={Home} primary={cargo.origin_city || '—'} secondary='Адрес' />
 				</InfoSection>
 
 				<InfoSection title='Куда'>
 					<InfoChip icon={MapPin} primary={`${cargo.destination_city}, ${cargo.destination_country}`} secondary='Город / страна' />
-					<InfoChip icon={Home} primary={cargo.destination_address || '—'} secondary='Адрес' />
+					<InfoChip icon={Home} primary={cargo.destination_city || '—'} secondary='Адрес' />
 				</InfoSection>
 
 				<InfoSection title='Когда'>
@@ -100,20 +101,20 @@ function DeskMyCard({ cargo }: DeskMyCardProps) {
 					<InfoChip icon={Wallet} primary={formatPrice(cargo.price_value, cargo.price_currency)} secondary='Стоимость' />
 					<InfoChip
 						icon={Wallet}
-						primary={formatPricePerKm(cargo.price_per_km, cargo.price_currency)}
+						primary={formatPricePerKm(300, cargo.price_currency)}
 						secondary='Цена за км'
 					/>
 				</InfoSection>
 
 				<InfoSection title='Контакты'>
-					<InfoChip icon={Phone} primary={cargo.contact_value || '—'} secondary='Телефон' className='flex-1' />
+					<InfoChip icon={Phone} primary={'Контакт'} secondary='Телефон' className='flex-1' />
 				</InfoSection>
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<ActionButton label='Изменить' className='bg-warning-400 text-white hover:bg-warning-400 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
-				<ActionButton label='Отказать' className='bg-error-400 text-white hover:bg-error-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
-				<ActionButton label='Принять' className='bg-success-400 text-white hover:bg-success-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status === StatusEnum.COMPLETED} />
+				<ActionButton label='Изменить' className='bg-warning-400 text-white hover:bg-warning-400 hover:text-white disabled:bg-grayscale' disabled={cargo.status_display === StatusEnum.COMPLETED} />
+				<ActionButton label='Отказать' className='bg-error-400 text-white hover:bg-error-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status_display === StatusEnum.COMPLETED} />
+				<ActionButton label='Принять' className='bg-success-400 text-white hover:bg-success-500 hover:text-white disabled:bg-grayscale' disabled={cargo.status_display === StatusEnum.COMPLETED} />
 			</CardFooter>
 		</Card>
 	)

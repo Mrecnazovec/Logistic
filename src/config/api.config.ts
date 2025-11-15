@@ -7,5 +7,5 @@ export const API_URL = {
 	loads: (url = '') => API_URL.root(`loads/${url}/`),
 	offers: (url = '') => API_URL.root(`offers/${url}/`),
 	orders: (url = '') => API_URL.root(`orders/${url}/`),
-	ratings: (url = '') => API_URL.root(`ratings/${url}/`),
+	ratings: (url = '') => API_URL.root(`ratings/${url}`),
 }

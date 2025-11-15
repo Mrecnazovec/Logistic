@@ -1,9 +1,10 @@
 'use client'
 
+import { IUserRating } from '@/shared/types/Rating.interface'
 import { IRatingTableRow } from '@/shared/types/RatingTableRow.interface'
 import { format } from 'date-fns'
 
-export function ExpandedRatingRow({ user }: { user: IRatingTableRow }) {
+export function ExpandedRatingRow({ user }: { user: IUserRating }) {
 	return (
 		<div className='flex flex-col gap-4'>
 			<div className='flex flex-col md:flex-row md:items-center md:justify-between'>

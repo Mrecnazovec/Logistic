@@ -1,6 +1,7 @@
 'use client'
 
 import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
+import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { BadgeSelector } from '@/components/ui/selectors/BadgeSelector'
@@ -9,12 +10,13 @@ import { cycleColumnSort } from '@/components/ui/table/utils'
 import { StatusEnum } from '@/shared/enums/Status.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Check, Handshake, Minus, X } from 'lucide-react'
 
-export const deskMyColumns: ColumnDef<ICargoList>[] = [
+export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 
 	{
 		id: 'fast_actions',
@@ -61,23 +63,16 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
-		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
+		cell: ({ row }) => <UuidCopy id={row.original.id} />,
 	},
 	{
 		accessorKey: 'company_name',
 		header: 'Перевозчик',
 	},
 	{
-		accessorKey: 'status',
+		accessorKey: 'status_display',
 		header: 'Статус',
-		cell: ({ row }) => {
-			const status = row.original.status as StatusEnum
 
-			return (
-				<BadgeSelector status={status} />
-			)
-
-		},
 	},
 	{
 		id: 'origin',
@@ -178,8 +173,8 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 		),
 		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
 		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_uzs || 0)
-			const priceB = Number(b.original.price_uzs || 0)
+			const priceA = Number(a.original.price_value || 0)
+			const priceB = Number(b.original.price_value || 0)
 			return priceA - priceB
 		},
 	},
@@ -187,7 +182,7 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'contact_value',
 		header: 'Телефон',
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return '+998 99 999 99 99'
+			if (row.original.carrier_contact) return row.original.carrier_contact
 			return <Minus className='size-5' />
 		}
 	},
@@ -195,14 +190,14 @@ export const deskMyColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'contact_pref',
 		header: 'Email',
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return 'example@example.com'
+			if (row.original.carrier_contact) return row.original.carrier_contact
 			return <Minus className='size-5' />
 		}
 	},
 	{
 		id: 'actions',
 		header: '',
-		cell: ({ row }) => <CargoActionsDropdown cargo={row.original} isOffer />,
+		cell: ({ row }) => <DeskMyActions cargo={row.original} />,
 		enableSorting: false,
 		enableHiding: false,
 	},
