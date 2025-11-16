@@ -15,7 +15,8 @@ import {
 	Truck,
 	Wallet
 } from 'lucide-react'
-import { CardPaginationControls, useDeskCardPagination } from './DeskCardPagination'
+import { CardListLayout } from '@/components/card/CardListLayout'
+import { useCardPagination } from '@/components/pagination/CardPagination'
 import {
 	ActionButton,
 	InfoChip,
@@ -33,24 +34,19 @@ type DeskDriverCardListProps = {
 }
 
 export function DeskDriverCardList({ cargos, serverPagination }: DeskDriverCardListProps) {
-	const pagination = useDeskCardPagination(serverPagination)
+	const pagination = useCardPagination(serverPagination)
 
 	if (!cargos.length) {
 		return null
 	}
 
 	return (
-		<div className='flex flex-1 flex-col gap-4'>
-			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background p-4'>
-				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
-					{cargos.map((cargo, index) => (
-						<DeskDriverCard key={cargo.id} cargo={cargo} index={index} />
-					))}
-				</div>
-			</div>
-
-			<CardPaginationControls pagination={pagination} />
-		</div>
+		<CardListLayout
+			items={cargos}
+			getKey={(cargo) => cargo.id}
+			renderItem={(cargo, index) => <DeskDriverCard cargo={cargo} index={index} />}
+			pagination={pagination}
+		/>
 	)
 }
 

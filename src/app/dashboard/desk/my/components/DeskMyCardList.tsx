@@ -1,6 +1,8 @@
 'use client'
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { CardListLayout } from '@/components/card/CardListLayout'
+import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { BadgeSelector } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
@@ -16,7 +18,6 @@ import {
 	Truck,
 	Wallet,
 } from 'lucide-react'
-import { CardPaginationControls, useDeskCardPagination } from './DeskCardPagination'
 import {
 	ActionButton,
 	InfoChip,
@@ -34,24 +35,19 @@ type DeskMyCardListProps = {
 }
 
 export function DeskMyCardList({ cargos, serverPagination }: DeskMyCardListProps) {
-	const pagination = useDeskCardPagination(serverPagination)
+	const pagination = useCardPagination(serverPagination)
 
 	if (!cargos.length) {
 		return null
 	}
 
 	return (
-		<div className='flex flex-1 flex-col gap-4'>
-			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>
-				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
-					{cargos.map((cargo) => (
-						<DeskMyCard key={cargo.id} cargo={cargo} />
-					))}
-				</div>
-			</div>
-
-			<CardPaginationControls pagination={pagination} />
-		</div>
+		<CardListLayout
+			items={cargos}
+			getKey={(cargo) => cargo.id}
+			renderItem={(cargo) => <DeskMyCard cargo={cargo} />}
+			pagination={pagination}
+		/>
 	)
 }
 

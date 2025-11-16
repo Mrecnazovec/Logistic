@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 
-export type DeskCardPaginationState = {
+export type CardPaginationState = {
 	enabled: boolean
 	currentPage: number
 	effectiveTotalPages: number
@@ -24,7 +24,7 @@ export type DeskCardPaginationState = {
 	selectPage: (page: number) => void
 }
 
-export function useDeskCardPagination(serverPagination?: ServerPaginationMeta): DeskCardPaginationState {
+export function useCardPagination(serverPagination?: ServerPaginationMeta): CardPaginationState {
 	const enabled = Boolean(serverPagination)
 	const router = useRouter()
 	const pathname = usePathname()
@@ -98,7 +98,7 @@ export function useDeskCardPagination(serverPagination?: ServerPaginationMeta): 
 }
 
 type CardPaginationControlsProps = {
-	pagination: DeskCardPaginationState
+	pagination: CardPaginationState
 	className?: string
 }
 
@@ -120,15 +120,15 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 
 	return (
 		<nav
-			aria-label='Пагинация заявок'
+			aria-label='Pagination navigation'
 			className={cn(
 				'flex flex-wrap items-center justify-between gap-4 rounded-4xl bg-background px-6 py-4 shadow-sm',
 				className,
 			)}
 		>
 			<p className='text-sm text-muted-foreground'>
-				Страница {currentPage}
-				{Number.isFinite(effectiveTotalPages) ? ` из ${effectiveTotalPages}` : ''}
+				Page {currentPage}
+				{Number.isFinite(effectiveTotalPages) ? ` of ${effectiveTotalPages}` : ''}
 			</p>
 
 			<div className='flex items-center gap-2'>
@@ -138,7 +138,7 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 					className='h-9 w-9 rounded-full p-0'
 					onClick={goPrevious}
 					disabled={!canGoPrevious}
-					aria-label='Предыдущая страница'
+					aria-label='Go to previous page'
 				>
 					<ChevronLeft className='size-4' aria-hidden />
 				</Button>
@@ -176,7 +176,7 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 					className='h-9 w-9 rounded-full p-0'
 					onClick={goNext}
 					disabled={!canGoNext}
-					aria-label='Следующая страница'
+					aria-label='Go to next page'
 				>
 					<ChevronRight className='size-4' aria-hidden />
 				</Button>

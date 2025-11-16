@@ -1,14 +1,11 @@
 'use client'
 
-import {
-	formatDateValue,
-	formatRelativeDate
-} from '@/app/dashboard/desk/components/cardFormatters'
-import { CardPaginationControls, useDeskCardPagination } from '@/app/dashboard/desk/my/components/DeskCardPagination'
+import { CardListLayout } from '@/components/card/CardListLayout'
+import { CardSections } from '@/components/card/CardSections'
+import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { IUserRating } from '@/shared/types/Rating.interface'
-import type { IRatingTableRow } from '@/shared/types/RatingTableRow.interface'
 import { BadgeCheck, PhoneCall, Star, UserRound } from 'lucide-react'
 import { useMemo } from 'react'
 
@@ -19,21 +16,17 @@ type RatingCardListProps = {
 }
 
 export function RatingCardList({ items, serverPagination, roleLabel }: RatingCardListProps) {
-	const pagination = useDeskCardPagination(serverPagination)
+	const pagination = useCardPagination(serverPagination)
 
 	if (!items.length) return null
 
 	return (
-		<div className='flex flex-1 flex-col gap-4'>
-			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>
-				<div className='grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto pr-1 xl:grid-cols-2'>
-					{items.map((rating) => (
-						<RatingCard key={rating.id} rating={rating} roleLabel={roleLabel} />
-					))}
-				</div>
-			</div>
-			<CardPaginationControls pagination={pagination} />
-		</div>
+		<CardListLayout
+			items={items}
+			getKey={(rating) => rating.id}
+			renderItem={(rating) => <RatingCard rating={rating} roleLabel={roleLabel} />}
+			pagination={pagination}
+		/>
 	)
 }
 
@@ -107,25 +100,7 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
-				{sections.map((section) => (
-					<section key={section.title} className='flex flex-col gap-2'>
-						<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>{section.title}</span>
-						<div className='flex flex-wrap gap-2'>
-							{section.items.map((item, index) => (
-								<div
-									key={`${section.title}-${index}`}
-									className='flex min-w-[160px] flex-1 items-center gap-2 rounded-full bg-card px-4 py-2'
-								>
-									<item.icon className='size-4 text-muted-foreground' aria-hidden />
-									<div className='flex flex-col leading-tight'>
-										<span className='font-medium text-foreground'>{item.primary}</span>
-										<span className='text-xs text-muted-foreground'>{item.secondary}</span>
-									</div>
-								</div>
-							))}
-						</div>
-					</section>
-				))}
+				<CardSections sections={sections} />
 			</CardContent>
 
 
