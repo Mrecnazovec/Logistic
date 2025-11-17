@@ -37,7 +37,7 @@ class OrdersService {
 	}
 
 	async getOrderDocuments(id: string | number) {
-		const { data } = await axiosWithAuth<IOrderDetail>({
+		const { data } = await axiosWithAuth<IOrderDocument[] | IOrderDetail>({
 			url: API_URL.orders(`${id}/documents`),
 			method: 'GET',
 		})

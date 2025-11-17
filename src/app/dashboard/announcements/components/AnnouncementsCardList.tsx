@@ -17,7 +17,7 @@ import { OfferModal } from '@/components/ui/modals/OfferModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { CalendarDays, Home, MapPin, Phone, Scale, Truck, Wallet } from 'lucide-react'
+import { CalendarDays, Home, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
 import { useMemo } from 'react'
 
 type AnnouncementsCardListProps = {
@@ -49,6 +49,12 @@ type AnnouncementCardProps = {
 function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const contact =
+		cargo.contact_pref === 'email'
+			? cargo.email
+			: cargo.contact_pref === 'phone'
+				? cargo.phone
+				: cargo.phone || cargo.email
 
 	const sections = useMemo(
 		() => [
@@ -90,23 +96,23 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 			{
 				title: 'Контакты',
 				items: [
-					{ icon: Phone, primary: cargo.contact_value || '—', secondary: 'Телефон' },
+					{ icon: Phone, primary: contact || '—', secondary: 'Телефон' },
 				],
 			},
 		],
-		[cargo, transportName],
+		[cargo, transportName, contact],
 	)
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
-			<CardHeader className='gap-4 border-b pb-4'>
+			<CardHeader className='gap-4 border-b [.border-b]:pb-0'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						Товар: {cargo.product || 'Без названия'}
+					<span className='text-sm text-muted-foreground flex items-center'><Star className='text-star ' /> {cargo.company_rating ? cargo.company_rating.toFixed(1) : <Minus />}</span>
+					<CardTitle className='text-lg font-semibold leading-tight text-grayscale'>
+						{cargo.company_name || '—'}
 					</CardTitle>
-					<span className='text-sm text-muted-foreground'>Размещено: {formatRelativeDate(cargo.created_at)}</span>
+					<span className='text-lg font-semibold leading-tight text-grayscale'>{formatRelativeDate(cargo.created_at)}</span>
 				</div>
-				<p className='text-sm text-muted-foreground'>Компания: {cargo.company_name || '—'}</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>

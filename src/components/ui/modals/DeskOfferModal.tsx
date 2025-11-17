@@ -8,8 +8,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/Dialog'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ArrowLeftRight, Search, Settings2 } from 'lucide-react'
@@ -23,9 +24,9 @@ interface OfferModalProps {
 }
 
 export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalProps) {
-	const transportName =
-		selectedRow &&
-		(TransportSelect.find((t) => t.type === selectedRow.transport_type)?.name ?? '—')
+	const transportName = selectedRow ? getTransportName(selectedRow.transport_type) || '—' : null
+	const formattedPrice = formatCurrencyValue(selectedRow?.price_value, selectedRow?.price_currency)
+	const formattedPricePerKm = formatCurrencyPerKmValue(selectedRow?.price_per_km, selectedRow?.price_currency)
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,10 +70,8 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 								<div>
 									<p>Тип: {transportName}</p>
 									<p>Вес: {selectedRow.weight_t} тонн</p>
-									<p>
-										Цена: {selectedRow.price_value} {selectedRow.price_currency}
-									</p>
-									<p>({selectedRow.price_per_km} на км)</p>
+									<p>Цена: {formattedPrice}</p>
+									<p>({formattedPricePerKm})</p>
 								</div>
 							</div>
 
@@ -86,8 +85,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 								<div>
 									<p>
 										<span className='font-semibold'>Предложение: </span>
-										{selectedRow.price_value} {selectedRow.price_currency} (
-										{selectedRow.price_per_km} на км)
+										{formattedPrice} ({formattedPricePerKm})
 									</p>
 								</div>
 							</div>

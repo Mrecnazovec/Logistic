@@ -166,18 +166,18 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 		},
 	},
 	{
-		accessorKey: 'contact_value',
+		accessorKey: 'phone',
 		header: 'Телефон',
 		cell: ({ row }) => {
-			if (row.original.carrier_contact) return row.original.carrier_contact
+			if (row.original.phone) return row.original.phone
 			return <Minus className='size-5' />
 		}
 	},
 	{
-		accessorKey: 'contact_pref',
+		accessorKey: 'email',
 		header: 'Email',
 		cell: ({ row }) => {
-			if (row.original.carrier_contact) return row.original.carrier_contact
+			if (row.original.email) return row.original.email
 			return <Minus className='size-5' />
 		}
 	},

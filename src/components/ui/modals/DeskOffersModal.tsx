@@ -9,8 +9,9 @@ import {
 	DialogTitle,
 } from '@/components/ui/Dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ArrowLeftRight } from 'lucide-react'
@@ -22,15 +23,17 @@ interface DeskOffersModalProps {
 }
 
 export function DeskOffersModal({ selectedRow, open, onOpenChange }: DeskOffersModalProps) {
-	const transportName =
-		selectedRow &&
-		(TransportSelect.find((t) => t.type === selectedRow.transport_type)?.name ?? '—')
+	const transportName = selectedRow ? getTransportName(selectedRow.transport_type) || '—' : null
 
 	const offers = selectedRow
 		? Array.from({ length: 3 }).map((_, index) => {
 			const originDate = new Date(selectedRow.load_date)
 			const destinationDate = selectedRow.delivery_date ? new Date(selectedRow.delivery_date) : null
 			const distanceValue = selectedRow.route_km ?? selectedRow.path_km
+			const price = formatCurrencyValue(selectedRow.price_value, selectedRow.price_currency)
+			const pricePerKm = selectedRow.price_per_km
+				? formatCurrencyPerKmValue(selectedRow.price_per_km, selectedRow.price_currency)
+				: ''
 
 			return {
 				id: `${selectedRow.uuid}-${index}`,
@@ -39,10 +42,8 @@ export function DeskOffersModal({ selectedRow, open, onOpenChange }: DeskOffersM
 				deliveryDate: destinationDate ? format(destinationDate, 'dd MMM, EEE', { locale: ru }) : '-',
 				deliveryTime: destinationDate ? format(destinationDate, 'HH:mm', { locale: ru }) : '-',
 				distance: distanceValue ? `${distanceValue} км` : '—',
-				price: selectedRow.price_value && selectedRow.price_currency
-					? `${selectedRow.price_value} ${selectedRow.price_currency}`
-					: '—',
-				pricePerKm: selectedRow.price_per_km ? `${selectedRow.price_per_km} на км` : '',
+				price,
+				pricePerKm,
 				origin: `${selectedRow.origin_city}, ${selectedRow.origin_country}`,
 				destination: `${selectedRow.destination_city}, ${selectedRow.destination_country}`,
 				weight: selectedRow.weight_t ? `${selectedRow.weight_t} тонн` : '—',
@@ -180,7 +181,8 @@ export function DeskOffersModal({ selectedRow, open, onOpenChange }: DeskOffersM
 							</p>
 							<p>
 								<span className='font-semibold'>Предложение: </span>
-								{selectedRow.price_value} {selectedRow.price_currency} ({selectedRow.price_per_km} на км)
+								{formatCurrencyValue(selectedRow.price_value, selectedRow.price_currency)} (
+								{formatCurrencyPerKmValue(selectedRow.price_per_km, selectedRow.price_currency)})
 							</p>
 						</div>
 

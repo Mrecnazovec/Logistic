@@ -23,5 +23,15 @@ export const TransportSelect = [
 	{ type: TransportTypeEnum.LOG, name: 'Лесовоз', symb: 'Л' },
 	{ type: TransportTypeEnum.PICKUP, name: 'Пикап', symb: 'П' },
 	{ type: TransportTypeEnum.MEGA, name: 'Мега фура', symb: 'М' },
-	{ type: TransportTypeEnum.OTHER, name: 'Другое', symb: 'Д' },
+	{ type: TransportTypeEnum.OTHER, name: 'Другое', symb: 'Др' },
 ]
+
+const transportNameMap = TransportSelect.reduce<Record<TransportTypeEnum, string>>((acc, transport) => {
+	acc[transport.type] = transport.name
+	return acc
+}, {} as Record<TransportTypeEnum, string>)
+
+export function getTransportName(type?: TransportTypeEnum | null) {
+	if (!type) return ''
+	return transportNameMap[type] ?? ''
+}

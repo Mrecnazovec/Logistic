@@ -7,11 +7,14 @@ import {
 	Clock,
 	Download,
 	FileText,
+	FileType,
 	FileWarning,
 	Image as ImageIcon,
 	Loader2,
+	Presentation,
 	Trash2,
 	UploadCloud,
+	type LucideIcon,
 } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -60,7 +63,7 @@ const STATUS_LABELS: Record<UploadStatus, string> = {
 
 const FOLDER_LABELS: Record<string, string> = {
 	licenses: 'Лицензии',
-	agreements: 'Договоры',
+	contracts: 'Договоры',
 	loading: 'Погрузка',
 	unloading: 'Разгрузка',
 	others: 'Прочие документы',
@@ -81,10 +84,19 @@ const BADGE_VARIANT_BY_EXTENSION: Record<
 
 const numberFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
 
+const FILE_THUMBNAIL_BY_EXTENSION: Record<string, { icon: LucideIcon; className: string }> = {
+	pdf: { icon: FileType, className: 'bg-destructive/10 text-destructive' },
+	doc: { icon: FileText, className: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-200' },
+	docx: { icon: FileText, className: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-200' },
+	ppt: { icon: Presentation, className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-200' },
+	pptx: { icon: Presentation, className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-200' },
+}
+
 export function FolderPage() {
 	const params = useParams<{ id: string; folder: string }>()
 	const orderId = params.id
 	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
+	const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
 	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Документы'
 
 	const fileInputRef = useRef<HTMLInputElement>(null)
@@ -98,17 +110,20 @@ export function FolderPage() {
 	const { uploadOrderDocumentAsync } = useUploadOrderDocument()
 
 	const documentsForFolder = useMemo(() => {
-		const docs = orderDocuments?.documents ?? []
-		const filtered = docs.filter(
-			(document) => (document.title ?? '').toLowerCase() === normalizedFolder
-		)
+		const docs = Array.isArray(orderDocuments) ? orderDocuments : orderDocuments?.documents ?? []
+		const filtered = docs.filter((document) => {
+			const title = (document.title ?? '').toLowerCase()
+			const category = (document.category ?? '').toLowerCase()
+
+			return category === normalizedCategory || title === normalizedFolder
+		})
 
 		return [...filtered].sort((a, b) => {
 			const first = a.created_at ? new Date(a.created_at).getTime() : 0
 			const second = b.created_at ? new Date(b.created_at).getTime() : 0
 			return second - first
 		})
-	}, [orderDocuments, normalizedFolder])
+	}, [orderDocuments, normalizedCategory, normalizedFolder])
 
 	const clearUploadTimer = useCallback((uploadId: string) => {
 		const timerId = uploadTimersRef.current[uploadId]
@@ -488,10 +503,16 @@ function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
 
 function FileThumbnail({ fileName }: { fileName: string }) {
 	const extension = getExtension(fileName)
-	const IconComponent = IMAGE_EXTENSIONS.includes(extension) ? ImageIcon : FileText
+	const mappedIcon = FILE_THUMBNAIL_BY_EXTENSION[extension]
+	const IconComponent = mappedIcon?.icon
+		? mappedIcon.icon
+		: IMAGE_EXTENSIONS.includes(extension)
+			? ImageIcon
+			: FileText
+	const colorClasses = mappedIcon?.className ?? 'bg-muted text-muted-foreground'
 
 	return (
-		<div className='size-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground'>
+		<div className={cn('size-12 rounded-2xl flex items-center justify-center', colorClasses)}>
 			<IconComponent className='size-6' aria-hidden />
 		</div>
 	)

@@ -27,5 +27,5 @@ This project is a web application with a React frontend, a Node.js backend using
 - Always use shadcn/ui components
 - Use strict mode typescript
 - After changes use `npm run lint` to check correctness
-
+- After making changes, check the spelling of words; there should be no incomprehensible characters left in the files.
 

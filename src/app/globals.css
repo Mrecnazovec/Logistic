@@ -54,6 +54,7 @@
 	--color-neutral-500: #f9fafb;
 	--color-purple-200: #d9d6fe;
 	--color-purple-700: #5925dc;
+	--color-star: #feca4f;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

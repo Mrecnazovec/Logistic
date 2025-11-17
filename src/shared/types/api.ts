@@ -396,7 +396,7 @@ export interface paths {
          *     **scope=incoming** — входящие: для Заказчика/Логиста — офферы от перевозчиков; для Перевозчика — инвайты от заказчиков (initiator=CUSTOMER);
          *     **scope=all** — все (только для staff).
          *
-         *     Доп. query: cargo_id, cargo_uuid, carrier_id, customer_id, initiator, is_active, accepted_by_customer, accepted_by_carrier, created_from/to, load_date_from/to, delivery_date_from/to, origin_city, destination_city, company|q, customer_email/phone, carrier_email/phone, order
+         *     Доп. query: cargo_id, cargo_uuid, carrier_id, customer_id, initiator, is_active, accepted_by_customer, accepted_by_carrier, created_from/to, load_date_from/to, delivery_date_from/to, origin_city, destination_city, company|q, customer_email/phone, carrier_email/phone, order (в т.ч. carrier_rating / -carrier_rating)
          */
         get: operations["offers_list"];
         put?: never;
@@ -709,6 +709,42 @@ export interface paths {
         patch: operations["ratings_partial_update"];
         trace?: never;
     };
+    "/api/ratings/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Список пользователей с рейтингами
+         *     (экран с вкладками 'Грузовладельцы / Логисты / Перевозчики'). */
+        get: operations["ratings_users_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ratings/users/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Список пользователей с рейтингами
+         *     (экран с вкладками 'Грузовладельцы / Логисты / Перевозчики'). */
+        get: operations["ratings_users_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/schema/": {
         parameters: {
             query?: never;
@@ -763,6 +799,7 @@ export interface components {
             deals_count: number;
         };
         CargoList: {
+            readonly id: number;
             /** Format: uuid */
             readonly uuid: string;
             /** Название груза */
@@ -830,9 +867,12 @@ export interface components {
              * @enum {string}
              */
             readonly contact_pref: "email" | "phone" | "both";
-            readonly contact_value: string;
             readonly is_hidden: boolean;
             readonly company_name: string;
+            /** Format: double */
+            readonly company_rating: number;
+            readonly phone: string;
+            readonly email: string;
             /**
              * @description * `pending` - На модерации
              *     * `approved` - Одобрено
@@ -864,6 +904,10 @@ export interface components {
             readonly price_per_km: number;
             /** Format: double */
             readonly origin_dist_km: number;
+            /** Format: double */
+            readonly origin_radius_km: number;
+            /** Format: double */
+            readonly dest_radius_km: number;
         };
         CargoPublish: {
             /** Format: uuid */
@@ -1204,8 +1248,12 @@ export interface components {
             readonly weight_t: number | null;
             /** @description Название перевозчика для колонки «Перевозчик». */
             readonly carrier_name: string;
-            /** @description Телефон / email для колонки «Контакты». */
-            readonly carrier_contact: string;
+            /** Format: double */
+            readonly carrier_rating: number;
+            /** @description Телефон перевозчика (вместо contact_value). */
+            readonly phone: string;
+            /** @description Email перевозчика (вместо contact_value). */
+            readonly email: string;
             /** Format: decimal */
             readonly price_value: string | null;
             /**
@@ -1217,6 +1265,12 @@ export interface components {
              * @enum {string}
              */
             readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** @description Способ оплаты: «Картой» / «Наличными».
+             *
+             *     Ожидается, что в модели Offer есть поле payment_method или payment_type
+             *     с кодами вида: CARD / CASH / BY_CARD / BY_CASH.
+             *     Если поля нет — вернётся пустая строка (getattr с default). */
+            readonly payment_method: string;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
             readonly is_active: boolean;
@@ -1226,6 +1280,10 @@ export interface components {
             /** @description Флаг, что оффер принят обеими сторонами
              *     (для зелёной галочки / завершённой сделки). */
             readonly is_handshake: boolean;
+            /** @description Статусы:
+             *     - «Предложение от заказчика» (инициатор CUSTOMER)
+             *     - «Предложение от посредника» (инициатор CARRIER) */
+            readonly source_status: string;
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
@@ -1234,8 +1292,11 @@ export interface components {
             readonly id: number;
             cargo: number;
             readonly cargo_id: number;
-            customer: number;
-            carrier?: number | null;
+            readonly customer: number;
+            readonly customer_name: string;
+            readonly carrier: number | null;
+            readonly carrier_name: string;
+            readonly logistic_name: string;
             /**
              * @description * `pending` - В ожидании
              *     * `en_route` - В пути
@@ -1253,20 +1314,26 @@ export interface components {
              * @enum {string}
              */
             currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            readonly currency_display: string;
             /** Format: decimal */
             price_total?: string;
             /** Format: decimal */
             route_distance_km?: string;
             /** Format: double */
             readonly price_per_km: number;
+            readonly origin_city: string;
+            /** Format: date */
+            readonly load_date: string;
+            readonly destination_city: string;
+            /** Format: date */
+            readonly delivery_date: string | null;
+            readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
             readonly documents: components["schemas"]["OrderDocument"][];
         };
         OrderDetailRequest: {
             cargo: number;
-            customer: number;
-            carrier?: number | null;
             /**
              * @description * `pending` - В ожидании
              *     * `en_route` - В пути
@@ -1330,8 +1397,11 @@ export interface components {
             readonly id: number;
             cargo: number;
             readonly cargo_id: number;
-            customer: number;
-            carrier?: number | null;
+            readonly customer: number;
+            readonly customer_name: string;
+            readonly carrier: number | null;
+            readonly carrier_name: string;
+            readonly logistic_name: string;
             /**
              * @description * `pending` - В ожидании
              *     * `en_route` - В пути
@@ -1349,12 +1419,20 @@ export interface components {
              * @enum {string}
              */
             currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            readonly currency_display: string;
             /** Format: decimal */
             price_total?: string;
             /** Format: decimal */
             route_distance_km?: string;
             /** Format: double */
             readonly price_per_km: number;
+            readonly origin_city: string;
+            /** Format: date */
+            readonly load_date: string;
+            readonly destination_city: string;
+            /** Format: date */
+            readonly delivery_date: string | null;
+            readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -1436,6 +1514,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["OrderList"][];
+        };
+        PaginatedRatingUserListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["RatingUserList"][];
         };
         PaginatedUserRatingList: {
             /** @example 123 */
@@ -1535,8 +1628,6 @@ export interface components {
         };
         PatchedOrderDetailRequest: {
             cargo?: number;
-            customer?: number;
-            carrier?: number | null;
             /**
              * @description * `pending` - В ожидании
              *     * `en_route` - В пути
@@ -1607,6 +1698,25 @@ export interface components {
             region?: string;
             /** Город */
             city?: string;
+        };
+        /** @description Строка для списка рейтинга (вкладки: Грузовладельцы / Логисты / Перевозчики). */
+        RatingUserList: {
+            readonly id: number;
+            /**
+             * @description * `LOGISTIC` - Логист
+             *     * `CUSTOMER` - Заказчик
+             *     * `CARRIER` - Перевозчик
+             * @enum {string}
+             */
+            readonly role: "LOGISTIC" | "CUSTOMER" | "CARRIER";
+            readonly company_name: string;
+            readonly display_name: string;
+            /** Format: double */
+            readonly avg_rating: number;
+            readonly rating_count: number;
+            readonly completed_orders: number;
+            /** Format: date-time */
+            readonly registered_at: string;
         };
         RefreshResponse: {
             detail: string;
@@ -2126,13 +2236,9 @@ export interface operations {
     geo_suggest_cities_retrieve: {
         parameters: {
             query: {
-                /** @description ISO-2 код страны для фильтра (необязательно) */
-                country?: string;
-                /** @description Язык результата: ru | uz | en (по умолчанию ru) */
-                lang?: string;
                 /** @description Максимум результатов (1..50, по умолчанию 10) */
                 limit?: number;
-                /** @description Строка поиска (минимум 2 символа) */
+                /** @description Часть названия города */
                 q: string;
             };
             header?: never;
@@ -2156,7 +2262,7 @@ export interface operations {
             query?: {
                 /** @description Максимум результатов (1..50, по умолчанию 10) */
                 limit?: number;
-                /** @description Код страны (ISO-2) или часть названия */
+                /** @description Часть названия страны */
                 q?: string;
             };
             header?: never;
@@ -3134,6 +3240,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserRating"];
+                };
+            };
+        };
+    };
+    ratings_users_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedRatingUserListList"];
+                };
+            };
+        };
+    };
+    ratings_users_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this user. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RatingUserList"];
                 };
             };
         };

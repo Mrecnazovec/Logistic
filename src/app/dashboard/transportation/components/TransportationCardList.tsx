@@ -1,17 +1,17 @@
 'use client'
 
+import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/components/card/cardFormatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { getTransportationStatusMeta } from '@/app/dashboard/transportation/constants/statusMeta'
-import Link from 'next/link'
 import type { IOrderList } from '@/shared/types/Order.interface'
+import { Building2, CalendarDays, Home, MapPin, Wallet } from 'lucide-react'
+import Link from 'next/link'
 
 type TransportationCardListProps = {
 	cargos: IOrderList[]
@@ -42,20 +42,63 @@ type TransportationCardProps = {
 }
 
 function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
-	const { badgeVariant, label: statusLabel } = getTransportationStatusMeta(statusValue)
-	const sections: CardSection[] = []
+
+	const sections: CardSection[] = [
+		{
+			title: 'Заказчик / Посредник',
+			items: [
+				{ icon: Building2, primary: cargo.customer_name || '—', secondary: 'Заказчик' },
+				{ icon: Building2, primary: cargo.logistic_name || '—', secondary: 'Посредник' },
+			],
+		},
+		{
+			title: 'Откуда',
+			items: [
+				{ icon: MapPin, primary: cargo.origin_city || '—', secondary: 'Город' },
+				{ icon: Home, primary: 'Адрес не указан', secondary: 'Адрес' },
+			],
+		},
+		{
+			title: 'Куда',
+			items: [
+				{ icon: MapPin, primary: cargo.destination_city || '—', secondary: 'Город' },
+				{ icon: Home, primary: 'Адрес не указан', secondary: 'Адрес' },
+			],
+		},
+		{
+			title: 'Когда',
+			items: [
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
+			],
+		},
+		{
+			title: 'Валюта / Цена',
+			items: [
+				{ icon: Wallet, primary: cargo.currency_display || cargo.currency || '—', secondary: 'Валюта' },
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: 'Стоимость' },
+			],
+		},
+		{
+			title: 'Цена / км',
+			items: [
+				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: 'Цена за км' },
+			],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
-			<CardHeader className='gap-4 border-b pb-4'>
+			<CardHeader className='gap-4 border-b'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<Badge variant={badgeVariant}>{statusLabel}</Badge>
-					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>������ �� ��������</CardTitle>
-					<UuidCopy id={cargo.id} />
+					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+						<UuidCopy id={cargo.id} isPlaceholder />
+					</div>
+					<span className='ml-auto text-xs text-muted-foreground'>Документы: {cargo.documents_count ?? 0}</span>
 				</div>
-				<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
-					<span>��������: ������ ����������</span>
-				</div>
+
+
+
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
@@ -64,9 +107,9 @@ function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.order(String(cargo.id))}>
-					<Button className='w-full bg-warning-400 hover:bg-warning-500 text-white'>��������</Button>
+					<Button className='w-full bg-warning-400 hover:bg-warning-500 text-white'>Посмотреть</Button>
 				</Link>
-				<Button className='flex-1 min-w-[140px] bg-error-400 hover:bg-error-500 text-white'>���������</Button>
+				<Button className='flex-1 min-w-[140px] bg-error-400 hover:bg-error-500 text-white'>Отменить</Button>
 			</CardFooter>
 		</Card>
 	)

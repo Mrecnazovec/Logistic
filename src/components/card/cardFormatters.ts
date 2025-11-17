@@ -2,6 +2,7 @@
 
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 
 export function formatRelativeDate(value?: string | null) {
 	if (!value) return '—'
@@ -22,10 +23,7 @@ export function formatRelativeDate(value?: string | null) {
 }
 
 export function formatPriceValue(value?: string | null, currency?: string | null) {
-	if (!value) return '—'
-	const numeric = Number(value)
-	if (Number.isNaN(numeric)) return '—'
-	return `${numeric.toLocaleString('ru-RU')} ${currency ?? ''}`.trim()
+	return formatCurrencyValue(value, currency)
 }
 
 export function formatPlace(city?: string | null, country?: string | null) {
@@ -52,10 +50,5 @@ export function formatWeightValue(value?: number | string | null) {
 }
 
 export function formatPricePerKmValue(value?: number | string | null, currency?: string | null) {
-	if (value === null || value === undefined || value === '') return '—'
-
-	const numeric = typeof value === 'string' ? Number(value) : value
-	if (Number.isNaN(numeric)) return String(value)
-
-	return `${numeric.toLocaleString('ru-RU')} ${currency ?? ''}/км`.trim()
+	return formatCurrencyPerKmValue(value, currency)
 }

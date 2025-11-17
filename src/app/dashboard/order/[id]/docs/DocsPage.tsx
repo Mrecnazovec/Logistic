@@ -10,7 +10,7 @@ const folderStructure = [{
 	folder: 'licenses'
 }, {
 	title: 'Договора',
-	folder: 'agreements'
+	folder: 'contracts'
 }, {
 	title: 'Документы о погрузке',
 	folder: 'loading'

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { LucideIcon } from 'lucide-react'
@@ -78,14 +79,9 @@ export function formatWeight(weight?: number | null) {
 }
 
 export function formatPrice(value?: string | null, currency?: string | null) {
-	if (!value) return '—'
-	const numeric = Number(value)
-	if (Number.isNaN(numeric)) return '—'
-	return `${numeric.toLocaleString('ru-RU')} ${currency ?? ''}`.trim()
+	return formatCurrencyValue(value, currency)
 }
 
 export function formatPricePerKm(value?: number | null, currency?: string | null) {
-	if (!value) return '—'
-	return `${value.toLocaleString('ru-RU')} ${currency ?? ''}/км`.trim()
+	return formatCurrencyPerKmValue(value, currency)
 }
-

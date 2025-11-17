@@ -26,7 +26,6 @@ export function DeskPage() {
 	const { data, isLoading } = useGetLoadsBoard()
 	const { data: dataOffers, isLoading: isLoadingOffers } = useGetIncomingOffers()
 
-
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()

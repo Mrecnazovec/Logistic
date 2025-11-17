@@ -75,31 +75,12 @@ export function DeskMyPage() {
 						<TableTypeSelector />
 					</div>
 					<TabsContent value='desk' className='flex-1'>
-						{isLoading ? (
-							<LoaderTable />
-						) : deskResults.length === 0 ? (
-							<EmptyTableState />
-						) : tableType === 'card' ? (
-							<DeskMyCardList cargos={deskResults} serverPagination={deskPagination} />
-						) : (
-							<DataTable
-								columns={deskMyColumns}
-								data={deskResults}
-								serverPagination={{
-									next: data?.next,
-									previous: data?.previous,
-									totalCount: data?.count,
-								}}
-							/>
-						)}
-					</TabsContent>
-					<TabsContent value='drivers'>
 						{isLoadingMy ? (
 							<LoaderTable />
 						) : myResults.length === 0 ? (
 							<EmptyTableState />
 						) : tableType === 'card' ? (
-							<DeskDriverCardList cargos={myResults} serverPagination={myPagination} />
+							<DeskMyCardList cargos={myResults} serverPagination={deskPagination} />
 						) : (
 							<DataTable
 								columns={deskCarrierColumns}
@@ -108,6 +89,26 @@ export function DeskMyPage() {
 									next: dataMy?.next,
 									previous: dataMy?.previous,
 									totalCount: dataMy?.count,
+								}}
+							/>
+
+						)}
+					</TabsContent>
+					<TabsContent value='drivers'>
+						{isLoading ? (
+							<LoaderTable />
+						) : deskResults.length === 0 ? (
+							<EmptyTableState />
+						) : tableType === 'card' ? (
+							<DeskDriverCardList cargos={deskResults} serverPagination={myPagination} />
+						) : (
+							<DataTable
+								columns={deskMyColumns}
+								data={deskResults}
+								serverPagination={{
+									next: data?.next,
+									previous: data?.previous,
+									totalCount: data?.count,
 								}}
 							/>
 						)}
@@ -130,21 +131,21 @@ export function DeskMyPage() {
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value='desk'>
-						{isLoading ? (
-							<LoaderTable />
-						) : deskResults.length === 0 ? (
-							<EmptyTableState />
-						) : (
-							<DeskMyCardList cargos={deskResults} serverPagination={deskPagination} />
-						)}
-					</TabsContent>
-					<TabsContent value='drivers'>
 						{isLoadingMy ? (
 							<LoaderTable />
 						) : myResults.length === 0 ? (
 							<EmptyTableState />
 						) : (
-							<DeskDriverCardList cargos={myResults} serverPagination={myPagination} />
+							<DeskMyCardList cargos={myResults} serverPagination={deskPagination} />
+						)}
+					</TabsContent>
+					<TabsContent value='drivers'>
+						{isLoading ? (
+							<LoaderTable />
+						) : deskResults.length === 0 ? (
+							<EmptyTableState />
+						) : (
+							<DeskDriverCardList cargos={deskResults} serverPagination={myPagination} />
 						)}
 					</TabsContent>
 				</Tabs>

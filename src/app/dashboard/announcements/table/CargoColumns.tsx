@@ -116,7 +116,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			`${row.original.origin_city}, ${row.original.origin_country}`,
 	},
 	{
-		accessorKey: 'origin_dist_km',
+		accessorKey: 'origin_radius_km',
 		header: 'Радиус',
 	},
 	{
@@ -126,7 +126,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			`${row.original.destination_city}, ${row.original.destination_country}`,
 	},
 	{
-		accessorKey: '',
+		accessorKey: 'dest_radius_km',
 		header: 'Радиус',
 	},
 	{
@@ -165,20 +165,19 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		header: 'Компания',
 	},
 	{
-		accessorKey: 'contact_value',
+		accessorKey: 'phone',
 		header: 'Телефон',
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.contact_value
+			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.phone
 			return <Minus className='size-5' />
 		}
 	},
 	{
-		accessorKey: 'contact_pref',
+		accessorKey: 'email',
 		header: 'Email',
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.contact_value
+			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.email
 			return <Minus className='size-5' />
 		}
 	},
 ]
-

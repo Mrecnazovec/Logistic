@@ -1,66 +1,121 @@
 'use client'
 
 import { OfferModal } from '@/components/ui/modals/OfferModal'
-import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
+import { getContactPrefName } from '@/shared/enums/ContactPref.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { formatCurrencyValue } from '@/shared/utils/currency'
 import { useRoleStore } from '@/store/useRoleStore'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { Star } from 'lucide-react'
+import type { ReactNode } from 'react'
+
+type InfoRowProps = {
+	label: string
+	value: ReactNode
+}
+
+const InfoRow = ({ label, value }: InfoRowProps) => (
+	<div className='flex items-start justify-between gap-4'>
+		<dt className='text-muted-foreground'>{label}:</dt>
+		<dd className='text-right font-semibold text-foreground'>{value}</dd>
+	</div>
+)
+
+const formatDate = (date?: string | null) =>
+	date ? format(new Date(date), 'dd.MM.yyyy', { locale: ru }) : '—'
+
+const formatDurationFromMinutes = (totalMinutes?: number) => {
+	if (!totalMinutes) return '—'
+	const hours = Math.floor(totalMinutes / 60)
+	const minutes = totalMinutes % 60
+	const parts = []
+	if (hours) parts.push(`${hours} ч`)
+	if (minutes) parts.push(`${minutes} мин`)
+	return parts.join(' ')
+}
 
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const { role } = useRoleStore()
-	const transportName = TransportSelect.find(t => t.type === cargo.transport_type)?.name ?? '—'
 
-	const contactName = ContactPrefSelector.find(t => t.type === cargo.contact_pref)?.name ?? '—'
+	const contactValue =
+		cargo.contact_pref === 'email'
+			? cargo.email
+			: cargo.contact_pref === 'phone'
+				? cargo.phone
+				: cargo.phone || cargo.email || '—'
+
+	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type
+	const contactName = getContactPrefName(cargo.contact_pref) || '—'
+	const ratingDisplay =
+		Number.isFinite(cargo.company_rating) && cargo.company_rating > 0 ? cargo.company_rating.toFixed(1) : '—'
+	const formattedPrice = formatCurrencyValue(cargo.price_value, cargo.price_currency)
+
 	return (
-		<div className='flex flex-col gap-4'>
-			{/* Верхняя часть */}
-			<div className='flex flex-col md:flex-row md:items-center md:justify-between'>
-				<div>
-					<p className='text-brand font-bold'>
-						Рейтинг пользователя: <span className='text-black'>4.5</span> <span className='font-bold text-yellow-500'>★★★★☆</span>
-					</p>
-					<p className='font-bold'>
-						Наименование груза: <span className='text-foreground font-semibold'>{cargo.product}</span>
-					</p>
+		<div className='flex flex-col gap-6'>
+			<div className='grid grid-cols-1 gap-10 text-sm md:grid-cols-4'>
+				<div className='space-y-4'>
+					<p className='font-semibold text-brand'>Информация о пользователе</p>
+					<dl className='space-y-3'>
+						<InfoRow label='Логин' value={cargo.company_name || '—'} />
+						<InfoRow label='Способ связи' value={`${contactName}${contactValue ? `: ${contactValue}` : ''}`} />
+						<InfoRow
+							label='Рейтинг'
+							value={
+								<span className='inline-flex items-center gap-1'>
+									<Star className='size-4 fill-yellow-500 text-yellow-500' aria-hidden />
+									<span>{ratingDisplay}</span>
+								</span>
+							}
+						/>
+					</dl>
+				</div>
+
+				<div className='space-y-6'>
+					<div className='space-y-3'>
+						<p className='font-semibold text-brand'>Откуда</p>
+						<dl className='space-y-3'>
+							<InfoRow label='Место' value={`${cargo.origin_city}, ${cargo.origin_country}`} />
+							<InfoRow label='Дата отгрузки' value={formatDate(cargo.load_date)} />
+						</dl>
+					</div>
+					<div className='space-y-3'>
+						<p className='font-semibold text-brand'>Куда</p>
+						<dl className='space-y-3'>
+							<InfoRow label='Место' value={`${cargo.destination_city}, ${cargo.destination_country}`} />
+							<InfoRow label='Дата разгрузки' value={formatDate(cargo.delivery_date)} />
+						</dl>
+					</div>
+				</div>
+
+				<div className='space-y-4'>
+					<p className='font-semibold text-brand'>Детали оборудования</p>
+					<dl className='space-y-3'>
+						<InfoRow label='Наименование груза' value={cargo.product || '—'} />
+						<InfoRow label='Тип транспорта' value={transportName} />
+					</dl>
+				</div>
+
+				<div className='space-y-4'>
+					<p className='font-semibold text-brand'>Детали перевозки</p>
+					<dl className='space-y-3'>
+						<InfoRow label='Способ оплаты' value='—' />
+						<InfoRow label='Почта' value={cargo.email || '—'} />
+						<InfoRow label='Номер телефона' value={cargo.phone || '—'} />
+						<InfoRow label='Примерное время' value={formatDurationFromMinutes(cargo.age_minutes)} />
+						<InfoRow label='Цена/Валюта' value={formattedPrice} />
+						<InfoRow label='Наименование груза' value={cargo.product || '—'} />
+					</dl>
 				</div>
 			</div>
 
-			{/* Детали */}
-			<div className='grid grid-cols-1 md:grid-cols-4 gap-12 text-sm'>
-				<div className='space-y-3'>
-					<p className='font-medium text-brand'>Откуда</p>
-					<p className='flex justify-between'><span className='text-grayscale'>Место:</span> <span className='font-bold'>{cargo.origin_city}, {cargo.origin_country}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Дата погрузки:</span> <span className='font-bold'>{format(cargo.load_date, 'dd.MM.yyyy', { locale: ru })}</span></p>
+			{role !== RoleEnum.CUSTOMER && (
+				<div className='mt-6 flex justify-end'>
+					<OfferModal selectedRow={cargo} />
 				</div>
-
-				<div className='space-y-3'>
-					<p className='font-medium text-brand'>Куда</p>
-					<p className='flex justify-between'><span className='text-grayscale'>Место:</span> <span className='font-bold'>{cargo.destination_city}, {cargo.destination_country}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Дата отгрузки:</span> <span className='font-bold'>{cargo.delivery_date ? format(cargo.delivery_date, 'dd.MM.yyyy', { locale: ru }) : '-'}</span></p>
-				</div>
-
-				<div className='space-y-3'>
-					<p className='font-medium text-brand'>Детали оборудования</p>
-					<p className='flex justify-between'><span className='text-grayscale'>Наименование груза:</span> <span className='font-bold'>{cargo.product}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Тип транспорта:</span> <span className='font-bold'>{transportName}</span></p>
-				</div>
-
-				<div className='space-y-3'>
-					<p className='font-medium text-brand'>Детали перевозки</p>
-					<p className='flex justify-between'><span className='text-grayscale'>Способ связи:</span> <span className='font-bold'>{contactName}</span></p>
-					<p className='flex justify-between'><span className='text-grayscale'>Контакт:</span> <span className='font-bold'>{cargo.contact_value}</span></p>
-
-					<p className='flex justify-between'><span className='text-grayscale'>Цена:</span> <span className='font-bold'>{cargo.price_value} {cargo.price_currency}</span></p>
-				</div>
-			</div>
-
-			{role !== RoleEnum.CUSTOMER && <div className='flex justify-end mt-6'>
-				<OfferModal selectedRow={cargo} />
-			</div>}
-
+			)}
 		</div>
 	)
 }

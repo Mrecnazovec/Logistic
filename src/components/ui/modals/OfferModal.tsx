@@ -24,8 +24,9 @@ import {
 } from '@/components/ui/Select'
 import { cn } from '@/lib/utils'
 import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 
 type OfferRow = ICargoList & { id?: number }
 type CurrencyCode = NonNullable<ICargoList['price_currency']>
@@ -94,8 +95,9 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 	const [currency, setCurrency] = useState<CurrencyCode | ''>(() => selectedRow.price_currency ?? '')
 	const cargoId = selectedRow.id
 
-	const transportName =
-		TransportSelect.find((t) => t.type === selectedRow.transport_type)?.name ?? '—'
+	const transportName = getTransportName(selectedRow.transport_type) || '—'
+	const formattedPrice = formatCurrencyValue(selectedRow.price_value, selectedRow.price_currency)
+	const formattedPricePerKm = formatCurrencyPerKmValue(selectedRow.price_per_km, selectedRow.price_currency)
 
 	const isCounterDisabled = !cargoId || !priceValue || !currency || isLoadingCreate
 	const isAcceptDisabled =
@@ -150,10 +152,8 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 					<div>
 						<p>Транспорт: {transportName}</p>
 						<p>Вес: {selectedRow.weight_t} т</p>
-						<p>
-							Цена: {selectedRow.price_value} {selectedRow.price_currency}
-						</p>
-						<p>({selectedRow.price_per_km} за км)</p>
+						<p>Цена: {formattedPrice}</p>
+						<p>({formattedPricePerKm})</p>
 					</div>
 				</div>
 
@@ -167,7 +167,7 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 					<div>
 						<p>
 							<span className='font-semibold'>Предложение: </span>
-							{selectedRow.price_value} {selectedRow.price_currency} ({selectedRow.price_per_km} за км)
+							{formattedPrice} ({formattedPricePerKm})
 						</p>
 					</div>
 				</div>

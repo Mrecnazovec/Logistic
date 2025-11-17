@@ -66,6 +66,10 @@ export const fakeCargoList: IPaginatedCargoListList = {
 		const priceValue = 1600 + index * 180
 		const pricePerKm = Math.round(priceValue / routeKm)
 		const contactValue = `+998 90 123 4${(10 + index).toString().padStart(2, '0')}`
+		const email = `contact${index + 1}@logist.com`
+		const companyRating = 4 + (index % 5) * 0.1
+		const originRadiusKm = 10 + index
+		const destRadiusKm = 15 + index
 
 		return {
 			id: index + 1,
@@ -87,9 +91,11 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			price_currency: priceCurrency,
 			price_uzs: (priceValue * 12500).toString(),
 			contact_pref: index % 3 === 0 ? ContactPrefEnum.PHONE : index % 3 === 1 ? ContactPrefEnum.EMAIL : ContactPrefEnum.BOTH,
-			contact_value: contactValue,
 			is_hidden: false,
 			company_name: company,
+			company_rating: Number(companyRating.toFixed(1)),
+			phone: contactValue,
+			email,
 			moderation_status: moderationStatuses[index % moderationStatuses.length],
 			status: statuses[index % statuses.length],
 			age_minutes: (index + 1) * 20,
@@ -100,6 +106,8 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			route_km: routeKm,
 			price_per_km: pricePerKm,
 			origin_dist_km: 10 + index * 3,
+			origin_radius_km: originRadiusKm,
+			dest_radius_km: destRadiusKm,
 			axles: 0,
 			offers_count: 3,
 			volume_m3: '300',

@@ -12,6 +12,10 @@ export const useGetOrders = () => {
 		searchParams.forEach((value, key) => {
 			obj[key] = value
 		})
+		if (!obj.status) {
+			obj.status = 'no_driver'
+		}
+
 		return obj as OrdersListQuery
 	}, [searchParams])
 

@@ -109,7 +109,7 @@ function DeskDriverCard({ cargo, index }: DeskDriverCardProps) {
 				</InfoSection>
 
 				<InfoSection title='Контакты'>
-					<InfoChip icon={Phone} primary={cargo.carrier_contact || '—'} secondary='Телефон' className='flex-1' />
+					<InfoChip icon={Phone} primary={cargo.phone || cargo.email || '—'} secondary='Телефон' className='flex-1' />
 				</InfoSection>
 			</CardContent>
 

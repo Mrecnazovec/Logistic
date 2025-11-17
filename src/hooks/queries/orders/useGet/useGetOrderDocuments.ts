@@ -2,11 +2,12 @@ import { ordersService } from '@/services/orders.service'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import { useMemo } from 'react'
+import type { IOrderDetail, IOrderDocument } from '@/shared/types/Order.interface'
 
 export const useGetOrderDocuments = () => {
 	const params = useParams<{ id: string }>()
 
-	const { data: orderDocuments, isLoading } = useQuery({
+	const { data: orderDocuments, isLoading } = useQuery<IOrderDocument[] | IOrderDetail>({
 		queryKey: ['get order documents', params.id],
 		queryFn: () => ordersService.getOrderDocuments(params.id),
 	})
