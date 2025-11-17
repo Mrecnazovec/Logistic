@@ -27,11 +27,11 @@ export function Sidebar() {
 		.map((group) => ({
 			...group,
 			items: group.items.filter((item) => isAllowed(item.roles)),
-		}))
+	}))
 		.filter((group) => group.items.length > 0)
 
 	return (
-		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0'>
+		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0 md:sticky md:top-0 md:h-screen md:z-20'>
 			<Logo />
 			<nav className='flex-1 flex flex-col items-center gap-2 mt-8'>
 				{visibleNavGroups.map((group, idx) => (

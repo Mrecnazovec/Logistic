@@ -23,7 +23,7 @@ export function Header() {
 	const { me, isLoading } = useGetMe()
 
 	return (
-		<header className='h-auto min-h-24 flex items-center xs:justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg px-4 max-xs:pt-4 max-xs:flex-col-reverse gap-4'>
+		<header className='h-auto min-h-24 flex items-center xs:justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg px-4 max-xs:pt-4 max-xs:flex-col-reverse gap-4 sticky top-0 z-30'>
 			<div className='flex flex-col items-center gap-3 xs:self-end self-start'>
 				{backLink && (
 					<Link
