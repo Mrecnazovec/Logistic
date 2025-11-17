@@ -116,10 +116,18 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 			`${row.original.origin_city}, ${row.original.origin_country}`,
 	},
 	{
+		accessorKey: 'origin_dist_km',
+		header: 'Радиус',
+	},
+	{
 		accessorKey: 'destination_city',
 		header: 'Выгрузка',
 		cell: ({ row }) =>
 			`${row.original.destination_city}, ${row.original.destination_country}`,
+	},
+	{
+		accessorKey: '',
+		header: 'Радиус',
 	},
 	{
 		accessorKey: 'load_date',

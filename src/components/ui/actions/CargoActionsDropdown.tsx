@@ -90,7 +90,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 
 					<DropdownMenuItem
 						onClick={() => setOpen(false)}
-						className='flex items-center gap-2'
+						className='flex items-center gap-2 cursor-pointer'
 					>
 						<Pencil className='size-4 text-muted-foreground' />
 						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>Изменить</Link>
@@ -100,7 +100,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 
 					<DropdownMenuItem
 						onClick={handleToggleVisibility}
-						className='flex items-center gap-2'
+						className='flex items-center gap-2 cursor-pointer'
 						disabled={isLoadingPut}
 					>
 						<VisibilityIcon className='size-4 text-muted-foreground' />
@@ -114,35 +114,11 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 							setOpen(false)
 							setOfferOpen(true)
 						}}
-						className='flex items-center gap-2'
+						className='flex items-center gap-2 cursor-pointer'
 					>
 						<Handshake className='size-4 text-muted-foreground' />
 						Сделать предложение
 					</DropdownMenuItem>
-					<DropdownMenuItem
-						onClick={() => {
-							setOfferOpen(true)
-							setOpen(false)
-						}}
-						className='flex items-center gap-2'
-					>
-						<Pencil className='size-4 text-muted-foreground' />
-						Изменить
-					</DropdownMenuItem>
-
-					<DropdownMenuSeparator />
-
-					<DropdownMenuItem
-						onClick={() => {
-							console.log('Скрыть', cargo.uuid)
-							setOpen(false)
-						}}
-						className='flex items-center gap-2 text-red-500 focus:text-red-500'
-					>
-						<Trash2 className='size-4 text-red-500' />
-						Удалить
-					</DropdownMenuItem>
-
 				</DropdownMenuContent>
 			</DropdownMenu>
 

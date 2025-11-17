@@ -57,7 +57,7 @@ class OrdersService {
 		return createdOrder
 	}
 
-	async uploadOrderDocument(id: string | number, payload: OrderDocumentUploadDto) {
+	async uploadOrderDocument(id: string | number, payload: OrderDocumentUploadDto, category: string) {
 		const formData = new FormData()
 
 		if (payload.title) {
@@ -65,6 +65,7 @@ class OrdersService {
 		}
 
 		formData.append('file', payload.file)
+		formData.append('category', category)
 
 		const { data } = await axiosWithAuth<IOrderDocument>({
 			url: API_URL.orders(`${id}/documents`),

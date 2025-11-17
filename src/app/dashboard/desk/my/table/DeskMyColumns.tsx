@@ -66,13 +66,21 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 		cell: ({ row }) => <UuidCopy id={row.original.id} />,
 	},
 	{
-		accessorKey: 'company_name',
+		accessorKey: 'carrier_name',
 		header: 'Перевозчик',
+	},
+	{
+		accessorKey: 'carrier_rating',
+		header: 'Рейтинг',
 	},
 	{
 		accessorKey: 'status_display',
 		header: 'Статус',
 
+	},
+	{
+		accessorKey: 'price_pref',
+		header: 'Способ оплаты',
 	},
 	{
 		id: 'origin',

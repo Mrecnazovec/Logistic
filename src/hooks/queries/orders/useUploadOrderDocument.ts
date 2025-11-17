@@ -3,6 +3,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 
+import { ordersService } from '@/services/orders.service'
+import { useParams } from 'next/navigation'
+import { CategoryEnum } from '@/shared/enums/Category.enum'
+
 type UploadPayload = {
 	id: string
 	data: OrderDocumentUploadDto
@@ -10,6 +14,8 @@ type UploadPayload = {
 
 export const useUploadOrderDocument = () => {
 	const queryClient = useQueryClient()
+	const param = useParams<{ folder: CategoryEnum }>()
+
 
 	const {
 		mutate: uploadOrderDocument,
@@ -17,25 +23,13 @@ export const useUploadOrderDocument = () => {
 		isPending: isLoadingUpload,
 	} = useMutation({
 		mutationKey: ['order', 'documents', 'upload'],
-		mutationFn: async ({ id, data }: UploadPayload) => {
-			console.log('[Mock upload payload]', {
-				orderId: id,
-				title: data.title,
-				file: {
-					name: data.file.name,
-					size: data.file.size,
-					type: data.file.type,
-				},
-			})
-
-			await new Promise((resolve) => setTimeout(resolve, 1200))
-		},
-		onSuccess() {
-			toast.success('Document prepared (mock)')
-			queryClient.invalidateQueries({ queryKey: ['get order documents'] })
+		mutationFn: async ({ id, data }: UploadPayload) => ordersService.uploadOrderDocument(id, data, param.folder),
+		onSuccess(_, { id }) {
+			toast.success('Документ успешно загружен')
+			queryClient.invalidateQueries({ queryKey: ['get order documents', id] })
 		},
 		onError() {
-			toast.error('Unable to mock upload document')
+			toast.error('Не удалось загрузить документ')
 		},
 	})
 

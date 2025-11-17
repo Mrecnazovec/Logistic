@@ -1,17 +1,15 @@
-﻿'use client'
+'use client'
 
-import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
+import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
-import { Loader2, Search } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 import { HistoryCardList } from './components/HistoryCardList'
@@ -33,40 +31,25 @@ export function HistoryPage() {
 		[router],
 	)
 
-	const serverPaginationMeta = data?.results
+	const results = data?.results ?? []
+
+	const serverPaginationMeta = results.length
 		? {
 			next: data.next,
 			previous: data.previous,
 			totalCount: data.count,
-			pageSize: data.results.length,
+			pageSize: results.length,
 		}
 		: undefined
 
-	const renderEmptyState = () => (
-		<div className='flex-1 bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
-			<div className='flex items-center justify-center flex-col gap-6'>
-				<div className='bg-background shadow-2xl p-4 rounded-full'>
-					<Search className='size-5 text-brand' />
-				</div>
-				<h1 className='text-5xl font-bold'>Ничего не найдено...</h1>
-				<p className='text-xl text-grayscale max-w-2xl text-center'>
-					Мы не нашли завершённых заказов по текущему запросу. Попробуйте изменить фильтры или создайте новое объявление.
-				</p>
-				<Link href={DASHBOARD_URL.posting()}>
-					<Button className='w-[260px] h-[54px] text-base'>Создать объявление</Button>
-				</Link>
-			</div>
-		</div>
-	)
-
 	const renderDesktopContent = () => {
-		if (isLoading) return <Loader />
-		if (!data?.results?.length) return renderEmptyState()
+		if (isLoading) return <LoaderTable />
+		if (!results.length) return <EmptyTableState />
 
 		if (tableType === 'card') {
 			return (
 				<HistoryCardList
-					cargos={data.results}
+					cargos={results}
 					serverPagination={serverPaginationMeta}
 					onView={handleRowClick}
 				/>
@@ -76,7 +59,7 @@ export function HistoryPage() {
 		return (
 			<DataTable
 				columns={historyColumns}
-				data={data.results}
+				data={results}
 				isButton
 				onRowClick={handleRowClick}
 				serverPagination={serverPaginationMeta}
@@ -85,12 +68,12 @@ export function HistoryPage() {
 	}
 
 	const renderMobileContent = () => {
-		if (isLoading) return <Loader />
-		if (!data?.results?.length) return renderEmptyState()
+		if (isLoading) return <LoaderTable />
+		if (!results.length) return <EmptyTableState />
 
 		return (
 			<HistoryCardList
-				cargos={data.results}
+				cargos={results}
 				serverPagination={serverPaginationMeta}
 				onView={handleRowClick}
 			/>
@@ -112,14 +95,6 @@ export function HistoryPage() {
 			</div>
 
 			{isDesktop ? renderDesktopContent() : renderMobileContent()}
-		</div>
-	)
-}
-
-function Loader() {
-	return (
-		<div className='flex-1 bg-background rounded-4xl flex items-center justify-center h-full'>
-			<Loader2 className='size-10 animate-spin' />
 		</div>
 	)
 }

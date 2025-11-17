@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import { Rating } from "./[role]/Rating";
+import { RatingPage } from "./[role]/RatingPage";
 
 export const metadata: Metadata = {
 	title: 'Рейтинг',
 }
 
 export default function page() {
-	return <Rating />
+	return <RatingPage />
 }

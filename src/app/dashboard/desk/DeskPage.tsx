@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
@@ -13,8 +12,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
-import { Loader2, Search } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { DeskCardList } from './components/DeskCardList'
@@ -22,6 +19,7 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { deskColumns } from './table/DeskColumns'
 import { DeskCardDriverList } from './components/DeskCardDriverList'
 import { deskDriverColumns } from './table/DeskDriverColumns'
+import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 
 
 export function DeskPage() {
@@ -61,84 +59,73 @@ export function DeskPage() {
 				</Form>
 			</div>
 
-			{isLoading ? (
-				<div className='flex-1 bg-background rounded-4xl flex items-center justify-center h-full'>
-					<Loader2 className='size-10 animate-spin' />
-				</div>
-			) : data?.results?.length === 0 ? (
-				<div className='flex-1 bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
-
-					<div className='flex items-center justify-center flex-col gap-6'>
-						<div className='bg-background shadow-2xl p-4 rounded-full'>
-							<Search className='size-5 text-brand' />
-						</div>
-						<h1 className='text-5xl font-bold'>Ничего не найдено</h1>
-						<p className='text-xl text-grayscale max-w-2xl text-center'>
-							Мы не нашли подходящих результатов, попробуйте изменить фильтры
-						</p>
-						<Link href={DASHBOARD_URL.posting()}>
-							<Button className='w-[260px] h-[54px] text-base'>Создать заявку</Button>
-						</Link>
-					</div>
-				</div>
-			) : data?.results ? (
-				isDesktop ? (
-					<Tabs defaultValue='desk' className='flex-1'>
-						<div className='flex flex-wrap items-end gap-4'>
-							<TabsList className='bg-transparent -mb-2'>
-								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-								<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-							</TabsList>
-							<div className='ml-auto'>
-								<TableTypeSelector />
-							</div>
-						</div>
-						<TabsContent value='desk' className='flex-1'>
-							{tableType === 'card' ? (
-								<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
-							) : (
-								<DataTable
-									columns={deskColumns}
-									data={data.results}
-									serverPagination={{
-										next: data.next,
-										previous: data.previous,
-										totalCount: data.count,
-									}}
-								/>
-							)}
-						</TabsContent>
-						<TabsContent value='drivers'>
-							{tableType === 'card' ? (
-								<DeskCardDriverList cargos={dataOffers?.results || []} serverPagination={serverPaginationMeta} />
-							) : (
-								<DataTable
-									columns={deskDriverColumns}
-									data={dataOffers?.results || []}
-									serverPagination={{
-										next: data.next,
-										previous: data.previous,
-										totalCount: data.count,
-									}}
-								/>
-							)}
-						</TabsContent>
-					</Tabs>
-				) : (
-					<Tabs defaultValue='desk' className='xs:bg-background'>
+			{isDesktop ? (
+				<Tabs defaultValue='desk' className='flex-1'>
+					<div className='flex flex-wrap items-end gap-4'>
 						<TabsList className='bg-transparent -mb-2'>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
 							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
 						</TabsList>
-						<TabsContent value='desk'>
+						<div className='ml-auto'>
+							<TableTypeSelector />
+						</div>
+					</div>
+					<TabsContent value='desk' className='flex-1'>
+						{isLoading ? <LoaderTable /> : data?.results?.length === 0 || !data?.results ? (
+							<EmptyTableState />
+						) : tableType === 'card' ? (
 							<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
-						</TabsContent>
-						<TabsContent value='drivers'>
-							<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
-						</TabsContent>
-					</Tabs>
-				)
-			) : null}
+						) : (
+							<DataTable
+								columns={deskColumns}
+								data={data.results}
+								serverPagination={{
+									next: data.next,
+									previous: data.previous,
+									totalCount: data.count,
+								}}
+							/>
+						)}
+					</TabsContent>
+					<TabsContent value='drivers'>
+						{isLoadingOffers ? <LoaderTable /> : dataOffers?.results?.length === 0 || !dataOffers?.results ? (
+							<EmptyTableState />
+						) : tableType === 'card' ? (
+							<DeskCardDriverList cargos={dataOffers?.results || []} serverPagination={serverPaginationMeta} />
+						) : (
+							<DataTable
+								columns={deskDriverColumns}
+								data={dataOffers?.results || []}
+								serverPagination={{
+									next: dataOffers.next,
+									previous: dataOffers.previous,
+									totalCount: dataOffers.count,
+								}}
+							/>
+						)}
+					</TabsContent>
+				</Tabs>
+			) : (
+				<Tabs defaultValue='desk' className='xs:bg-background flex-1'>
+					<TabsList className='bg-transparent -mb-2'>
+						<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
+						<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
+					</TabsList>
+					<TabsContent value='desk'>
+						{isLoading ? <LoaderTable /> : data?.results?.length === 0 || !data?.results ? (
+							<EmptyTableState />
+						) :
+							< DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />}
+					</TabsContent>
+					<TabsContent value='drivers'>
+						{isLoading ? <LoaderTable /> : dataOffers?.results?.length === 0 || !dataOffers?.results ? (
+							<EmptyTableState />
+						) :
+							< DeskCardDriverList cargos={dataOffers.results} serverPagination={serverPaginationMeta} />}
+					</TabsContent>
+				</Tabs>
+			)
+			}
 		</div>
 	)
 }

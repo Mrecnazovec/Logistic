@@ -1,28 +1,28 @@
-﻿'use client'
+'use client'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
+import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
-import { Loader2, Search } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
 import { TransportationCardList } from './components/TransportationCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { createTransportationColumns } from './table/TransportationColumns'
-import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 
 const STATUS_TABS = [
 	{ value: 'no_driver', label: 'Без водителя' },
 	{ value: 'pending', label: 'В ожидании' },
 	{ value: 'en_route', label: 'В пути' },
-	{ value: 'delivered', label: 'Доставлено' },
+	{ value: 'delivered', label: 'Доставлен' },
 ] as const
 
 export function TransportationPage() {
@@ -37,12 +37,14 @@ export function TransportationPage() {
 	const role = useRoleStore((state) => state.role)
 	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
 
-	const serverPaginationMeta = data?.results
+	const results = data?.results ?? []
+
+	const serverPaginationMeta = results.length
 		? {
-			next: data.next,
-			previous: data.previous,
-			totalCount: data.count,
-			pageSize: data.results.length,
+			next: data?.next,
+			previous: data?.previous,
+			totalCount: data?.count,
+			pageSize: results.length,
 		}
 		: undefined
 
@@ -68,33 +70,14 @@ export function TransportationPage() {
 		[router],
 	)
 
-	const hasResults = Boolean(data?.results?.length)
-
-	const renderLoader = () => (
-		<div className='bg-background rounded-4xl flex items-center justify-center h-full'>
-			<Loader2 className='size-10 animate-spin' />
-		</div>
-	)
-
-	const renderEmptyState = () => (
-		<div className='h-full bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
-			<div className='flex items-center justify-center flex-col gap-6'>
-				<div className='bg-background shadow-2xl p-4 rounded-full'>
-					<Search className='size-5 text-brand' />
-				</div>
-				<h1 className='text-5xl font-bold'>Ничего не найдено...</h1>
-			</div>
-		</div>
-	)
-
 	const renderDesktopContent = (tabValue: string) => {
-		if (isLoading) return renderLoader()
-		if (!hasResults || !data?.results?.length) return renderEmptyState()
+		if (isLoading) return <LoaderTable />
+		if (!results.length) return <EmptyTableState />
 
 		if (tableType === 'card') {
 			return (
 				<TransportationCardList
-					cargos={data.results}
+					cargos={results}
 					serverPagination={serverPaginationMeta}
 					statusValue={tabValue}
 				/>
@@ -104,7 +87,7 @@ export function TransportationPage() {
 		return (
 			<DataTable
 				columns={tableColumns}
-				data={data.results}
+				data={results}
 				onRowClick={handleRowClick}
 				serverPagination={serverPaginationMeta}
 			/>
@@ -112,12 +95,12 @@ export function TransportationPage() {
 	}
 
 	const renderMobileContent = (tabValue: string) => {
-		if (isLoading) return renderLoader()
-		if (!hasResults || !data?.results?.length) return renderEmptyState()
+		if (isLoading) return <LoaderTable />
+		if (!results.length) return <EmptyTableState />
 
 		return (
 			<TransportationCardList
-				cargos={data.results}
+				cargos={results}
 				serverPagination={serverPaginationMeta}
 				statusValue={tabValue}
 			/>
