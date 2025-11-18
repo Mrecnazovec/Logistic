@@ -1,8 +1,12 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
+import {
+	formatCurrencyPerKmValue,
+	formatCurrencyValue,
+	type PriceCurrencyCode,
+} from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import type { LucideIcon } from 'lucide-react'
@@ -64,24 +68,27 @@ export function ActionButton({ label, className, ...props }: ActionButtonProps) 
 }
 
 export function formatDate(value?: string | null) {
-	if (!value) return '—'
+	if (!value) return '\u2014'
 
 	try {
 		return format(new Date(value), 'dd.MM.yyyy', { locale: ru })
 	} catch {
-		return '—'
+		return '\u2014'
 	}
 }
 
 export function formatWeight(weight?: number | null) {
-	if (!weight) return '—'
-	return `${weight.toLocaleString('ru-RU')} т`
+	if (!weight) return '\u2014'
+	return `${weight.toLocaleString('ru-RU')} \u043a\u0433`
 }
 
-export function formatPrice(value?: string | null, currency?: string | null) {
+export function formatPrice(value?: number | string | null, currency?: PriceCurrencyCode | null) {
 	return formatCurrencyValue(value, currency)
 }
 
-export function formatPricePerKm(value?: number | null, currency?: string | null) {
+export function formatPricePerKm(
+	value?: number | string | null,
+	currency?: PriceCurrencyCode | null,
+) {
 	return formatCurrencyPerKmValue(value, currency)
 }
