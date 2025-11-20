@@ -134,6 +134,15 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 	// 	),
 	// },
 	{
+		accessorKey: 'documents_count',
+		header: 'Документы',
+		cell: ({ row }) => {
+			if (row.original.documents_count === 0) return <div className='rounded-full bg-[#F8F9FC] border border-[#D5D9EB] size-7 flex items-center justify-center'>{row.original.documents_count}</div>
+			return <div className='rounded-full bg-[#F4F3FF] border border-[#D9D6FE] size-7 flex items-center justify-center'>{row.original.documents_count}</div>
+		},
+
+	},
+	{
 		accessorKey: 'price_per_km',
 		header: 'Цена за км',
 		cell: ({ row }) => Number(row.original.price_per_km || 0).toLocaleString(),
