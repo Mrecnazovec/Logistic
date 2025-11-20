@@ -1,40 +1,73 @@
 'use client'
 
+import { formatPriceValue } from '@/components/card/cardFormatters'
+import { Badge } from '@/components/ui/Badge'
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import type { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Star } from 'lucide-react'
-import { formatCurrencyValue } from '@/shared/utils/currency'
+import { getOrderStatusLabel, getOrderStatusVariant } from '../orderStatusConfig'
 
+const formatDateValue = (value?: string | null) => {
+	if (!value) return '—'
+	try {
+		return format(new Date(value), 'dd.MM.yyyy', { locale: ru })
+	} catch {
+		return '—'
+	}
+}
 
-export const historyColumns: ColumnDef<ICargoList>[] = [
+const formatRouteDistance = (value?: string | null) => {
+	if (!value) return '—'
+	const numeric = Number(value)
+	if (Number.isNaN(numeric)) return value
+	return `${numeric.toLocaleString('ru-RU')} км`
+}
+
+const parseRouteDistance = (value?: string | null) => {
+	const numeric = Number(value)
+	return Number.isNaN(numeric) ? 0 : numeric
+}
+
+const parseDateValue = (value?: string | null) => {
+	if (!value) return 0
+	const timestamp = Date.parse(value)
+	return Number.isNaN(timestamp) ? 0 : timestamp
+}
+
+export const historyColumns: ColumnDef<IOrderList>[] = [
 	{
-		accessorKey: 'company_name',
+		accessorKey: 'id',
+		header: 'ID',
+		cell: ({ row }) => <UuidCopy id={row.original.id} />,
+	},
+	{
+		accessorKey: 'customer_name',
 		header: 'Заказчик',
+		cell: ({ row }) => row.original.customer_name || '—',
 	},
 	{
-		accessorKey: '',
-		header: 'Посредник',
+		accessorKey: 'carrier_name',
+		header: 'Перевозчик',
+		cell: ({ row }) => row.original.carrier_name || '—',
 	},
 	{
-		accessorKey: 'route_km',
-		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
-				Путь (км)
-				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
-			</Button>
+		accessorKey: 'logistic_name',
+		header: 'Логист',
+		cell: ({ row }) => row.original.logistic_name || '—',
+	},
+	{
+		accessorKey: 'status',
+		header: 'Статус',
+		cell: ({ row }) => (
+			<Badge variant={getOrderStatusVariant(row.original.status)}>
+				{getOrderStatusLabel(row.original.status)}
+			</Badge>
 		),
-		cell: ({ row }) => `${row.original.route_km} км`,
-	},
-	{
-		accessorKey: 'weight_t',
-		header: 'Вес (т)',
-		cell: ({ row }) => `${row.original.weight_t} т`
-
 	},
 	{
 		id: 'origin',
@@ -44,27 +77,17 @@ export const historyColumns: ColumnDef<ICargoList>[] = [
 				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Откуда / Дата погрузки
+				Погрузка
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => {
-			const { origin_city, origin_country, load_date } = row.original
-			const formattedDate = load_date
-				? format(new Date(load_date), 'dd.MM.yyyy', { locale: ru })
-				: '—'
-			return (
-				<div className='flex flex-col'>
-					<span>{`${origin_city}, ${origin_country}`}</span>
-					<span className='text-muted-foreground text-sm'>{formattedDate}</span>
-				</div>
-			)
-		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.load_date).getTime()
-			const dateB = new Date(b.original.load_date).getTime()
-			return dateA - dateB
-		},
+		cell: ({ row }) => (
+			<div className='flex flex-col'>
+				<span>{row.original.origin_city || '—'}</span>
+				<span className='text-muted-foreground text-sm'>{formatDateValue(row.original.load_date)}</span>
+			</div>
+		),
+		sortingFn: (a, b) => parseDateValue(a.original.load_date) - parseDateValue(b.original.load_date),
 	},
 	{
 		id: 'destination',
@@ -74,88 +97,41 @@ export const historyColumns: ColumnDef<ICargoList>[] = [
 				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Куда / Дата разгрузки
+				Разгрузка
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => {
-			const { destination_city, destination_country, delivery_date } = row.original
-			const formattedDate =
-				delivery_date && typeof delivery_date === 'string'
-					? format(new Date(delivery_date), 'dd.MM.yyyy', { locale: ru })
-					: '—'
-			return (
-				<div className='flex flex-col'>
-					<span>{`${destination_city}, ${destination_country}`}</span>
-					<span className='text-muted-foreground text-sm'>{formattedDate}</span>
-				</div>
-			)
-		},
-		sortingFn: (a, b) => {
-			const dateA = a.original.delivery_date
-				? new Date(a.original.delivery_date).getTime()
-				: 0
-			const dateB = b.original.delivery_date
-				? new Date(b.original.delivery_date).getTime()
-				: 0
-			return dateA - dateB
-		},
+		cell: ({ row }) => (
+			<div className='flex flex-col'>
+				<span>{row.original.destination_city || '—'}</span>
+				<span className='text-muted-foreground text-sm'>{formatDateValue(row.original.delivery_date)}</span>
+			</div>
+		),
+		sortingFn: (a, b) => parseDateValue(a.original.delivery_date) - parseDateValue(b.original.delivery_date),
 	},
 	{
-		accessorKey: 'price_value',
+		id: 'route_distance_km',
 		header: ({ column }) => (
 			<Button
 				variant='ghost'
 				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Цена
+				Расстояние (км)
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
-		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_uzs || 0)
-			const priceB = Number(b.original.price_uzs || 0)
-			return priceA - priceB
-		},
-	},
-
-	{
-		accessorKey: 'price_currency',
-		header: 'Валюта',
+		cell: ({ row }) => formatRouteDistance(row.original.route_distance_km),
+		sortingFn: (a, b) => parseRouteDistance(a.original.route_distance_km) - parseRouteDistance(b.original.route_distance_km),
 	},
 	{
-		accessorKey: 'path_km',
-		header: 'Рейтинг',
-		cell: () => <span className='flex items-center gap-2 font-medium'>
-			<Star className='size-4 text-yellow-400 fill-yellow-400' />
-			5
-		</span>
+		accessorKey: 'price_total',
+		header: 'Стоимость',
+		cell: ({ row }) => formatPriceValue(row.original.price_total, row.original.currency),
 	},
 	{
-		accessorKey: 'load_date',
-		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='hover:bg-transparent p-0'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
-				Дата завершения
-				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
-			</Button>
-		),
-		cell: ({ row }) => {
-			const date = new Date(row.original.load_date)
-			return format(date, 'dd/MM/yyyy', { locale: ru })
-		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.load_date).getTime()
-			const dateB = new Date(b.original.load_date).getTime()
-			return dateA - dateB
-		},
+		accessorKey: 'documents_count',
+		header: 'Документы',
+		cell: ({ row }) => row.original.documents_count ?? 0,
 	},
-
-
 ]
-

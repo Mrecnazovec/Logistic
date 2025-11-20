@@ -1,135 +1,133 @@
-﻿'use client'
+'use client'
 
 import {
 	formatDateValue,
-	formatPlace,
 	formatPricePerKmValue,
 	formatPriceValue,
-	formatWeightValue
 } from '@/components/card/cardFormatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
-import { CardSections } from '@/components/card/CardSections'
+import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
+import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import type { IOrderList } from '@/shared/types/Order.interface'
 import {
+	Building2,
 	CalendarDays,
-	Home,
+	FileText,
 	MapPin,
-	Scale,
-	Star,
-	Truck,
+	Route as RouteIcon,
 	Wallet,
 } from 'lucide-react'
 import { useMemo } from 'react'
+import { getOrderStatusLabel, getOrderStatusVariant } from '../orderStatusConfig'
 
 type HistoryCardListProps = {
-	cargos: ICargoList[]
+	orders: IOrderList[]
 	serverPagination?: ServerPaginationMeta
-	onView?: (cargo: ICargoList) => void
+	onView?: (order: IOrderList) => void
 }
 
-export function HistoryCardList({ cargos, serverPagination, onView }: HistoryCardListProps) {
+const formatRouteDistance = (value?: string | null) => {
+	if (!value) return '-'
+	const numeric = Number(value)
+	if (Number.isNaN(numeric)) return value
+	return `${numeric.toLocaleString('ru-RU')} км`
+}
+
+export function HistoryCardList({ orders, serverPagination, onView }: HistoryCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 
-	if (!cargos.length) return null
+	if (!orders.length) return null
 
 	return (
 		<CardListLayout
-			items={cargos}
-			getKey={(cargo) => cargo.uuid}
-			renderItem={(cargo) => <HistoryCard cargo={cargo} onView={onView} />}
+			items={orders}
+			getKey={(order) => order.id}
+			renderItem={(order) => <HistoryCard order={order} onView={onView} />}
 			pagination={pagination}
 		/>
 	)
 }
 
 type HistoryCardProps = {
-	cargo: ICargoList
-	onView?: (cargo: ICargoList) => void
+	order: IOrderList
+	onView?: (order: IOrderList) => void
 }
 
-function HistoryCard({ cargo, onView }: HistoryCardProps) {
-	const transportName =
-		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+function HistoryCard({ order, onView }: HistoryCardProps) {
+	const statusLabel = getOrderStatusLabel(order.status)
+	const statusVariant = getOrderStatusVariant(order.status)
 
-	const sections = useMemo(
+	const sections: CardSection[] = useMemo(
 		() => [
 			{
-				title: 'Откуда',
+				title: 'Участники',
 				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.origin_address || '—', secondary: 'Адрес' },
+					{ icon: Building2, primary: order.customer_name || '-', secondary: 'Заказчик' },
+					{ icon: Building2, primary: order.logistic_name || '-', secondary: 'Логист' },
+					{ icon: Building2, primary: order.carrier_name || '-', secondary: 'Перевозчик' },
 				],
 			},
 			{
-				title: 'Куда',
+				title: 'Маршрут',
 				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.destination_address || '—', secondary: 'Адрес' },
+					{ icon: MapPin, primary: order.origin_city || '-', secondary: 'Погрузка' },
+					{ icon: MapPin, primary: order.destination_city || '-', secondary: 'Разгрузка' },
+					{ icon: RouteIcon, primary: formatRouteDistance(order.route_distance_km), secondary: 'Расстояние' },
 				],
 			},
 			{
-				title: 'Когда',
+				title: 'Даты',
 				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
-				],
-			},
-			{
-				title: 'Тип транспорта / Вес',
-				items: [
-					{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
-					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
+					{ icon: CalendarDays, primary: formatDateValue(order.load_date), secondary: 'Дата погрузки' },
+					{ icon: CalendarDays, primary: formatDateValue(order.delivery_date), secondary: 'Дата доставки' },
+					{ icon: CalendarDays, primary: formatDateValue(order.created_at), secondary: 'Создан' },
 				],
 			},
 			{
 				title: 'Стоимость',
 				items: [
-					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Фиксированная' },
-					{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: 'Цена за км' },
+					{ icon: Wallet, primary: formatPriceValue(order.price_total, order.currency), secondary: 'Общая стоимость' },
+					{ icon: Wallet, primary: formatPricePerKmValue(order.price_per_km, order.currency), secondary: 'Цена за км' },
+					{ icon: Wallet, primary: order.currency_display || order.currency || '-', secondary: 'Валюта' },
 				],
 			},
+			{
+				title: 'Документы',
+				items: [{ icon: FileText, primary: order.documents_count ?? 0, secondary: 'Файлов' }],
+			},
 		],
-		[cargo, transportName],
+		[order],
 	)
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.company_name || cargo.product || 'Без названия'}
-					</CardTitle>
-					<UuidCopy uuid={cargo.uuid} />
+					<div>
+						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
+							{`Заказ №${order.id}`}
+						</CardTitle>
+						<p className='text-sm text-muted-foreground'>{order.customer_name || 'Без заказчика'}</p>
+					</div>
+					<Badge variant={statusVariant}>{statusLabel}</Badge>
 				</div>
-				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<p className='text-sm text-muted-foreground'>Товар: {cargo.product}</p>
-					<span className='text-sm text-muted-foreground'>Маршрут: {cargo.route_km?.toLocaleString('ru-RU') ?? '—'} км</span>
+				<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
+					<UuidCopy id={order.id} />
+					<span>Документов: {order.documents_count ?? 0}</span>
 				</div>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<CardSections sections={sections} />
-
-				<section className='flex flex-col gap-2'>
-					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Оценка</span>
-					<div className='flex min-w-[160px] items-center gap-2 rounded-full bg-card px-4 py-2'>
-						<Star className='size-4 text-yellow-400 fill-yellow-400' aria-hidden />
-						<div className='flex flex-col leading-tight'>
-							<span className='font-medium text-foreground'>5 / 5</span>
-							<span className='text-xs text-muted-foreground'>Рейтинг заказа</span>
-						</div>
-					</div>
-				</section>
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button className='flex-1 min-w-[140px]' onClick={() => onView?.(cargo)}>
+				<Button className='flex-1 min-w-[140px]' onClick={() => onView?.(order)}>
 					Посмотреть
 				</Button>
 			</CardFooter>

@@ -6,9 +6,9 @@ import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { fakeCargoList } from '@/data/FakeData'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import type { IOrderList } from '@/shared/types/Order.interface'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
@@ -17,16 +17,15 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { historyColumns } from './table/HistoryColumns'
 
 export function HistoryPage() {
-	const data = fakeCargoList
-	const isLoading = false
+	const { data, isLoading } = useGetOrders('delivered')
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
 	const tableType = useTableTypeStore((state) => state.tableType)
 
 	const handleRowClick = useCallback(
-		(cargo: ICargoList) => {
-			router.push(DASHBOARD_URL.order(`${cargo.uuid}?status=finished`))
+		(order: IOrderList) => {
+			router.push(DASHBOARD_URL.order(`${order.id}`))
 		},
 		[router],
 	)
@@ -35,9 +34,9 @@ export function HistoryPage() {
 
 	const serverPaginationMeta = results.length
 		? {
-			next: data.next,
-			previous: data.previous,
-			totalCount: data.count,
+			next: data?.next,
+			previous: data?.previous,
+			totalCount: data?.count,
 			pageSize: results.length,
 		}
 		: undefined
@@ -49,7 +48,7 @@ export function HistoryPage() {
 		if (tableType === 'card') {
 			return (
 				<HistoryCardList
-					cargos={results}
+					orders={results}
 					serverPagination={serverPaginationMeta}
 					onView={handleRowClick}
 				/>
@@ -73,7 +72,7 @@ export function HistoryPage() {
 
 		return (
 			<HistoryCardList
-				cargos={results}
+				orders={results}
 				serverPagination={serverPaginationMeta}
 				onView={handleRowClick}
 			/>

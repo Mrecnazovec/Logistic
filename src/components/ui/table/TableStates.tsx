@@ -1,13 +1,13 @@
 import { Loader2, Search } from "lucide-react";
 
 export function EmptyTableState() {
-	return <div className='h-full bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center'>
+	return <div className='h-full bg-background rounded-4xl bg-[url(/png/bg_announcements.png)] bg-no-repeat bg-center bg-contain flex items-center justify-center text-center p-4'>
 
 		<div className='flex items-center justify-center flex-col gap-6'>
 			<div className='bg-background shadow-2xl p-4 rounded-full'>
 				<Search className='size-5 text-brand' />
 			</div>
-			<h1 className='text-5xl font-bold'>Ничего не найдено</h1>
+			<h1 className='xs:text-5xl text-3xl font-bold'>Ничего не найдено</h1>
 			<p className='text-xl text-grayscale max-w-2xl text-center'>
 				Мы не нашли подходящих результатов, попробуйте изменить фильтры
 			</p>

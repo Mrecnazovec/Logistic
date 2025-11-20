@@ -30,7 +30,7 @@ export function useSearchForm() {
 		})
 
 		await queryClient.invalidateQueries({
-			queryKey: ['get loads', 'public'],
+			queryKey: ['get orders'],
 		})
 	}
 
