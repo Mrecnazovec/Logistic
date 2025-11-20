@@ -12,10 +12,11 @@ export const useCounterOffer = () => {
 		mutationFn: ({ id, data }: { id: string; data: IOfferCounter }) => offerService.counterOffer(id, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Контр-предложение отправлено')
 		},
 		onError() {
-			toast.error('Ошибка при контр-предложении')
+			toast.error('Не удалось отправить контр-предложение')
 		},
 	})
 

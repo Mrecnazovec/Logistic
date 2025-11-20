@@ -7,9 +7,9 @@ export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailReq
 export type IOrderDocument = components['schemas']['OrderDocument']
 export type OrderDocumentRequestDto = components['schemas']['OrderDocumentRequest']
 export type IOrderStatusUpdate = components['schemas']['OrderStatusUpdate']
+export type IOrderStatusHistory = components['schemas']['OrderStatusHistory']
 export type PatchedOrderStatusUpdateDto = components['schemas']['PatchedOrderStatusUpdateRequest']
 
-export type OrdersListQuery =
-	paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
+export type OrdersListQuery = paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }

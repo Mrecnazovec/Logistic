@@ -13,6 +13,8 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CircleCheck, Minus } from 'lucide-react'
 import { useState } from 'react'
+import { formatCurrencyValue } from '@/shared/utils/currency'
+
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -63,7 +65,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
 		sortingFn: (a, b) => {
 			const priceA = Number(a.original.price_uzs || 0)
 			const priceB = Number(b.original.price_uzs || 0)
@@ -91,7 +93,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
-		cell: ({row}) => `${row.original.weight_t} т`
+		cell: ({ row }) => `${row.original.weight_t} т`
 
 	},
 	{
@@ -177,7 +179,7 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				</Button>
 			</div>
 
-			<DeskOffersModal selectedRow={cargo} open={open} onOpenChange={setOpen} />
+			<DeskOffersModal cargoUuid={cargo.uuid} open={open} onOpenChange={setOpen} />
 		</>
 	)
 }

@@ -11,10 +11,11 @@ export const useRejectOffer = () => {
 		mutationFn: (id: string) => offerService.rejectOffer(id),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			toast.success('Оффер отклонён')
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
+			toast.success('Предложение отклонено')
 		},
 		onError() {
-			toast.error('Ошибка при отклонении оффера')
+			toast.error('Не удалось отклонить предложение')
 		},
 	})
 

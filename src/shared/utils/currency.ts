@@ -1,6 +1,6 @@
-﻿import type { ICargoList } from '@/shared/types/CargoList.interface'
+﻿import { PriceCurrencyEnum } from '../enums/PriceCurrency.enum'
 
-export type PriceCurrencyCode = NonNullable<ICargoList['price_currency']>
+export type PriceCurrencyCode = NonNullable<PriceCurrencyEnum>
 
 export const currencySymbols: Record<PriceCurrencyCode, string> = {
 	USD: '$',
@@ -10,15 +10,12 @@ export const currencySymbols: Record<PriceCurrencyCode, string> = {
 	UZS: '\u0441\u045e\u043c',
 }
 
-export function getCurrencySymbol(currency?: ICargoList['price_currency'] | null) {
+export function getCurrencySymbol(currency?: PriceCurrencyEnum | null) {
 	if (!currency) return ''
 	return currencySymbols[currency as PriceCurrencyCode] ?? currency
 }
 
-export function formatCurrencyValue(
-	value?: number | string | null,
-	currency?: ICargoList['price_currency'] | null,
-) {
+export function formatCurrencyValue(value?: number | string | null, currency?: PriceCurrencyEnum | null) {
 	if (value === null || value === undefined || value === '') return '\u2014'
 
 	const numeric = typeof value === 'string' ? Number(value) : value
@@ -27,14 +24,11 @@ export function formatCurrencyValue(
 	const formatted = numeric.toLocaleString('ru-RU')
 	const symbol = getCurrencySymbol(currency)
 
-	if (symbol) return `${symbol}${formatted}`
+	if (symbol) return `${formatted} ${symbol}`
 	return currency ? `${formatted} ${currency}` : formatted
 }
 
-export function formatCurrencyPerKmValue(
-	value?: number | string | null,
-	currency?: ICargoList['price_currency'] | null,
-) {
+export function formatCurrencyPerKmValue(value?: number | string | null, currency?: PriceCurrencyEnum | null) {
 	if (value === null || value === undefined || value === '') return '\u2014'
 
 	const numeric = typeof value === 'string' ? Number(value) : value

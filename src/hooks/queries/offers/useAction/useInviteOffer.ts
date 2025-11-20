@@ -12,6 +12,7 @@ export const useInviteOffer = () => {
 		mutationFn: (data: IOfferInvite) => offerService.inviteOffer(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Инвайт отправлен')
 		},
 		onError() {

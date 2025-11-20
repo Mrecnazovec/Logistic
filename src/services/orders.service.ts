@@ -3,6 +3,7 @@ import { API_URL } from '@/config/api.config'
 import {
 	IOrderDetail,
 	IOrderDocument,
+	IOrderStatusHistory,
 	IOrderStatusUpdate,
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
@@ -39,6 +40,15 @@ class OrdersService {
 	async getOrderDocuments(id: string | number) {
 		const { data } = await axiosWithAuth<IOrderDocument[] | IOrderDetail>({
 			url: API_URL.orders(`${id}/documents`),
+			method: 'GET',
+		})
+
+		return data
+	}
+
+	async getOrderStatusHistory(id: string | number) {
+		const { data } = await axiosWithAuth<IOrderStatusHistory[]>({
+			url: API_URL.orders(`${id}/status-history`),
 			method: 'GET',
 		})
 

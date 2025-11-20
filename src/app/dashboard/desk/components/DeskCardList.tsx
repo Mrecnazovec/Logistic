@@ -191,7 +191,7 @@ function HasOffersField({ cargo }: { cargo: ICargoList }) {
 				)}
 			</Button>
 
-			<DeskOffersModal selectedRow={cargo} open={open} onOpenChange={setOpen} />
+			<DeskOffersModal cargoUuid={cargo.uuid} open={open} onOpenChange={setOpen} />
 		</>
 	)
 }

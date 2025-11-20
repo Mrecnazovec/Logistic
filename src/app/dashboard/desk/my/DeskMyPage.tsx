@@ -115,19 +115,19 @@ export function DeskMyPage() {
 					</TabsContent>
 				</Tabs>
 			) : (
-				<Tabs defaultValue='desk' className='xs:bg-background'>
+				<Tabs defaultValue='desk' className='xs:bg-background h-full'>
 					<TabsList className='bg-transparent -mb-2'>
 						<TabsTrigger
 							className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 							value='desk'
 						>
-							Incoming offers
+							Я предложил
 						</TabsTrigger>
 						<TabsTrigger
 							className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 							value='drivers'
 						>
-							My offers
+							Предложили мне
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value='desk'>

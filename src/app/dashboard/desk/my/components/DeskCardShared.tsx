@@ -67,28 +67,3 @@ export function ActionButton({ label, className, ...props }: ActionButtonProps) 
 	)
 }
 
-export function formatDate(value?: string | null) {
-	if (!value) return '\u2014'
-
-	try {
-		return format(new Date(value), 'dd.MM.yyyy', { locale: ru })
-	} catch {
-		return '\u2014'
-	}
-}
-
-export function formatWeight(weight?: number | null) {
-	if (!weight) return '\u2014'
-	return `${weight.toLocaleString('ru-RU')} \u043a\u0433`
-}
-
-export function formatPrice(value?: number | string | null, currency?: PriceCurrencyCode | null) {
-	return formatCurrencyValue(value, currency)
-}
-
-export function formatPricePerKm(
-	value?: number | string | null,
-	currency?: PriceCurrencyCode | null,
-) {
-	return formatCurrencyPerKmValue(value, currency)
-}

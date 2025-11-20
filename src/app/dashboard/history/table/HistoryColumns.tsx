@@ -8,6 +8,8 @@ import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Star } from 'lucide-react'
+import { formatCurrencyValue } from '@/shared/utils/currency'
+
 
 export const historyColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -31,7 +33,7 @@ export const historyColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
-		cell: ({row}) => `${row.original.weight_t} т`
+		cell: ({ row }) => `${row.original.weight_t} т`
 
 	},
 	{
@@ -111,7 +113,7 @@ export const historyColumns: ColumnDef<ICargoList>[] = [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
 		sortingFn: (a, b) => {
 			const priceA = Number(a.original.price_uzs || 0)
 			const priceB = Number(b.original.price_uzs || 0)

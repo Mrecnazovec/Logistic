@@ -25,7 +25,7 @@ import {
 	Wallet,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
 	formatDateValue,
 	formatPlace,
@@ -33,6 +33,7 @@ import {
 	formatPriceValue,
 	formatWeightValue,
 } from '../../../../components/card/cardFormatters'
+import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 
 type DeskCardListProps = {
 	cargos: IOfferShort[]
@@ -67,38 +68,38 @@ function DeskCard({ cargo }: DeskCardProps) {
 	const sections = useMemo(
 		() => [
 			{
-				title: 'Origin',
+				title: 'Пункт отправления',
 				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'City / country' },
-					{ icon: Home, primary: cargo.origin_city || '-', secondary: 'Address' },
+					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
+					{ icon: Home, primary: cargo.origin_city || '—', secondary: 'Адрес' },
 				],
 			},
 			{
-				title: 'Destination',
+				title: 'Пункт назначения',
 				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'City / country' },
-					{ icon: Home, primary: cargo.destination_city || '-', secondary: 'Address' },
+					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
+					{ icon: Home, primary: cargo.destination_city || '—', secondary: 'Адрес' },
 				],
 			},
 			{
-				title: 'Dates',
+				title: 'Даты',
 				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Pickup date' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Delivery date' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Дата загрузки' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Дата выгрузки' },
 				],
 			},
 			{
-				title: 'Transport / weight',
+				title: 'Транспорт / вес',
 				items: [
-					{ icon: Truck, primary: transportName || '-', secondary: 'Transport type' },
-					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Weight' },
+					{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
+					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
 				],
 			},
 			{
-				title: 'Pricing',
+				title: 'Стоимость',
 				items: [
-					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Payment' },
-					{ icon: Wallet, primary: formatPricePerKmValue(300, cargo.price_currency), secondary: 'Price per km' },
+					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Оплата' },
+					{ icon: Wallet, primary: formatPricePerKmValue(300, cargo.price_currency), secondary: 'Цена за км' },
 				],
 			},
 		],
@@ -109,39 +110,39 @@ function DeskCard({ cargo }: DeskCardProps) {
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>Driver request</CardTitle>
+					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>Запрос перевозчика</CardTitle>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<span className='font-semibold text-foreground'>ID:</span>
 						<UuidCopy id={cargo.id} />
 					</div>
 				</div>
-				<p className='text-sm text-muted-foreground'>Cargo: carrier request</p>
+				<p className='text-sm text-muted-foreground'>Заявка: запрос перевозчика</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<CardSections sections={sections} />
 
 				<section className='flex flex-col gap-2'>
-					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Offers</span>
+					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Предложения</span>
 					<HasOffersField cargo={cargo} />
 				</section>
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
-					<RefreshCcw /> Update
+					<RefreshCcw /> Обновить
 				</Button>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(String(cargo.id))}>
 					<Button variant='outline' className='w-full'>
-						<Pen /> Edit
+						<Pen /> Редактировать
 					</Button>
 				</Link>
 				<Button variant='outline' className='flex-1 min-w-[140px]'>
-					<EyeOff /> Hide
+					<EyeOff /> Скрыть
 				</Button>
 				<Button variant='outline' className='flex items-center gap-2 flex-1 min-w-[240px]'>
 					<Handshake className='size-4 text-muted-foreground' />
-					Make an offer
+					Сделать предложение
 				</Button>
 			</CardFooter>
 		</Card>
@@ -149,7 +150,8 @@ function DeskCard({ cargo }: DeskCardProps) {
 }
 
 function HasOffersField({ cargo }: { cargo: IOfferShort }) {
-	const hasOffers = Boolean(cargo.is_handshake)
+	const hasOffers = Boolean(cargo.accepted_by_carrier)
+	const [open, setOpen] = useState(false)
 
 	return (
 		<>
@@ -158,19 +160,22 @@ function HasOffersField({ cargo }: { cargo: IOfferShort }) {
 				variant='outline'
 				className='flex items-center gap-2 p-0 text-sm font-semibold text-foreground disabled:text-muted-foreground border-0 shadow-none'
 				disabled={!hasOffers}
+				onClick={() => setOpen(true)}
 			>
 				{hasOffers ? (
 					<>
 						<CircleCheck className='size-4 text-success-500' aria-hidden />
-						<span>Offers available</span>
+						<span>Есть предложения</span>
 					</>
 				) : (
 					<>
 						<Minus className='size-4 text-muted-foreground' aria-hidden />
-						<span>No offers</span>
+						<span>Нет предложений</span>
 					</>
 				)}
 			</Button>
+
+			<DeskOffersModal cargoUuid={cargo.cargo_uuid} open={open} onOpenChange={setOpen} />
 		</>
 	)
 }

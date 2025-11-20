@@ -50,7 +50,7 @@ export function formatWeightValue(value?: number | string | null) {
 	const numeric = typeof value === 'string' ? Number(value) : value
 	if (Number.isNaN(numeric)) return String(value)
 
-	return `${numeric.toLocaleString('ru-RU')} \u043a\u0433`
+	return `${numeric.toLocaleString('ru-RU')} т`
 }
 
 export function formatPricePerKmValue(value?: number | string | null, currency?: PriceCurrencyCode | null) {

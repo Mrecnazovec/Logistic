@@ -1,11 +1,13 @@
 'use client'
 
+import { CardListLayout } from '@/components/card/CardListLayout'
+import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import { IOfferShort } from '@/shared/types/Offer.interface'
 import {
 	Calendar,
 	Home,
@@ -15,18 +17,12 @@ import {
 	Truck,
 	Wallet
 } from 'lucide-react'
-import { CardListLayout } from '@/components/card/CardListLayout'
-import { useCardPagination } from '@/components/pagination/CardPagination'
 import {
 	ActionButton,
 	InfoChip,
 	InfoSection,
-	formatDate,
-	formatPrice,
-	formatPricePerKm,
-	formatWeight,
 } from './DeskCardShared'
-import { IOfferShort } from '@/shared/types/Offer.interface'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/components/card/cardFormatters'
 
 type DeskDriverCardListProps = {
 	cargos: IOfferShort[]
@@ -90,20 +86,20 @@ function DeskDriverCard({ cargo, index }: DeskDriverCardProps) {
 				</InfoSection>
 
 				<InfoSection title='Когда'>
-					<InfoChip icon={Calendar} primary={formatDate(cargo.load_date)} secondary='Дата загрузки' />
-					<InfoChip icon={Calendar} primary={formatDate(cargo.delivery_date)} secondary='Дата доставки' />
+					<InfoChip icon={Calendar} primary={formatDateValue(cargo.load_date)} secondary='Дата загрузки' />
+					<InfoChip icon={Calendar} primary={formatDateValue(cargo.delivery_date)} secondary='Дата доставки' />
 				</InfoSection>
 
 				<InfoSection title='Тип транспорта / Вес'>
 					<InfoChip icon={Truck} primary={transportName} secondary='Тип транспорта' />
-					<InfoChip icon={Scale} primary={formatWeight(cargo.weight_t)} secondary='Вес, т' />
+					<InfoChip icon={Scale} primary={formatWeightValue(cargo.weight_t)} secondary='Вес, т' />
 				</InfoSection>
 
 				<InfoSection title='Цена / км'>
-					<InfoChip icon={Wallet} primary={formatPrice(cargo.price_value, cargo.price_currency)} secondary='Стоимость' />
+					<InfoChip icon={Wallet} primary={formatPriceValue(cargo.price_value, cargo.price_currency)} secondary='Стоимость' />
 					<InfoChip
 						icon={Wallet}
-						primary={formatPricePerKm(300, cargo.price_currency)}
+						primary={formatPricePerKmValue(300, cargo.price_currency)}
 						secondary='Цена за км'
 					/>
 				</InfoSection>

@@ -78,7 +78,7 @@ function CountrySelectorInner({
                 <PopoverContent className='w-[var(--radix-popover-trigger-width)] p-0' align='start'>
                     <Command shouldFilter={false}>
                         <CommandInput
-                            placeholder='��࠭�'
+                            placeholder='Город'
                             value={search}
                             onValueChange={(nextValue) => setSearch(nextValue)}
                         />
@@ -90,7 +90,7 @@ function CountrySelectorInner({
                                 </div>
                             ) : (
                                 <>
-                                    <CommandEmpty>��祣� �� �������</CommandEmpty>
+                                    <CommandEmpty>Ничего не найдено</CommandEmpty>
                                     <CommandGroup>
                                         {filteredCountries.map((country) => (
                                             <CommandItem

@@ -1,5 +1,10 @@
 'use client'
 
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { ArrowLeftRight } from 'lucide-react'
+import { useMemo, useState } from 'react'
+
 import { Button } from '@/components/ui/Button'
 import {
 	Dialog,
@@ -8,194 +13,238 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/Dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { getTransportName } from '@/shared/enums/TransportType.enum'
-import { ICargoList } from '@/shared/types/CargoList.interface'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
-import { ArrowLeftRight } from 'lucide-react'
+import { Input } from '@/components/ui/form-control/Input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
+import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
+import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
+import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
+import type { IOfferShort } from '@/shared/types/Offer.interface'
+import type { PriceCurrencyCode } from '@/shared/utils/currency'
+import { formatCurrencyValue } from '@/shared/utils/currency'
 
 interface DeskOffersModalProps {
-	selectedRow?: ICargoList
+	cargoUuid?: string
 	open?: boolean
 	onOpenChange?: (open: boolean) => void
 }
 
-export function DeskOffersModal({ selectedRow, open, onOpenChange }: DeskOffersModalProps) {
-	const transportName = selectedRow ? getTransportName(selectedRow.transport_type) || '—' : null
+type OfferFormState = {
+	paymentMethod?: string
+	currency?: PriceCurrencyCode
+	price?: string
+}
 
-	const offers = selectedRow
-		? Array.from({ length: 3 }).map((_, index) => {
-			const originDate = new Date(selectedRow.load_date)
-			const destinationDate = selectedRow.delivery_date ? new Date(selectedRow.delivery_date) : null
-			const distanceValue = selectedRow.route_km ?? selectedRow.path_km
-			const price = formatCurrencyValue(selectedRow.price_value, selectedRow.price_currency)
-			const pricePerKm = selectedRow.price_per_km
-				? formatCurrencyPerKmValue(selectedRow.price_per_km, selectedRow.price_currency)
-				: ''
+const EMPTY = '—'
+const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
+const paymentOptions = [
+	{ value: 'CASH', label: 'Наличными' },
+	{ value: 'CARD', label: 'Перевод на карту' },
+	{ value: 'BY_CARD', label: 'Безналичный расчёт (карта)' },
+	{ value: 'BY_CASH', label: 'Безналичный расчёт (наличные)' },
+]
 
-			return {
-				id: `${selectedRow.uuid}-${index}`,
-				loadDate: format(originDate, 'dd MMM, EEE', { locale: ru }),
-				loadTime: format(originDate, 'HH:mm', { locale: ru }),
-				deliveryDate: destinationDate ? format(destinationDate, 'dd MMM, EEE', { locale: ru }) : '-',
-				deliveryTime: destinationDate ? format(destinationDate, 'HH:mm', { locale: ru }) : '-',
-				distance: distanceValue ? `${distanceValue} км` : '—',
-				price,
-				pricePerKm,
-				origin: `${selectedRow.origin_city}, ${selectedRow.origin_country}`,
-				destination: `${selectedRow.destination_city}, ${selectedRow.destination_country}`,
-				weight: selectedRow.weight_t ? `${selectedRow.weight_t} тонн` : '—',
-				type: transportName ?? '—',
-			}
-		})
-		: []
+const formatDate = (value?: string | null) => {
+	if (!value) return EMPTY
+	const parsed = new Date(value)
+	if (Number.isNaN(parsed.getTime())) return EMPTY
+	return format(parsed, 'dd MMM, EEE', { locale: ru })
+}
+
+const formatTime = (value?: string | null) => {
+	if (!value) return EMPTY
+	const parsed = new Date(value)
+	if (Number.isNaN(parsed.getTime())) return EMPTY
+	return format(parsed, 'HH:mm', { locale: ru })
+}
+
+const normalizeOffer = (offer: IOfferShort) => {
+	const priceCurrency = offer.price_currency as PriceCurrencyCode
+	return {
+		id: offer.id,
+		origin: `${offer.origin_city}, ${offer.origin_country}`,
+		originDate: formatDate(offer.load_date),
+		originTime: formatTime(offer.load_date),
+		destination: `${offer.destination_city}, ${offer.destination_country}`,
+		destinationDate: formatDate(offer.delivery_date),
+		destinationTime: formatTime(offer.delivery_date),
+		transport: offer.transport_type_display || offer.transport_type || EMPTY,
+		weight: offer.weight_t ? `${offer.weight_t} т` : EMPTY,
+		price: formatCurrencyValue(offer.price_value, priceCurrency),
+		company: offer.carrier_name,
+	}
+}
+
+export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersModalProps) {
+	const [formState, setFormState] = useState<Record<number, OfferFormState>>({})
+	const params = useMemo(() => (cargoUuid ? { cargo_uuid: cargoUuid } : undefined), [cargoUuid])
+	const { data, isLoading } = useGetOffers(params, { enabled: Boolean(cargoUuid) })
+	const { acceptOffer, isLoadingAccept } = useAcceptOffer()
+	const { rejectOffer, isLoadingReject } = useRejectOffer()
+	const { counterOffer, isLoadingCounter } = useCounterOffer()
+
+	const offers = useMemo(() => data?.results ?? [], [data])
+	const normalizedOffers = useMemo(() => offers.map((offer) => normalizeOffer(offer)), [offers])
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
-				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>
-						Предложения
-					</DialogTitle>
+			<DialogContent className='max-w-[900px] rounded-3xl'>
+				<DialogHeader className='pb-6 text-center'>
+					<DialogTitle className='text-2xl font-bold text-center'>Предложения</DialogTitle>
 				</DialogHeader>
 
-				{!selectedRow ? (
-					<p className='text-center text-muted-foreground py-6'>
-						Выберите груз, чтобы посмотреть предложения.
+				{!cargoUuid ? (
+					<p className='py-10 text-center text-muted-foreground'>
+						Выберите груз, чтобы посмотреть доступные предложения перевозчиков.
 					</p>
+				) : isLoading ? (
+					<p className='py-10 text-center text-muted-foreground'>Загружаем предложения…</p>
+				) : normalizedOffers.length === 0 ? (
+					<p className='py-10 text-center text-muted-foreground'>Для этого груза пока нет предложений.</p>
 				) : (
 					<div className='space-y-6'>
-						<Tabs defaultValue='received'>
-							<TabsList className='bg-transparent w-full justify-start border-b border-border rounded-none px-0'>
-								<TabsTrigger
-									value='sent'
-									className='flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none'
-								>
-									Отправленные
-								</TabsTrigger>
-								<TabsTrigger
-									value='received'
-									className='flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none'
-								>
-									Полученные
-								</TabsTrigger>
-							</TabsList>
-
-							<TabsContent value='sent' className='mt-6'>
-								<div className='space-y-6'>
-									{offers.map((offer) => (
-										<div key={offer.id} className='flex flex-col gap-6 border-b-2 pb-6 last:border-b-0'>
-											<div className='flex flex-wrap items-center justify-between gap-6'>
-												<div>
-													<p>{offer.origin}</p>
-													<p className='text-sm text-muted-foreground'>
-														{offer.loadDate}, {offer.loadTime}
-													</p>
-												</div>
-
-												<div className='flex flex-col items-center justify-center gap-1 text-sm text-muted-foreground font-semibold'>
-													<ArrowLeftRight className='size-5' />
-													<span>{offer.distance}</span>
-												</div>
-
-												<div>
-													<p>{offer.destination}</p>
-													<p className='text-sm text-muted-foreground'>
-														{offer.deliveryDate}, {offer.deliveryTime}
-													</p>
-												</div>
-
-												<div className='text-sm text-muted-foreground'>
-													<p>
-														<span className='font-semibold text-foreground'>Тип: </span>
-														{offer.type}
-													</p>
-													<p>
-														<span className='font-semibold text-foreground'>Вес: </span>
-														{offer.weight}
-													</p>
-													<p>
-														<span className='font-semibold text-foreground'>Цена: </span>
-														{offer.price}
-													</p>
-													{offer.pricePerKm && <p>({offer.pricePerKm})</p>}
-												</div>
-											</div>
+						{normalizedOffers.map((offer) => {
+							const form = formState[offer.id] ?? {}
+							const isCounterDisabled = !form.price || !form.currency || isLoadingCounter
+							return (
+								<div key={offer.id} className='space-y-5'>
+									<div className='grid gap-4 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_minmax(150px,1fr)]'>
+										<div>
+											<p className='font-semibold text-foreground'>{offer.origin}</p>
+											<p className='text-sm text-muted-foreground'>
+												{offer.originDate} · {offer.originTime}
+											</p>
 										</div>
-									))}
-								</div>
-							</TabsContent>
 
-							<TabsContent value='received' className='mt-6'>
-								<div className='space-y-6'>
-									{offers.map((offer) => (
-										<div key={`${offer.id}-received`} className='flex flex-col gap-6 border-b-2 pb-6 last:border-b-0'>
-											<div className='flex flex-wrap items-center justify-between gap-6'>
-												<div>
-													<p>{offer.origin}</p>
-													<p className='text-sm text-muted-foreground'>
-														{offer.loadDate}, {offer.loadTime}
-													</p>
-												</div>
-
-												<div className='flex flex-col items-center justify-center gap-1 text-sm text-muted-foreground font-semibold'>
-													<ArrowLeftRight className='size-5' />
-													<span>{offer.distance}</span>
-												</div>
-
-												<div>
-													<p>{offer.destination}</p>
-													<p className='text-sm text-muted-foreground'>
-														{offer.deliveryDate}, {offer.deliveryTime}
-													</p>
-												</div>
-
-												<div className='text-sm text-muted-foreground'>
-													<p>
-														<span className='font-semibold text-foreground'>Тип: </span>
-														{offer.type}
-													</p>
-													<p>
-														<span className='font-semibold text-foreground'>Вес: </span>
-														{offer.weight}
-													</p>
-													<p>
-														<span className='font-semibold text-foreground'>Цена: </span>
-														{offer.price}
-													</p>
-													{offer.pricePerKm && <p>({offer.pricePerKm})</p>}
-												</div>
-											</div>
+										<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
+											<ArrowLeftRight className='mb-1 size-5' />
+											<span>-</span>
 										</div>
-									))}
+
+										<div>
+											<p className='font-semibold text-foreground'>{offer.destination}</p>
+											<p className='text-sm text-muted-foreground'>
+												{offer.destinationDate} · {offer.destinationTime}
+											</p>
+										</div>
+
+										<div className='space-y-1 text-sm text-muted-foreground'>
+											<p>
+												<span className='font-semibold text-foreground'>Тип: </span>
+												{offer.transport}
+											</p>
+											<p>
+												<span className='font-semibold text-foreground'>Вес: </span>
+												{offer.weight}
+											</p>
+											<p>
+												<span className='font-semibold text-foreground'>Цена: </span>
+												{offer.price}
+												(x цена/км)
+											</p>
+										</div>
+									</div>
+
+									<div className='flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm text-foreground'>
+										<p>
+											<span className='font-semibold'>Компания: </span>
+											{offer.company}
+										</p>
+										<p className='font-semibold'>
+											Предложение: {offer.price}
+											(x цена/км)
+										</p>
+									</div>
+
+									<div className='grid gap-3 pt-2 md:grid-cols-3'>
+										<Select
+											value={form.paymentMethod}
+											onValueChange={(value) =>
+												setFormState((prev) => ({ ...prev, [offer.id]: { ...prev[offer.id], paymentMethod: value } }))
+											}
+										>
+											<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none w-full'>
+												<SelectValue placeholder='Способ оплаты' />
+											</SelectTrigger>
+											<SelectContent align='start'>
+												{paymentOptions.map((option) => (
+													<SelectItem key={`${offer.id}-${option.value}`} value={option.value}>
+														{option.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+
+										<Select
+											value={form.currency}
+											onValueChange={(value) =>
+												setFormState((prev) => ({
+													...prev,
+													[offer.id]: { ...prev[offer.id], currency: value as PriceCurrencyCode },
+												}))
+											}
+										>
+											<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none w-full'>
+												<SelectValue placeholder='Выберите валюту' />
+											</SelectTrigger>
+											<SelectContent align='start'>
+												{currencyOptions.map((currency) => (
+													<SelectItem key={`${offer.id}-${currency}`} value={currency}>
+														{currency}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+
+										<Input
+											type='number'
+											inputMode='decimal'
+											min='0'
+											step='0.01'
+											value={form.price ?? ''}
+											onChange={(event) =>
+												setFormState((prev) => ({
+													...prev,
+													[offer.id]: { ...prev[offer.id], price: event.target.value },
+												}))
+											}
+											placeholder='Введите цену'
+											className='rounded-full border-none bg-muted/40 text-sm font-medium text-foreground placeholder:text-muted-foreground w-full'
+										/>
+									</div>
+
+									<div className='flex justify-end gap-3 pt-4'>
+										<Button
+											className='rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60'
+											onClick={() => acceptOffer(String(offer.id))}
+											disabled={isLoadingAccept}
+										>
+											Принять
+										</Button>
+										<Button
+											className='rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60'
+											onClick={() => {
+												if (!form.price || !form.currency) return
+												counterOffer({
+													id: String(offer.id),
+													data: { price_value: form.price, price_currency: form.currency },
+												})
+											}}
+											disabled={isCounterDisabled}
+										>
+											Торговать
+										</Button>
+										<Button
+											className='rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60'
+											onClick={() => rejectOffer(String(offer.id))}
+											disabled={isLoadingReject}
+										>
+											Отказать
+										</Button>
+									</div>
 								</div>
-							</TabsContent>
-						</Tabs>
-
-						<div className='flex justify-between border-t border-border pt-4 text-sm flex-wrap gap-4'>
-							<p>
-								<span className='font-semibold'>Компания: </span>
-								{selectedRow.company_name ?? '—'}
-							</p>
-							<p>
-								<span className='font-semibold'>Предложение: </span>
-								{formatCurrencyValue(selectedRow.price_value, selectedRow.price_currency)} (
-								{formatCurrencyPerKmValue(selectedRow.price_per_km, selectedRow.price_currency)})
-							</p>
-						</div>
-
-						<div className='flex max-md:flex-col md:justify-end gap-3'>
-							<Button className='bg-success-400 text-white hover:bg-success-500 max-md:w-full'>
-								Принять
-							</Button>
-							<DialogClose asChild>
-								<Button className='bg-error-400 text-white hover:bg-error-500 max-md:w-full'>
-									Отказать
-								</Button>
-							</DialogClose>
-						</div>
+							)
+						})}
 					</div>
 				)}
 			</DialogContent>

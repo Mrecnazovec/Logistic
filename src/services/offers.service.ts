@@ -1,5 +1,6 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
+import type { operations } from '@/shared/types/api'
 import {
 	IOfferAcceptResponse,
 	IOfferCounter,
@@ -12,14 +13,16 @@ import {
 } from '@/shared/types/Offer.interface'
 import { IPaginatedOfferShortList } from '@/shared/types/PaginatedList.interface'
 
+type OffersListQuery = operations['offers_list']['parameters']['query']
+
 class OffersService {
 	/* GET */
 
-	async getOffers(scope?: string, page?: string) {
+	async getOffers(params?: OffersListQuery) {
 		const { data } = await axiosWithAuth<IPaginatedOfferShortList>({
 			url: API_URL.offers(),
 			method: 'GET',
-			params: { scope, page },
+			params,
 		})
 
 		return data
@@ -68,7 +71,7 @@ class OffersService {
 
 	async acceptOffer(id: string) {
 		const { data } = await axiosWithAuth<IOfferAcceptResponse>({
-			url: API_URL.offers(`${id}/accept`),
+			url: API_URL.offers(`${id}/accept/`),
 			method: 'POST',
 		})
 		return data
@@ -76,7 +79,7 @@ class OffersService {
 
 	async counterOffer(id: string, data: IOfferCounter) {
 		const { data: counterOffer } = await axiosWithAuth<IOfferAcceptResponse>({
-			url: API_URL.offers(`${id}/counter`),
+			url: API_URL.offers(`${id}/counter/`),
 			method: 'POST',
 			data,
 		})
@@ -85,7 +88,7 @@ class OffersService {
 
 	async rejectOffer(id: string) {
 		const { data } = await axiosWithAuth<IOfferRejectResponse>({
-			url: API_URL.offers(`${id}/reject`),
+			url: API_URL.offers(`${id}/reject/`),
 			method: 'POST',
 		})
 		return data

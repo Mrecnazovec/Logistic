@@ -13,11 +13,11 @@ export const ContactPrefSelector = [
 	},
 	{
 		type: ContactPrefEnum.PHONE,
-		name: 'РўРµР»РµС„РѕРЅ',
+		name: 'Телефон',
 	},
 	{
 		type: ContactPrefEnum.BOTH,
-		name: 'РћР±Р°',
+		name: 'Оба',
 	},
 ]
 

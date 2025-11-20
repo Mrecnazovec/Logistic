@@ -1,8 +1,8 @@
 'use client'
 
-import { CargoActionsDropdown } from '@/components/ui/actions/CargoActionsDropdown'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
+import { DeskOfferQuickActions } from '@/components/ui/actions/DeskOfferQuickActions'
 import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
@@ -14,6 +14,8 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CircleCheck, Minus } from 'lucide-react'
 import { useState } from 'react'
+import { formatCurrencyValue } from '@/shared/utils/currency'
+
 
 export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
 	{
@@ -64,7 +66,7 @@ export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
 		sortingFn: (a, b) => {
 			const priceA = Number(a.original.price_value || 0)
 			const priceB = Number(b.original.price_value || 0)
@@ -139,11 +141,11 @@ export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
 			return transportName
 		},
 	},
-	// {
-	// 	accessorKey: 'has_offers',
-	// 	header: 'Предложения',
-	// 	cell: ({ row }) => <DeskOffersCell cargo={row.original} />,
-	// },
+	{
+		accessorKey: 'accepted_by_carrier',
+		header: 'Предложения',
+		cell: ({ row }) => <DeskOffersCell cargo={row.original} />,
+	},
 
 	// {
 	// 	id: 'actions',
@@ -154,9 +156,9 @@ export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
 	// },
 ]
 
-function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
+function DeskOffersCell({ cargo }: { cargo: IOfferShort }) {
 	const [open, setOpen] = useState(false)
-	const hasOffers = Boolean(cargo.has_offers)
+	const hasOffers = Boolean(cargo.accepted_by_carrier)
 
 	return (
 		<>
@@ -178,7 +180,7 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				</Button>
 			</div>
 
-			<DeskOffersModal selectedRow={cargo} open={open} onOpenChange={setOpen} />
+			<DeskOffersModal cargoUuid={cargo.cargo_uuid} open={open} onOpenChange={setOpen} />
 		</>
 	)
 }

@@ -11,10 +11,11 @@ export const useAcceptOffer = () => {
 		mutationFn: (id: string) => offerService.acceptOffer(id),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			toast.success('Оффер принят')
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
+			toast.success('Предложение принято')
 		},
 		onError() {
-			toast.error('Ошибка при принятии оффера')
+			toast.error('Не удалось принять предложение')
 		},
 	})
 

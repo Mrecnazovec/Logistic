@@ -9,6 +9,8 @@ import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { formatCurrencyValue } from '@/shared/utils/currency'
+
 
 const EMPTY_PLACEHOLDER = '—'
 
@@ -122,7 +124,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<ICargoLi
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => Number(row.original.price_value || 0).toLocaleString(),
+		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
 		sortingFn: (a, b) => {
 			const priceA = Number(a.original.price_uzs || 0)
 			const priceB = Number(b.original.price_uzs || 0)
