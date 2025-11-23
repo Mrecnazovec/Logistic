@@ -4,16 +4,18 @@ type OrderStatus = NonNullable<IOrderList['status']>
 type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'destructive' | 'outline'
 
 const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-	delivered: 'Доставлено',
-	en_route: 'В пути',
-	no_driver: 'Нет водителя',
-	pending: 'В обработке',
+	delivered: 'Доставлен',
+	in_process: 'В процессе',
+	no_driver: 'Без водителя',
+	paid: 'Оплачен',
+	pending: 'В ожидании',
 }
 
 const ORDER_STATUS_BADGE_VARIANTS: Record<OrderStatus, BadgeVariant> = {
 	delivered: 'success',
-	en_route: 'info',
+	in_process: 'info',
 	no_driver: 'danger',
+	paid: 'success',
 	pending: 'warning',
 }
 

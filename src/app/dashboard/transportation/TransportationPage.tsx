@@ -21,8 +21,9 @@ import { createTransportationColumns } from './table/TransportationColumns'
 const STATUS_TABS = [
 	{ value: 'no_driver', label: 'Без водителя' },
 	{ value: 'pending', label: 'В ожидании' },
-	{ value: 'en_route', label: 'В пути' },
+	{ value: 'in_process', label: 'В процессе' },
 	{ value: 'delivered', label: 'Доставлен' },
+	{ value: 'paid', label: 'Оплачен' },
 ] as const
 
 export function TransportationPage() {

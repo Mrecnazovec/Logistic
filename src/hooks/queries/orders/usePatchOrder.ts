@@ -18,10 +18,10 @@ export const usePatchOrder = () => {
 		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			toast.success('Order updated')
+			toast.success('Заказ обновлён')
 		},
 		onError() {
-			toast.error('Unable to update order')
+			toast.error('Ошибка при обновлении заказа')
 		},
 	})
 

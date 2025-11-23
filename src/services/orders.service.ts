@@ -3,13 +3,13 @@ import { API_URL } from '@/config/api.config'
 import {
 	IOrderDetail,
 	IOrderDocument,
+	IOrderDriverStatusUpdate,
 	IOrderStatusHistory,
-	IOrderStatusUpdate,
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
 	OrdersListQuery,
 	PatchedOrderDetailDto,
-	PatchedOrderStatusUpdateDto,
+	PatchedOrderDriverStatusUpdateDto,
 } from '@/shared/types/Order.interface'
 import { IPaginatedOrderListList } from '@/shared/types/PaginatedList.interface'
 
@@ -113,9 +113,9 @@ class OrdersService {
 		return patchedOrder
 	}
 
-	async updateOrderStatus(id: string | number, data: PatchedOrderStatusUpdateDto) {
-		const { data: status } = await axiosWithAuth<IOrderStatusUpdate>({
-			url: API_URL.orders(`${id}/status`),
+	async updateDriverStatus(id: string | number, data: PatchedOrderDriverStatusUpdateDto) {
+		const { data: status } = await axiosWithAuth<IOrderDriverStatusUpdate>({
+			url: API_URL.orders(`${id}/driver-status`),
 			method: 'PATCH',
 			data,
 		})

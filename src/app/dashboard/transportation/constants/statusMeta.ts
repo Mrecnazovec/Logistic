@@ -3,7 +3,7 @@ import type { Badge } from '@/components/ui/Badge'
 
 type BadgeVariant = ComponentProps<typeof Badge>['variant']
 
-export type TransportationStatusValue = 'no_driver' | 'pending' | 'en_route' | 'delivered'
+export type TransportationStatusValue = 'no_driver' | 'pending' | 'in_process' | 'delivered' | 'paid'
 
 type StatusMeta = {
 	label: string
@@ -13,8 +13,9 @@ type StatusMeta = {
 export const TRANSPORTATION_STATUS_META: Record<TransportationStatusValue, StatusMeta> = {
 	no_driver: { label: 'Без водителя', badgeVariant: 'outline' },
 	pending: { label: 'В ожидании', badgeVariant: 'danger' },
-	en_route: { label: 'В пути', badgeVariant: 'warning' },
-	delivered: { label: 'Доставлено', badgeVariant: 'success' },
+	in_process: { label: 'В процессе', badgeVariant: 'warning' },
+	delivered: { label: 'Доставлен', badgeVariant: 'success' },
+	paid: { label: 'Оплачен', badgeVariant: 'success' },
 } as const
 
 export const getTransportationStatusMeta = (status: string): StatusMeta => {
@@ -35,4 +36,3 @@ export const getTransportationStatusMeta = (status: string): StatusMeta => {
 		badgeVariant: 'secondary',
 	}
 }
-

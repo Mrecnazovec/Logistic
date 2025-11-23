@@ -13,7 +13,7 @@ type SearchExtras = Partial<{
 	min_price: number
 	max_price: number
 	price_currency: PriceCurrency
-	has_offers: boolean
+	has_offers: boolean | string
 	origin_lat: number
 	origin_lng: number
 	origin_radius_km: number

@@ -70,6 +70,8 @@ export const fakeCargoList: IPaginatedCargoListList = {
 		const companyRating = 4 + (index % 5) * 0.1
 		const originRadiusKm = 10 + index
 		const destRadiusKm = 15 + index
+		const hasOffers = index % 2 === 0
+		const offersCount = hasOffers ? 3 : 0
 
 		return {
 			id: index + 1,
@@ -101,7 +103,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			age_minutes: (index + 1) * 20,
 			created_at: createdAt.toISOString(),
 			refreshed_at: refreshedAt.toISOString(),
-			has_offers: index % 2 === 0,
+			has_offers: hasOffers ? 'true' : 'false',
 			path_km: routeKm,
 			route_km: routeKm,
 			price_per_km: pricePerKm,
@@ -109,7 +111,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			origin_radius_km: originRadiusKm,
 			dest_radius_km: destRadiusKm,
 			axles: 0,
-			offers_count: 3,
+			offers_count: offersCount,
 			volume_m3: '300',
 		}
 	}),

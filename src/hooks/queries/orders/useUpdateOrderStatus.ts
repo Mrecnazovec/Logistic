@@ -1,32 +1,32 @@
 import { ordersService } from '@/services/orders.service'
-import type { PatchedOrderStatusUpdateDto } from '@/shared/types/Order.interface'
+import type { PatchedOrderDriverStatusUpdateDto } from '@/shared/types/Order.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 
 type UpdateStatusPayload = {
 	id: string
-	data: PatchedOrderStatusUpdateDto
+	data: PatchedOrderDriverStatusUpdateDto
 }
 
 export const useUpdateOrderStatus = () => {
 	const queryClient = useQueryClient()
 
-	const { mutate: updateOrderStatus, isPending: isLoadingUpdateStatus } = useMutation({
-		mutationKey: ['order', 'status', 'update'],
-		mutationFn: ({ id, data }: UpdateStatusPayload) => ordersService.updateOrderStatus(id, data),
+	const { mutate: updateDriverStatus, isPending: isLoadingUpdateStatus } = useMutation({
+		mutationKey: ['order', 'driver-status', 'update'],
+		mutationFn: ({ id, data }: UpdateStatusPayload) => ordersService.updateDriverStatus(id, data),
 		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			toast.success('Order status updated')
+			toast.success('Статус водителя обновлён')
 		},
 		onError() {
-			toast.error('Unable to update order status')
+			toast.error('Ошибка при обновлении статуса водителя')
 		},
 	})
 
 	return useMemo(
-		() => ({ updateOrderStatus, isLoadingUpdateStatus }),
-		[updateOrderStatus, isLoadingUpdateStatus],
+		() => ({ updateDriverStatus, isLoadingUpdateStatus }),
+		[updateDriverStatus, isLoadingUpdateStatus],
 	)
 }

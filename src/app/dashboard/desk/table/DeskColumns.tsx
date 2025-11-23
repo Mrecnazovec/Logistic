@@ -15,6 +15,12 @@ import { CircleCheck, Minus } from 'lucide-react'
 import { useState } from 'react'
 import { formatCurrencyValue } from '@/shared/utils/currency'
 
+const hasOffersValue = (cargo: ICargoList) => {
+	if (cargo.offers_count && cargo.offers_count > 0) return true
+	const normalized = String(cargo.has_offers ?? '').toLowerCase()
+	return normalized === 'true' || normalized === '1'
+}
+
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -157,7 +163,7 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 
 function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 	const [open, setOpen] = useState(false)
-	const hasOffers = Boolean(cargo.has_offers)
+	const hasOffers = hasOffersValue(cargo)
 
 	return (
 		<>

@@ -36,6 +36,12 @@ import {
 	formatWeightValue
 } from '../../../../components/card/cardFormatters'
 
+const hasOffersValue = (cargo: ICargoList) => {
+	if (cargo.offers_count && cargo.offers_count > 0) return true
+	const normalized = String(cargo.has_offers ?? '').toLowerCase()
+	return normalized === 'true' || normalized === '1'
+}
+
 type DeskCardListProps = {
 	cargos: ICargoList[]
 	serverPagination?: ServerPaginationMeta
@@ -167,7 +173,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 
 function HasOffersField({ cargo }: { cargo: ICargoList }) {
 	const [open, setOpen] = useState(false)
-	const hasOffers = Boolean(cargo.has_offers)
+	const hasOffers = hasOffersValue(cargo)
 
 	return (
 		<>

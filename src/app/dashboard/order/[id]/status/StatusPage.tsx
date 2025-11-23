@@ -6,6 +6,7 @@ import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { useGetOrderStatusHistory } from "@/hooks/queries/orders/useGet/useGetOrderStatusHistory"
 import type { IOrderStatusHistory } from "@/shared/types/Order.interface"
+import { OrderDriverStatusSelector } from "@/shared/enums/OrderStatus.enum"
 
 type TimelineEvent = {
 	id: string
@@ -88,9 +89,9 @@ export function StatusPage() {
 														</div>
 
 														<p className="text-sm text-muted-foreground">
-															Status changed to &quot;
-															<span className="font-semibold text-foreground">{event.statusTo}</span>&quot; from
-															&quot;<span className="font-semibold text-foreground">{event.statusFrom}</span>&quot;
+															Статус изменён с &quot;
+															<span className="font-semibold text-foreground">{OrderDriverStatusSelector.find((t) => t.type === event.statusFrom)?.name}</span>&quot; на
+															&quot;<span className="font-semibold text-foreground">{OrderDriverStatusSelector.find((t) => t.type === event.statusTo)?.name}</span>&quot;
 														</p>
 													</div>
 												</div>

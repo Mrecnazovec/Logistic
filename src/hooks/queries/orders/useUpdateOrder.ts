@@ -18,10 +18,10 @@ export const useUpdateOrder = () => {
 		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			toast.success('Order updated')
+			toast.success('Статус заказа обновлён')
 		},
 		onError() {
-			toast.error('Unable to update order')
+			toast.error('Ошибка обновления статуса заказа')
 		},
 	})
 

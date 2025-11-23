@@ -59,6 +59,8 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 				price_currency: cargo.price_currency,
 				contact_pref: cargo.contact_pref,
 				is_hidden: !cargo.is_hidden,
+				payment_method: 'both',
+				
 			},
 		})
 		setOpen(false)

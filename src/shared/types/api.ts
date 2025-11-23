@@ -622,12 +622,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description GET  /orders/{id}/documents/ → список документов
-         *     POST /orders/{id}/documents/ → загрузка файла (multipart/form-data) */
         get: operations["orders_documents_retrieve"];
         put?: never;
-        /** @description GET  /orders/{id}/documents/ → список документов
-         *     POST /orders/{id}/documents/ → загрузка файла (multipart/form-data) */
         post: operations["orders_documents_create"];
         delete?: never;
         options?: never;
@@ -635,7 +631,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/orders/{id}/status/": {
+    "/api/orders/{id}/driver-status/": {
         parameters: {
             query?: never;
             header?: never;
@@ -648,9 +644,8 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** @description Обновление статуса (валидация через OrderStatusUpdateSerializer)
-         *     + запись в историю статусов. */
-        patch: operations["orders_status_partial_update"];
+        /** @description Водитель может обновлять только driver_status: "stopped", "en_route", "problem" */
+        patch: operations["orders_driver_status_partial_update"];
         trace?: never;
     };
     "/api/orders/{id}/status-history/": {
@@ -660,8 +655,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description GET /api/orders/{id}/status-history/ → история смены статусов
-         *     для таймлайна на вкладке «Статусы». */
         get: operations["orders_status_history_retrieve"];
         put?: never;
         post?: never;
@@ -894,11 +887,14 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly refreshed_at: string;
-            readonly has_offers: boolean;
+            readonly has_offers: string;
             readonly offers_count: number;
             /** Format: double */
             readonly path_km: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Returns route_km, falling back to cached values or path_km.
+             */
             readonly route_km: number | null;
             /** Format: double */
             readonly price_per_km: number;
@@ -976,8 +972,14 @@ export interface components {
              */
             contact_pref: "email" | "phone" | "both";
             is_hidden?: boolean;
-            /** Format: double */
-            readonly route_km: number | null;
+            /**
+             * @description * `transfer` - Перечисление
+             *     * `cash` - Наличными
+             *     * `both` - Оба варианта
+             * @default transfer
+             * @enum {string}
+             */
+            payment_method: "transfer" | "cash" | "both";
         };
         CargoPublishRequest: {
             /** Название груза */
@@ -1044,6 +1046,14 @@ export interface components {
              */
             contact_pref: "email" | "phone" | "both";
             is_hidden?: boolean;
+            /**
+             * @description * `transfer` - Перечисление
+             *     * `cash` - Наличными
+             *     * `both` - Оба варианта
+             * @default transfer
+             * @enum {string}
+             */
+            payment_method: "transfer" | "cash" | "both";
         };
         City: {
             name: string;
@@ -1299,12 +1309,20 @@ export interface components {
             readonly logistic_name: string;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string}
              */
-            status: "pending" | "en_route" | "delivered" | "no_driver";
+            status: "pending" | "in_process" | "delivered" | "no_driver" | "paid";
+            /**
+             * @description * `stopped` - Остановился
+             *     * `en_route` - В пути
+             *     * `problem` - Проблема
+             * @enum {string}
+             */
+            readonly driver_status: "stopped" | "en_route" | "problem";
             /**
              * @description * `UZS` - сум
              *     * `KZT` - тнг
@@ -1336,12 +1354,13 @@ export interface components {
             cargo: number;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string}
              */
-            status: "pending" | "en_route" | "delivered" | "no_driver";
+            status: "pending" | "in_process" | "delivered" | "no_driver" | "paid";
             /**
              * @description * `UZS` - сум
              *     * `KZT` - тнг
@@ -1393,6 +1412,15 @@ export interface components {
             /** Format: binary */
             file: string;
         };
+        OrderDriverStatusUpdate: {
+            /**
+             * @description * `stopped` - Остановился
+             *     * `en_route` - В пути
+             *     * `problem` - Проблема
+             * @enum {string}
+             */
+            driver_status: "stopped" | "en_route" | "problem";
+        };
         OrderList: {
             readonly id: number;
             cargo: number;
@@ -1404,12 +1432,20 @@ export interface components {
             readonly logistic_name: string;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string}
              */
-            status: "pending" | "en_route" | "delivered" | "no_driver";
+            status: "pending" | "in_process" | "delivered" | "no_driver" | "paid";
+            /**
+             * @description * `stopped` - Остановился
+             *     * `en_route` - В пути
+             *     * `problem` - Проблема
+             * @enum {string}
+             */
+            readonly driver_status: "stopped" | "en_route" | "problem";
             /**
              * @description * `UZS` - сум
              *     * `KZT` - тнг
@@ -1441,34 +1477,26 @@ export interface components {
             readonly user_name: string;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string|null}
              */
-            old_status?: "pending" | "en_route" | "delivered" | "no_driver" | "" | null;
+            old_status?: "pending" | "in_process" | "delivered" | "no_driver" | "paid" | "" | null;
             readonly old_status_label: string;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string}
              */
-            new_status: "pending" | "en_route" | "delivered" | "no_driver";
+            new_status: "pending" | "in_process" | "delivered" | "no_driver" | "paid";
             readonly new_status_label: string;
             /** Format: date-time */
             readonly created_at: string;
-        };
-        OrderStatusUpdate: {
-            /**
-             * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
-             *     * `delivered` - Доставлен
-             *     * `no_driver` - Без водителя
-             * @enum {string}
-             */
-            status: "pending" | "en_route" | "delivered" | "no_driver";
         };
         PaginatedCargoListList: {
             /** @example 123 */
@@ -1610,6 +1638,14 @@ export interface components {
              */
             contact_pref?: "email" | "phone" | "both";
             is_hidden?: boolean;
+            /**
+             * @description * `transfer` - Перечисление
+             *     * `cash` - Наличными
+             *     * `both` - Оба варианта
+             * @default transfer
+             * @enum {string}
+             */
+            payment_method: "transfer" | "cash" | "both";
         };
         PatchedOfferDetailRequest: {
             /** Format: decimal */
@@ -1630,12 +1666,13 @@ export interface components {
             cargo?: number;
             /**
              * @description * `pending` - В ожидании
-             *     * `en_route` - В пути
+             *     * `in_process` - В процессе
              *     * `delivered` - Доставлен
              *     * `no_driver` - Без водителя
+             *     * `paid` - Оплачено
              * @enum {string}
              */
-            status?: "pending" | "en_route" | "delivered" | "no_driver";
+            status?: "pending" | "in_process" | "delivered" | "no_driver" | "paid";
             /**
              * @description * `UZS` - сум
              *     * `KZT` - тнг
@@ -1650,15 +1687,14 @@ export interface components {
             /** Format: decimal */
             route_distance_km?: string;
         };
-        PatchedOrderStatusUpdateRequest: {
+        PatchedOrderDriverStatusUpdateRequest: {
             /**
-             * @description * `pending` - В ожидании
+             * @description * `stopped` - Остановился
              *     * `en_route` - В пути
-             *     * `delivered` - Доставлен
-             *     * `no_driver` - Без водителя
+             *     * `problem` - Проблема
              * @enum {string}
              */
-            status?: "pending" | "en_route" | "delivered" | "no_driver";
+            driver_status?: "stopped" | "en_route" | "problem";
         };
         PatchedUpdateMeRequest: {
             /** Имя */
@@ -3048,7 +3084,7 @@ export interface operations {
             };
         };
     };
-    orders_status_partial_update: {
+    orders_driver_status_partial_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -3060,9 +3096,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedOrderStatusUpdateRequest"];
-                "multipart/form-data": components["schemas"]["PatchedOrderStatusUpdateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderStatusUpdateRequest"];
+                "application/json": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
             };
         };
         responses: {
@@ -3071,7 +3107,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderStatusUpdate"];
+                    "application/json": components["schemas"]["OrderDriverStatusUpdate"];
                 };
             };
         };

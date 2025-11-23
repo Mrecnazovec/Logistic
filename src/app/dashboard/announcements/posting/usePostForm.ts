@@ -9,11 +9,12 @@ export function usePostForm() {
 		mode: 'onChange',
 		defaultValues: {
 			is_hidden: false,
+			payment_method: 'transfer',
 		},
 	})
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
-		createLoad(data)
+		createLoad({ ...data, payment_method: data.payment_method ?? 'transfer' })
 		// console.log(data)
 	}
 
