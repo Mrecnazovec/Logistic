@@ -8,6 +8,7 @@ type SearchExtras = Partial<{
 	load_date: string
 	transport_type: TransportType
 	id: number
+	uuid: string
 	min_weight: number
 	max_weight: number
 	min_price: number

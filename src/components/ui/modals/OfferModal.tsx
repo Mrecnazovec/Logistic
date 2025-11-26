@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowLeftRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { ArrowRight } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import {
@@ -22,8 +22,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/Select'
-import { cn } from '@/lib/utils'
 import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
+import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
@@ -37,6 +37,7 @@ interface OfferModalProps {
 	open?: boolean
 	onOpenChange?: (open: boolean) => void
 	isAction?: boolean
+	title?: string
 }
 
 const currencyOptions: CurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
@@ -47,6 +48,7 @@ export function OfferModal({
 	open,
 	onOpenChange,
 	isAction = false,
+	title = 'Контрпредложение'
 }: OfferModalProps) {
 	const { createOffer, isLoadingCreate } = useCreateOffer()
 
@@ -62,7 +64,7 @@ export function OfferModal({
 
 			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>Контрпредложение</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>{title}</DialogTitle>
 				</DialogHeader>
 
 				{!selectedRow ? (
@@ -136,7 +138,7 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 						<p>{format(selectedRow.load_date, 'dd.MM.yyyy', { locale: ru })}</p>
 					</div>
 					<div className='flex flex-col items-center justify-center gap-3'>
-						<ArrowLeftRight className='size-5' />
+						<ArrowRight className='size-5' />
 						<p>{selectedRow.origin_dist_km} км</p>
 					</div>
 					<div>

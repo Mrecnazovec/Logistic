@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 import { Banknote, Home, } from 'lucide-react'
 import { usePostForm } from './usePostForm'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
@@ -198,7 +199,9 @@ export function PostingPage() {
 									</FormItem>
 								)}
 							/>
+
 						</div>
+
 						<div className='flex items-end gap-6'>
 							<FormField
 								control={form.control}
@@ -249,8 +252,23 @@ export function PostingPage() {
 							rules={{ required: 'Предпочтение обязательно' }}
 							render={({ field }) => (
 								<FormItem className='mb-6'>
+									<FormLabel className='text-brand'>Выберите вариант размещения ваших способов связи</FormLabel>
 									<FormControl>
 										<ContactSelector onChange={field.onChange} value={field.value} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='payment_method'
+							rules={{ required: 'Метод оплаты обязателен' }}
+							render={({ field }) => (
+								<FormItem className='mb-6'>
+									<FormLabel className='text-brand'>Выберите способ оплаты</FormLabel>
+									<FormControl>
+										<PaymentSelector onChange={field.onChange} value={field.value} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -335,12 +353,12 @@ export function PostingPage() {
 						/>
 						<FormField
 							control={form.control}
-							name='weight_kg'
+							name='weight_tons'
 							rules={{
 								required: 'Вес обязателен',
 								pattern: {
 									value: NUMERIC_REGEX,
-									message: 'Weight must be up to 10 digits with 2 decimals',
+									message: 'Вес должен быть числом',
 								},
 							}}
 
@@ -349,7 +367,7 @@ export function PostingPage() {
 									<FormControl>
 										<InputGroup>
 											<InputGroupInput
-												placeholder='Вес(кг)'
+												placeholder='Вес(т)'
 												{...field}
 												value={field.value ?? ''}
 												onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
@@ -369,7 +387,11 @@ export function PostingPage() {
 							render={({ field }) => (
 								<FormItem className='w-full max-w-full min-w-0'>
 									<FormControl>
-										<RichTextEditor value={field.value || ''} onChange={(value) => field.onChange(value)} />
+										<RichTextEditor
+											value={field.value || ''}
+											onChange={(value) => field.onChange(value)}
+											placeholder='Опишите объявление: груз, сроки, условия и важные детали'
+										/>
 									</FormControl>
 								</FormItem>
 							)}

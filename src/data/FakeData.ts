@@ -103,7 +103,7 @@ export const fakeCargoList: IPaginatedCargoListList = {
 			age_minutes: (index + 1) * 20,
 			created_at: createdAt.toISOString(),
 			refreshed_at: refreshedAt.toISOString(),
-			has_offers: hasOffers ? 'true' : 'false',
+			has_offers: hasOffers,
 			path_km: routeKm,
 			route_km: routeKm,
 			price_per_km: pricePerKm,

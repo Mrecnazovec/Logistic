@@ -50,7 +50,7 @@ const ACCEPTED_MIME_TYPES = [
 
 const ACCEPTED_EXTENSIONS = ['.pdf', '.png', '.gif', '.doc', '.docx', '.ppt', '.pptx'] as const
 const FILE_INPUT_ACCEPT = [...ACCEPTED_MIME_TYPES, ...ACCEPTED_EXTENSIONS].join(',')
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']
 
@@ -66,7 +66,7 @@ const FOLDER_LABELS: Record<string, string> = {
 	contracts: 'Договоры',
 	loading: 'Погрузка',
 	unloading: 'Разгрузка',
-	others: 'Прочие документы',
+	other: 'Прочие документы',
 }
 
 const BADGE_VARIANT_BY_EXTENSION: Record<
@@ -601,7 +601,7 @@ function validateFile(file: File) {
 	}
 
 	if (file.size > MAX_FILE_SIZE_BYTES) {
-		return 'Файл превышает 5 МБ'
+		return 'Файл превышает 15 МБ'
 	}
 
 	return null

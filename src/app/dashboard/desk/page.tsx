@@ -4,7 +4,7 @@ import { DeskPage } from './DeskPage'
 import { LoaderTable } from '@/components/ui/table/TableStates'
 
 export const metadata: Metadata = {
-	title: 'Заявки'
+	title: 'Торговля'
 }
 
 export default function page() {

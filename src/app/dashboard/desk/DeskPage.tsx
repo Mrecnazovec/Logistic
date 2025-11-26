@@ -53,7 +53,7 @@ export function DeskPage() {
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} />
+						<SearchFields form={form} showOffersFilter />
 					</form>
 				</Form>
 			</div>

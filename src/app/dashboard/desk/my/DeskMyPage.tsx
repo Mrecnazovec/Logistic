@@ -1,6 +1,9 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Form } from '@/components/ui/form-control/Form'
+import { OfferDecisionModal } from '@/components/ui/modals/OfferDecisionModal'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
@@ -9,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { DeskDriverCardList } from './components/DeskDriverCardList'
@@ -45,12 +49,30 @@ export function DeskMyPage() {
 		}
 		: undefined
 
+	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()
+	const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false)
+
+	const handleRowClick = (offer: IOfferShort) => {
+		const status = (offer.status_display || '').toLowerCase()
+		if (status.includes('ожидает')) {
+			setSelectedOffer(offer)
+			setIsDecisionModalOpen(true)
+		}
+	}
+
+	const handleModalOpenChange = (open: boolean) => {
+		setIsDecisionModalOpen(open)
+		if (!open) {
+			setSelectedOffer(undefined)
+		}
+	}
+
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} />
+						<SearchFields form={form} showOffersFilter />
 					</form>
 				</Form>
 			</div>
@@ -90,6 +112,7 @@ export function DeskMyPage() {
 									previous: dataMy?.previous,
 									totalCount: dataMy?.count,
 								}}
+								onRowClick={handleRowClick}
 							/>
 
 						)}
@@ -110,6 +133,7 @@ export function DeskMyPage() {
 									previous: data?.previous,
 									totalCount: data?.count,
 								}}
+								onRowClick={handleRowClick}
 							/>
 						)}
 					</TabsContent>
@@ -150,6 +174,13 @@ export function DeskMyPage() {
 					</TabsContent>
 				</Tabs>
 			)}
+
+			<OfferDecisionModal
+				key={selectedOffer?.id ?? 'empty'}
+				offer={selectedOffer}
+				open={isDecisionModalOpen}
+				onOpenChange={handleModalOpenChange}
+			/>
 		</div>
 	)
 }

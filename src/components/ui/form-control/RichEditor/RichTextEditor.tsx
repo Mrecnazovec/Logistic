@@ -4,10 +4,9 @@
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import TextAlign from '@tiptap/extension-text-align'
+import Placeholder from '@tiptap/extension-placeholder'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-// import ResizeImage from 'tiptap-extension-resize-image'
-import Placeholder from '@tiptap/extension-placeholder'
 import Youtube from '@tiptap/extension-youtube'
 import { useEffect } from 'react'
 import MenuBar from './MenuBar'
@@ -16,9 +15,12 @@ interface RichTextEditorProps {
 	value: string
 	onChange: (value: string) => void
 	disabled?: boolean
+	placeholder?: string
 }
 
-export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, disabled, placeholder }: RichTextEditorProps) {
+	const placeholderText = placeholder ?? 'Введите описание объявления...'
+
 	const editor = useEditor({
 		extensions: [
 			StarterKit.configure({
@@ -46,7 +48,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 				},
 			}),
 			Placeholder.configure({
-				placeholder: 'Начните писать...',
+				placeholder: placeholderText,
 			}),
 			// ResizeImage.configure({
 			// 	allowBase64: true,
@@ -67,13 +69,14 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 		content: value,
 		editorProps: {
 			attributes: {
-				class: 'min-h-[156px] rounded-4xl bg-grayscale-50 py-4 px-6 max-w-',
+				class: 'min-h-[156px] rounded-4xl bg-grayscale-50 py-4 px-6 max-w-full',
 			},
 		},
 		onUpdate: ({ editor }) => {
 			onChange(editor.getHTML())
 		},
 		immediatelyRender: false,
+		editable: !disabled,
 	})
 
 	useEffect(() => {

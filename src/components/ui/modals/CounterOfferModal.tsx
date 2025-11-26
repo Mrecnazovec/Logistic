@@ -1,9 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { ArrowLeftRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { ArrowRight } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import {
@@ -23,9 +23,9 @@ import {
 	SelectValue,
 } from '@/components/ui/Select'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
+import type { PriceCurrencyCode } from '@/shared/utils/currency'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
@@ -70,7 +70,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 						</div>
 
 						<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
-							<ArrowLeftRight className='mb-2 size-5' />
+							<ArrowRight className='mb-2 size-5' />
 							<span>—</span>
 						</div>
 

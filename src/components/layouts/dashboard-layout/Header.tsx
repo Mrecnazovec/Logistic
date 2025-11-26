@@ -5,6 +5,7 @@ import { NoPhoto } from '@/components/ui/NoPhoto'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { cn } from '@/lib/utils'
+import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { ChevronLeft, Loader2, Mail } from 'lucide-react'
 import Image from 'next/image'
@@ -82,9 +83,19 @@ export function Header() {
 							) : (
 								<NoPhoto />
 							)}
-							<p className='font-medium text-base max-md:hidden'>
-								{me?.first_name || 'Пользователь'}
-							</p>
+							<div>
+								<p className='font-medium text-base max-md:hidden'>
+									{me?.first_name || 'Пользователь'}
+								</p>
+								<div className='flex items-center justify-between gap-2'>
+									<p className='text-xs max-md:hidden'>
+										{RoleSelect.find((type) => type.type === me?.role)?.name ?? 'Роль'}
+									</p>
+									{role !== RoleEnum.LOGISTIC && <p className='text-xs max-md:hidden'>
+										{role === RoleEnum.CARRIER ? me?.rating_as_carrier : me?.rating_as_customer} ⭐
+									</p>}
+								</div>
+							</div>
 						</Link></>
 				)}
 			</div>

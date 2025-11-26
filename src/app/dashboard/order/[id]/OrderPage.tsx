@@ -25,14 +25,18 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 const PLACEHOLDER = '—'
 
 type DriverStatus = NonNullable<IOrderDetail['driver_status']>
-type DocumentCategory = 'loading' | 'unloading' | 'other'
-
-const fullDateFormatter = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+const fullDateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
+	day: 'numeric',
+	month: 'long',
+	year: 'numeric',
+	hour: '2-digit',
+	minute: '2-digit',
+})
 
 const formatFullDateValue = (value?: string | null) => {
 	if (!value) return PLACEHOLDER
 	try {
-		return fullDateFormatter.format(new Date(value))
+		return fullDateTimeFormatter.format(new Date(value))
 	} catch {
 		return PLACEHOLDER
 	}
@@ -73,44 +77,47 @@ export function OrderPage() {
 	const orderId = order ? String(order.id) : ''
 	const canChangeDriverStatus = Boolean(order && isCarrier)
 	const orderStatus = order?.status ?? null
-	const documentsByCategory = useMemo(() => {
+	const firstOtherDocument = useMemo(() => {
 		const docs = order?.documents ?? []
-		const sorted = [...docs].sort((first, second) => {
-			const firstTimestamp = new Date(first.created_at ?? '').getTime() || 0
-			const secondTimestamp = new Date(second.created_at ?? '').getTime() || 0
-			return firstTimestamp - secondTimestamp
+		const filtered = docs.filter((document) => document.category === 'other')
+		if (!filtered.length) return null
+
+		return filtered.reduce((earliest, current) => {
+			const earliestTime = new Date(earliest.created_at ?? '').getTime() || Number.POSITIVE_INFINITY
+			const currentTime = new Date(current.created_at ?? '').getTime() || Number.POSITIVE_INFINITY
+			return currentTime < earliestTime ? current : earliest
 		})
-
-		return sorted.reduce(
-			(acc, document) => {
-				const category = document.category as DocumentCategory
-
-				if ((category === 'loading' || category === 'unloading' || category === 'other') && !acc[category]) {
-					acc[category] = document
-				}
-
-				return acc
-			},
-			{} as Partial<Record<DocumentCategory, IOrderDetail['documents'][number]>>,
-		)
 	}, [order?.documents])
-	const firstLoadingDocument = documentsByCategory.loading ?? null
-	const firstUnloadingDocument = documentsByCategory.unloading ?? null
-	const firstOtherDocument = documentsByCategory.other ?? null
-	const hasLoadingDocument = Boolean(firstLoadingDocument)
-	const hasUnloadingDocument = Boolean(firstUnloadingDocument)
+	const hasLoadingDocument = Boolean(order?.loading_datetime)
+	const hasUnloadingDocument = Boolean(order?.unloading_datetime)
 	const hasOtherDocument = Boolean(firstOtherDocument)
-	const firstLoadingDocumentDate = formatFullDateValue(firstLoadingDocument?.created_at)
-	const firstUnloadingDocumentDate = formatFullDateValue(firstUnloadingDocument?.created_at)
+	const firstLoadingDocumentDate = formatFullDateValue(order?.loading_datetime)
+	const firstUnloadingDocumentDate = formatFullDateValue(order?.unloading_datetime)
 	const firstOtherDocumentDate = formatFullDateValue(firstOtherDocument?.created_at)
 	const shouldShowUnloadingSection = hasLoadingDocument || hasUnloadingDocument
 	const shouldShowTransportDetailsSection = hasUnloadingDocument || hasOtherDocument
 	const documentSectionsCount = 1 + Number(shouldShowUnloadingSection) + Number(shouldShowTransportDetailsSection)
 
 	const docsBasePath = orderId ? `/dashboard/order/${orderId}/docs` : ''
-	const renderDocumentAction = ({ hasDocument, documentDate, href, buttonLabel }: { hasDocument: boolean; documentDate: string; href: string; buttonLabel: string }) => {
+	const renderDocumentAction = ({
+		hasDocument,
+		documentDate,
+		href,
+		buttonLabel,
+		allowUpload = true,
+	}: {
+		hasDocument: boolean
+		documentDate: string
+		href: string
+		buttonLabel: string
+		allowUpload?: boolean
+	}) => {
 		if (hasDocument) {
 			return <span className="font-medium text-end">{documentDate}</span>
+		}
+
+		if (!allowUpload) {
+			return <span className="font-medium text-end text-muted-foreground">{PLACEHOLDER}</span>
 		}
 
 		return (
@@ -328,6 +335,7 @@ export function OrderPage() {
 							documentDate: firstLoadingDocumentDate,
 							href: `${docsBasePath}/loading`,
 							buttonLabel: 'Загрузить документ',
+							allowUpload: isCarrier,
 						})}
 					</p>
 				</div>
@@ -354,6 +362,7 @@ export function OrderPage() {
 								documentDate: firstUnloadingDocumentDate,
 								href: `${docsBasePath}/unloading`,
 								buttonLabel: 'Загрузить документ',
+								allowUpload: isCarrier,
 							})}
 						</p>
 					</div>

@@ -31,7 +31,7 @@ export const navItems: NavGroup[] = [
 			{
 				href: DASHBOARD_URL.desk(),
 				icon: Package,
-				label: 'Заявки',
+				label: 'Торговля',
 			},
 			{
 				href: DASHBOARD_URL.transportation(),

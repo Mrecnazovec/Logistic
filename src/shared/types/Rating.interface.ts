@@ -5,4 +5,4 @@ export type UserRatingRequestDto = components['schemas']['UserRatingRequest']
 export type PatchedUserRatingRequestDto = components['schemas']['PatchedUserRatingRequest']
 
 export type RatingsListQuery =
-	paths['/api/ratings/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
+	paths['/api/ratings/ratings/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>

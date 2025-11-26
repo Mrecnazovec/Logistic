@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/fcm-token/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_fcm_token_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/forgot-password/": {
         parameters: {
             query?: never;
@@ -61,9 +77,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description POST /api/auth/logout
-         *     - с телом {"refresh": "<token>"}: выход только с текущего устройства
-         *     - без тела: выход со всех устройств */
         post: operations["auth_logout_create"];
         delete?: never;
         options?: never;
@@ -94,7 +107,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description GET /api/auth/me/analytics/ — данные для карточек аналитики в профиле. */
         get: operations["auth_me_analytics_retrieve"];
         put?: never;
         post?: never;
@@ -129,9 +141,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Обновление токенов вручную (альтернатива стандартному TokenRefreshView),
-         *     с опциональной ротацией под remember_me.
-         *     Body: {"refresh": "<token>", "remember_me": true|false} */
         post: operations["auth_refresh_create"];
         delete?: never;
         options?: never;
@@ -375,6 +384,54 @@ export interface paths {
         get: operations["loads_public_list"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["notifications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications/{id}/mark-read/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["notifications_mark_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications/mark-all-read/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["notifications_mark_all_read_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -638,13 +695,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["orders_driver_status_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** @description Водитель может обновлять только driver_status: "stopped", "en_route", "problem" */
         patch: operations["orders_driver_status_partial_update"];
         trace?: never;
     };
@@ -664,54 +720,19 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/ratings/": {
+    "/api/ratings/rating-users/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        get: operations["ratings_list"];
-        put?: never;
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        post: operations["ratings_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/ratings/{id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        get: operations["ratings_retrieve"];
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        put: operations["ratings_update"];
-        post?: never;
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        delete: operations["ratings_destroy"];
-        options?: never;
-        head?: never;
-        /** @description CRUD API для оценок пользователей (рейтингов). */
-        patch: operations["ratings_partial_update"];
-        trace?: never;
-    };
-    "/api/ratings/users/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Список пользователей с рейтингами
-         *     (экран с вкладками 'Грузовладельцы / Логисты / Перевозчики'). */
-        get: operations["ratings_users_list"];
+        /** @description Список пользователей с рейтингами (каталог).
+         *     Вкладки:
+         *     - Грузовладельцы
+         *     - Логисты
+         *     - Перевозчики */
+        get: operations["ratings_rating_users_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -720,22 +741,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/ratings/users/{id}/": {
+    "/api/ratings/rating-users/{id}/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description Список пользователей с рейтингами
-         *     (экран с вкладками 'Грузовладельцы / Логисты / Перевозчики'). */
-        get: operations["ratings_users_retrieve"];
+        /** @description Список пользователей с рейтингами (каталог).
+         *     Вкладки:
+         *     - Грузовладельцы
+         *     - Логисты
+         *     - Перевозчики */
+        get: operations["ratings_rating_users_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/ratings/rating-users/countries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Список пользователей с рейтингами (каталог).
+         *     Вкладки:
+         *     - Грузовладельцы
+         *     - Логисты
+         *     - Перевозчики */
+        get: operations["ratings_rating_users_countries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ratings/ratings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD API для оценок пользователей. */
+        get: operations["ratings_ratings_list"];
+        put?: never;
+        /** @description CRUD API для оценок пользователей. */
+        post: operations["ratings_ratings_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ratings/ratings/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD API для оценок пользователей. */
+        get: operations["ratings_ratings_retrieve"];
+        /** @description CRUD API для оценок пользователей. */
+        put: operations["ratings_ratings_update"];
+        post?: never;
+        /** @description CRUD API для оценок пользователей. */
+        delete: operations["ratings_ratings_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD API для оценок пользователей. */
+        patch: operations["ratings_ratings_partial_update"];
         trace?: never;
     };
     "/api/schema/": {
@@ -887,14 +970,11 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly refreshed_at: string;
-            readonly has_offers: string;
+            readonly has_offers: boolean;
             readonly offers_count: number;
             /** Format: double */
             readonly path_km: number;
-            /**
-             * Format: double
-             * @description Returns route_km, falling back to cached values or path_km.
-             */
+            /** Format: double */
             readonly route_km: number | null;
             /** Format: double */
             readonly price_per_km: number;
@@ -1070,6 +1150,12 @@ export interface components {
         CountrySuggestResponse: {
             results: components["schemas"]["Country"][];
         };
+        FCMUpdateRequestRequest: {
+            fcm_token: string;
+        };
+        FCMUpdateResponse: {
+            detail: string;
+        };
         ForgotPasswordRequest: {
             /** Format: email */
             email: string;
@@ -1082,6 +1168,7 @@ export interface components {
             password: string;
             /** @default false */
             remember_me: boolean;
+            fcm_token?: string | null;
         };
         LoginResponse: {
             user: components["schemas"]["Me"];
@@ -1093,6 +1180,14 @@ export interface components {
         };
         LogoutResponse: {
             detail: string;
+        };
+        /** @description Для отметки уведомления как прочитанного. */
+        MarkRead: {
+            id: number;
+        };
+        /** @description Для отметки уведомления как прочитанного. */
+        MarkReadRequest: {
+            id: number;
         };
         Me: {
             readonly id: number;
@@ -1127,6 +1222,21 @@ export interface components {
              */
             date_joined?: string;
             readonly profile: components["schemas"]["Profile"];
+            fcm_token?: string | null;
+        };
+        Notification: {
+            readonly id: number;
+            type: string;
+            title: string;
+            message?: string;
+            payload?: {
+                [key: string]: unknown;
+            };
+            readonly cargo_id: number;
+            readonly offer_id: number;
+            is_read?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         OfferAcceptResponse: {
             detail: string;
@@ -1344,10 +1454,14 @@ export interface components {
             readonly load_date: string;
             readonly destination_city: string;
             /** Format: date */
-            readonly delivery_date: string | null;
+            readonly delivery_date: string;
             readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
+            /** Format: date-time */
+            loading_datetime?: string | null;
+            /** Format: date-time */
+            unloading_datetime?: string | null;
             readonly documents: components["schemas"]["OrderDocument"][];
         };
         OrderDetailRequest: {
@@ -1374,6 +1488,10 @@ export interface components {
             price_total?: string;
             /** Format: decimal */
             route_distance_km?: string;
+            /** Format: date-time */
+            loading_datetime?: string | null;
+            /** Format: date-time */
+            unloading_datetime?: string | null;
         };
         OrderDocument: {
             readonly id: number;
@@ -1411,15 +1529,6 @@ export interface components {
             category: "licenses" | "contracts" | "loading" | "unloading" | "other";
             /** Format: binary */
             file: string;
-        };
-        OrderDriverStatusUpdate: {
-            /**
-             * @description * `stopped` - Остановился
-             *     * `en_route` - В пути
-             *     * `problem` - Проблема
-             * @enum {string}
-             */
-            driver_status: "stopped" | "en_route" | "problem";
         };
         OrderList: {
             readonly id: number;
@@ -1467,7 +1576,7 @@ export interface components {
             readonly load_date: string;
             readonly destination_city: string;
             /** Format: date */
-            readonly delivery_date: string | null;
+            readonly delivery_date: string;
             readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -1512,6 +1621,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["CargoList"][];
+        };
+        PaginatedNotificationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Notification"][];
         };
         PaginatedOfferShortList: {
             /** @example 123 */
@@ -1686,15 +1810,10 @@ export interface components {
             price_total?: string;
             /** Format: decimal */
             route_distance_km?: string;
-        };
-        PatchedOrderDriverStatusUpdateRequest: {
-            /**
-             * @description * `stopped` - Остановился
-             *     * `en_route` - В пути
-             *     * `problem` - Проблема
-             * @enum {string}
-             */
-            driver_status?: "stopped" | "en_route" | "problem";
+            /** Format: date-time */
+            loading_datetime?: string | null;
+            /** Format: date-time */
+            unloading_datetime?: string | null;
         };
         PatchedUpdateMeRequest: {
             /** Имя */
@@ -1704,11 +1823,12 @@ export interface components {
             /** Format: binary */
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
+            fcm_token?: string | null;
         };
         PatchedUserRatingRequest: {
             /** Оцениваемый пользователь */
             rated_user?: number;
-            /** Заказ, в рамках которого выставлена оценка */
+            /** Заказ */
             order?: number;
             /** Оценка (1–5) */
             score?: number;
@@ -1735,7 +1855,7 @@ export interface components {
             /** Город */
             city?: string;
         };
-        /** @description Строка для списка рейтинга (вкладки: Грузовладельцы / Логисты / Перевозчики). */
+        /** @description Строка списка рейтингов (вкладки: Грузовладельцы / Логисты / Перевозчики). */
         RatingUserList: {
             readonly id: number;
             /**
@@ -1747,10 +1867,12 @@ export interface components {
             readonly role: "LOGISTIC" | "CUSTOMER" | "CARRIER";
             readonly company_name: string;
             readonly display_name: string;
+            readonly country: string;
             /** Format: double */
             readonly avg_rating: number;
             readonly rating_count: number;
             readonly completed_orders: number;
+            readonly total_distance: number | null;
             /** Format: date-time */
             readonly registered_at: string;
         };
@@ -1785,6 +1907,7 @@ export interface components {
             country_code?: string;
             region?: string;
             city?: string;
+            fcm_token?: string | null;
         };
         RegisterResponse: {
             detail: string;
@@ -1848,13 +1971,14 @@ export interface components {
             /** Format: binary */
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
+            fcm_token?: string | null;
         };
         UserRating: {
             readonly id: number;
             /** Оцениваемый пользователь */
             rated_user: number;
             readonly rated_by: string;
-            /** Заказ, в рамках которого выставлена оценка */
+            /** Заказ */
             order: number;
             /** Оценка (1–5) */
             score: number;
@@ -1866,7 +1990,7 @@ export interface components {
         UserRatingRequest: {
             /** Оцениваемый пользователь */
             rated_user: number;
-            /** Заказ, в рамках которого выставлена оценка */
+            /** Заказ */
             order: number;
             /** Оценка (1–5) */
             score: number;
@@ -1927,6 +2051,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoleChangeResponse"];
+                };
+            };
+        };
+    };
+    auth_fcm_token_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FCMUpdateRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["FCMUpdateRequestRequest"];
+                "multipart/form-data": components["schemas"]["FCMUpdateRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FCMUpdateResponse"];
                 };
             };
         };
@@ -2537,6 +2686,73 @@ export interface operations {
             };
         };
     };
+    notifications_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedNotificationList"];
+                };
+            };
+        };
+    };
+    notifications_mark_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkReadRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MarkReadRequest"];
+                "multipart/form-data": components["schemas"]["MarkReadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkRead"];
+                };
+            };
+        };
+    };
+    notifications_mark_all_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     offers_list: {
         parameters: {
             query?: {
@@ -3084,6 +3300,28 @@ export interface operations {
             };
         };
     };
+    orders_driver_status_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
     orders_driver_status_partial_update: {
         parameters: {
             query?: never;
@@ -3096,9 +3334,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
-                "multipart/form-data": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
+                "application/json": components["schemas"]["PatchedOrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDetailRequest"];
             };
         };
         responses: {
@@ -3107,7 +3345,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderDriverStatusUpdate"];
+                    "application/json": components["schemas"]["OrderDetail"];
                 };
             };
         };
@@ -3134,7 +3372,70 @@ export interface operations {
             };
         };
     };
-    ratings_list: {
+    ratings_rating_users_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedRatingUserListList"];
+                };
+            };
+        };
+    };
+    ratings_rating_users_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this user. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RatingUserList"];
+                };
+            };
+        };
+    };
+    ratings_rating_users_countries_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RatingUserList"];
+                };
+            };
+        };
+    };
+    ratings_ratings_list: {
         parameters: {
             query?: {
                 /** @description A page number within the paginated result set. */
@@ -3156,7 +3457,7 @@ export interface operations {
             };
         };
     };
-    ratings_create: {
+    ratings_ratings_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -3181,7 +3482,7 @@ export interface operations {
             };
         };
     };
-    ratings_retrieve: {
+    ratings_ratings_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -3203,7 +3504,7 @@ export interface operations {
             };
         };
     };
-    ratings_update: {
+    ratings_ratings_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -3231,7 +3532,7 @@ export interface operations {
             };
         };
     };
-    ratings_destroy: {
+    ratings_ratings_destroy: {
         parameters: {
             query?: never;
             header?: never;
@@ -3252,7 +3553,7 @@ export interface operations {
             };
         };
     };
-    ratings_partial_update: {
+    ratings_ratings_partial_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -3276,50 +3577,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserRating"];
-                };
-            };
-        };
-    };
-    ratings_users_list: {
-        parameters: {
-            query?: {
-                /** @description A page number within the paginated result set. */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedRatingUserListList"];
-                };
-            };
-        };
-    };
-    ratings_users_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description A unique integer value identifying this user. */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RatingUserList"];
                 };
             };
         };

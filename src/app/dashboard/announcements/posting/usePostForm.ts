@@ -9,13 +9,18 @@ export function usePostForm() {
 		mode: 'onChange',
 		defaultValues: {
 			is_hidden: false,
-			payment_method: 'transfer',
 		},
 	})
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
-		createLoad({ ...data, payment_method: data.payment_method ?? 'transfer' })
-		// console.log(data)
+		const weightTons = Number(data.weight_tons ?? 0)
+		const weight_kg = (Number.isFinite(weightTons) ? weightTons * 1000 : 0).toString()
+
+		createLoad({
+			...data,
+			weight_kg,
+			payment_method: data.payment_method ?? 'transfer',
+		})
 	}
 
 	return { onSubmit, form, isLoadingCreate }

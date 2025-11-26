@@ -13,7 +13,7 @@ import { ICargoList } from '@/shared/types/CargoList.interface'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ArrowLeftRight, Search, Settings2 } from 'lucide-react'
+import { ArrowRight, Search, Settings2 } from 'lucide-react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../form-control/InputGroup'
 
 interface OfferModalProps {
@@ -54,7 +54,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 									</p>
 								</div>
 								<div className='flex flex-col items-center justify-center gap-3'>
-									<ArrowLeftRight className='size-5' />
+									<ArrowRight className='size-5' />
 									<p>{selectedRow.origin_dist_km} км</p>
 								</div>
 								<div>

@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { DeskMyPage } from './DeskMyPage'
 
 export const metadata: Metadata = {
-	title: 'Заявки'
+	title: 'Торговля'
 }
 
 export default function page() {

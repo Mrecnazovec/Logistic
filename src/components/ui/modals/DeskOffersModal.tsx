@@ -2,16 +2,15 @@
 
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ArrowLeftRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogHeader,
-	DialogTitle,
+	DialogTitle
 } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
@@ -117,7 +116,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 										</div>
 
 										<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
-											<ArrowLeftRight className='mb-1 size-5' />
+											<ArrowRight className='mb-1 size-5' />
 											<span>-</span>
 										</div>
 

@@ -1,8 +1,8 @@
 'use client'
 
 import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
-import { DeskOfferQuickActions } from '@/components/ui/actions/DeskOfferQuickActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
+import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
@@ -14,12 +14,15 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Minus } from 'lucide-react'
 
+const getStatusBadge = (status?: string) => {
+	const normalized = (status || '').toLowerCase()
+	if (normalized.includes('ожидает')) return { variant: 'warning' as const, label: status }
+	if (normalized.includes('ответ')) return { variant: 'success' as const, label: status }
+	if (normalized.includes('отмен')) return { variant: 'danger' as const, label: status }
+	return { variant: 'secondary' as const, label: status || '—' }
+}
+
 export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
-	{
-		id: 'fast_actions',
-		header: 'Быстрые действия',
-		cell: ({ row }) => <DeskOfferQuickActions offer={row.original} enableCounter/>,
-	},
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -32,6 +35,10 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'status_display',
 		header: 'Статус',
+		cell: ({ row }) => {
+			const { variant, label } = getStatusBadge(row.original.status_display)
+			return <Badge variant={variant}>{label}</Badge>
+		},
 	},
 	{
 		id: 'origin',
