@@ -326,6 +326,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/loads/{uuid}/visibility/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["loads_visibility_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/loads/board/": {
         parameters: {
             query?: never;
@@ -976,6 +992,14 @@ export interface components {
             readonly path_km: number;
             /** Format: double */
             readonly route_km: number | null;
+            /**
+             * Способ оплаты
+             * @description * `transfer` - Перечисление
+             *     * `cash` - Наличными
+             *     * `both` - Оба варианта
+             * @enum {string}
+             */
+            readonly payment_method: "transfer" | "cash" | "both";
             /** Format: double */
             readonly price_per_km: number;
             /** Format: double */
@@ -1374,6 +1398,8 @@ export interface components {
             readonly phone: string;
             /** @description Email перевозчика (вместо contact_value). */
             readonly email: string;
+            /** Format: double */
+            readonly route_km: number | null;
             /** Format: decimal */
             readonly price_value: string | null;
             /**
@@ -2591,6 +2617,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RefreshResponse"];
+                };
+            };
+        };
+    };
+    loads_visibility_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CargoList"];
                 };
             };
         };

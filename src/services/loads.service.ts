@@ -1,6 +1,7 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 
 import { API_URL } from '@/config/api.config'
+import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CargoPublishRequestDto, ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { IPaginatedCargoListList } from '@/shared/types/PaginatedList.interface'
 import { IRefreshResponse } from '@/shared/types/Registration.interface'
@@ -76,6 +77,15 @@ class LoadsService {
 		})
 
 		return createdLoad
+	}
+
+	async toggleLoadVisibility(uuid: string) {
+		const { data } = await axiosWithAuth<ICargoList>({
+			url: API_URL.loads(`${uuid}/visibility`),
+			method: 'POST',
+		})
+
+		return data
 	}
 
 	/* PUT */

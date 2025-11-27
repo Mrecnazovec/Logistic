@@ -7,16 +7,16 @@ import { DataTable } from '@/components/ui/table/DataTable'
 import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { fakeCargoList } from '@/data/FakeData'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
 import { useSearchForm } from './Searching/useSearchForm'
-import { createTransportationColumns } from './table/TransportationColumns'
-import { TransportationMyCardList } from './components/TransportationMyCardList'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
+import { createTransportationColumns } from '../table/TransportationColumns'
+import { TransportationCardList } from '../components/TransportationCardList'
 
 const STATUS_TABS = [
 	{ value: 'no_driver', label: 'Без водителя' },
@@ -27,8 +27,8 @@ const STATUS_TABS = [
 ] as const
 
 export function TransportationMyPage() {
-	const data = fakeCargoList
-	const isLoading = false
+	const { data, isLoading } = useGetOrders()
+
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
@@ -43,9 +43,9 @@ export function TransportationMyPage() {
 
 	const serverPaginationMeta = results.length
 		? {
-			next: data.next,
-			previous: data.previous,
-			totalCount: data.count,
+			next: data?.next,
+			previous: data?.previous,
+			totalCount: data?.count,
 			pageSize: results.length,
 		}
 		: undefined
@@ -66,22 +66,22 @@ export function TransportationMyPage() {
 	)
 
 	const handleRowClick = useCallback(
-		(cargo: ICargoList) => {
-			router.push(DASHBOARD_URL.order(`${cargo.uuid}`))
+		(order: IOrderList) => {
+			router.push(DASHBOARD_URL.order(`${order.id}`))
 		},
 		[router],
 	)
 
-	const renderDesktopContent = (tabLabel: string) => {
+	const renderDesktopContent = (tabValue: string) => {
 		if (isLoading) return <LoaderTable />
 		if (!results.length) return <EmptyTableState />
 
 		if (tableType === 'card') {
 			return (
-				<TransportationMyCardList
+				<TransportationCardList
 					cargos={results}
 					serverPagination={serverPaginationMeta}
-					statusLabel={tabLabel}
+					statusValue={tabValue}
 				/>
 			)
 		}
@@ -96,15 +96,15 @@ export function TransportationMyPage() {
 		)
 	}
 
-	const renderMobileContent = (tabLabel: string) => {
+	const renderMobileContent = (tabValue: string) => {
 		if (isLoading) return <LoaderTable />
 		if (!results.length) return <EmptyTableState />
 
 		return (
-			<TransportationMyCardList
+			<TransportationCardList
 				cargos={results}
 				serverPagination={serverPaginationMeta}
-				statusLabel={tabLabel}
+				statusValue={tabValue}
 			/>
 		)
 	}
@@ -140,7 +140,7 @@ export function TransportationMyPage() {
 
 					{STATUS_TABS.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderDesktopContent(tab.label)}
+							{renderDesktopContent(tab.value)}
 						</TabsContent>
 					))}
 				</Tabs>
@@ -160,7 +160,7 @@ export function TransportationMyPage() {
 
 					{STATUS_TABS.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderMobileContent(tab.label)}
+							{renderMobileContent(tab.value)}
 						</TabsContent>
 					))}
 				</Tabs>
