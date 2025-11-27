@@ -139,7 +139,7 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 					</div>
 					<div className='flex flex-col items-center justify-center gap-3'>
 						<ArrowRight className='size-5' />
-						<p>{selectedRow.origin_dist_km} км</p>
+						<p>{selectedRow.route_km} км</p>
 					</div>
 					<div>
 						<p>

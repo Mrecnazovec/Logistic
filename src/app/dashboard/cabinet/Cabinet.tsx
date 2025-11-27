@@ -12,7 +12,7 @@ import { useGetAnalytics } from "@/hooks/queries/me/useGetAnalytics"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
 import type { LucideIcon } from "lucide-react"
-import { BarChart3, BusFront, DoorOpen, PackageCheck, Star } from "lucide-react"
+import { BarChart3, BusFront, DoorOpen, PackageCheck, Star, Truck } from "lucide-react"
 import Image from "next/image"
 import { useMemo } from "react"
 import type { CSSProperties } from "react"
@@ -121,7 +121,7 @@ export function Cabinet() {
 				title: "Пройдено расстояния",
 				value: distanceValue,
 				description: analytics ? `За ${integerFormatter.format(dealsCount)} сделок` : undefined,
-				icon: BusFront,
+				icon: Truck,
 				accentClass: "text-blue-700 bg-blue-100",
 			},
 			{

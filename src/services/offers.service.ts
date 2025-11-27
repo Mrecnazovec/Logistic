@@ -96,7 +96,7 @@ class OffersService {
 
 	async inviteOffer(data: IOfferInvite) {
 		const { data: inviteOffer } = await axiosWithAuth<IOfferDetail>({
-			url: API_URL.offers('invite'),
+			url: API_URL.offers('invite/'),
 			method: 'POST',
 			data,
 		})
