@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Bell, CheckCheck, RefreshCcw, Tag } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 export function Notifications() {
 	const {
@@ -80,7 +80,7 @@ export function Notifications() {
 					fetchNextPage()
 				}
 			},
-			{ root, rootMargin: '32px', threshold: 0 },
+			{ root, rootMargin: '0px', threshold: 1 },
 		)
 
 		observer.observe(sentinel)
@@ -96,15 +96,6 @@ export function Notifications() {
 		() => notifications.filter((item) => !item.is_read).length,
 		[notifications],
 	)
-
-	const handleScroll = useCallback(() => {
-		const node = listRef.current
-		if (!node || isFetchingNextPage || !hasNextPage) return
-		const threshold = 48
-		if (node.scrollTop + node.clientHeight >= node.scrollHeight - threshold) {
-			fetchNextPage()
-		}
-	}, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
 	const handleSelect = (id: number, isRead?: boolean) => {
 		router.push(`${pathname}?id=${id}`)
@@ -158,11 +149,7 @@ export function Notifications() {
 						</p>
 					</div>
 					<ScrollArea className='h-[580px]'>
-						<div
-							ref={listRef}
-							onScroll={handleScroll}
-							className='max-h-full overflow-y-auto'
-						>
+						<div ref={listRef} className='max-h-full overflow-y-auto'>
 							{notifications.map((item) => (
 								<button
 									key={item.id}
@@ -173,7 +160,7 @@ export function Notifications() {
 										item.id === selectedId
 											? 'bg-brand/10 border-l-4 border-l-brand'
 											: 'hover:bg-accent/50',
-										!item.is_read && 'font-semibold',
+										!item.is_read && 'font-bold',
 									)}
 								>
 									<p className='text-sm text-gray-900 line-clamp-2 flex items-start gap-2'>
@@ -199,7 +186,7 @@ export function Notifications() {
 				<div className='border rounded-2xl p-5 bg-white shadow-sm min-h-[320px]'>
 					{selectedNotification ? (
 						<div className='flex flex-col gap-3'>
-							<div className='flex flex-wrap items-center justify-between gap-2 border-b pb-3'>
+							<div className='flex flex-wrap items-center justify_between gap-2 border-b pb-3'>
 								<div className='flex items-center gap-2'>
 									<Tag className='size-4 text-brand' />
 									<h2 className='text-lg font-semibold'>{selectedNotification.title}</h2>

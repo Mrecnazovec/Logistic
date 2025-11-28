@@ -38,6 +38,12 @@ export function Header() {
 		isMarkingAllRead,
 	} = useNotifications(true)
 	const scrollRef = useRef<HTMLDivElement | null>(null)
+	const audioRef = useRef<HTMLAudioElement | null>(null)
+	const lastUnreadRef = useRef(0)
+
+	useEffect(() => {
+		audioRef.current = new Audio('/sounds/notification.mp3')
+	}, [])
 
 	useEffect(() => {
 		if (isNotificationsOpen) {
@@ -45,10 +51,25 @@ export function Header() {
 		}
 	}, [isNotificationsOpen, refetchNotifications])
 
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refetchNotifications()
+		}, 300000)
+		return () => clearInterval(interval)
+	}, [refetchNotifications])
+
 	const unreadCount = useMemo(
 		() => notifications.filter((item) => !item.is_read).length,
 		[notifications],
 	)
+
+	useEffect(() => {
+		const currentUnread = unreadCount
+		if (audioRef.current && currentUnread > lastUnreadRef.current) {
+			audioRef.current.play().catch(() => undefined)
+		}
+		lastUnreadRef.current = currentUnread
+	}, [unreadCount])
 
 	const handleMarkRead = (id: number, isRead?: boolean) => {
 		if (!isRead) {
