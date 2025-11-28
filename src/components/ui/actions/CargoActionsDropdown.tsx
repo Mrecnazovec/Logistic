@@ -9,14 +9,14 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
+import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
+import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { OfferModal } from '../modals/OfferModal'
 
 interface CargoActionsDropdownProps {
 	cargo: ICargoList
@@ -28,11 +28,11 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
-	const visibilityActionLabel = cargo.is_hidden ? 'Показать' : 'Скрыть'
+	const visibilityActionLabel = cargo.is_hidden ? 'Показать объявление' : 'Скрыть объявление'
 	const VisibilityIcon = cargo.is_hidden ? Eye : EyeOff
 
 	const handleToggleVisibility = () => {
-		toggleLoadVisibility(cargo.uuid)
+		toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !cargo.is_hidden })
 		setOpen(false)
 	}
 
@@ -49,7 +49,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 				<DropdownMenuContent align='end'>
 					<DropdownMenuItem
 						onClick={() => {
-							refreshLoad({ uuid: cargo.uuid, detail: 'Обновить' })
+							refreshLoad({ uuid: cargo.uuid, detail: 'Обновление объявления' })
 							setOpen(false)
 						}}
 						className='flex items-center gap-2 cursor-pointer'
@@ -66,7 +66,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 					>
 						<Pencil className='size-4 text-muted-foreground' />
 						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>
-							Изменить
+							Редактировать
 						</Link>
 					</DropdownMenuItem>
 
@@ -91,7 +91,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						className='flex items-center gap-2 cursor-pointer'
 					>
 						<Handshake className='size-4 text-muted-foreground' />
-						Пригласить перевозчика
+						Отправить предложение
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

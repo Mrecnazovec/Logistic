@@ -1,11 +1,15 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
-
 import { API_URL } from '@/config/api.config'
-import { ICargoList } from '@/shared/types/CargoList.interface'
+import type { components, operations } from '@/shared/types/api'
 import { CargoPublishRequestDto, ICargoPublish, PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { IPaginatedCargoListList } from '@/shared/types/PaginatedList.interface'
 import { IRefreshResponse } from '@/shared/types/Registration.interface'
 import { ISearch } from '@/shared/types/Search.interface'
+
+type LoadListQuery = operations['loads_board_list']['parameters']['query']
+type LoadInviteResponse = components['schemas']['GenerateInviteResponse']
+type CargoVisibilityResponse = components['schemas']['CargoVisibilityResponse']
+type CargoVisibilityRequest = components['schemas']['CargoVisibilityRequestRequest']
 
 class LoadsService {
 	/* GET */
@@ -19,19 +23,21 @@ class LoadsService {
 		return data
 	}
 
-	async getLoadsBoard() {
+	async getLoadsBoard(params?: LoadListQuery) {
 		const { data } = await axiosWithAuth<IPaginatedCargoListList>({
 			url: API_URL.loads('board'),
 			method: 'GET',
+			params,
 		})
 
 		return data
 	}
 
-	async getLoadsMine() {
+	async getLoadsMine(params?: LoadListQuery) {
 		const { data } = await axiosWithAuth<IPaginatedCargoListList>({
 			url: API_URL.loads('mine'),
 			method: 'GET',
+			params,
 		})
 
 		return data
@@ -79,9 +85,20 @@ class LoadsService {
 		return createdLoad
 	}
 
-	async toggleLoadVisibility(uuid: string) {
-		const { data } = await axiosWithAuth<ICargoList>({
+	async toggleLoadVisibility(uuid: string, isHidden: boolean) {
+		const payload: CargoVisibilityRequest = { is_hidden: isHidden }
+		const { data } = await axiosWithAuth<CargoVisibilityResponse>({
 			url: API_URL.loads(`${uuid}/visibility`),
+			method: 'POST',
+			data: payload,
+		})
+
+		return data
+	}
+
+	async generateLoadInvite(uuid: string) {
+		const { data } = await axiosWithAuth<LoadInviteResponse>({
+			url: API_URL.loads(`${uuid}/invite/generate`),
 			method: 'POST',
 		})
 

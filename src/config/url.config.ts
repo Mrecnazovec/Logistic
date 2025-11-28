@@ -18,6 +18,7 @@ export const DASHBOARD_URL = {
 	order: (url = '') => `/dashboard/order/${url}`,
 	rating: (url = '') => `/dashboard/rating/${url}`,
 	history: (url = '') => `/dashboard/history/${url}`,
+	notifications: (url = '') => `/dashboard/notifications/${url}`,
 
 	posting: (url = '') => `/dashboard/announcements/posting/${url}`,
 	edit: (url = '') => `/dashboard/desk/edit/${url}`,

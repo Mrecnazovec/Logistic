@@ -310,6 +310,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/loads/{uuid}/invite/generate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Создание токен-ссылки на груз.
+         *     Только владелец груза (customer) или логист может генерировать ссылку. */
+        post: operations["loads_invite_generate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/loads/{uuid}/refresh/": {
         parameters: {
             query?: never;
@@ -1159,6 +1177,13 @@ export interface components {
              */
             payment_method: "transfer" | "cash" | "both";
         };
+        CargoVisibilityRequestRequest: {
+            is_hidden: boolean;
+        };
+        CargoVisibilityResponse: {
+            detail: string;
+            is_hidden: boolean;
+        };
         City: {
             name: string;
             country: string;
@@ -1186,6 +1211,10 @@ export interface components {
         };
         ForgotPasswordResponse: {
             detail: string;
+        };
+        GenerateInviteResponse: {
+            token: string;
+            invite_url: string;
         };
         LoginRequest: {
             login: string;
@@ -2594,6 +2623,27 @@ export interface operations {
             };
         };
     };
+    loads_invite_generate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateInviteResponse"];
+                };
+            };
+        };
+    };
     loads_refresh_create: {
         parameters: {
             query?: never;
@@ -2630,14 +2680,20 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CargoVisibilityRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CargoVisibilityRequestRequest"];
+                "multipart/form-data": components["schemas"]["CargoVisibilityRequestRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CargoList"];
+                    "application/json": components["schemas"]["CargoVisibilityResponse"];
                 };
             };
         };
