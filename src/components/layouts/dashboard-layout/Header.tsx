@@ -191,7 +191,6 @@ export function Header() {
 													<Link
 														key={item.id}
 														href={`${DASHBOARD_URL.home()}notifications?id=${item.id}`}
-														onMouseEnter={() => handleMarkRead(item.id, item.is_read)}
 														className={cn(
 															'text-left px-4 py-3 flex flex-col gap-1 transition-colors border-b last:border-none',
 															item.is_read
@@ -222,7 +221,7 @@ export function Header() {
 
 						<Link
 							href={DASHBOARD_URL.cabinet()}
-							className='flex items-center gap-3'
+							className='flex items-center gap-3 '
 						>
 							{me?.photo ? (
 								<Image
