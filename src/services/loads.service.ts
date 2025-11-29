@@ -8,6 +8,7 @@ import { ISearch } from '@/shared/types/Search.interface'
 
 type LoadListQuery = operations['loads_board_list']['parameters']['query']
 type LoadInviteResponse = components['schemas']['GenerateInviteResponse']
+type OpenInviteResponse = components['schemas']['OpenInviteResponse']
 type CargoVisibilityResponse = components['schemas']['CargoVisibilityResponse']
 type CargoVisibilityRequest = components['schemas']['CargoVisibilityRequestRequest']
 
@@ -100,6 +101,15 @@ class LoadsService {
 		const { data } = await axiosWithAuth<LoadInviteResponse>({
 			url: API_URL.loads(`${uuid}/invite/generate`),
 			method: 'POST',
+		})
+
+		return data
+	}
+
+	async getLoadInviteByToken(token: string) {
+		const { data } = await axiosWithAuth<OpenInviteResponse>({
+			url: API_URL.loads(`invite/${token}`),
+			method: 'GET',
 		})
 
 		return data

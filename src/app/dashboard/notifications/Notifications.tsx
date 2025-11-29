@@ -22,6 +22,7 @@ export function Notifications() {
 		markRead,
 		markAllRead,
 		isMarkingAllRead,
+		isNotificationsEnabled,
 	} = useNotifications(true)
 
 	const searchParams = useSearchParams()
@@ -45,7 +46,7 @@ export function Notifications() {
 	}, [pathname, router, searchParams, selectedId])
 
 	useEffect(() => {
-		if (selectedId === null) return
+		if (selectedId === null || !isNotificationsEnabled) return
 		const match = notifications.find((item) => item.id === selectedId)
 		if (match) {
 			if (!match.is_read) {
@@ -59,14 +60,15 @@ export function Notifications() {
 			refetchNotifications()
 		}
 	}, [
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isLoadingNotifications,
-		markRead,
-		notifications,
-		refetchNotifications,
-		selectedId,
+			fetchNextPage,
+			hasNextPage,
+			isFetchingNextPage,
+			isLoadingNotifications,
+			isNotificationsEnabled,
+			markRead,
+			notifications,
+			refetchNotifications,
+			selectedId,
 	])
 
 	useEffect(() => {
@@ -121,7 +123,7 @@ export function Notifications() {
 						variant='ghost'
 						size='sm'
 						className='has-[>svg]:px-0'
-						disabled={isLoadingNotifications}
+						disabled={isLoadingNotifications || !isNotificationsEnabled}
 						onClick={() => refetchNotifications()}
 					>
 						<RefreshCcw className='size-4' />
@@ -131,7 +133,7 @@ export function Notifications() {
 						variant='ghost'
 						size='sm'
 						className='has-[>svg]:px-0'
-						disabled={isMarkingAllRead || notifications.length === 0}
+						disabled={isMarkingAllRead || notifications.length === 0 || !isNotificationsEnabled}
 						onClick={() => markAllRead()}
 					>
 						<CheckCheck className='size-4' />

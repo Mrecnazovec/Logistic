@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
 import { AddDriver } from '@/components/ui/modals/AddDriver'
+import { OrderRatingModal } from './OrderRatingModal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
@@ -73,6 +74,7 @@ export function OrderPage() {
 	const driverStatusMeta = currentDriverStatus ? DRIVER_STATUS_BADGE_MAP[currentDriverStatus] : null
 	const hasDriver = Boolean(order?.carrier_name)
 	const isCompleted = order?.status === OrderStatusEnum.DELIVERED || order?.status === OrderStatusEnum.PAID
+	const canRateParticipants = order?.status === OrderStatusEnum.PAID
 	const isCarrier = role === RoleEnum.CARRIER
 	const orderId = order ? String(order.id) : ''
 	const canChangeDriverStatus = Boolean(order && isCarrier)
@@ -414,6 +416,9 @@ export function OrderPage() {
 					<Button className="bg-black/90 hover:bg-black">Скрыть контакты заказчика</Button>
 				) : (
 					<AddDriver />
+				)}
+				{canRateParticipants && order && (
+					<OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />
 				)}
 				<Button onClick={handleShareClick} className="bg-warning-500/90 hover:bg-warning-500">
 					<Share2 className="size-4" aria-hidden="true" />

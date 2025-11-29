@@ -36,6 +36,7 @@ export function Header() {
 		markRead,
 		markAllRead,
 		isMarkingAllRead,
+		isNotificationsEnabled,
 	} = useNotifications(true)
 	const scrollRef = useRef<HTMLDivElement | null>(null)
 	const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -46,17 +47,18 @@ export function Header() {
 	}, [])
 
 	useEffect(() => {
-		if (isNotificationsOpen) {
+		if (isNotificationsOpen && isNotificationsEnabled) {
 			refetchNotifications()
 		}
-	}, [isNotificationsOpen, refetchNotifications])
+	}, [isNotificationsEnabled, isNotificationsOpen, refetchNotifications])
 
 	useEffect(() => {
+		if (!isNotificationsEnabled) return
 		const interval = setInterval(() => {
 			refetchNotifications()
 		}, 300000)
 		return () => clearInterval(interval)
-	}, [refetchNotifications])
+	}, [isNotificationsEnabled, refetchNotifications])
 
 	const unreadCount = useMemo(
 		() => notifications.filter((item) => !item.is_read).length,

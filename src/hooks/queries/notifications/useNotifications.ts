@@ -1,4 +1,5 @@
 import { notificationsService } from '@/services/notifications.service'
+import { getAccessToken } from '@/services/auth/auth-token.service'
 import type { INotification, IPaginatedNotificationList } from '@/shared/types/Notification.interface'
 import { useMutation, useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -12,6 +13,8 @@ const parseNextPage = (response?: IPaginatedNotificationList) => {
 
 export const useNotifications = (enabled: boolean) => {
 	const queryClient = useQueryClient()
+	const hasAccessToken = Boolean(getAccessToken())
+	const canQuery = enabled && hasAccessToken
 
 	const {
 		data,
@@ -26,7 +29,7 @@ export const useNotifications = (enabled: boolean) => {
 		queryFn: ({ pageParam = 1 }) => notificationsService.getNotifications(pageParam),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) => parseNextPage(lastPage),
-		enabled,
+		enabled: canQuery,
 		staleTime: 30_000,
 	})
 
@@ -70,15 +73,17 @@ export const useNotifications = (enabled: boolean) => {
 		() => ({
 			notifications,
 			refetchNotifications,
-			isLoadingNotifications: isLoading || isFetching,
-			isFetchingNextPage,
-			hasNextPage: Boolean(hasNextPage),
+			isLoadingNotifications: canQuery ? isLoading || isFetching : false,
+			isFetchingNextPage: canQuery ? isFetchingNextPage : false,
+			hasNextPage: Boolean(canQuery && hasNextPage),
 			fetchNextPage,
 			markRead,
 			markAllRead,
 			isMarkingAllRead,
+			isNotificationsEnabled: canQuery,
 		}),
 		[
+			canQuery,
 			fetchNextPage,
 			hasNextPage,
 			isFetching,

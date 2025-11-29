@@ -26,7 +26,7 @@ This project is a web application with a React frontend, a Node.js backend using
 - When refactoring, aim for clear, modular code and update relevant documentation.
 - Always use shadcn/ui components
 - Use strict mode typescript
-- After changes use `npm run lint` to check correctness
+- After changes use `npm run lint` and `npm run build` to check correctness
 - After making changes, check the spelling of words; there should be no incomprehensible characters left in the files.
 - Never use hieroglyphs or obscure symbols. Use only Cyrillic and Latin scripts.
 

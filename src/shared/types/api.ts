@@ -320,7 +320,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** @description Создание токен-ссылки на груз.
-         *     Только владелец груза (customer) или логист может генерировать ссылку. */
+         *     Генерируют customer или logistic. */
         post: operations["loads_invite_generate_create"];
         delete?: never;
         options?: never;
@@ -386,6 +386,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["loads_create_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/loads/invite/{token}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["loads_invite_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1462,6 +1478,14 @@ export interface components {
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
+        };
+        OpenInviteResponse: {
+            cargo_id: number;
+            carrier_id: number;
+            invited_by_id: number;
+            cargo: components["schemas"]["CargoList"];
+            /** Format: date-time */
+            expires_at: string;
         };
         OrderDetail: {
             readonly id: number;
@@ -2741,6 +2765,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CargoPublish"];
+                };
+            };
+        };
+    };
+    loads_invite_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpenInviteResponse"];
                 };
             };
         };

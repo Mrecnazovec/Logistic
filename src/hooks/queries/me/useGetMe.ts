@@ -3,10 +3,15 @@ import { useRoleStore } from '@/store/useRoleStore'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 
-export const useGetMe = () => {
+interface UseGetMeOptions {
+	enabled?: boolean
+}
+
+export const useGetMe = (options?: UseGetMeOptions) => {
 	const { data: me, isLoading } = useQuery({
 		queryKey: ['get profile'],
 		queryFn: () => meService.getMe(),
+		enabled: options?.enabled ?? true,
 	})
 	const setRole = useRoleStore((state) => state.setRole)
 

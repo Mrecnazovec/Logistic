@@ -12,10 +12,10 @@ export const useCreateRating = () => {
 		mutationFn: (data: UserRatingRequestDto) => ratingsService.createRating(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get ratings'] })
-			toast.success('Rating created')
+			toast.success('Оценка отправлена')
 		},
 		onError() {
-			toast.error('Unable to create rating')
+			toast.error('Не удалось отправить оценку')
 		},
 	})
 
