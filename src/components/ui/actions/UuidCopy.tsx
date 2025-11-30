@@ -1,5 +1,5 @@
 import { Copy, CopyCheck } from "lucide-react"
-import { useEffect, useState } from "react"
+import { MouseEvent, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Button } from "../Button"
 
@@ -20,7 +20,9 @@ export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 		return () => window.clearTimeout(timer)
 	}, [copied])
 
-	const handleCopy = async () => {
+	const handleCopy = async (event: MouseEvent<HTMLButtonElement>) => {
+		event.stopPropagation()
+
 		try {
 			if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
 				await navigator.clipboard.writeText(displayId)
