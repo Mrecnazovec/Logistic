@@ -1,29 +1,74 @@
 'use client'
 
-import { IUserRating } from '@/shared/types/Rating.interface'
-import { IRatingTableRow } from '@/shared/types/RatingTableRow.interface'
+import { RoleSelect } from '@/shared/enums/Role.enum'
+import { IRatingUser } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
 
-export function ExpandedRatingRow({ user }: { user: IUserRating }) {
+const roleLabels: Record<IRatingUser['role'], string> = {
+	LOGISTIC: 'Logistic',
+	CUSTOMER: 'Customer',
+	CARRIER: 'Carrier',
+}
+
+const formatNumber = (value?: number | null) => {
+	if (value === null || value === undefined) return '-'
+
+	return value.toLocaleString('ru-RU')
+}
+
+export function ExpandedRatingRow({ user }: { user: IRatingUser }) {
+	const registeredAt = user.registered_at
+		? format(new Date(user.registered_at), 'dd.MM.yyyy')
+		: '-'
+
+	const stats = [
+		{
+			label: 'Общий рейтинг',
+			value: `${user.avg_rating ? user.avg_rating.toFixed(1) : '—'} / ${user.rating_count.toLocaleString('ru-RU')} отзывов`,
+		},
+		{
+			label: 'Выполненных заказов',
+			value: formatNumber(user.completed_orders),
+		},
+		{
+			label: 'Пройденная дистанция',
+			value: formatNumber(user.total_distance),
+		},
+		{
+			label: 'Зарегистрирован с',
+			value: registeredAt,
+		},
+	]
+
 	return (
-		<div className='flex flex-col gap-4'>
-			<div className='flex flex-col md:flex-row md:items-center md:justify-between'>
-				<div className='w-full'>
-					<p className='text-brand font-bold mb-4'>
-						Рейтинг пользователя: <span className='text-black'>4.5</span> <span className='font-bold text-yellow-500'>★★★★☆</span>
-					</p>
-					<p className='text-brand mb-3'>
-						Данные
-					</p>
-					<div className='flex items-center justify-between'>
-						<p className='text-grayscale'>Зарегистрирован с <span className='text-black'>{format(user.created_at, 'dd.MM.yyyy')}</span></p>
-						<p className='text-grayscale'>Выполнено заказов <span className='text-black'>476 заказов</span></p>
-						<p className='text-grayscale'>Пройдено пути <span className='text-black'>11 234 км</span></p>
-						<p className='text-grayscale'>Название транспорта <span className='text-black'>Mersedeces Benz Amg</span></p>
-					</div>
+		<div className='grid gap-6 md:grid-cols-2'>
+			<div className='space-y-3'>
+				<div>
+					<p className='text-sm text-muted-foreground'>Компания</p>
+					<p className='text-base font-semibold text-foreground'>{user.company_name ?? '-'}</p>
+				</div>
+				<div>
+					<p className='text-sm text-muted-foreground'>Имя</p>
+					<p className='text-base font-medium text-foreground'>{user.display_name ?? '-'}</p>
+				</div>
+				<div>
+					<p className='text-sm text-muted-foreground'>Роль</p>
+					<p className='text-base font-medium text-foreground'>{RoleSelect.find((type) => type.type === user.role)?.name}</p>
+				</div>
+				<div>
+					<p className='text-sm text-muted-foreground'>Страна</p>
+					<p className='text-base font-medium text-foreground'>{user.country ?? '-'}</p>
 				</div>
 			</div>
 
+			<div className='grid gap-3 sm:grid-cols-2'>
+				{stats.map((item) => (
+					<div key={item.label} className='rounded-3xl bg-muted p-4'>
+						<p className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>{item.label}</p>
+						<p className='text-lg font-semibold text-foreground'>{item.value}</p>
+					</div>
+				))}
+			</div>
 		</div>
 	)
 }

@@ -141,23 +141,23 @@ function DeskCard({ cargo }: DeskCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-[#111827] text-white'>
 					<RefreshCcw /> Обновить
 				</Button>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(cargo.uuid)}>
-					<Button variant='outline' className='w-full'>
+					<Button variant='outline' className='w-full bg-warning-400 text-white'>
 						<Pen /> Изменить
 					</Button>
 				</Link>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-error-500 text-white'>
 					<EyeOff /> Скрыть
 				</Button>
 				<Button
 					variant='outline'
 					onClick={() => setOfferOpen(true)}
-					className='flex items-center gap-2 flex-1 min-w-[240px]'
+					className='flex items-center gap-2 flex-1 min-w-[240px] bg-brand text-white'
 				>
-					<Handshake className='size-4 text-muted-foreground' />
+					<Handshake className='size-4' />
 					Сделать предложение
 				</Button>
 			</CardFooter>

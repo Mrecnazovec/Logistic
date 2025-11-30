@@ -19,18 +19,18 @@ import { ratingColumns } from "./table/RatingColumns"
 export function RatingPage() {
 	const router = useRouter()
 	const param = useParams<{ role: string }>()
-	const { ratings: data, isLoading } = useGetRatings()
+	const { ratings, isLoading } = useGetRatings()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)
 
-	const results = data?.results ?? []
+	const results = ratings?.results ?? []
 
 	const serverPaginationMeta = results.length
 		? {
-			next: data?.next,
-			previous: data?.previous,
-			totalCount: data?.count,
+			next: ratings?.next,
+			previous: ratings?.previous,
+			totalCount: ratings?.count,
 			pageSize: results.length,
 		}
 		: undefined
@@ -68,9 +68,9 @@ export function RatingPage() {
 						data={results}
 						isButton
 						serverPagination={{
-							next: data?.next,
-							previous: data?.previous,
-							totalCount: data?.count,
+							next: ratings?.next,
+							previous: ratings?.previous,
+							totalCount: ratings?.count,
 						}}
 						renderExpandedRow={(row) => <ExpandedRatingRow user={row} />}
 					/>

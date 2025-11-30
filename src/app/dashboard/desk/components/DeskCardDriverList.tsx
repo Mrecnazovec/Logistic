@@ -6,6 +6,7 @@ import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
@@ -33,7 +34,6 @@ import {
 	formatPriceValue,
 	formatWeightValue,
 } from '../../../../components/card/cardFormatters'
-import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 
 type DeskCardListProps = {
 	cargos: IOfferShort[]
@@ -129,19 +129,19 @@ function DeskCard({ cargo }: DeskCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-[#111827] text-white'>
 					<RefreshCcw /> Обновить
 				</Button>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(String(cargo.id))}>
-					<Button variant='outline' className='w-full'>
-						<Pen /> Редактировать
+					<Button variant='outline' className='w-full bg-warning-400 text-white'>
+						<Pen /> Изменить
 					</Button>
 				</Link>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-error-500 text-white'>
 					<EyeOff /> Скрыть
 				</Button>
-				<Button variant='outline' className='flex items-center gap-2 flex-1 min-w-[240px]'>
-					<Handshake className='size-4 text-muted-foreground' />
+				<Button variant='outline' className='flex items-center gap-2 flex-1 min-w-[240px] bg-brand text-white'>
+					<Handshake className='size-4' />
 					Сделать предложение
 				</Button>
 			</CardFooter>

@@ -109,7 +109,6 @@ function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.order(String(cargo.id))}>
 					<Button className='w-full bg-warning-400 hover:bg-warning-500 text-white'>Посмотреть</Button>
 				</Link>
-				<Button className='flex-1 min-w-[140px] bg-error-400 hover:bg-error-500 text-white'>Отменить</Button>
 			</CardFooter>
 		</Card>
 	)

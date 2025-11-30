@@ -97,7 +97,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 					</p>
 				) : (
 					<div className='space-y-6'>
-						<Card key={selectedRow.uuid} className='border-none bg-muted/40'>
+						<Card key={selectedRow.uuid} className='border-none shadow-none'>
 							<CardContent className='flex flex-col gap-6 pt-6'>
 								<div className='flex flex-wrap items-center justify-between gap-6 border-b-2 pb-6'>
 									<div>

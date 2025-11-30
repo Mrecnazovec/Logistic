@@ -66,7 +66,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 					>
 						<Pencil className='size-4 text-muted-foreground' />
 						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>
-							Редактировать
+							Изменить
 						</Link>
 					</DropdownMenuItem>
 
