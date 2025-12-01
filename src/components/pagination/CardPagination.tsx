@@ -1,12 +1,8 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
-import {
-	buildPaginationItems,
-	getPageNumberFromUrl,
-	type PaginationItem,
-	type ServerPaginationMeta,
-} from '@/components/ui/table/DataTable'
+import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { buildPaginationItems, getPageNumberFromUrl, PaginationItem } from '@/lib/pagination'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -56,7 +52,7 @@ export function useCardPagination(serverPagination?: ServerPaginationMeta): Card
 		: null
 	const canGoPrevious = enabled ? currentPage > 1 || Boolean(serverPagination?.previous) : false
 	const canGoNext = enabled ? Boolean(serverPagination?.next) : false
-	const paginationItems = useMemo(
+	const paginationItems = useMemo<PaginationItem[]>(
 		() => buildPaginationItems(effectiveTotalPages, currentPage),
 		[currentPage, effectiveTotalPages],
 	)
@@ -125,8 +121,8 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 			)}
 		>
 			<p className='text-sm text-muted-foreground'>
-				Страница {currentPage}
-				{Number.isFinite(effectiveTotalPages) ? ` из ${effectiveTotalPages}` : ''}
+				Page {currentPage}
+				{Number.isFinite(effectiveTotalPages) ? ` of ${effectiveTotalPages}` : ''}
 			</p>
 
 			<div className='flex items-center gap-2'>
@@ -164,7 +160,7 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 							>
 								{item}
 							</Button>
-						),
+						)
 					)}
 				</div>
 

@@ -13,9 +13,10 @@ import {
 	useReactTable,
 } from '@tanstack/react-table'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
+import { buildPaginationItems, getPageNumberFromUrl, PaginationItem } from '@/lib/pagination'
 import { cn } from '@/lib/utils'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
@@ -38,82 +39,6 @@ interface DataTableProps<TData, TValue> {
 	onRowClick?: (record: TData) => void
 }
 
-export type PaginationItem = number | 'ellipsis'
-
-export const getPageNumberFromUrl = (url?: string | null) => {
-	if (!url) return null
-
-	try {
-		const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
-		const parsed = new URL(url, base)
-		const pageParam = parsed.searchParams.get('page')
-		if (!pageParam) return null
-
-		const page = Number(pageParam)
-		return Number.isFinite(page) && page > 0 ? page : null
-	} catch {
-		return null
-	}
-}
-
-export const buildPaginationItems = (
-	totalPages: number,
-	currentPage: number,
-	siblingCount = 1,
-): PaginationItem[] => {
-	if (!Number.isFinite(totalPages) || totalPages <= 0) return [1]
-
-	const total = Math.max(Math.floor(totalPages), 1)
-	const current = Math.min(Math.max(currentPage, 1), total)
-
-	if (total <= 7) {
-		return Array.from({ length: total }, (_, idx) => idx + 1)
-	}
-
-	const leftSiblingIndex = Math.max(current - siblingCount, 1)
-	const rightSiblingIndex = Math.min(current + siblingCount, total)
-	const showLeftEllipsis = leftSiblingIndex > 2
-	const showRightEllipsis = rightSiblingIndex < total - 1
-	const firstPageIndex = 1
-	const lastPageIndex = total
-	const range: PaginationItem[] = []
-	const edgeItemCount = 2 + siblingCount
-
-	if (!showLeftEllipsis && showRightEllipsis) {
-		const leftItemCount = Math.min(edgeItemCount, total)
-		for (let i = 1; i <= leftItemCount; i += 1) {
-			range.push(i)
-		}
-		range.push('ellipsis')
-		range.push(lastPageIndex)
-		return range
-	}
-
-	if (showLeftEllipsis && !showRightEllipsis) {
-		range.push(firstPageIndex)
-		range.push('ellipsis')
-		const start = Math.max(total - edgeItemCount + 1, 1)
-		for (let i = start; i <= total; i += 1) {
-			range.push(i)
-		}
-		return range
-	}
-
-	range.push(firstPageIndex)
-	range.push('ellipsis')
-	for (let i = leftSiblingIndex; i <= rightSiblingIndex; i += 1) {
-		range.push(i)
-	}
-	range.push('ellipsis')
-	range.push(lastPageIndex)
-
-	return range
-}
-/**
- * Универсальная таблица данных
- * Поддерживает сортировку, фильтрацию, пагинацию и раскрывающиеся строки
- * Можно использовать с любым интерфейсом данных (generic)
- */
 export function DataTable<TData, TValue>({
 	columns,
 	data,
@@ -166,75 +91,76 @@ export function DataTable<TData, TValue>({
 			)
 			: Math.max(table.getPageCount(), 1)
 	const displayPageIndex = serverPagination ? currentPage : table.getState().pagination.pageIndex + 1
-	const paginationItems = useMemo(
+	const paginationItems = useMemo<PaginationItem[]>(
 		() => buildPaginationItems(effectiveTotalPages, displayPageIndex),
 		[displayPageIndex, effectiveTotalPages],
 	)
 	const canGoPrevious = serverPagination ? canUseServerPrevious : table.getCanPreviousPage()
 	const canGoNext = serverPagination ? canUseServerNext : table.getCanNextPage()
+	const containerClassName = cn('rounded-4xl bg-background py-8', isButton && 'shadow-sm')
 
-	const goToServerPage = (page: number | null) => {
-		if (!serverPagination || !page || page === currentPage) return
+	const navigateToPage = useCallback(
+		(page: number | null) => {
+			if (!serverPagination || !page || page === currentPage) return
 
-		const params = new URLSearchParams(searchParams.toString())
+			const params = new URLSearchParams(searchParams.toString())
 
-		if (page <= 1) {
-			params.delete('page')
-		} else {
-			params.set('page', page.toString())
-		}
+			if (page <= 1) {
+				params.delete('page')
+			} else {
+				params.set('page', page.toString())
+			}
 
-		const queryString = params.toString()
-		const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
+			const queryString = params.toString()
+			const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
 
-		router.push(nextRoute)
-	}
+			router.push(nextRoute)
+		},
+		[currentPage, pathname, router, searchParams, serverPagination],
+	)
 
-	const handlePreviousClick = () => {
-		if (serverPagination) {
-			goToServerPage(serverPreviousPage)
-			return
-		}
+	const handlePageChange = useCallback(
+		(target: 'previous' | 'next' | number) => {
+			if (serverPagination) {
+				const targetPage =
+					typeof target === 'number'
+						? target
+						: target === 'previous'
+							? serverPreviousPage
+							: serverNextPage ?? currentPage + 1
 
-		table.previousPage()
-	}
+				navigateToPage(targetPage)
+				return
+			}
 
-	const handleNextClick = () => {
-		if (serverPagination) {
-			goToServerPage(serverNextPage ?? currentPage + 1)
-			return
-		}
+			if (typeof target === 'number') {
+				table.setPageIndex(target - 1)
+				return
+			}
 
-		table.nextPage()
-	}
+			if (target === 'previous') {
+				table.previousPage()
+			} else {
+				table.nextPage()
+			}
+		},
+		[currentPage, navigateToPage, serverNextPage, serverPagination, serverPreviousPage, table],
+	)
 
-	const handlePageSelect = (page: number) => {
-		if (page === displayPageIndex) return
-
-		if (serverPagination) {
-			goToServerPage(page)
-			return
-		}
-
-		table.setPageIndex(page - 1)
-	}
+	const footerActions = renderFooterActions?.(selectedRow)
 
 	return (
-		<div className='rounded-4xl bg-background py-8'>
-			{/* 🔍 Фильтр поиска */}
+		<div className={containerClassName}>
 			{filterKey && (
 				<div className='flex items-center py-4 max-w-96'>
 					<Input
-						placeholder='Поиск'
+						placeholder='Search'
 						value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ''}
-						onChange={(event) =>
-							table.getColumn(filterKey)?.setFilterValue(event.target.value)
-						}
+						onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)}
 					/>
 				</div>
 			)}
 
-			{/* 📊 Таблица */}
 			<div>
 				<Table>
 					<TableHeader className='[&_tr]:border-b-0 [&_th]:first:pl-12 [&_th]:py-2'>
@@ -244,10 +170,7 @@ export function DataTable<TData, TValue>({
 									<TableHead key={header.id}>
 										{header.isPlaceholder
 											? null
-											: flexRender(
-												header.column.columnDef.header,
-												header.getContext()
-											)}
+											: flexRender(header.column.columnDef.header, header.getContext())}
 									</TableHead>
 								))}
 							</TableRow>
@@ -258,34 +181,30 @@ export function DataTable<TData, TValue>({
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<React.Fragment key={row.id}>
-							<TableRow
-								data-state={row.getIsSelected() && 'selected'}
-								onClick={() => {
-									if (onRowClick) {
-										onRowClick(row.original)
-										return
-									}
+									<TableRow
+										data-state={row.getIsSelected() && 'selected'}
+										onClick={() => {
+											if (onRowClick) {
+												onRowClick(row.original)
+												return
+											}
 
-									if (renderExpandedRow) {
-										setExpandedRow(expandedRow === row.id ? null : row.id)
-									}
-								}}
-								className={cn(
-									(renderExpandedRow || onRowClick) &&
-										'cursor-pointer hover:bg-muted/40 transition-colors',
-								)}
-							>
+											if (renderExpandedRow) {
+												setExpandedRow(expandedRow === row.id ? null : row.id)
+											}
+										}}
+										className={cn(
+											(renderExpandedRow || onRowClick) &&
+												'cursor-pointer hover:bg-muted/40 transition-colors',
+										)}
+									>
 										{row.getVisibleCells().map((cell) => (
 											<TableCell key={cell.id}>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext()
-												)}
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
 											</TableCell>
 										))}
 									</TableRow>
 
-									{/* Раскрывающаяся строка */}
 									{renderExpandedRow && expandedRow === row.id && (
 										<TableRow className='bg-muted/20'>
 											<TableCell colSpan={columns.length} className='py-6 px-12'>
@@ -298,7 +217,7 @@ export function DataTable<TData, TValue>({
 						) : (
 							<TableRow>
 								<TableCell colSpan={columns.length} className='h-24 text-center'>
-									Ничего не найдено.
+									No data available.
 								</TableCell>
 							</TableRow>
 						)}
@@ -306,23 +225,21 @@ export function DataTable<TData, TValue>({
 				</Table>
 			</div>
 
-			{/* 📄 Пагинация и действия */}
 			<div className='flex items-center justify-between px-6 py-4 border-t border-border'>
 				<p className='text-sm text-muted-foreground'>
-					Показано: {table.getPaginationRowModel().rows.length} объявлений
+					Showing: {table.getPaginationRowModel().rows.length} items
 				</p>
 
-				{/* Пагинация */}
 				<div className='flex items-center gap-2'>
 					<Button
 						variant='ghost'
 						size='sm'
 						className='h-8 w-8 p-0 rounded-full'
-						onClick={handlePreviousClick}
+						onClick={() => handlePageChange('previous')}
 						disabled={!canGoPrevious}
 						aria-label='Previous page'
 					>
-						‹
+						Prev
 					</Button>
 
 					<div className='flex items-center gap-1'>
@@ -336,17 +253,19 @@ export function DataTable<TData, TValue>({
 									key={`page-${item}`}
 									variant='ghost'
 									size='sm'
-									onClick={() => handlePageSelect(item)}
+									onClick={() => handlePageChange(item)}
 									disabled={item === displayPageIndex}
 									aria-current={item === displayPageIndex ? 'page' : undefined}
-									className={`h-8 w-8 rounded-full p-0 text-sm disabled:opacity-100 ${item === displayPageIndex
-										? 'bg-brand text-white hover:bg-brand/90'
-										: 'text-muted-foreground hover:bg-muted/60'
-										}`}
+									className={cn(
+										'h-8 w-8 rounded-full p-0 text-sm disabled:opacity-100',
+										item === displayPageIndex
+											? 'bg-brand text-white hover:bg-brand/90'
+											: 'text-muted-foreground hover:bg-muted/60',
+									)}
 								>
 									{item}
 								</Button>
-							),
+							)
 						)}
 					</div>
 
@@ -354,16 +273,17 @@ export function DataTable<TData, TValue>({
 						variant='ghost'
 						size='sm'
 						className='h-8 w-8 p-0 rounded-full'
-						onClick={handleNextClick}
+						onClick={() => handlePageChange('next')}
 						disabled={!canGoNext}
 						aria-label='Next page'
 					>
-						›
+						Next
 					</Button>
 				</div>
-				<p className='text-sm text-muted-foreground'>Показано {currentPage} из {paginationItems.length}</p>
-				{/* Действия внизу (например, OfferModal) */}
-				{renderFooterActions?.(selectedRow)}
+				<p className='text-sm text-muted-foreground'>
+					Page {displayPageIndex} of {effectiveTotalPages}
+				</p>
+				{footerActions}
 			</div>
 		</div>
 	)

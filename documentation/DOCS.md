@@ -100,12 +100,14 @@ formatPricePerKmValue — wrapper over formatCurrencyPerKmValue.
 formatDistanceKm — formats numeric distance with “км”.
 parseDistanceKm — parses distance value to number for sorting.
 parseDateToTimestamp — parses date to timestamp for sorting.
-formatDurationFromMinutes — formats total minutes to “X ч Y мин”.
-formatAgeFromMinutes — human-readable age from minutes (“мин/ч/дн назад”).
-handleNumericInput — normalizes numeric input (comma to dot) and applies regex.
-transliterate — transliterates between Cyrillic and Latin characters.
-cn — merges className strings via clsx and tailwind-merge.
-buildSearchDefaultValues — builds ISearch object from URLSearchParams with type coercion.
+formatDurationFromMinutes – formats total minutes to “X ч Y мин”.
+formatAgeFromMinutes – human-readable age from minutes (“мин/ч/дн назад”).
+handleNumericInput – normalizes numeric input (comma to dot) and applies regex.
+transliterate – transliterates between Cyrillic and Latin characters.
+cn – merges className strings via clsx and tailwind-merge.
+buildSearchDefaultValues – builds ISearch object from URLSearchParams with type coercion.
+buildPaginationItems – creates pagination page list with ellipsis handling for long ranges.
+getPageNumberFromUrl – extracts a valid positive page number from a URL search param.
 
 ## Services
 
