@@ -11,10 +11,10 @@ export const useCancelLoad = () => {
 		mutationFn: ({ id, detail }: { id: string; detail: string }) => loadsService.cancelLoad(id, detail),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
-			toast.success('Заявка отменена')
+			toast.success('Объявление отменено')
 		},
 		onError() {
-			toast.error('Ошибка при отмене заявки')
+			toast.error('Не удалось отменить объявление')
 		},
 	})
 

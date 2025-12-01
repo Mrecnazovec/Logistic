@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/components/card/cardFormatters'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'

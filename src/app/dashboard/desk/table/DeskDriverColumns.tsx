@@ -2,19 +2,17 @@
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
-import { DeskOfferQuickActions } from '@/components/ui/actions/DeskOfferQuickActions'
 import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
+import { formatCurrencyValue } from '@/lib/currency'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
-import { ICargoList } from '@/shared/types/CargoList.interface'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CircleCheck, Minus } from 'lucide-react'
 import { useState } from 'react'
-import { formatCurrencyValue } from '@/shared/utils/currency'
 
 
 export const deskDriverColumns: ColumnDef<IOfferShort>[] = [

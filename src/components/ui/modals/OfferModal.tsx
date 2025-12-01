@@ -26,7 +26,8 @@ import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
+
 
 type OfferRow = ICargoList & { id?: number }
 type CurrencyCode = NonNullable<ICargoList['price_currency']>

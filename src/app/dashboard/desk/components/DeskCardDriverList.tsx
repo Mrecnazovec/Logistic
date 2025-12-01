@@ -27,13 +27,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import {
-	formatDateValue,
-	formatPlace,
-	formatPricePerKmValue,
-	formatPriceValue,
-	formatWeightValue,
-} from '../../../../components/card/cardFormatters'
+import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 
 type DeskCardListProps = {
 	cargos: IOfferShort[]

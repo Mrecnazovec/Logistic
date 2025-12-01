@@ -15,9 +15,9 @@ import {
 } from '@/components/ui/Dialog'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { useGenerateLoadInvite } from '@/hooks/queries/loads/useGenerateLoadInvite'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 

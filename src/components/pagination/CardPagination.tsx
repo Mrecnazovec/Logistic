@@ -49,9 +49,7 @@ export function useCardPagination(serverPagination?: ServerPaginationMeta): Card
 		}
 	}
 
-	const effectiveTotalPages = enabled && totalCount
-		? Math.max(Math.ceil(totalCount / resolvedPageSize), currentPage, 1)
-		: 1
+	const effectiveTotalPages = enabled && totalCount ? Math.max(Math.ceil(totalCount / resolvedPageSize), currentPage, 1) : 1
 	const serverNextPage = enabled ? getPageNumberFromUrl(serverPagination?.next) : null
 	const serverPreviousPage = enabled
 		? getPageNumberFromUrl(serverPagination?.previous) ?? (currentPage > 1 ? currentPage - 1 : null)

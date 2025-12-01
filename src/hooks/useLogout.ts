@@ -14,7 +14,7 @@ export const useLogout = () => {
 			router.refresh()
 		},
 		onError() {
-			toast.error('Ошибка при выходе')
+			toast.error('Не удалось выйти')
 		},
 	})
 

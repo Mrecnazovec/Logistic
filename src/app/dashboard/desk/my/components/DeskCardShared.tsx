@@ -2,13 +2,6 @@
 
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
-import {
-	formatCurrencyPerKmValue,
-	formatCurrencyValue,
-	type PriceCurrencyCode,
-} from '@/shared/utils/currency'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 

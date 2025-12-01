@@ -12,7 +12,7 @@ export const useRegister = () => {
 			toast.success('Регистрация прошла успешно')
 		},
 		onError() {
-			toast.error('Ошибка при регистрации')
+			toast.error('Не удалось завершить регистрацию')
 		},
 	})
 

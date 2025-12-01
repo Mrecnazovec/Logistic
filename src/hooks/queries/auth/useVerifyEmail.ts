@@ -9,10 +9,10 @@ export const useVerifyEmail = () => {
 		mutationKey: ['auth', 'verify-email'],
 		mutationFn: (data: IVerifyEmail) => authService.verifyEmail(data),
 		onSuccess() {
-			toast.success('Email успешно подтверждён')
+			toast.success('Email успешно подтвержден')
 		},
 		onError() {
-			toast.error('Ошибка при подтверждении Email')
+			toast.error('Не удалось подтвердить Email')
 		},
 	})
 

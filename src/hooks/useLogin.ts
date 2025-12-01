@@ -12,7 +12,7 @@ export const useLogin = () => {
 			toast.success('Вы успешно вошли')
 		},
 		onError() {
-			toast.error('Ошибка при входе')
+			toast.error('Не удалось выполнить вход')
 		},
 	})
 

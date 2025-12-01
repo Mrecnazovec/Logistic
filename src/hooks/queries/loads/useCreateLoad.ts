@@ -15,9 +15,9 @@ export const useCreateLoad = () => {
 	const { mutate: createLoad, isPending: isLoadingCreate } = useMutation({
 		mutationKey: ['load', 'create'],
 		mutationFn: (data: CargoPublishRequestDto) => loadsService.createLoad(data),
-		onSuccess(data) {
+		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			toast.success('Заявка отправлена на модерацию')
+			toast.success('Объявление успешно опубликовано')
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
@@ -34,14 +34,10 @@ export const useCreateLoad = () => {
 
 				toast.error(message)
 			} else {
-				toast.error('Failed to create load')
+				toast.error('Не удалось создать объявление')
 			}
 		},
 	})
 
 	return useMemo(() => ({ createLoad, isLoadingCreate }), [createLoad, isLoadingCreate])
 }
-
-
-
-

@@ -1,4 +1,4 @@
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
+import { PriceCurrencyCode } from "@/lib/currency"
 
 export type InviteResponseActionsProps = {
 	cargoId: number | null

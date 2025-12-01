@@ -15,11 +15,11 @@ export const usePatchLoad = () => {
 		mutationFn: ({ uuid, data }: { uuid: string; data: PatchedCargoPublishDto }) => loadsService.patchLoad(uuid, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
-			toast.success('Заявка обновлена')
+			toast.success('Объявление обновлено')
 			router.push(DASHBOARD_URL.desk())
 		},
 		onError() {
-			toast.error('Ошибка при обновлении заявки')
+			toast.error('Не удалось обновить объявление')
 		},
 	})
 

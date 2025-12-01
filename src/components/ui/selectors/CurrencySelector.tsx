@@ -12,13 +12,14 @@ interface CurrencySelectProps {
 	className?: string
 }
 
-export function CurrencySelector({ value, onChange, placeholder = 'Валюта', disabled, className }: CurrencySelectProps) {
+export function CurrencySelector({ value, onChange, placeholder = 'Выберите валюту', disabled, className }: CurrencySelectProps) {
 	return (
 		<Select onValueChange={onChange} value={value ?? ''} disabled={disabled}>
 			<SelectTrigger
 				className={cn(
-					'w-full rounded-full bg-grayscale-50 border-none ', value && '[&_span]:text-black',
-					className
+					'w-full rounded-full bg-grayscale-50 border-none ',
+					value && '[&_span]:text-black',
+					className,
 				)}
 			>
 				<SelectValue placeholder={placeholder} />

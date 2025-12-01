@@ -1,43 +1,20 @@
 'use client'
 
-import { formatPriceValue } from '@/components/card/cardFormatters'
 import { Badge } from '@/components/ui/Badge'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
+import {
+	formatDateValue,
+	formatDistanceKm,
+	formatPriceValue,
+	parseDateToTimestamp,
+	parseDistanceKm,
+} from '@/lib/formatters'
 import type { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { getOrderStatusLabel, getOrderStatusVariant } from '../orderStatusConfig'
-
-const formatDateValue = (value?: string | null) => {
-	if (!value) return '—'
-	try {
-		return format(new Date(value), 'dd.MM.yyyy', { locale: ru })
-	} catch {
-		return '—'
-	}
-}
-
-const formatRouteDistance = (value?: string | null) => {
-	if (!value) return '—'
-	const numeric = Number(value)
-	if (Number.isNaN(numeric)) return value
-	return `${numeric.toLocaleString('ru-RU')} км`
-}
-
-const parseRouteDistance = (value?: string | null) => {
-	const numeric = Number(value)
-	return Number.isNaN(numeric) ? 0 : numeric
-}
-
-const parseDateValue = (value?: string | null) => {
-	if (!value) return 0
-	const timestamp = Date.parse(value)
-	return Number.isNaN(timestamp) ? 0 : timestamp
-}
 
 export const historyColumns: ColumnDef<IOrderList>[] = [
 	{
@@ -77,7 +54,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Погрузка
+				Отправление
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -87,7 +64,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 				<span className='text-muted-foreground text-sm'>{formatDateValue(row.original.load_date)}</span>
 			</div>
 		),
-		sortingFn: (a, b) => parseDateValue(a.original.load_date) - parseDateValue(b.original.load_date),
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.load_date) - parseDateToTimestamp(b.original.load_date),
 	},
 	{
 		id: 'destination',
@@ -97,7 +74,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 				className='hover:bg-transparent p-0'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Разгрузка
+				Назначение
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -107,7 +84,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 				<span className='text-muted-foreground text-sm'>{formatDateValue(row.original.delivery_date)}</span>
 			</div>
 		),
-		sortingFn: (a, b) => parseDateValue(a.original.delivery_date) - parseDateValue(b.original.delivery_date),
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.delivery_date) - parseDateToTimestamp(b.original.delivery_date),
 	},
 	{
 		id: 'route_distance_km',
@@ -121,8 +98,8 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatRouteDistance(row.original.route_distance_km),
-		sortingFn: (a, b) => parseRouteDistance(a.original.route_distance_km) - parseRouteDistance(b.original.route_distance_km),
+		cell: ({ row }) => formatDistanceKm(row.original.route_distance_km),
+		sortingFn: (a, b) => parseDistanceKm(a.original.route_distance_km) - parseDistanceKm(b.original.route_distance_km),
 	},
 	{
 		accessorKey: 'price_total',
@@ -131,7 +108,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 	},
 	{
 		accessorKey: 'documents_count',
-		header: 'Документы',
+		header: 'Документов',
 		cell: ({ row }) => row.original.documents_count ?? 0,
 	},
 ]

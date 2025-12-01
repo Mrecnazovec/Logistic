@@ -8,6 +8,6 @@ export function HomePage() {
 	const router = useRouter()
 	useEffect(() => {
 		router.push(DASHBOARD_URL.announcements())
-	}, [])
+	}, [router])
 	return <div>HomePage123</div>
 }

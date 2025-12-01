@@ -17,7 +17,7 @@ export const OrderDriverStatusEnum = {
 export type OrderDriverStatusEnum = (typeof OrderDriverStatusEnum)[keyof typeof OrderDriverStatusEnum]
 
 export const OrderDriverStatusSelector = [
-	{ type: OrderDriverStatusEnum.STOPPED, name: 'Остановился' },
-	{ type: OrderDriverStatusEnum.PROBLEM, name: 'Проблема' },
+	{ type: OrderDriverStatusEnum.STOPPED, name: 'Ожидает' },
+	{ type: OrderDriverStatusEnum.PROBLEM, name: 'Есть проблема' },
 	{ type: OrderDriverStatusEnum.EN_ROUTE, name: 'В пути' },
 ]

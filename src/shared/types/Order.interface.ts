@@ -15,3 +15,5 @@ export type PatchedOrderDriverStatusUpdateDto = components['schemas']['PatchedOr
 export type OrdersListQuery = paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
+
+export type DriverStatus = IOrderDetail['driver_status']

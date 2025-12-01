@@ -20,14 +20,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/Select'
+import { DASHBOARD_URL } from '@/config/url.config'
 import { useLoadInvite } from '@/hooks/queries/loads/useLoadInvite'
 import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
+import type { PriceCurrencyCode } from '@/lib/currency'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getAccessToken } from '@/services/auth/auth-token.service'
-import { DASHBOARD_URL } from '@/config/url.config'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import type { InviteResponseActionsProps } from '@/shared/types/Invite.interface'
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 
 const EMPTY = '—'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']

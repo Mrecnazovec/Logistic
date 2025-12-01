@@ -3,88 +3,40 @@
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { formatPriceValue } from '@/lib/formatters'
+import {
+	formatDateValue,
+	formatDistanceKm,
+	formatRelativeDate,
+	formatWeightValue,
+	parseDateToTimestamp,
+} from '@/lib/formatters'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { Minus } from 'lucide-react'
-import { formatCurrencyValue } from '@/shared/utils/currency'
 
 export const cargoColumns: ColumnDef<ICargoList>[] = [
-	// {
-	// 	id: 'select',
-	// 	cell: ({ row, table }) => {
-	// 		const selectedRow = table.getSelectedRowModel().rows[0]
-	// 		const isSelected = selectedRow?.id === row.id
-
-	// 		return (
-	// 			<RadioGroup
-	// 				value={isSelected ? row.id : ''}
-	// 				onValueChange={(value) => {
-	// 					table.resetRowSelection()
-	// 					if (value === row.id) {
-	// 						row.toggleSelected(true)
-	// 					}
-	// 				}}
-	// 				className='flex items-center justify-center'
-	// 			>
-	// 				<RadioGroupItem
-	// 					value={row.id}
-	// 					id={`radio-${row.id}`}
-	// 					aria-label='Выбрать строку'
-	// 				/>
-	// 			</RadioGroup>
-	// 		)
-	// 	},
-	// 	enableSorting: false,
-	// 	enableHiding: false,
-	// },
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='hover:bg-transparent p-0'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
-				Опубл. время
+			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+				Опубликован
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => {
-			const createdAt = new Date(row.original.created_at)
-			const now = new Date()
-			const diffMs = now.getTime() - createdAt.getTime()
-
-			const minutes = Math.floor(diffMs / (1000 * 60))
-			const hours = Math.floor(diffMs / (1000 * 60 * 60))
-			const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-			if (days >= 1) return `${days} дн. назад`
-			if (hours >= 1) return `${hours} ч. назад`
-			return `${minutes} мин. назад`
-		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.created_at).getTime()
-			const dateB = new Date(b.original.created_at).getTime()
-			return dateA - dateB
-		},
+		cell: ({ row }) => formatRelativeDate(row.original.created_at, '—'),
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.created_at) - parseDateToTimestamp(b.original.created_at),
 	},
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='hover:bg-transparent p-0'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
 				Цена
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
+		cell: ({ row }) => formatPriceValue(row.original.price_value, row.original.price_currency),
 		sortingFn: (a, b) => {
 			const priceA = Number(a.original.price_uzs || 0)
 			const priceB = Number(b.original.price_uzs || 0)
@@ -99,22 +51,22 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'route_km',
 		header: ({ column }) => (
 			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
-				Путь (км)
+				Дистанция (км)
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => `${row.original.route_km} км`,
+		cell: ({ row }) => formatDistanceKm(row.original.route_km),
+		sortingFn: (a, b) => Number(a.original.route_km || 0) - Number(b.original.route_km || 0),
 	},
 	{
 		accessorKey: 'weight_t',
 		header: 'Вес (т)',
-		cell: ({ row }) => `${row.original.weight_t} т`
+		cell: ({ row }) => formatWeightValue(row.original.weight_t),
 	},
 	{
 		accessorKey: 'origin_city',
-		header: 'Погрузка',
-		cell: ({ row }) =>
-			`${row.original.origin_city}, ${row.original.origin_country}`,
+		header: 'Отправление',
+		cell: ({ row }) => `${row.original.origin_city}, ${row.original.origin_country}`,
 	},
 	{
 		accessorKey: 'origin_radius_km',
@@ -122,9 +74,8 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'destination_city',
-		header: 'Выгрузка',
-		cell: ({ row }) =>
-			`${row.original.destination_city}, ${row.original.destination_country}`,
+		header: 'Назначение',
+		cell: ({ row }) => `${row.original.destination_city}, ${row.original.destination_country}`,
 	},
 	{
 		accessorKey: 'dest_radius_km',
@@ -133,33 +84,21 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'load_date',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='hover:bg-transparent p-0'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
-				Дата
+			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+				Дата загрузки
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => {
-			const date = new Date(row.original.load_date)
-			return format(date, 'dd/MM/yyyy', { locale: ru })
-		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.load_date).getTime()
-			const dateB = new Date(b.original.load_date).getTime()
-			return dateA - dateB
-		},
+		cell: ({ row }) => formatDateValue(row.original.load_date, 'dd/MM/yyyy', '—'),
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.load_date) - parseDateToTimestamp(b.original.load_date),
 	},
 	{
 		accessorKey: 'transport_type',
-		header: 'Тип',
+		header: 'Транспорт',
 		cell: ({ row }) => {
-			const transportName = TransportSelect.find(t => t.type === row.original.transport_type)?.symb ?? '—'
-
+			const transportName = TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—'
 			return transportName
-		}
+		},
 	},
 	{
 		accessorKey: 'company_name',
@@ -171,7 +110,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		cell: ({ row }) => {
 			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.phone
 			return <Minus className='size-5' />
-		}
+		},
 	},
 	{
 		accessorKey: 'email',
@@ -179,6 +118,6 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 		cell: ({ row }) => {
 			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.email
 			return <Minus className='size-5' />
-		}
+		},
 	},
 ]

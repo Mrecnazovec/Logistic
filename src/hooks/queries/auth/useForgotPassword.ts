@@ -9,10 +9,10 @@ export const useForgotPassword = () => {
 		mutationKey: ['auth', 'forgot-password'],
 		mutationFn: (data: IForgotPassword) => authService.forgotPassword(data),
 		onSuccess() {
-			toast.success('Письмо для восстановления отправлено')
+			toast.success('Письмо для сброса пароля отправлено')
 		},
 		onError() {
-			toast.error('Ошибка при восстановлении пароля')
+			toast.error('Не удалось отправить письмо для сброса')
 		},
 	})
 

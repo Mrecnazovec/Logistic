@@ -9,10 +9,10 @@ export const useResetPassword = () => {
 		mutationKey: ['auth', 'reset-password'],
 		mutationFn: (data: IResetPassword) => authService.resetPassword(data),
 		onSuccess() {
-			toast.success('Пароль успешно изменён')
+			toast.success('Пароль успешно обновлен')
 		},
 		onError() {
-			toast.error('Ошибка при смене пароля')
+			toast.error('Не удалось обновить пароль')
 		},
 	})
 

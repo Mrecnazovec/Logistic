@@ -1,10 +1,5 @@
 'use client'
 
-import {
-	formatDateValue,
-	formatPricePerKmValue,
-	formatPriceValue,
-} from '@/components/card/cardFormatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
@@ -12,16 +7,10 @@ import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { formatDateValue, formatDistanceKm, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import type { IOrderList } from '@/shared/types/Order.interface'
-import {
-	Building2,
-	CalendarDays,
-	FileText,
-	MapPin,
-	Route as RouteIcon,
-	Wallet,
-} from 'lucide-react'
+import { Building2, CalendarDays, FileText, MapPin, Route as RouteIcon, Wallet } from 'lucide-react'
 import { useMemo } from 'react'
 import { getOrderStatusLabel, getOrderStatusVariant } from '../orderStatusConfig'
 
@@ -29,13 +18,6 @@ type HistoryCardListProps = {
 	orders: IOrderList[]
 	serverPagination?: ServerPaginationMeta
 	onView?: (order: IOrderList) => void
-}
-
-const formatRouteDistance = (value?: string | null) => {
-	if (!value) return '-'
-	const numeric = Number(value)
-	if (Number.isNaN(numeric)) return value
-	return `${numeric.toLocaleString('ru-RU')} км`
 }
 
 export function HistoryCardList({ orders, serverPagination, onView }: HistoryCardListProps) {
@@ -75,30 +57,30 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 			{
 				title: 'Маршрут',
 				items: [
-					{ icon: MapPin, primary: order.origin_city || '-', secondary: 'Погрузка' },
-					{ icon: MapPin, primary: order.destination_city || '-', secondary: 'Разгрузка' },
-					{ icon: RouteIcon, primary: formatRouteDistance(order.route_distance_km), secondary: 'Расстояние' },
+					{ icon: MapPin, primary: order.origin_city || '-', secondary: 'Отправление' },
+					{ icon: MapPin, primary: order.destination_city || '-', secondary: 'Назначение' },
+					{ icon: RouteIcon, primary: formatDistanceKm(order.route_distance_km), secondary: 'Расстояние' },
 				],
 			},
 			{
 				title: 'Даты',
 				items: [
 					{ icon: CalendarDays, primary: formatDateValue(order.load_date), secondary: 'Дата погрузки' },
-					{ icon: CalendarDays, primary: formatDateValue(order.delivery_date), secondary: 'Дата доставки' },
+					{ icon: CalendarDays, primary: formatDateValue(order.delivery_date), secondary: 'Дата выгрузки' },
 					{ icon: CalendarDays, primary: formatDateValue(order.created_at), secondary: 'Создан' },
 				],
 			},
 			{
 				title: 'Стоимость',
 				items: [
-					{ icon: Wallet, primary: formatPriceValue(order.price_total, order.currency), secondary: 'Общая стоимость' },
+					{ icon: Wallet, primary: formatPriceValue(order.price_total, order.currency), secondary: 'Фиксированная стоимость' },
 					{ icon: Wallet, primary: formatPricePerKmValue(order.price_per_km, order.currency), secondary: 'Цена за км' },
 					{ icon: Wallet, primary: order.currency_display || order.currency || '-', secondary: 'Валюта' },
 				],
 			},
 			{
 				title: 'Документы',
-				items: [{ icon: FileText, primary: order.documents_count ?? 0, secondary: 'Файлов' }],
+				items: [{ icon: FileText, primary: order.documents_count ?? 0, secondary: 'Количество' }],
 			},
 		],
 		[order],
@@ -109,10 +91,8 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<div>
-						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-							{`Заказ №${order.id}`}
-						</CardTitle>
-						<p className='text-sm text-muted-foreground'>{order.customer_name || 'Без заказчика'}</p>
+						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>{`Заказ №${order.id}`}</CardTitle>
+						<p className='text-sm text-muted-foreground'>{order.customer_name || 'Без названия заказчика'}</p>
 					</div>
 					<Badge variant={statusVariant}>{statusLabel}</Badge>
 				</div>
@@ -128,7 +108,7 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Button className='flex-1 min-w-[140px]' onClick={() => onView?.(order)}>
-					Посмотреть
+					Подробнее
 				</Button>
 			</CardFooter>
 		</Card>

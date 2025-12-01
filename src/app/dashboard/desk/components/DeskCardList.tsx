@@ -28,13 +28,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import {
-	formatDateValue,
-	formatPlace,
-	formatPricePerKmValue,
-	formatPriceValue,
-	formatWeightValue
-} from '../../../../components/card/cardFormatters'
+import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 
 const hasOffersValue = (cargo: ICargoList) => {
 	if (cargo.offers_count && cargo.offers_count > 0) return true

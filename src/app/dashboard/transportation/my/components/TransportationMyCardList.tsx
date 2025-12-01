@@ -1,13 +1,7 @@
 'use client'
 
 import { getTransportationStatusMeta } from '@/app/dashboard/transportation/constants/statusMeta'
-import {
-	formatDateValue,
-	formatPlace,
-	formatPricePerKmValue,
-	formatPriceValue,
-	formatWeightValue
-} from '@/components/card/cardFormatters'
+import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'

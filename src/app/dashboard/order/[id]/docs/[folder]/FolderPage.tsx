@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetOrderDocuments } from '@/hooks/queries/orders/useGet/useGetOrderDocuments'
 import { useUploadOrderDocument } from '@/hooks/queries/orders/useUploadOrderDocument'
+import { formatFileSize as formatFileSizeHelper } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import type { IOrderDocument } from '@/shared/types/Order.interface'
 
@@ -55,18 +56,18 @@ const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']
 
 const STATUS_LABELS: Record<UploadStatus, string> = {
-	pending: 'В очереди',
-	uploading: 'Загружается',
-	success: 'Готово',
-	error: 'Ошибка',
+	pending: 'Р’ РѕС‡РµСЂРµРґРё',
+	uploading: 'Р—Р°РіСЂСѓР¶Р°РµС‚СЃСЏ',
+	success: 'Р“РѕС‚РѕРІРѕ',
+	error: 'РћС€РёР±РєР°',
 }
 
 const FOLDER_LABELS: Record<string, string> = {
-	licenses: 'Лицензии',
-	contracts: 'Договоры',
-	loading: 'Погрузка',
-	unloading: 'Разгрузка',
-	other: 'Прочие документы',
+	licenses: 'Р›РёС†РµРЅР·РёРё',
+	contracts: 'Р”РѕРіРѕРІРѕСЂС‹',
+	loading: 'РџРѕРіСЂСѓР·РєР°',
+	unloading: 'Р Р°Р·РіСЂСѓР·РєР°',
+	other: 'РџСЂРѕС‡РёРµ РґРѕРєСѓРјРµРЅС‚С‹',
 }
 
 const BADGE_VARIANT_BY_EXTENSION: Record<
@@ -82,7 +83,6 @@ const BADGE_VARIANT_BY_EXTENSION: Record<
 	pptx: 'warning',
 }
 
-const numberFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
 
 const FILE_THUMBNAIL_BY_EXTENSION: Record<string, { icon: LucideIcon; className: string }> = {
 	pdf: { icon: FileType, className: 'bg-destructive/10 text-destructive' },
@@ -97,7 +97,7 @@ export function FolderPage() {
 	const orderId = params.id
 	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
 	const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
-	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Документы'
+	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Р”РѕРєСѓРјРµРЅС‚С‹'
 
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const uploadTimersRef = useRef<Record<string, number>>({})
@@ -133,29 +133,12 @@ export function FolderPage() {
 		}
 	}, [])
 
-	const formatFileSize = useCallback((bytes?: number | null) => {
-		if (!bytes || bytes <= 0) {
-			return '0 Б'
-		}
-
-		const kb = bytes / 1024
-		if (kb < 1024) {
-			return `${numberFormatter.format(kb)} КБ`
-		}
-
-		const mb = kb / 1024
-		if (mb < 1024) {
-			return `${numberFormatter.format(mb)} МБ`
-		}
-
-		const gb = mb / 1024
-		return `${numberFormatter.format(gb)} ГБ`
-	}, [])
+const formatFileSize = useCallback((bytes?: number | null) => formatFileSizeHelper(bytes, '—'), [])
 
 	const beginUpload = useCallback(
 		(item: UploadQueueItem) => {
 			if (!orderId) {
-				toast.error('Не удалось определить номер заказа')
+				toast.error('РќРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РЅРѕРјРµСЂ Р·Р°РєР°Р·Р°')
 				return
 			}
 
@@ -212,7 +195,7 @@ export function FolderPage() {
 								? {
 									...queueItem,
 									status: 'error',
-									error: 'Не удалось загрузить файл. Попробуйте ещё раз.',
+									error: 'РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р». РџРѕРїСЂРѕР±СѓР№С‚Рµ РµС‰С‘ СЂР°Р·.',
 								}
 								: queueItem
 						)
@@ -222,12 +205,15 @@ export function FolderPage() {
 		[clearUploadTimer, normalizedFolder, orderId, uploadOrderDocumentAsync]
 	)
 
-	useEffect(() => {
-		return () => {
-			Object.values(uploadTimersRef.current).forEach((timerId) => window.clearInterval(timerId))
-			Object.values(removalTimersRef.current).forEach((timerId) => window.clearTimeout(timerId))
-		}
-	}, [])
+useEffect(() => {
+	const uploadTimers = uploadTimersRef.current
+	const removalTimers = removalTimersRef.current
+
+	return () => {
+		Object.values(uploadTimers).forEach((timerId) => window.clearInterval(timerId))
+		Object.values(removalTimers).forEach((timerId) => window.clearTimeout(timerId))
+	}
+}, [])
 
 	const handleFiles = useCallback(
 		(files: FileList | File[] | null) => {
@@ -308,18 +294,18 @@ export function FolderPage() {
 		<><section className='rounded-4xl bg-background p-8 space-y-8 mb-4'>
 			<header className='flex flex-wrap items-center justify-between gap-4'>
 				<div>
-					<p className='text-xs uppercase tracking-[0.2em] text-muted-foreground'>Папка</p>
+					<p className='text-xs uppercase tracking-[0.2em] text-muted-foreground'>РџР°РїРєР°</p>
 					<h1 className='text-2xl font-semibold tracking-tight'>{folderLabel}</h1>
 				</div>
 				<Badge variant='secondary' className='text-sm font-medium px-3 py-1 rounded-full'>
-					{documentsForFolder.length} файлов
+					{documentsForFolder.length} С„Р°Р№Р»РѕРІ
 				</Badge>
 			</header>
 
 			<div
 				role='button'
 				tabIndex={0}
-				aria-label='Загрузить документы'
+				aria-label='Р—Р°РіСЂСѓР·РёС‚СЊ РґРѕРєСѓРјРµРЅС‚С‹'
 				aria-busy={uploadQueue.some((item) => item.status === 'uploading')}
 				onClick={() => fileInputRef.current?.click()}
 				onKeyDown={handleKeyDown}
@@ -339,13 +325,13 @@ export function FolderPage() {
 			>
 				<UploadCloud className='size-12 text-muted-foreground' aria-hidden />
 				<p className='text-lg font-medium text-primary'>
-					<span className='text-brand'>Кликните чтобы загрузить</span> или перетащите сюда
+					<span className='text-brand'>РљР»РёРєРЅРёС‚Рµ С‡С‚РѕР±С‹ Р·Р°РіСЂСѓР·РёС‚СЊ</span> РёР»Рё РїРµСЂРµС‚Р°С‰РёС‚Рµ СЃСЋРґР°
 				</p>
 				<p className='text-sm text-muted-foreground'>
-					DOC, PNG, PDF или GIF (макс. 5 МБ)
+					DOC, PNG, PDF РёР»Рё GIF (РјР°РєСЃ. 5 РњР‘)
 				</p>
 				<Button type='button' variant='outline' size='sm' className='mt-2'>
-					Выбрать файлы
+					Р’С‹Р±СЂР°С‚СЊ С„Р°Р№Р»С‹
 				</Button>
 				<input
 					ref={fileInputRef}
@@ -364,7 +350,7 @@ export function FolderPage() {
 				<div className='flex items-center justify-between'>
 					{uploadQueue.length ? (
 						<span className='text-sm text-muted-foreground'>
-							В очереди: {uploadQueue.length}
+							Р’ РѕС‡РµСЂРµРґРё: {uploadQueue.length}
 						</span>
 					) : null}
 				</div>
@@ -432,7 +418,7 @@ function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowPr
 						onClick={() => onRemove(item.id)}
 					>
 						<Trash2 className='size-4' />
-						<span className='sr-only'>Удалить файл {item.file.name}</span>
+						<span className='sr-only'>РЈРґР°Р»РёС‚СЊ С„Р°Р№Р» {item.file.name}</span>
 					</Button>
 				</div>
 			</div>
@@ -467,7 +453,7 @@ type DocumentListItemProps = {
 function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
 	const extension = getExtension(document.file_name ?? document.title ?? '')
 	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
-	const displayName = document.file_name ?? document.title ?? 'Документ'
+	const displayName = document.file_name ?? document.title ?? 'Р”РѕРєСѓРјРµРЅС‚'
 
 	return (
 		<div className='rounded-2xl border px-5 py-4 bg-card/40 flex flex-col gap-3 md:flex-row md:items-center'>
@@ -481,19 +467,19 @@ function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
 						</Badge>
 					</div>
 					<p className='text-sm text-muted-foreground'>
-						{formatFileSize(document.file_size)} · загружено {document.uploaded_by}
+						{formatFileSize(document.file_size)} В· Р·Р°РіСЂСѓР¶РµРЅРѕ {document.uploaded_by}
 					</p>
 				</div>
 			</div>
 
 			<div className='flex items-center gap-3 md:ml-auto'>
 				<p className='text-sm text-muted-foreground'>
-					{document.created_at ? formatDate(document.created_at) : '—'}
+					{document.created_at ? formatDate(document.created_at) : 'вЂ”'}
 				</p>
 				<Button asChild variant='ghost' size='sm' className='gap-2'>
 					<a href={document.file} download target='_blank' rel='noreferrer'>
 						<Download className='size-4' />
-						Скачать
+						РЎРєР°С‡Р°С‚СЊ
 					</a>
 				</Button>
 			</div>
@@ -572,8 +558,8 @@ function DocumentListSkeleton() {
 function EmptyState() {
 	return (
 		<div className='rounded-3xl border border-dashed px-6 py-14 text-center text-muted-foreground space-y-2'>
-			<p className='text-base font-medium'>В этой папке пока нет документов</p>
-			<p className='text-sm'>Добавьте файлы через форму выше — они появятся здесь автоматически.</p>
+			<p className='text-base font-medium'>Р’ СЌС‚РѕР№ РїР°РїРєРµ РїРѕРєР° РЅРµС‚ РґРѕРєСѓРјРµРЅС‚РѕРІ</p>
+			<p className='text-sm'>Р”РѕР±Р°РІСЊС‚Рµ С„Р°Р№Р»С‹ С‡РµСЂРµР· С„РѕСЂРјСѓ РІС‹С€Рµ вЂ” РѕРЅРё РїРѕСЏРІСЏС‚СЃСЏ Р·РґРµСЃСЊ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё.</p>
 		</div>
 	)
 }
@@ -597,12 +583,19 @@ function validateFile(file: File) {
 	const isExtensionAllowed = ACCEPTED_EXTENSIONS.includes(`.${extension}` as (typeof ACCEPTED_EXTENSIONS)[number])
 
 	if (!isMimeAllowed && !isExtensionAllowed) {
-		return 'Неподдерживаемый формат файла'
+		return 'РќРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Р№ С„РѕСЂРјР°С‚ С„Р°Р№Р»Р°'
 	}
 
 	if (file.size > MAX_FILE_SIZE_BYTES) {
-		return 'Файл превышает 15 МБ'
+		return 'Р¤Р°Р№Р» РїСЂРµРІС‹С€Р°РµС‚ 15 РњР‘'
 	}
 
 	return null
 }
+
+
+
+
+
+
+

@@ -9,10 +9,10 @@ export const useChangeRole = () => {
 		mutationKey: ['auth', 'change-role'],
 		mutationFn: (data: RoleChangeDto) => authService.changeRole(data),
 		onSuccess() {
-			toast.success('Роль успешно изменена')
+			toast.success('Роль успешно обновлена')
 		},
 		onError() {
-			toast.error('Ошибка при изменении роли')
+			toast.error('Не удалось обновить роль')
 		},
 	})
 

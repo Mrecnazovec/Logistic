@@ -6,19 +6,18 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
+import { formatCurrencyValue } from '@/lib/currency'
+import { formatDateValue, formatPlace, parseDateToTimestamp } from '@/lib/formatters'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
-import { formatCurrencyValue } from '@/shared/utils/currency'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { Minus } from 'lucide-react'
 
 const getStatusBadge = (status?: string) => {
 	const normalized = (status || '').toLowerCase()
-	if (normalized.includes('ожидает')) return { variant: 'warning' as const, label: status }
-	if (normalized.includes('ответ')) return { variant: 'success' as const, label: status }
-	if (normalized.includes('отмен')) return { variant: 'danger' as const, label: status }
+	if (normalized.includes('ждет')) return { variant: 'warning' as const, label: status }
+	if (normalized.includes('принят')) return { variant: 'success' as const, label: status }
+	if (normalized.includes('откл')) return { variant: 'danger' as const, label: status }
 	return { variant: 'secondary' as const, label: status || '—' }
 }
 
@@ -48,25 +47,20 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 				className='p-0 hover:bg-transparent'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Погрузка / дата
+				Отправление / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
 			const { origin_city, origin_country, load_date } = row.original
-			const formattedDate = load_date ? format(new Date(load_date), 'dd.MM.yyyy', { locale: ru }) : '—'
 			return (
 				<div className='flex flex-col'>
-					<span>{`${origin_city}, ${origin_country}`}</span>
-					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
+					<span>{formatPlace(origin_city, origin_country, '—')}</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(load_date, 'dd.MM.yyyy', '—')}</span>
 				</div>
 			)
 		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.load_date).getTime()
-			const dateB = new Date(b.original.load_date).getTime()
-			return dateA - dateB
-		},
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.load_date) - parseDateToTimestamp(b.original.load_date),
 	},
 	{
 		id: 'destination',
@@ -76,31 +70,26 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 				className='p-0 hover:bg-transparent'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Выгрузка / дата
+				Назначение / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
 			const { destination_city, destination_country, delivery_date } = row.original
-			const formattedDate =
-				delivery_date && typeof delivery_date === 'string'
-					? format(new Date(delivery_date), 'dd.MM.yyyy', { locale: ru })
-					: '—'
 			return (
 				<div className='flex flex-col'>
-					<span>{`${destination_city}, ${destination_country}`}</span>
-					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
+					<span>{formatPlace(destination_city, destination_country, '—')}</span>
+					<span className='text-sm text-muted-foreground'>
+						{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}
+					</span>
 				</div>
 			)
 		},
-		sortingFn: (a, b) => {
-			const parse = (value?: string | null) => (value ? new Date(value).getTime() : 0)
-			return parse(a.original.delivery_date) - parse(b.original.delivery_date)
-		},
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.delivery_date) - parseDateToTimestamp(b.original.delivery_date),
 	},
 	{
 		accessorKey: 'transport_type',
-		header: 'Тип',
+		header: 'Транспорт',
 		cell: ({ row }) => {
 			const transportName = TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—'
 			return transportName
@@ -123,7 +112,7 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 				className='p-0 hover:bg-transparent'
 				onClick={(event) => cycleColumnSort(event, column)}
 			>
-				Ставка
+				Цена
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),

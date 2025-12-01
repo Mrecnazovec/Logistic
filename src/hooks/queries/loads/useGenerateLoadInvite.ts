@@ -8,10 +8,10 @@ export const useGenerateLoadInvite = () => {
 		mutationKey: ['load', 'invite', 'generate'],
 		mutationFn: (uuid: string) => loadsService.generateLoadInvite(uuid),
 		onSuccess() {
-			toast.success('Приглашение сгенерировано')
+			toast.success('Инвайт на груз сгенерирован')
 		},
 		onError() {
-			toast.error('Не удалось сгенерировать приглашение')
+			toast.error('Не удалось сгенерировать инвайт')
 		},
 	})
 

@@ -1,4 +1,4 @@
-﻿import { PriceCurrencyEnum } from '../enums/PriceCurrency.enum'
+﻿import { PriceCurrencyEnum } from "@/shared/enums/PriceCurrency.enum"
 
 export type PriceCurrencyCode = NonNullable<PriceCurrencyEnum>
 

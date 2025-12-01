@@ -13,7 +13,6 @@ import { AddDriver } from '@/components/ui/modals/AddDriver'
 import { OrderRatingModal } from './OrderRatingModal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import {
-	DEFAULT_PLACEHOLDER,
 	formatDateTimeValue,
 	formatDateValue,
 	formatDistanceKm,
@@ -25,10 +24,14 @@ import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
 import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
-import type { DriverStatus, IOrderDetail } from '@/shared/types/Order.interface'
+import type { IOrderDetail } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
+
+const PLACEHOLDER = '—'
+
+type DriverStatus = NonNullable<IOrderDetail['driver_status']>
 
 const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }> = {
 	en_route: { label: 'В пути', variant: 'info' },
@@ -39,7 +42,7 @@ const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 's
 const DRIVER_STATUS_BADGE_ENTRIES = Object.entries(DRIVER_STATUS_BADGE_MAP) as Array<[DriverStatus, (typeof DRIVER_STATUS_BADGE_MAP)[DriverStatus]]>
 
 const withFallback = (value?: string | number | null) => {
-	if (value === null || value === undefined || value === '') return DEFAULT_PLACEHOLDER
+	if (value === null || value === undefined || value === '') return PLACEHOLDER
 	return String(value)
 }
 
@@ -73,9 +76,9 @@ export function OrderPage() {
 	const hasLoadingDocument = Boolean(order?.loading_datetime)
 	const hasUnloadingDocument = Boolean(order?.unloading_datetime)
 	const hasOtherDocument = Boolean(firstOtherDocument)
-	const firstLoadingDocumentDate = formatDateTimeValue(order?.loading_datetime, DEFAULT_PLACEHOLDER)
-	const firstUnloadingDocumentDate = formatDateTimeValue(order?.unloading_datetime, DEFAULT_PLACEHOLDER)
-	const firstOtherDocumentDate = formatDateTimeValue(firstOtherDocument?.created_at, DEFAULT_PLACEHOLDER)
+	const firstLoadingDocumentDate = formatDateTimeValue(order?.loading_datetime, PLACEHOLDER)
+	const firstUnloadingDocumentDate = formatDateTimeValue(order?.unloading_datetime, PLACEHOLDER)
+	const firstOtherDocumentDate = formatDateTimeValue(firstOtherDocument?.created_at, PLACEHOLDER)
 	const shouldShowUnloadingSection = hasLoadingDocument || hasUnloadingDocument
 	const shouldShowTransportDetailsSection = hasUnloadingDocument || hasOtherDocument
 	const documentSectionsCount = 1 + Number(shouldShowUnloadingSection) + Number(shouldShowTransportDetailsSection)
@@ -99,7 +102,7 @@ export function OrderPage() {
 		}
 
 		if (!allowUpload) {
-			return <span className="font-medium text-end text-muted-foreground">{DEFAULT_PLACEHOLDER}</span>
+			return <span className="font-medium text-end text-muted-foreground">{PLACEHOLDER}</span>
 		}
 
 		return (
@@ -209,7 +212,7 @@ export function OrderPage() {
 
 	const loadDate = formatDateValue(order.load_date)
 	const deliveryDate = formatDateValue(order.delivery_date)
-	const distance = formatDistanceKm(order.route_distance_km, DEFAULT_PLACEHOLDER)
+	const distance = formatDistanceKm(order.route_distance_km, PLACEHOLDER)
 	const price = formatPriceValue(order.price_total, order.currency)
 	const pricePerKm = formatPricePerKmValue(order.price_per_km, order.currency)
 	const driverStatusButton = canChangeDriverStatus ? (
@@ -256,28 +259,28 @@ export function OrderPage() {
 						title: 'Информация о заказчике',
 						rows: [
 							{ label: 'Заказчик', value: withFallback(order.customer_name) },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Логин', value: PLACEHOLDER },
+							{ label: 'Контакты', value: PLACEHOLDER },
+							{ label: 'На платформе с', value: PLACEHOLDER },
 						],
 					},
 					{
 						title: 'Информация о посреднике',
 						rows: [
 							{ label: 'Логист', value: withFallback(order.logistic_name) },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Логин', value: PLACEHOLDER },
+							{ label: 'Контакты', value: PLACEHOLDER },
+							{ label: 'На платформе с', value: PLACEHOLDER },
 						],
 					},
 					{
 						title: 'Информация о водителе',
 						rows: [
-							{ label: 'Водитель', value: hasDriver ? withFallback(order.carrier_name) : DEFAULT_PLACEHOLDER },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Транспорт', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Водитель', value: hasDriver ? withFallback(order.carrier_name) : PLACEHOLDER },
+							{ label: 'Логин', value: PLACEHOLDER },
+							{ label: 'Контакты', value: PLACEHOLDER },
+							{ label: 'Транспорт', value: PLACEHOLDER },
+							{ label: 'На платформе с', value: PLACEHOLDER },
 						],
 					},
 				].map((section) => (
@@ -304,7 +307,7 @@ export function OrderPage() {
 					</p>
 					<p className="flex justify-between gap-3">
 						<span className="text-grayscale">Адрес</span>
-						<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
+						<span className="font-medium text-end">{PLACEHOLDER}</span>
 					</p>
 					<p className="flex justify-between gap-3">
 						<span className="text-grayscale">Дата</span>
@@ -331,7 +334,7 @@ export function OrderPage() {
 						</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Адрес</span>
-							<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
+							<span className="font-medium text-end">{PLACEHOLDER}</span>
 						</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Дата</span>

@@ -14,15 +14,15 @@ export const TransportTypeEnum = {
 export type TransportTypeEnum = (typeof TransportTypeEnum)[keyof typeof TransportTypeEnum]
 
 export const TransportSelect = [
-	{ type: TransportTypeEnum.TENT, name: 'Тент', symb: 'Т' },
+	{ type: TransportTypeEnum.TENT, name: 'Тентованный', symb: 'Т' },
 	{ type: TransportTypeEnum.CONT, name: 'Контейнер', symb: 'К' },
 	{ type: TransportTypeEnum.REEFER, name: 'Рефрижератор', symb: 'Р' },
 	{ type: TransportTypeEnum.DUMP, name: 'Самосвал', symb: 'С' },
-	{ type: TransportTypeEnum.CARTR, name: 'Автотранспортер', symb: 'А' },
+	{ type: TransportTypeEnum.CARTR, name: 'Автовоз', symb: 'А' },
 	{ type: TransportTypeEnum.GRAIN, name: 'Зерновоз', symb: 'З' },
 	{ type: TransportTypeEnum.LOG, name: 'Лесовоз', symb: 'Л' },
 	{ type: TransportTypeEnum.PICKUP, name: 'Пикап', symb: 'П' },
-	{ type: TransportTypeEnum.MEGA, name: 'Мега фура', symb: 'М' },
+	{ type: TransportTypeEnum.MEGA, name: 'Мега-тент', symb: 'М' },
 	{ type: TransportTypeEnum.OTHER, name: 'Другое', symb: 'Др' },
 ]
 

@@ -8,10 +8,10 @@ export const useResendVerify = () => {
 		mutationKey: ['auth', 'resend-verify'],
 		mutationFn: (email: string) => authService.resendVerify(email),
 		onSuccess() {
-			toast.success('Письмо повторно отправлено')
+			toast.success('Письмо подтверждения отправлено повторно')
 		},
 		onError() {
-			toast.error('Ошибка при повторной отправке письма')
+			toast.error('Не удалось отправить письмо подтверждения')
 		},
 	})
 

@@ -1,7 +1,5 @@
 'use client'
 
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { ArrowRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -23,9 +21,10 @@ import {
 	SelectValue,
 } from '@/components/ui/Select'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
+import type { PriceCurrencyCode } from '@/lib/currency'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
+import { formatDateValue } from '@/lib/formatters'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/shared/utils/currency'
 
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
@@ -37,17 +36,16 @@ interface CounterOfferModalProps {
 
 export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferModalProps) {
 	const formattedOriginDate = useMemo(() => {
-		if (!offer.load_date) return '—'
-		return format(new Date(offer.load_date), 'dd MMM, EEE', { locale: ru })
+		return formatDateValue(offer.load_date, 'dd MMM, EEE', '—')
 	}, [offer.load_date])
 
 	const formattedDestinationDate = useMemo(() => {
-		if (!offer.delivery_date) return '—'
-		return format(new Date(offer.delivery_date), 'dd MMM, EEE', { locale: ru })
+		return formatDateValue(offer.delivery_date, 'dd MMM, EEE', '—')
 	}, [offer.delivery_date])
 
 	const formattedPrice = formatCurrencyValue(offer.price_value, offer.price_currency as PriceCurrencyCode)
 	const formattedPricePerKm = formatCurrencyPerKmValue(
+		(offer as Partial<IOfferShort> & { price_per_km?: number | string }).price_per_km,
 		offer.price_currency as PriceCurrencyCode,
 	)
 

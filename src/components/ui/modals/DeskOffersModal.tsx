@@ -1,7 +1,5 @@
 'use client'
 
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { ArrowRight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -18,9 +16,10 @@ import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
 import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
+import type { PriceCurrencyCode } from '@/lib/currency'
+import { formatCurrencyValue } from '@/lib/currency'
+import { formatDateValue } from '@/lib/formatters'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
-import { formatCurrencyValue } from '@/shared/utils/currency'
 
 interface DeskOffersModalProps {
 	cargoUuid?: string
@@ -43,30 +42,16 @@ const paymentOptions = [
 	{ value: 'BY_CASH', label: 'Безналичный расчёт (наличные)' },
 ]
 
-const formatDate = (value?: string | null) => {
-	if (!value) return EMPTY
-	const parsed = new Date(value)
-	if (Number.isNaN(parsed.getTime())) return EMPTY
-	return format(parsed, 'dd MMM, EEE', { locale: ru })
-}
-
-const formatTime = (value?: string | null) => {
-	if (!value) return EMPTY
-	const parsed = new Date(value)
-	if (Number.isNaN(parsed.getTime())) return EMPTY
-	return format(parsed, 'HH:mm', { locale: ru })
-}
-
 const normalizeOffer = (offer: IOfferShort) => {
 	const priceCurrency = offer.price_currency as PriceCurrencyCode
 	return {
 		id: offer.id,
 		origin: `${offer.origin_city}, ${offer.origin_country}`,
-		originDate: formatDate(offer.load_date),
-		originTime: formatTime(offer.load_date),
+		originDate: formatDateValue(offer.load_date, 'dd MMM, EEE', EMPTY),
+		originTime: formatDateValue(offer.load_date, 'HH:mm', EMPTY),
 		destination: `${offer.destination_city}, ${offer.destination_country}`,
-		destinationDate: formatDate(offer.delivery_date),
-		destinationTime: formatTime(offer.delivery_date),
+		destinationDate: formatDateValue(offer.delivery_date, 'dd MMM, EEE', EMPTY),
+		destinationTime: formatDateValue(offer.delivery_date, 'HH:mm', EMPTY),
 		transport: offer.transport_type_display || offer.transport_type || EMPTY,
 		weight: offer.weight_t ? `${offer.weight_t} т` : EMPTY,
 		price: formatCurrencyValue(offer.price_value, priceCurrency),

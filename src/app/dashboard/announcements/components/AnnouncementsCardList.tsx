@@ -7,9 +7,9 @@ import {
 	formatPriceValue,
 	formatRelativeDate,
 	formatWeightValue,
-} from '@/components/card/cardFormatters'
+} from '@/lib/formatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
-import { CardSections } from '@/components/card/CardSections'
+import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -49,6 +49,7 @@ type AnnouncementCardProps = {
 function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+
 	const contact =
 		cargo.contact_pref === 'email'
 			? cargo.email
@@ -56,48 +57,54 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				? cargo.phone
 				: cargo.phone || cargo.email
 
-	const sections = useMemo(
+	const sections = useMemo<CardSection[]>(
 		() => [
 			{
 				title: 'Откуда',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.origin_address || '—', secondary: 'Адрес' },
+					{ icon: Home, primary: cargo.origin_address || '—', secondary: 'Адрес погрузки' },
 				],
 			},
 			{
 				title: 'Куда',
 				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.destination_address || '—', secondary: 'Адрес' },
+					{
+						icon: MapPin,
+						primary: formatPlace(cargo.destination_city, cargo.destination_country),
+						secondary: 'Город / страна',
+					},
+					{ icon: Home, primary: cargo.destination_address || '—', secondary: 'Адрес доставки' },
 				],
 			},
 			{
-				title: 'Когда',
+				title: 'Даты',
 				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
 					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
 				],
 			},
 			{
-				title: 'Тип транспорта / Вес',
+				title: 'Транспорт / вес',
 				items: [
 					{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
 					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
 				],
 			},
 			{
-				title: 'Цена / миля',
+				title: 'Цена / км',
 				items: [
-					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Фиксированная' },
-					{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: 'Цена за км' },
+					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Стоимость перевозки' },
+					{
+						icon: Wallet,
+						primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency),
+						secondary: 'Цена за км',
+					},
 				],
 			},
 			{
 				title: 'Контакты',
-				items: [
-					{ icon: Phone, primary: contact || '—', secondary: 'Телефон' },
-				],
+				items: [{ icon: Phone, primary: contact || '—', secondary: 'Предпочтительный контакт' }],
 			},
 		],
 		[cargo, transportName, contact],
@@ -107,7 +114,9 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b [.border-b]:pb-0'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<span className='text-sm text-muted-foreground flex items-center'><Star className='text-star ' /> {cargo.company_rating ? cargo.company_rating.toFixed(1) : <Minus />}</span>
+					<span className='flex items-center text-sm text-muted-foreground'>
+						<Star className='text-star' /> {cargo.company_rating ? cargo.company_rating.toFixed(1) : <Minus />}
+					</span>
 					<CardTitle className='text-lg font-semibold leading-tight text-grayscale'>
 						{cargo.company_name || '—'}
 					</CardTitle>
@@ -120,10 +129,10 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='flex-1 min-w-[140px]'>
-					Подробнее
+				<Button variant='outline' className='min-w-[140px] flex-1'>
+					Связаться
 				</Button>
-				<OfferModal className='flex-1 min-w-[140px]' selectedRow={cargo} />
+				<OfferModal className='min-w-[140px] flex-1' selectedRow={cargo} />
 			</CardFooter>
 		</Card>
 	)

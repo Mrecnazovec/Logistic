@@ -17,7 +17,7 @@ export const ContactPrefSelector = [
 	},
 	{
 		type: ContactPrefEnum.BOTH,
-		name: 'Оба',
+		name: 'Email и телефон',
 	},
 ]
 

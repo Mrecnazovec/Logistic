@@ -23,7 +23,7 @@ import {
 	InfoChip,
 	InfoSection,
 } from './DeskCardShared'
-import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/components/card/cardFormatters'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]

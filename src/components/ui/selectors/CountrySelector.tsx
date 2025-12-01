@@ -40,13 +40,13 @@ function CountrySelectorInner({
     const [search, setSearch] = useState(value?.name ?? '')
 
     const { data, isLoading } = useCountrySuggest(search)
-    const countries = data?.results ?? []
 
     const filteredCountries = useMemo(() => {
+        const countries = data?.results ?? []
         if (!search) return countries
         const normalized = search.toLowerCase()
         return countries.filter((country) => country.name.toLowerCase().includes(normalized))
-    }, [countries, search])
+    }, [data?.results, search])
 
     const handleSelect = (country: Country) => {
         onChange(country)

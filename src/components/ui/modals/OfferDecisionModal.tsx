@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { ArrowRight } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
@@ -12,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
-import { getTransportName, TransportSelect } from '@/shared/enums/TransportType.enum'
+import type { PriceCurrencyCode } from '@/lib/currency'
+import { formatCurrencyValue } from '@/lib/currency'
+import { formatDateValue } from '@/lib/formatters'
+import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
-import type { PriceCurrencyCode } from '@/shared/utils/currency'
-import { formatCurrencyValue } from '@/shared/utils/currency'
 
 interface OfferDecisionModalProps {
 	offer?: IOfferShort
@@ -37,8 +36,8 @@ export function OfferDecisionModal({ offer, open, onOpenChange }: OfferDecisionM
 	const { rejectOffer, isLoadingReject } = useRejectOffer()
 	const { counterOffer, isLoadingCounter } = useCounterOffer()
 
-	const formattedLoadDate = offer?.load_date ? format(new Date(offer.load_date), 'dd.MM.yyyy', { locale: ru }) : EMPTY
-	const formattedDeliveryDate = offer?.delivery_date ? format(new Date(offer.delivery_date), 'dd.MM.yyyy', { locale: ru }) : EMPTY
+	const formattedLoadDate = formatDateValue(offer?.load_date, 'dd.MM.yyyy', EMPTY)
+	const formattedDeliveryDate = formatDateValue(offer?.delivery_date, 'dd.MM.yyyy', EMPTY)
 
 	const transport = offer ? (TransportSelect.find((type) => type.type === offer.transport_type)?.name ?? offer.transport_type) || offer.transport_type || EMPTY : EMPTY
 	const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)

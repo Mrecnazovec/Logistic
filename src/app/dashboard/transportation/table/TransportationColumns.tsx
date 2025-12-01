@@ -1,4 +1,4 @@
-import { formatPriceValue } from '@/components/card/cardFormatters'
+import { formatDateValue, formatPriceValue, parseDateToTimestamp } from '@/lib/formatters'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
@@ -6,8 +6,6 @@ import { cycleColumnSort } from '@/components/ui/table/utils'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import { Minus } from 'lucide-react'
 
 
@@ -40,9 +38,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 		),
 		cell: ({ row }) => {
 			const { origin_city, load_date } = row.original
-			const formattedDate = load_date
-				? format(new Date(load_date), 'dd.MM.yyyy', { locale: ru })
-				: <Minus />
+			const formattedDate = load_date ? formatDateValue(load_date) : <Minus />
 			return (
 				<div className='flex flex-col'>
 					<span>{`${origin_city}`}</span>
@@ -50,11 +46,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 				</div>
 			)
 		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.load_date).getTime()
-			const dateB = new Date(b.original.load_date).getTime()
-			return dateA - dateB
-		},
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.load_date) - parseDateToTimestamp(b.original.load_date),
 	},
 	{
 		id: 'destination',
@@ -70,10 +62,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 		),
 		cell: ({ row }) => {
 			const { destination_city, delivery_date } = row.original
-			const formattedDate =
-				delivery_date && typeof delivery_date === 'string'
-					? format(new Date(delivery_date), 'dd.MM.yyyy', { locale: ru })
-					: <Minus />
+			const formattedDate = delivery_date ? formatDateValue(delivery_date) : <Minus />
 			return (
 				<div className='flex flex-col'>
 					<span>{`${destination_city}`}</span>
@@ -81,15 +70,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 				</div>
 			)
 		},
-		sortingFn: (a, b) => {
-			const dateA = a.original.delivery_date
-				? new Date(a.original.delivery_date).getTime()
-				: 0
-			const dateB = b.original.delivery_date
-				? new Date(b.original.delivery_date).getTime()
-				: 0
-			return dateA - dateB
-		},
+		sortingFn: (a, b) => parseDateToTimestamp(a.original.delivery_date) - parseDateToTimestamp(b.original.delivery_date),
 	},
 	{
 		accessorKey: 'currency',
