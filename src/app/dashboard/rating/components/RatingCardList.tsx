@@ -13,16 +13,11 @@ import { useMemo } from 'react'
 type RatingCardListProps = {
 	items: IRatingUser[]
 	serverPagination?: ServerPaginationMeta
-	roleLabel: string
 }
 
-const roleLabels: Record<IRatingUser['role'], string> = {
-	LOGISTIC: 'Logistic',
-	CUSTOMER: 'Customer',
-	CARRIER: 'Carrier',
-}
 
-export function RatingCardList({ items, serverPagination, roleLabel }: RatingCardListProps) {
+
+export function RatingCardList({ items, serverPagination }: RatingCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 
 	if (!items.length) return null
@@ -31,7 +26,7 @@ export function RatingCardList({ items, serverPagination, roleLabel }: RatingCar
 		<CardListLayout
 			items={items}
 			getKey={(rating) => rating.id}
-			renderItem={(rating) => <RatingCard rating={rating} roleLabel={roleLabel} />}
+			renderItem={(rating) => <RatingCard rating={rating} />}
 			pagination={pagination}
 		/>
 	)
@@ -39,10 +34,9 @@ export function RatingCardList({ items, serverPagination, roleLabel }: RatingCar
 
 type RatingCardProps = {
 	rating: IRatingUser
-	roleLabel: string
 }
 
-function RatingCard({ rating, roleLabel }: RatingCardProps) {
+function RatingCard({ rating }: RatingCardProps) {
 	const registeredAt = rating.registered_at
 		? format(new Date(rating.registered_at), 'dd.MM.yyyy')
 		: '-'
@@ -50,32 +44,32 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 	const sections = useMemo(
 		() => [
 			{
-				title: 'Company & contact',
+				title: 'Компания и контакт',
 				items: [
 					{
 						icon: BadgeCheck,
 						primary: rating.company_name ?? '-',
-						secondary: 'Company',
+						secondary: 'Компания',
 					},
 					{
 						icon: UserRound,
 						primary: rating.display_name ?? '-',
-						secondary: 'Contact',
+						secondary: 'Контакт',
 					},
 				],
 			},
 			{
-				title: 'Performance',
+				title: 'Достижения',
 				items: [
 					{
 						icon: Star,
-						primary: `${rating.avg_rating.toFixed(1)} / 5`,
-						secondary: `${rating.rating_count.toLocaleString('ru-RU')} reviews`,
+						primary: `${rating.avg_rating ? rating.avg_rating.toFixed(1) : '—'} / 5`,
+						secondary: `${rating.rating_count.toLocaleString('ru-RU')} отзывов`,
 					},
 					{
 						icon: Briefcase,
 						primary: rating.completed_orders.toLocaleString('ru-RU'),
-						secondary: 'Completed orders',
+						secondary: 'Выполненных заказов',
 					},
 				],
 			},
@@ -85,12 +79,12 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 					{
 						icon: Globe2,
 						primary: rating.country ?? '-',
-						secondary: 'Country',
+						secondary: 'Страна',
 					},
 					{
 						icon: CalendarDays,
 						primary: registeredAt,
-						secondary: 'Registered',
+						secondary: 'Зарегистрирован',
 					},
 				],
 			},
@@ -115,12 +109,9 @@ function RatingCard({ rating, roleLabel }: RatingCardProps) {
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
 						<Star className='size-4 fill-yellow-400 text-yellow-400' aria-hidden />
-						{rating.avg_rating.toFixed(1)}
+						{rating.avg_rating ? rating.avg_rating.toFixed(1) : '—'}
 					</span>
 				</div>
-				<p className='text-sm text-muted-foreground'>
-					Role: {roleLabels[rating.role] ?? roleLabel}
-				</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>

@@ -46,3 +46,11 @@ export function BadgeSelector({ status }: BadgeProps) {
 			return <Badge variant='secondary'>—</Badge>
 	}
 }
+
+export const getStatusBadge = (status?: string) => {
+	const normalized = (status || '').toLowerCase()
+	if (normalized.includes('ожидает')) return { variant: 'warning' as const, label: status }
+	if (normalized.includes('получен')) return { variant: 'success' as const, label: status }
+	if (normalized.includes('отм')) return { variant: 'danger' as const, label: status }
+	return { variant: 'secondary' as const, label: status || '—' }
+}

@@ -21,7 +21,6 @@ export interface NavGroup {
 
 export const navItems: NavGroup[] = [
 	{
-		group: 'Главная',
 		items: [
 			{
 				href: DASHBOARD_URL.announcements(),
@@ -51,7 +50,7 @@ export const navItems: NavGroup[] = [
 		],
 	},
 	{
-		group: 'Настройки',
+		// group: 'Настройки',
 		items: [
 			{
 				href: DASHBOARD_URL.home('settings'),

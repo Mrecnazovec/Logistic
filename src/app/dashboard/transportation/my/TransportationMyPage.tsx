@@ -111,10 +111,10 @@ export function TransportationMyPage() {
 
 	return (
 		<div className='flex h-full flex-col gap-4'>
-			<div className='w-full bg-background rounded-4xl px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} />
+						<SearchFields form={form} onSubmit={form.handleSubmit(onSubmit)} />
 					</form>
 				</Form>
 			</div>

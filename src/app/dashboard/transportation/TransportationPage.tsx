@@ -5,9 +5,9 @@ import { SearchFields } from '@/components/ui/search/SearchFields'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
-import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
@@ -110,10 +110,10 @@ export function TransportationPage() {
 
 	return (
 		<div className='flex h-full flex-col gap-4'>
-			<div className='w-full bg-background rounded-4xl px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} />
+						<SearchFields form={form} onSubmit={form.handleSubmit(onSubmit)} />
 					</form>
 				</Form>
 			</div>
@@ -144,7 +144,7 @@ export function TransportationPage() {
 					))}
 				</Tabs>
 			) : (
-				<Tabs value={status} onValueChange={handleStatusChange} className='xs:bg-background rounded-4xl p-4 h-full'>
+				<Tabs value={status} onValueChange={handleStatusChange} className='xs:bg-background rounded-4xl h-full'>
 					<TabsList className='bg-transparent -mb-2 w-full overflow-x-scroll justify-start'>
 						{STATUS_TABS.map((tab) => (
 							<TabsTrigger

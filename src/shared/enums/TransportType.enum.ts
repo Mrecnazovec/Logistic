@@ -14,7 +14,7 @@ export const TransportTypeEnum = {
 export type TransportTypeEnum = (typeof TransportTypeEnum)[keyof typeof TransportTypeEnum]
 
 export const TransportSelect = [
-	{ type: TransportTypeEnum.TENT, name: 'Тентованный', symb: 'Т' },
+	{ type: TransportTypeEnum.TENT, name: 'Тент', symb: 'Т' },
 	{ type: TransportTypeEnum.CONT, name: 'Контейнер', symb: 'К' },
 	{ type: TransportTypeEnum.REEFER, name: 'Рефрижератор', symb: 'Р' },
 	{ type: TransportTypeEnum.DUMP, name: 'Самосвал', symb: 'С' },

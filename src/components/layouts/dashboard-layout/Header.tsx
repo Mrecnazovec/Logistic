@@ -9,8 +9,9 @@ import { useNotifications } from '@/hooks/queries/notifications/useNotifications
 import { cn } from '@/lib/utils'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
+import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { format } from 'date-fns'
-import { Bell, CheckCheck, ChevronLeft, Loader2 } from 'lucide-react'
+import { Bell, CheckCheck, ChevronLeft, Loader2, Search } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -41,6 +42,19 @@ export function Header() {
 	const scrollRef = useRef<HTMLDivElement | null>(null)
 	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const lastUnreadRef = useRef(0)
+	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
+
+	const searchEnabledRoutes = [
+		'/dashboard/transportation',
+		'/dashboard/transportation/my',
+		'/dashboard/announcements',
+		'/dashboard/history',
+		'/dashboard/desk',
+		'/dashboard/desk/my',
+		'/dashboard/rating',
+	]
+
+	const isSearchAvailable = searchEnabledRoutes.some((route) => pathname?.startsWith(route))
 
 	useEffect(() => {
 		audioRef.current = new Audio('/sounds/notification.mp3')
@@ -89,11 +103,11 @@ export function Header() {
 	}, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
 	return (
-		<header className='h-auto min-h-24 flex items-center xs:justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg px-4 max-xs:pt-4 max-xs:flex-col-reverse gap-4 sticky top-0 z-30'>
-			<div className='flex flex-col items-center gap-3 xs:self-end self-start'>
+		<header className='h-auto md:min-h-24 flex items-center justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg md:px-4 px-3 max-md:pt-3 gap-4 sticky top-0 z-30'>
+			<div className='flex flex-col items-center gap-3 self-end'>
 				{backLink && (
 					<Link
-						className='flex justify-center self-start items-center gap-2.5 text-brand text-xl font-medium hover:text-brand/70 transition-colors'
+						className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1'
 						href={backLink.href}
 					>
 						<ChevronLeft /> {backLink.label}
@@ -119,29 +133,23 @@ export function Header() {
 				)}
 			</div>
 
-			<div className='flex items-center gap-3 max-xs:self-end'>
+			<div className='flex items-center gap-3'>
 				{isLoading ? (
 					<Loader2 className='size-5 animate-spin' />
 				) : (
 					<>
-						<Link href={DASHBOARD_URL.notifications()} className='sm:hidden'>
+						{isSearchAvailable ? (
 							<Button
+								type='button'
+								variant='outline'
 								size='icon'
-								className={cn(
-									'rounded-[13.5px] bg-brand/20 hover:bg-brand/10 size-9 relative',
-									unreadCount > 0 && 'ring-2 ring-brand/30',
-								)}
+								onClick={() => openSearchDrawer()}
+								className='md:hidden rounded-full border-grayscale-200 mb-3 xs:size-9 size-7'
 							>
-								<Bell className='size-5 text-brand' />
-								{unreadCount > 0 && (
-									<span className='absolute -top-1 -right-1 min-w-5 min-h-5 rounded-full bg-error-500 text-white text-[10px] leading-5 font-semibold px-1 text-center'>
-										{unreadCount > 9 ? '9+' : unreadCount}
-									</span>
-								)}
+								<Search className='w-3/4 h-3/4' />
 							</Button>
-						</Link>
-
-						<div className='hidden sm:block'>
+						) : null}
+						<div className='hidden md:block'>
 							<Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
 								<PopoverTrigger asChild>
 									<Button
@@ -223,7 +231,7 @@ export function Header() {
 
 						<Link
 							href={DASHBOARD_URL.cabinet()}
-							className='flex items-center gap-3 '
+							className='flex items-center gap-3 max-md:mb-3'
 						>
 							{me?.photo ? (
 								<Image

@@ -4,6 +4,7 @@ import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { getStatusBadge } from '@/components/ui/selectors/BadgeSelector'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
@@ -12,14 +13,6 @@ import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
-
-const getStatusBadge = (status?: string) => {
-	const normalized = (status || '').toLowerCase()
-	if (normalized.includes('ждет')) return { variant: 'warning' as const, label: status }
-	if (normalized.includes('принят')) return { variant: 'success' as const, label: status }
-	if (normalized.includes('откл')) return { variant: 'danger' as const, label: status }
-	return { variant: 'secondary' as const, label: status || '—' }
-}
 
 export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{

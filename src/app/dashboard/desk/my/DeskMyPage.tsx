@@ -69,10 +69,10 @@ export function DeskMyPage() {
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} showOffersFilter />
+						<SearchFields form={form} showOffersFilter onSubmit={form.handleSubmit(onSubmit)} />
 					</form>
 				</Form>
 			</div>
@@ -139,7 +139,7 @@ export function DeskMyPage() {
 					</TabsContent>
 				</Tabs>
 			) : (
-				<Tabs defaultValue='desk' className='xs:bg-background h-full'>
+				<Tabs defaultValue='desk' className='xs:bg-background rounded-4xl h-full'>
 					<TabsList className='bg-transparent -mb-2'>
 						<TabsTrigger
 							className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'

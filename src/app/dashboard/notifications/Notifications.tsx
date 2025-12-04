@@ -109,7 +109,7 @@ export function Notifications() {
 	return (
 		<div className='flex flex-col h-full gap-4 xs:px-2 md:px-6 lg:px-8 xs:py-4'>
 			<div className='flex items-center justify-between gap-3 flex-wrap'>
-				<div className='flex items-center gap-2'>
+				<div className='flex items-center gap-2 flex-wrap'>
 					<Bell className='size-5 text-brand' />
 					<h1 className='text-2xl font-semibold'>Уведомления</h1>
 					{unreadCount > 0 && (

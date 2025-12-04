@@ -5,7 +5,9 @@ import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { getStatusBadge } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import {
@@ -22,7 +24,6 @@ import {
 	InfoChip,
 	InfoSection,
 } from './DeskCardShared'
-import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 
 type DeskDriverCardListProps = {
 	cargos: IOfferShort[]
@@ -57,15 +58,14 @@ function DeskDriverCard({ cargo, index }: DeskDriverCardProps) {
 	const offerMeta = getOfferMeta(index)
 	const rating = 5
 
+	const { variant, label } = getStatusBadge(cargo.status_display)
+
+
 	return (
 		<Card className='h-full rounded-3xl border-0 bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					{Number(index) % 2 === 0 ? <Badge variant='warning' >
-						Предложение от посредника
-					</Badge> : <Badge variant='info' >
-						Предложение от заказчика
-					</Badge>}
+					<Badge variant={variant}>{label}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						Название компании
 					</CardTitle>

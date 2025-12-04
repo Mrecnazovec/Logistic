@@ -71,7 +71,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 				<p className='text-sm text-muted-foreground'>Опубликовано {formatAgeFromMinutes(cargo.age_minutes, EMPTY_VALUE)}</p>
 			</div>
 
-			<div className='grid grid-cols-1 gap-10 text-sm lg:grid-cols-4'>
+			<div className='grid grid-cols-1 gap-10 text-sm md:grid-cols-4'>
 				<div className='space-y-4'>
 					<p className='text-base font-semibold text-brand'>Информация о компании</p>
 					<dl className='space-y-2'>
@@ -146,7 +146,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 			</div>
 
 			{role !== RoleEnum.CUSTOMER && (
-				<div className='mt-2 flex justify-end'>
+				<div className='mt-2 flex lg:justify-center justify-start'>
 					<OfferModal selectedRow={cargo} title='Подтвердить предложение' />
 				</div>
 			)}

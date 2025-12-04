@@ -6,18 +6,24 @@ import { Search, Settings2 } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/Button'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/Drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { ISearch } from '@/shared/types/Search.interface'
+import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { usePathname, useRouter } from 'next/navigation'
 
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
+	onSubmit: () => void | Promise<void>
 }
 
-export function SearchRatingFields({ form }: SearchFieldsProps) {
+export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 	const router = useRouter()
 	const pathname = usePathname()
+	const isDesktop = useMediaQuery('(min-width: 1024px)')
+	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
 
 	const handleDeleteFilter = () => {
 		form.reset()
@@ -25,7 +31,25 @@ export function SearchRatingFields({ form }: SearchFieldsProps) {
 		router.push(pathname)
 	}
 
-	return (
+	const searchButton = (
+		<Button
+			type={isDesktop ? 'submit' : 'button'}
+			className='max-lg:w-full flex'
+			onClick={
+				isDesktop
+					? undefined
+					: () => {
+						onSubmit()
+						closeDrawer()
+					}
+			}
+		>
+			<Search className='size-5' />
+			Поиск
+		</Button>
+	)
+
+	const content = (
 		<>
 			<div className='flex items-center gap-3 mb-6'>
 				<FormField
@@ -48,22 +72,21 @@ export function SearchRatingFields({ form }: SearchFieldsProps) {
 					<PopoverTrigger asChild>
 						<Button variant={'outline'} className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand'>
 							<Settings2 className='size-5' />
-							Фильтр
+							Фильтры
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align='end' className='space-y-3'>
 						<div className='flex items-center justify-between pb-3 border-b'>
-							<p className='text-sm font-medium'>Фильтр</p>
+							<p className='text-sm font-medium'>Фильтры</p>
 							<Button onClick={() => handleDeleteFilter()} type='button' variant={'link'} className='text-brand underline p-0 h-fit text-[10px]'>
-								Очистить фильтр
+								Сбросить фильтры
 							</Button>
 						</div>
 
-
-						<div className='flex items-end gap-1'>
+						<div className='flex flex-col gap-3'>
 							<FormField
 								control={form.control}
-								name='min_weight'
+								name='rating_min'
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className='text-grayscale'>Рейтинг</FormLabel>
@@ -77,7 +100,7 @@ export function SearchRatingFields({ form }: SearchFieldsProps) {
 							/>
 							<FormField
 								control={form.control}
-								name='max_weight'
+								name='rating_max'
 								render={({ field }) => (
 									<FormItem>
 										<FormControl>
@@ -93,11 +116,25 @@ export function SearchRatingFields({ form }: SearchFieldsProps) {
 				</Popover>
 			</div>
 			<div className='flex lg:flex-row flex-col justify-end gap-3'>
-				<Button type='submit' className='max-lg:w-full flex'>
-					<Search className='size-5' />
-					Поиск
-				</Button>
+				{searchButton}
 			</div>
 		</>
+	)
+
+	if (isDesktop) {
+		return content
+	}
+
+	return (
+		<Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+			<DrawerContent className='max-h-[90vh] overflow-y-auto pb-6'>
+				<DrawerHeader>
+					<DrawerTitle>Поиск</DrawerTitle>
+				</DrawerHeader>
+				<div className='space-y-6 px-4'>
+					{content}
+				</div>
+			</DrawerContent>
+		</Drawer>
 	)
 }

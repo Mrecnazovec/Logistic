@@ -81,10 +81,10 @@ export function HistoryPage() {
 
 	return (
 		<div className='flex flex-col md:gap-4 h-full'>
-			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} />
+						<SearchFields form={form} onSubmit={form.handleSubmit(onSubmit)} />
 					</form>
 				</Form>
 			</div>

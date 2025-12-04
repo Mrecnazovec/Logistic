@@ -116,13 +116,13 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 		<nav
 			aria-label='Pagination navigation'
 			className={cn(
-				'flex flex-wrap items-center justify-between gap-4 rounded-4xl bg-background px-6 py-4 shadow-sm',
+				'flex flex-wrap items-center xs:justify-between justify-center gap-4 rounded-4xl bg-background px-6 py-4 shadow-sm',
 				className,
 			)}
 		>
 			<p className='text-sm text-muted-foreground'>
-				Page {currentPage}
-				{Number.isFinite(effectiveTotalPages) ? ` of ${effectiveTotalPages}` : ''}
+				Страница {currentPage}
+				{Number.isFinite(effectiveTotalPages) ? ` из ${effectiveTotalPages}` : ''}
 			</p>
 
 			<div className='flex items-center gap-2'>

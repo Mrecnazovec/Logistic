@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
 import { buildPaginationItems, getPageNumberFromUrl, PaginationItem } from '@/lib/pagination'
 import { cn } from '@/lib/utils'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
 
@@ -195,7 +196,7 @@ export function DataTable<TData, TValue>({
 										}}
 										className={cn(
 											(renderExpandedRow || onRowClick) &&
-												'cursor-pointer hover:bg-muted/40 transition-colors',
+											'cursor-pointer hover:bg-muted/40 transition-colors',
 										)}
 									>
 										{row.getVisibleCells().map((cell) => (
@@ -227,7 +228,7 @@ export function DataTable<TData, TValue>({
 
 			<div className='flex items-center justify-between px-6 py-4 border-t border-border'>
 				<p className='text-sm text-muted-foreground'>
-					Showing: {table.getPaginationRowModel().rows.length} items
+					Показано: {table.getPaginationRowModel().rows.length} элементов
 				</p>
 
 				<div className='flex items-center gap-2'>
@@ -239,7 +240,7 @@ export function DataTable<TData, TValue>({
 						disabled={!canGoPrevious}
 						aria-label='Previous page'
 					>
-						Prev
+						<ChevronLeft />
 					</Button>
 
 					<div className='flex items-center gap-1'>
@@ -277,11 +278,11 @@ export function DataTable<TData, TValue>({
 						disabled={!canGoNext}
 						aria-label='Next page'
 					>
-						Next
+						<ChevronRight />
 					</Button>
 				</div>
 				<p className='text-sm text-muted-foreground'>
-					Page {displayPageIndex} of {effectiveTotalPages}
+					Страница {displayPageIndex} из {effectiveTotalPages}
 				</p>
 				{footerActions}
 			</div>

@@ -98,3 +98,46 @@ If the user runs:
 The agent must respond:
 
 - Command "somethingElse" not found in COMMANDS.md.
+
+## Command: gen-types
+
+### Usage
+
+`use command gen-types`
+
+### Agent Actions
+
+1. Execute the following commands:
+   `npm run gen:types`
+
+2. After updating:
+
+- The agent must detect which methods were added or changed.
+
+- If new endpoints are added, create new services and hooks. If existing ones have changed, modify the existing services and hooks as needed. Then add or modify the usage of services and hooks in the application. Then document the new elements (hooks, utils, services, enums, types, regex patterns, components, stores) in `DOCS.md`.
+
+3. Updating `DOCS.md` includes:
+
+- Adding entries for newly created utilities/hooks/services/types/enums/regex/components/stores.
+- Updating entries when functionality has changed.
+- Removing entries when the corresponding source files were deleted.
+
+4. Format of every `DOCS.md` entry must be strictly one line:
+
+- Name – short description (what it does, what parameters it takes)
+
+---
+
+## Command: check
+
+### Usage
+
+`use command check`
+
+### Agent Actions
+
+1. Execute the following commands:
+   `npm run lint`
+   `npm run build`
+
+2. Fix any problems if there are any.

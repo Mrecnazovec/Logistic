@@ -4,7 +4,7 @@ import { CardListLayout } from '@/components/card/CardListLayout'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { BadgeSelector } from '@/components/ui/selectors/BadgeSelector'
+import { BadgeSelector, getStatusBadge } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { StatusEnum } from '@/shared/enums/Status.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
@@ -24,6 +24,7 @@ import {
 	InfoSection,
 } from './DeskCardShared'
 import { formatDateValue, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { Badge } from '@/components/ui/Badge'
 
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
@@ -54,12 +55,14 @@ type DeskMyCardProps = {
 function DeskMyCard({ cargo }: DeskMyCardProps) {
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const { variant, label } = getStatusBadge(cargo.status_display)
+
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<BadgeSelector status={cargo.status_display as StatusEnum} />
+					<Badge variant={variant}>{label}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						Название компании
 					</CardTitle>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
@@ -7,12 +9,15 @@ import { ArrowRight, Search, Settings2, Trash2 } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/Button'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/Drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX } from '@/shared/regex/regex'
 import { ISearch } from '@/shared/types/Search.interface'
+import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { CurrencySelector } from '../selectors/CurrencySelector'
 import { DatePicker } from '../selectors/DateSelector'
@@ -21,15 +26,21 @@ import { TransportSelector } from '../selectors/TransportSelector'
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
 	showOffersFilter?: boolean
+	onSubmit: () => void | Promise<void>
 }
 
-export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
+export function SearchFields({ form, showOffersFilter = true, onSubmit }: SearchFieldsProps) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const priceCurrency = form.watch('price_currency')
 	const isPriceEnabled = Boolean(priceCurrency)
 	const hasQuery = searchParams.toString().length > 0
+	const isTablet = useMediaQuery('(min-width: 768px)')
+	const isLarge = useMediaQuery('(min-width: 1280px)')
+	const isMobile = !isTablet
+	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
+	const [showAdvanced, setShowAdvanced] = useState(false)
 
 	const handleDeleteFilter = () => {
 		router.push(pathname)
@@ -38,13 +49,31 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 
 	const renderCurrencyBadge = () => (
 		<span className='w-5 h-5 rounded-sm border border-grayscale-200 bg-grayscale-50 text-[10px] leading-[14px] text-black flex items-center justify-center'>
-			{priceCurrency ?? '—'}
+			{priceCurrency ?? '???'}
 		</span>
 	)
 
-	return (
+	const searchButton = (
+		<Button
+			type={isMobile ? 'button' : 'submit'}
+			className='max-xl:w-full'
+			onClick={
+				isMobile
+					? undefined
+					: () => {
+						onSubmit()
+						closeDrawer()
+					}
+			}
+		>
+			<Search className='size-5' />
+			Поиск
+		</Button>
+	)
+
+	const primaryRow = (
 		<>
-			<div className='flex items-center gap-3 mb-6'>
+			<div className='flex items-center gap-3 mb-6 max-xs:flex-wrap'>
 				<FormField
 					control={form.control}
 					name='uuid'
@@ -52,7 +81,7 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 						<FormItem className='w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput placeholder='Поиск по id' {...field} value={field.value ?? ''} />
+									<InputGroupInput placeholder='Поиск по номеру id' {...field} value={field.value ?? ''} />
 									<InputGroupAddon className='pr-2'>
 										<Search className={cn('text-grayscale size-5', field.value && 'text-black')} />
 									</InputGroupAddon>
@@ -63,14 +92,14 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 				/>
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant={'outline'} className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand'>
+						<Button variant={'outline'} className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand max-xs:w-full'>
 							<Settings2 className='size-5' />
-							Фильтр
+							Фильтры
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align='end' className='space-y-3'>
 						<div className='flex items-center justify-between pb-3 border-b'>
-							<p className='text-sm font-medium'>Фильтр</p>
+							<p className='text-sm font-medium'>Фильтры</p>
 						</div>
 						<FormField
 							control={form.control}
@@ -78,7 +107,7 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel className='text-grayscale flex items-center gap-2'>
-										Цена
+										Валюта
 										{renderCurrencyBadge()}
 									</FormLabel>
 									<FormControl>
@@ -93,7 +122,7 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 								name='min_price'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className='text-grayscale'>От</FormLabel>
+										<FormLabel className='text-grayscale'>Цена</FormLabel>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
@@ -140,7 +169,7 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 
 									return (
 										<FormItem>
-											<FormLabel className='text-grayscale'>Предложения</FormLabel>
+											<FormLabel className='text-grayscale'>Наличие предложений</FormLabel>
 											<FormControl>
 												<RadioGroup
 													className=''
@@ -149,11 +178,11 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 												>
 													<label className='flex items-center gap-2 rounded-4xl px-3 py-2 text-sm cursor-pointer bg-grayscale-50 h-13'>
 														<RadioGroupItem value='true' />
-														С предложениями
+														Есть предложения
 													</label>
 													<label className='flex items-center gap-2 rounded-4xl px-3 py-2 text-sm cursor-pointer bg-grayscale-50 h-13'>
 														<RadioGroupItem value='false' />
-														Без предложений
+														Нет предложений
 													</label>
 												</RadioGroup>
 											</FormControl>
@@ -168,7 +197,7 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 								name='min_weight'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className='text-grayscale'>Вес от</FormLabel>
+										<FormLabel className='text-grayscale'>Масса</FormLabel>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
@@ -198,97 +227,135 @@ export function SearchFields({ form, showOffersFilter }: SearchFieldsProps) {
 						variant='destructive'
 						type='button'
 						onClick={handleDeleteFilter}
-						title='Сбросить фильтр'
+						title='Сбросить фильтры'
 					>
 						<Trash2 className='size-4' />
 					</Button>
 				) : null}
 			</div>
-			<div className='flex lg:flex-row flex-col justify-between items-center gap-3'>
-				<div className='flex gap-3 w-full'>
-					<FormField
-						control={form.control}
-						name='origin_city'
-						render={({ field }) => (
-							<FormItem className='w-full'>
-								<FormControl>
-									<CitySelector {...field} countryCode={undefined} placeholder='Откуда' />
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name='origin_radius_km'
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<InputGroup>
-										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
-									</InputGroup>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-				</div>
-				<ArrowRight className='size-5 flex text-grayscale shrink-0' />
-				<div className='flex gap-3 w-full'>
-					<FormField
-						control={form.control}
-						name='destination_city'
-						render={({ field }) => (
-							<FormItem className='w-full'>
-								<FormControl>
-									<CitySelector {...field} countryCode={' '} placeholder='Куда' />
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name='dest_radius_km'
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<InputGroup>
-										<InputGroupInput placeholder='Радиус' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
-									</InputGroup>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-				</div>
-				<FormField
-					control={form.control}
-					name='transport_type'
-					render={({ field }) => (
-						<FormItem className='max-lg:w-full'>
-							<FormControl>
-								<TransportSelector value={field.value} onChange={field.onChange} />
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name='load_date'
-					render={({ field }) => (
-						<FormItem className='flex flex-col max-lg:w-full'>
-							<FormControl>
-								<DatePicker
-									value={field.value}
-									onChange={field.onChange}
-									placeholder='Дата погрузки'
-								/>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-				<Button type='submit' className='max-lg:w-full'>
-					<Search className='size-5' />
-					Поиск
-				</Button>
-			</div>
 		</>
+	)
+
+	const advancedFields = (
+		<div className='flex xl:flex-row flex-col justify-between items-center gap-3'>
+			<div className='flex gap-3 w-full max-xs:flex-wrap'>
+				<FormField
+					control={form.control}
+					name='origin_city'
+					render={({ field }) => (
+						<FormItem className='w-full'>
+							<FormControl>
+								<CitySelector {...field} countryCode={undefined} placeholder='Откуда' />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='origin_radius_km'
+					render={({ field }) => (
+						<FormItem className='max-xs:w-full'>
+							<FormControl>
+								<InputGroup>
+									<InputGroupInput placeholder='Радиус, км' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+								</InputGroup>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+			</div>
+			<ArrowRight className='size-5 flex text-grayscale shrink-0 max-xl:rotate-90' />
+			<div className='flex gap-3 w-full max-xs:flex-wrap'>
+				<FormField
+					control={form.control}
+					name='destination_city'
+					render={({ field }) => (
+						<FormItem className='w-full'>
+							<FormControl>
+								<CitySelector {...field} countryCode={' '} placeholder='Куда' />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='dest_radius_km'
+					render={({ field }) => (
+						<FormItem className='max-xs:w-full'>
+							<FormControl>
+								<InputGroup>
+									<InputGroupInput placeholder='Радиус, км' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+								</InputGroup>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+			</div>
+			<FormField
+				control={form.control}
+				name='transport_type'
+				render={({ field }) => (
+					<FormItem className='max-xl:w-full'>
+						<FormControl>
+							<TransportSelector value={field.value} onChange={field.onChange} />
+						</FormControl>
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name='load_date'
+				render={({ field }) => (
+					<FormItem className='flex flex-col max-xl:w-full'>
+						<FormControl>
+							<DatePicker
+								value={field.value}
+								onChange={field.onChange}
+								placeholder='Выберите дату загрузки'
+							/>
+						</FormControl>
+					</FormItem>
+				)}
+			/>
+			{isLarge ? searchButton : null}
+		</div>
+	)
+
+	if (isMobile) {
+		return (
+			<Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+				<DrawerContent className='max-h-[90vh] overflow-y-auto pb-6'>
+					<DrawerHeader>
+						<DrawerTitle>Поиск</DrawerTitle>
+					</DrawerHeader>
+					<div className='space-y-6 px-4'>
+						{primaryRow}
+						{advancedFields}
+						{!isLarge ? searchButton : null}
+					</div>
+				</DrawerContent>
+			</Drawer>
+		)
+	}
+
+	return (
+		<div className='space-y-4'>
+			{primaryRow}
+			{!isLarge && (
+				<div className='flex flex-wrap gap-3 justify-end'>
+					{searchButton}
+					<Button
+						type='button'
+						variant='outline'
+						size={'icon'}
+						onClick={() => setShowAdvanced((prev) => !prev)}
+						className='max-md:w-full'
+					>
+						{showAdvanced ? <ArrowRight className='-rotate-90 w-3/4 h-3/4' /> : <ArrowRight className='rotate-90 w-3/4 h-3/4' />}
+					</Button>
+				</div>
+			)}
+			{isLarge || showAdvanced ? advancedFields : null}
+		</div>
 	)
 }

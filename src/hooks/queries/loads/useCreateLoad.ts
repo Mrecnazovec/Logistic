@@ -17,7 +17,7 @@ export const useCreateLoad = () => {
 		mutationFn: (data: CargoPublishRequestDto) => loadsService.createLoad(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			toast.success('Объявление успешно опубликовано')
+			toast.success('Объявление отправлено на модерацию')
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {

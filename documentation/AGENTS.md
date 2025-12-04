@@ -93,3 +93,8 @@ This project is a web application with a React frontend, a Node.js backend using
   - Look up the corresponding command in `documentation/COMMANDS.md`.
   - Execute the command with the provided <value> according to its definition.
 - If the command with the given name (or alias) is not found in `documentation/COMMANDS.md`, respond that the command is not defined in `documentation/COMMANDS.md` and no action can be taken.
+
+## Always
+
+- After changes use `npm run lint` and `npm run build` to check correctness
+- Never use hieroglyphs or obscure symbols. Use only Cyrillic and Latin scripts.

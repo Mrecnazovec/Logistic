@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { RatingPage } from "./[role]/RatingPage";
+import { RatingPage } from "./RatingPage";
 
 export const metadata: Metadata = {
 	title: 'Рейтинг',

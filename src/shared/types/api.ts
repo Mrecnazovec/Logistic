@@ -777,11 +777,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Список пользователей с рейтингами (каталог).
-         *     Вкладки:
-         *     - Грузовладельцы
-         *     - Логисты
-         *     - Перевозчики */
         get: operations["ratings_rating_users_list"];
         put?: never;
         post?: never;
@@ -798,11 +793,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Список пользователей с рейтингами (каталог).
-         *     Вкладки:
-         *     - Грузовладельцы
-         *     - Логисты
-         *     - Перевозчики */
         get: operations["ratings_rating_users_retrieve"];
         put?: never;
         post?: never;
@@ -819,11 +809,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Список пользователей с рейтингами (каталог).
-         *     Вкладки:
-         *     - Грузовладельцы
-         *     - Логисты
-         *     - Перевозчики */
         get: operations["ratings_rating_users_countries_retrieve"];
         put?: never;
         post?: never;

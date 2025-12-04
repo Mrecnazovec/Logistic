@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useGetAnalytics } from "@/hooks/queries/me/useGetAnalytics"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
+import { RoleSelect } from "@/shared/enums/Role.enum"
 import type { LucideIcon } from "lucide-react"
 import { BarChart3, BusFront, DoorOpen, PackageCheck, Star, Truck } from "lucide-react"
 import Image from "next/image"
@@ -188,7 +189,7 @@ export function Cabinet() {
 							) : (
 								<NoPhoto className="size-24" />
 							)}
-							<p className="text-sm font-semibold text-muted-foreground">{me?.company_name}</p>
+							<p className="text-sm font-semibold text-muted-foreground">{RoleSelect.find((type) => type.type === me?.role)?.name ?? 'Неизвестно'}</p>
 							<p className="text-lg font-semibold">{me?.first_name || me?.email}</p>
 							<Button
 								onClick={() => logout("")}

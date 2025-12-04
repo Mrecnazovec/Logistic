@@ -213,23 +213,23 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			},
 		],
 	},
-	{
-		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
-		items: [
-			{
-				label: 'Грузовладельцы',
-				href: DASHBOARD_URL.rating('customers'),
-			},
-			{
-				label: 'Логисты',
-				href: DASHBOARD_URL.rating('logistics'),
-			},
-			{
-				label: 'Перевозчики',
-				href: DASHBOARD_URL.rating('carriers'),
-			},
-		],
-	},
+	// {
+	// 	matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
+	// 	items: [
+	// 		{
+	// 			label: 'Грузовладельцы',
+	// 			href: DASHBOARD_URL.rating('customers'),
+	// 		},
+	// 		{
+	// 			label: 'Логисты',
+	// 			href: DASHBOARD_URL.rating('logistics'),
+	// 		},
+	// 		{
+	// 			label: 'Перевозчики',
+	// 			href: DASHBOARD_URL.rating('carriers'),
+	// 		},
+	// 	],
+	// },
 
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/cabinet'),
