@@ -17,6 +17,8 @@ Where `<description>` is the user-provided commit message.
 ### Agent Actions
 
 1. Execute the following Git commands:
+   npm run lint
+   npm run build
    git add .
    git commit -m "<description>"
    git push

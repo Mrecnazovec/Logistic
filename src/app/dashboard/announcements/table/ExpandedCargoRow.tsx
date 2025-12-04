@@ -127,7 +127,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 						<InfoRow label='Способ оплаты' value={paymentMethod} />
 						<InfoRow label='Email' value={cargo.email || EMPTY_VALUE} />
 						<InfoRow label='Телефон' value={cargo.phone || EMPTY_VALUE} />
-						<InfoRow label='Давность' value={formatDurationFromMinutes(cargo.age_minutes, EMPTY_VALUE)} />
+						<InfoRow label='Примерное время' value={formatDurationFromMinutes(cargo.age_minutes, EMPTY_VALUE)} />
 						<InfoRow label='Стоимость' value={formattedPrice} />
 					</dl>
 				</div>

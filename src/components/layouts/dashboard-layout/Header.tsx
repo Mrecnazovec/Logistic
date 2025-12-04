@@ -133,9 +133,9 @@ export function Header() {
 				)}
 			</div>
 
-			<div className='flex items-center gap-3'>
+			<div className='flex items-center gap-3 max-md:self-start'>
 				{isLoading ? (
-					<Loader2 className='size-5 animate-spin' />
+					<Loader2 className='md:size-9 size-7 animate-spin max-md:mb-3 max-md:mr-3' />
 				) : (
 					<>
 						{isSearchAvailable ? (

@@ -55,15 +55,13 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 
 	const searchButton = (
 		<Button
-			type={isMobile ? 'button' : 'submit'}
+			type={'submit'}
 			className='max-xl:w-full'
 			onClick={
-				isMobile
-					? undefined
-					: () => {
-						onSubmit()
-						closeDrawer()
-					}
+				() => {
+					onSubmit()
+					closeDrawer()
+				}
 			}
 		>
 			<Search className='size-5' />
