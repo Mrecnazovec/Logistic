@@ -109,6 +109,9 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 	{
 		accessorKey: 'documents_count',
 		header: 'Документов',
-		cell: ({ row }) => row.original.documents_count ?? 0,
+		cell: ({ row }) => {
+			if (row.original.documents_count === 0) return <div className='rounded-full bg-[#F8F9FC] border border-[#D5D9EB] size-7 flex items-center justify-center'>{row.original.documents_count}</div>
+			return <div className='rounded-full bg-[#F4F3FF] border border-[#D9D6FE] size-7 flex items-center justify-center'>{row.original.documents_count}</div>
+		},
 	},
 ]

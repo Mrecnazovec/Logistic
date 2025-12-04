@@ -17,7 +17,7 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { historyColumns } from './table/HistoryColumns'
 
 export function HistoryPage() {
-	const { data, isLoading } = useGetOrders('delivered')
+	const { data, isLoading } = useGetOrders('paid')
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
