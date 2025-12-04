@@ -142,7 +142,7 @@ CargoList.interface.ts — ICargoList type for cargo list.
 CargoPublish.interface.ts — ICargoPublish and DTOs for create/update cargo.
 Error.interface.ts — IErrorResponse and FieldError for error responses.
 Geo.interface.ts — City/Country types and suggest responses.
-Invite.interface.ts — InviteResponseActionsProps for invite modal handlers.
+Invite.interface.ts — InviteResponseActionsProps for invite/offer actions (accept/counter/reject) using offerId payloads.
 Login.interface.ts — types for login/tokens/forgot password/reset password.
 Logout.interface.ts — ILogoutRequest and ILogoutResponse for logout.
 Me.interface.ts — profile/update/role change types.
@@ -154,7 +154,7 @@ PaginatedList.interface.ts — paginated lists for cargos, offers, orders, ratin
 Rating.interface.ts — rating types and rating users list query.
 RatingTableRow.interface.ts — alias for rating table row type.
 Registration.interface.ts — registration/verification DTOs and refresh response.
-Search.interface.ts — ISearch filter params with ordering and numeric/boolean extras.
+Search.interface.ts — ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
 
 ## Shared regex
 
@@ -189,6 +189,7 @@ ContactSelector — preferred contact selector.
 CountrySelector — country selector with suggestions.
 CurrencySelector — currency selector based on PriceSelector.
 DateSelector — single or range date selector.
+Drawer — Vaul-based drawer component with trigger/overlay/content/title helpers for slide-in panels.
 PaymentSelector — payment method selector.
 TableTypeSelector — toggle between card/table view.
 TransportSelector — transport type selector from TransportSelect.
@@ -234,3 +235,4 @@ Footer — public pages footer.
 
 useRoleStore — Zustand store for user role with setRole.
 useTableTypeStore — Zustand store for current view mode (card/table) with setTableType.
+useSearchDrawerStore — Zustand store for opening/closing the shared search drawer.

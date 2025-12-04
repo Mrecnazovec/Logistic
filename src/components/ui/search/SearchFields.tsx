@@ -328,7 +328,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 					<DrawerHeader>
 						<DrawerTitle>Поиск</DrawerTitle>
 					</DrawerHeader>
-					<div className='space-y-6 px-4'>
+					<div className='space-y-6 px-4 max-md:overflow-y-scroll'>
 						{primaryRow}
 						{advancedFields}
 						{!isLarge ? searchButton : null}

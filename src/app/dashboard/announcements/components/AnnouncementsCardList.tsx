@@ -129,9 +129,6 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='min-w-[140px] flex-1'>
-					Связаться
-				</Button>
 				<OfferModal className='min-w-[140px] flex-1' selectedRow={cargo} />
 			</CardFooter>
 		</Card>
