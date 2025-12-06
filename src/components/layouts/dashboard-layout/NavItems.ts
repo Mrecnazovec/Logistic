@@ -47,16 +47,15 @@ export const navItems: NavGroup[] = [
 				icon: Clock,
 				label: 'История',
 			},
-		],
-	},
-	{
-		// group: 'Настройки',
-		items: [
 			{
 				href: DASHBOARD_URL.home('settings'),
 				icon: Settings,
 				label: 'Настройки',
 			},
 		],
+	},
+	{
+		// group: 'Настройки',
+		items: [],
 	},
 ]

@@ -3,6 +3,7 @@ import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type UpdateRatingPayload = {
 	id: string
@@ -20,8 +21,9 @@ export const useUpdateRating = () => {
 			queryClient.invalidateQueries({ queryKey: ['get rating', id] })
 			toast.success('Rating updated')
 		},
-		onError() {
-			toast.error('Unable to update rating')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Unable to update rating'
+			toast.error(message)
 		},
 	})
 

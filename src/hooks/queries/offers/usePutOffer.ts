@@ -3,6 +3,7 @@ import { OfferDetailDto } from '@/shared/types/Offer.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const usePutOffer = () => {
 	const queryClient = useQueryClient()
@@ -10,12 +11,14 @@ export const usePutOffer = () => {
 	const { mutate: putOffer, isPending: isLoadingPut } = useMutation({
 		mutationKey: ['offer', 'put'],
 		mutationFn: ({ id, data }: { id: string; data: OfferDetailDto }) => offerService.putOffer(id, data),
-		onSuccess() {
+		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			toast.success('Оффер обновлён')
+			queryClient.invalidateQueries({ queryKey: ['get offer', id] })
+			toast.success('Оффер обновлен')
 		},
-		onError() {
-			toast.error('Ошибка при обновлении оффера')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Ошибка при обновлении оффера'
+			toast.error(message)
 		},
 	})
 

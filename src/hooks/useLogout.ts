@@ -3,9 +3,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useLogout = () => {
 	const router = useRouter()
+
 	const { mutate: logout, isPending: isLoading } = useMutation({
 		mutationKey: ['auth', 'logout'],
 		mutationFn: (refresh?: string) => authService.logout(refresh),
@@ -13,8 +15,9 @@ export const useLogout = () => {
 			toast.success('Вы вышли из аккаунта')
 			router.refresh()
 		},
-		onError() {
-			toast.error('Не удалось выйти')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось выйти'
+			toast.error(message)
 		},
 	})
 

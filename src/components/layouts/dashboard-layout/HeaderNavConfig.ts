@@ -244,6 +244,28 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			href: DASHBOARD_URL.announcements(),
 		},
 	},
+
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/settings'),
+		items: [
+			{
+				label: 'Профиль',
+				href: DASHBOARD_URL.settings(),
+			},
+			{
+				label: 'Язык',
+				href: DASHBOARD_URL.settings('language'),
+			},
+			{
+				label: 'Поддержка',
+				href: DASHBOARD_URL.settings('support'),
+			},
+			{
+				label: 'Пароль',
+				href: DASHBOARD_URL.settings('password'),
+			},
+		],
+	},
 ]
 
 export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): ResolvedHeaderNavItems => {

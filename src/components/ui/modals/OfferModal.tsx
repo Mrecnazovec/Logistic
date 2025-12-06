@@ -23,10 +23,10 @@ import {
 	SelectValue,
 } from '@/components/ui/Select'
 import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
+import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 
 
 type OfferRow = ICargoList & { id?: number }
@@ -63,7 +63,7 @@ export function OfferModal({
 				</DialogTrigger>
 			)}
 
-			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
+			<DialogContent className='w-[900px] lg:max-w-none'>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>{title}</DialogTitle>
 				</DialogHeader>
@@ -118,15 +118,6 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 		})
 	}
 
-	const handleAcceptOffer = () => {
-		if (isAcceptDisabled || !cargoId || !selectedRow.price_value || !selectedRow.price_currency) return
-
-		createOffer({
-			cargo: cargoId,
-			price_value: selectedRow.price_value,
-			price_currency: selectedRow.price_currency,
-		})
-	}
 
 	return (
 		<div className='space-y-6'>
@@ -199,18 +190,11 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 
 				<div className='flex max-md:flex-col md:justify-end gap-3 mt-6'>
 					<Button
-						className='bg-warning-400 text-white hover:bg-warning-500 max-md:w-full max-md:order-2'
+						className='bg-success-400 text-white hover:bg-success-500 max-md:w-full max-md:order-2'
 						onClick={handleCounterOffer}
 						disabled={isCounterDisabled}
 					>
-						Отправить встречное
-					</Button>
-					<Button
-						className='bg-success-400 text-white hover:bg-success-500 max-md:w-full max-md:order-1'
-						onClick={handleAcceptOffer}
-						disabled={isAcceptDisabled}
-					>
-						Принять предложение
+						Предложить
 					</Button>
 					<DialogClose asChild>
 						<Button className='bg-error-400 text-white hover:bg-error-500 max-md:w-full max-md:order-3'>

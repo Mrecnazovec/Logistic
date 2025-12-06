@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
@@ -271,27 +271,6 @@ export function PostingPage() {
 										<PaymentSelector onChange={field.onChange} value={field.value} />
 									</FormControl>
 									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='is_hidden'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className='text-brand mb-6'>Выберите вариант размещения</FormLabel>
-									<FormControl>
-										<RadioGroup defaultValue='false' className='flex gap-6' onValueChange={(val) => field.onChange(val === 'true')} value={field.value ? 'true' : 'false'}>
-											<div className='flex items-center space-x-2'>
-												<RadioGroupItem value='false' id='visible' />
-												<Label htmlFor='visible'>Показывать</Label>
-											</div>
-											<div className='flex items-center space-x-2'>
-												<RadioGroupItem value='true' id='hidden' />
-												<Label htmlFor='hidden'>Скрывать</Label>
-											</div>
-										</RadioGroup>
-									</FormControl>
 								</FormItem>
 							)}
 						/>

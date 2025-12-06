@@ -15,12 +15,15 @@ import { ICargoList } from '@/shared/types/CargoList.interface'
 import {
 	CalendarDays,
 	CircleCheck,
+	Eye,
 	EyeOff,
 	Handshake,
 	Home,
+	Mail,
 	MapPin,
 	Minus,
 	Pen,
+	Phone,
 	RefreshCcw,
 	Scale,
 	Truck,
@@ -29,6 +32,8 @@ import {
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
+import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 
 const hasOffersValue = (cargo: ICargoList) => {
 	if (cargo.offers_count && cargo.offers_count > 0) return true
@@ -65,6 +70,10 @@ type DeskCardProps = {
 function DeskCard({ cargo }: DeskCardProps) {
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
+	const { refreshLoad } = useRefreshLoad()
+
+
 
 	const sections = useMemo(
 		() => [
@@ -72,21 +81,14 @@ function DeskCard({ cargo }: DeskCardProps) {
 				title: 'Откуда',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.origin_address || '—', secondary: 'Адрес' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
 				],
 			},
 			{
 				title: 'Куда',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.destination_address || '—', secondary: 'Адрес' },
-				],
-			},
-			{
-				title: 'Когда',
-				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
 				],
 			},
 			{
@@ -103,11 +105,23 @@ function DeskCard({ cargo }: DeskCardProps) {
 					{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: 'Цена за км' },
 				],
 			},
+			{
+				title: 'Телефон',
+				items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
+			},
+			{
+				title: 'Почта',
+				items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
+			},
 		],
 		[cargo, transportName],
 	)
 
 	const [offerOpen, setOfferOpen] = useState(false)
+
+	const isHiddenForMe = String(cargo.is_hidden_for_me ?? '').toLowerCase() === 'true'
+	const visibilityActionLabel = isHiddenForMe ? 'Показать' : 'Скрыть'
+	const VisibilityIcon = isHiddenForMe ? Eye : EyeOff
 
 
 	return (
@@ -135,7 +149,9 @@ function DeskCard({ cargo }: DeskCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='flex-1 min-w-[140px] bg-[#111827] text-white'>
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-[#111827] text-white' onClick={() => {
+					refreshLoad({ uuid: cargo.uuid, detail: 'Обновление объявления' })
+				}}>
 					<RefreshCcw /> Обновить
 				</Button>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(cargo.uuid)}>
@@ -143,8 +159,9 @@ function DeskCard({ cargo }: DeskCardProps) {
 						<Pen /> Изменить
 					</Button>
 				</Link>
-				<Button variant='outline' className='flex-1 min-w-[140px] bg-error-500 text-white'>
-					<EyeOff /> Скрыть
+				<Button variant='outline' className='flex-1 min-w-[140px] bg-error-500 text-white' onClick={() => { toggleLoadVisibility({ uuid: cargo.uuid, isHiddenForMe: !isHiddenForMe }) }}>
+					<VisibilityIcon className='size-4' />
+					{visibilityActionLabel}
 				</Button>
 				<Button
 					variant='outline'

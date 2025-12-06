@@ -5,11 +5,7 @@ import { formatCurrencyPerKmValue, formatCurrencyValue, type PriceCurrencyCode }
 
 export const DEFAULT_PLACEHOLDER = '—'
 
-export function formatDateValue(
-	value?: string | number | Date | null,
-	pattern = 'dd.MM.yyyy',
-	placeholder = DEFAULT_PLACEHOLDER,
-) {
+export function formatDateValue(value?: string | number | Date | null, pattern = 'dd.MM.yyyy', placeholder = DEFAULT_PLACEHOLDER) {
 	if (!value) return placeholder
 	try {
 		return format(new Date(value), pattern, { locale: ru })
@@ -61,7 +57,7 @@ export function formatWeightValue(value?: number | string | null, placeholder = 
 	const numeric = typeof value === 'string' ? Number(value) : value
 	if (Number.isNaN(numeric)) return String(value)
 
-	return `${numeric.toLocaleString('ru-RU')} кг`
+	return `${numeric.toLocaleString('ru-RU')} т`
 }
 
 export function formatPriceValue(value?: number | string | null, currency?: PriceCurrencyCode | null) {

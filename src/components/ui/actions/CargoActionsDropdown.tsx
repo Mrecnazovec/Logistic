@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import {
@@ -28,11 +28,12 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
-	const visibilityActionLabel = cargo.is_hidden ? 'Показать объявление' : 'Скрыть объявление'
-	const VisibilityIcon = cargo.is_hidden ? Eye : EyeOff
+	const isHiddenForMe = String(cargo.is_hidden_for_me ?? '').toLowerCase() === 'true'
+	const visibilityActionLabel = isHiddenForMe ? 'Показать' : 'Скрыть'
+	const VisibilityIcon = isHiddenForMe ? Eye : EyeOff
 
 	const handleToggleVisibility = () => {
-		toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !cargo.is_hidden })
+		toggleLoadVisibility({ uuid: cargo.uuid, isHiddenForMe: !isHiddenForMe })
 		setOpen(false)
 	}
 

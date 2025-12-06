@@ -2,6 +2,7 @@ import { offerService } from '@/services/offers.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useDeleteOffer = () => {
 	const queryClient = useQueryClient()
@@ -11,10 +12,11 @@ export const useDeleteOffer = () => {
 		mutationFn: (id: string) => offerService.deleteOffer(id),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			toast.success('Оффер удалён')
+			toast.success('Оффер удален')
 		},
-		onError() {
-			toast.error('Ошибка при удалении оффера')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Ошибка при удалении оффера'
+			toast.error(message)
 		},
 	})
 

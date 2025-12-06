@@ -86,8 +86,8 @@ class LoadsService {
 		return createdLoad
 	}
 
-	async toggleLoadVisibility(uuid: string, isHidden: boolean) {
-		const payload: CargoVisibilityRequest = { is_hidden: isHidden }
+	async toggleLoadVisibility(uuid: string, isHiddenForMe: boolean) {
+		const payload: CargoVisibilityRequest = { is_hidden: isHiddenForMe }
 		const { data } = await axiosWithAuth<CargoVisibilityResponse>({
 			url: API_URL.loads(`${uuid}/visibility`),
 			method: 'POST',
@@ -129,9 +129,9 @@ class LoadsService {
 
 	/* PATCH */
 
-	async patchLoad(id: string, data: PatchedCargoPublishDto) {
+	async patchLoad(uuid: string, data: PatchedCargoPublishDto) {
 		const { data: patchedLoad } = await axiosWithAuth<ICargoPublish>({
-			url: API_URL.loads(`${id}`),
+			url: API_URL.loads(`${uuid}`),
 			method: 'PATCH',
 			data,
 		})

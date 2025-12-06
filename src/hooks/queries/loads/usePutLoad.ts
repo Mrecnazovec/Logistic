@@ -3,6 +3,7 @@ import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const usePutLoad = () => {
 	const queryClient = useQueryClient()
@@ -14,8 +15,9 @@ export const usePutLoad = () => {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			toast.success('Объявление обновлено')
 		},
-		onError() {
-			toast.error('Не удалось обновить объявление')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось обновить объявление'
+			toast.error(message)
 		},
 	})
 

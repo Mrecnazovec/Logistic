@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import type { IVerifyEmail } from '@/shared/types/Registration.interface'
 import { authService } from '@/services/auth/auth.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useVerifyEmail = () => {
 	const { mutate: verifyEmail, isPending: isLoading } = useMutation({
@@ -11,8 +12,9 @@ export const useVerifyEmail = () => {
 		onSuccess() {
 			toast.success('Email успешно подтвержден')
 		},
-		onError() {
-			toast.error('Не удалось подтвердить Email')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось подтвердить Email'
+			toast.error(message)
 		},
 	})
 

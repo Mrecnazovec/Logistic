@@ -3,6 +3,7 @@ import { OfferCreateDto } from '@/shared/types/Offer.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCreateOffer = () => {
 	const queryClient = useQueryClient()
@@ -14,8 +15,9 @@ export const useCreateOffer = () => {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
 			toast.success('Оффер создан')
 		},
-		onError() {
-			toast.error('Ошибка при создании оффера')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Ошибка при создании оффера'
+			toast.error(message)
 		},
 	})
 

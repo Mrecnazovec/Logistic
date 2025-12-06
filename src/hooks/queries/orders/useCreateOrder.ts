@@ -1,8 +1,9 @@
 import { ordersService } from '@/services/orders.service'
-import type { OrderDetailRequestDto } from '@/shared/types/Order.interface'
+import { OrderDetailRequestDto } from '@/shared/types/Order.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCreateOrder = () => {
 	const queryClient = useQueryClient()
@@ -12,10 +13,11 @@ export const useCreateOrder = () => {
 		mutationFn: (data: OrderDetailRequestDto) => ordersService.createOrder(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			toast.success('Order created')
+			toast.success('Заказ создан')
 		},
-		onError() {
-			toast.error('Unable to create order')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Unable to create order'
+			toast.error(message)
 		},
 	})
 

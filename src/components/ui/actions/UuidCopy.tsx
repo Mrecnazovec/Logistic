@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import { Copy, CopyCheck } from "lucide-react"
 import { MouseEvent, useEffect, useState } from "react"
 import toast from "react-hot-toast"
@@ -41,7 +42,7 @@ export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 			type='button'
 			onClick={handleCopy}
 			variant='link'
-			className='inline-flex items-center gap-2 text-left text-sm font-medium text-muted-foreground hover:text-primary focus:outline-none p-0'
+			className='inline-flex min-w-0 max-w-full items-center gap-2 text-left text-sm font-medium text-muted-foreground hover:text-primary focus:outline-none p-0'
 		>
 			{copied ? (
 				<CopyCheck
@@ -51,7 +52,14 @@ export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 			) : (
 				<Copy className='size-4 shrink-0' aria-hidden='true' />
 			)}
-			<span className={copied ? 'text-brand' : ''}>{isPlaceholder && displayId}</span>
+			<span
+				className={cn(
+					'truncate max-w-[10rem] sm:max-w-[14rem] lg:max-w-[18rem]',
+					copied ? 'text-brand' : ''
+				)}
+			>
+				{isPlaceholder && displayId}
+			</span>
 			<span className='sr-only'>{copied ? 'ID скопировано' : 'Скопировать ID'}</span>
 		</Button>
 	)

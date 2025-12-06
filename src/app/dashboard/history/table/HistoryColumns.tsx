@@ -34,7 +34,7 @@ export const historyColumns: ColumnDef<IOrderList>[] = [
 	},
 	{
 		accessorKey: 'logistic_name',
-		header: 'Логист',
+		header: 'Экспедитор',
 		cell: ({ row }) => row.original.logistic_name || '—',
 	},
 	{

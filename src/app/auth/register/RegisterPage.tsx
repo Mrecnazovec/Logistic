@@ -38,12 +38,12 @@ const ROLES = [
 	},
 	{
 		key: RoleEnum.LOGISTIC,
-		title: 'Логист',
+		title: 'Экспедитор',
 		icon: LogistIcon,
 		color: '#1E3A8A',
 		description:
 			'Специалист, который организует и управляет процессом перемещения и хранения товаров, чтобы груз дошёл вовремя и с минимальными затратами.',
-		buttonText: 'логист',
+		buttonText: 'экспедитор',
 	},
 ]
 
@@ -70,7 +70,7 @@ export function RegisterPage() {
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
 			<h1 className='sr-only'>Регистрация</h1>
-			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover lg:bg-center bg-bottom px-12 py-16 min-h-[200px]'>
+			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover bg-bottom px-12 py-16 min-h-[200px]'>
 				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
 					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>
 						Высококачественное программное решение для управления вашим бизнес-процессом

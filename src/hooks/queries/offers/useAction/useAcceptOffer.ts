@@ -2,6 +2,7 @@ import { offerService } from '@/services/offers.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useAcceptOffer = () => {
 	const queryClient = useQueryClient()
@@ -11,11 +12,11 @@ export const useAcceptOffer = () => {
 		mutationFn: (id: string) => offerService.acceptOffer(id),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Предложение принято')
 		},
-		onError() {
-			toast.error('Не удалось принять предложение')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось принять предложение'
+			toast.error(message)
 		},
 	})
 

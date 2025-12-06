@@ -7,9 +7,6 @@ export function usePostForm() {
 
 	const form = useForm<CargoPublishRequestDto>({
 		mode: 'onChange',
-		defaultValues: {
-			is_hidden: false,
-		},
 	})
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {

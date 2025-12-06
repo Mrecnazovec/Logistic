@@ -7,7 +7,7 @@ export const RoleEnum = {
 export type RoleEnum = (typeof RoleEnum)[keyof typeof RoleEnum]
 
 export const RoleSelect = [
-	{ type: RoleEnum.LOGISTIC, name: 'Логист' },
+	{ type: RoleEnum.LOGISTIC, name: 'Экспедитор' },
 	{ type: RoleEnum.CUSTOMER, name: 'Грузоотправитель' },
 	{ type: RoleEnum.CARRIER, name: 'Перевозчик' },
 ]

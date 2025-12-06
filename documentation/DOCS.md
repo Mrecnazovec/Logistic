@@ -39,7 +39,7 @@ useLoadInvite — opens invite by token via loadsService.getLoadInviteByToken.
 usePatchLoad — partial load update by id via loadsService.patchLoad.
 usePutLoad — full load update by id via loadsService.putLoad.
 useRefreshLoad — refreshes load announcement via loadsService.refreshLoad.
-useToggleLoadVisibility — toggles load visibility via loadsService.toggleLoadVisibility.
+useToggleLoadVisibility — toggles load visibility for the current user via loadsService.toggleLoadVisibility.
 useCancelLoad — cancels load with reason via loadsService.cancelLoad.
 
 - ## Offers

@@ -50,7 +50,7 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 				title: 'Участники',
 				items: [
 					{ icon: Building2, primary: order.customer_name || '-', secondary: 'Заказчик' },
-					{ icon: Building2, primary: order.logistic_name || '-', secondary: 'Логист' },
+					{ icon: Building2, primary: order.logistic_name || '-', secondary: 'Экспедитор' },
 					{ icon: Building2, primary: order.carrier_name || '-', secondary: 'Перевозчик' },
 				],
 			},

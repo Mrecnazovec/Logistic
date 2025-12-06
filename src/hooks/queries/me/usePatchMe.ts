@@ -3,6 +3,7 @@ import { UpdateMeDto } from '@/shared/types/Me.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const usePatchMe = () => {
 	const queryClient = useQueryClient()
@@ -14,10 +15,11 @@ export const usePatchMe = () => {
 			queryClient.invalidateQueries({
 				queryKey: ['get profile'],
 			})
-			toast.success('Профиль обновлён')
+			toast.success('Профиль обновлен')
 		},
-		onError: () => {
-			toast.error('Ошибка обновления профиля')
+		onError: (error) => {
+			const message = getErrorMessage(error) ?? 'Ошибка обновления профиля'
+			toast.error(message)
 		},
 	})
 

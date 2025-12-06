@@ -2,11 +2,21 @@ import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
 
 import { IUserRating, PaginatedRatingUserListList, PatchedUserRatingRequestDto, RatingsListQuery, UserRatingRequestDto } from '@/shared/types/Rating.interface'
+import type { IRatingUser } from '@/shared/types/Rating.interface'
 
 export type { RatingsListQuery } from '@/shared/types/Rating.interface'
 
 class RatingsService {
 	/* GET */
+
+	async getRatingUser(id: string | number) {
+		const { data } = await axiosWithAuth<IRatingUser>({
+			url: API_URL.ratings(`rating-users/${id}/`),
+			method: 'GET',
+		})
+
+		return data
+	}
 
 	async getRatings(params?: RatingsListQuery) {
 		const { data } = await axiosWithAuth<PaginatedRatingUserListList>({

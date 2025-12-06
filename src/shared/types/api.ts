@@ -978,7 +978,6 @@ export interface components {
              * @enum {string}
              */
             readonly contact_pref: "email" | "phone" | "both";
-            readonly is_hidden: boolean;
             readonly company_name: string;
             /** Format: double */
             readonly company_rating: number;
@@ -1027,6 +1026,7 @@ export interface components {
             readonly origin_radius_km: number;
             /** Format: double */
             readonly dest_radius_km: number;
+            readonly is_hidden_for_me: string;
         };
         CargoPublish: {
             /** Format: uuid */
@@ -1094,7 +1094,6 @@ export interface components {
              * @enum {string}
              */
             contact_pref: "email" | "phone" | "both";
-            is_hidden?: boolean;
             /**
              * @description * `transfer` - Перечисление
              *     * `cash` - Наличными
@@ -1168,7 +1167,6 @@ export interface components {
              * @enum {string}
              */
             contact_pref: "email" | "phone" | "both";
-            is_hidden?: boolean;
             /**
              * @description * `transfer` - Перечисление
              *     * `cash` - Наличными
@@ -1183,7 +1181,7 @@ export interface components {
         };
         CargoVisibilityResponse: {
             detail: string;
-            is_hidden: boolean;
+            is_hidden_for_me: boolean;
         };
         City: {
             name: string;
@@ -1825,7 +1823,6 @@ export interface components {
              * @enum {string}
              */
             contact_pref?: "email" | "phone" | "both";
-            is_hidden?: boolean;
             /**
              * @description * `transfer` - Перечисление
              *     * `cash` - Наличными

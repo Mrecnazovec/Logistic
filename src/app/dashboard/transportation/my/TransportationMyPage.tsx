@@ -17,6 +17,7 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { createTransportationColumns } from '../table/TransportationColumns'
 import { TransportationCardList } from '../components/TransportationCardList'
+import { useTransportationStatusCounts } from '../hooks/useTransportationStatusCounts'
 
 const STATUS_TABS = [
 	{ value: 'no_driver', label: 'Без водителя' },
@@ -40,6 +41,23 @@ export function TransportationMyPage() {
 	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
 
 	const results = data?.results ?? []
+	const { statusCounts } = useTransportationStatusCounts(STATUS_TABS, searchParams)
+
+	const renderTabLabel = useCallback(
+		(tabValue: typeof STATUS_TABS[number]) => {
+			const count = statusCounts[tabValue.value]
+
+			return (
+				<span className='inline-flex items-center gap-2'>
+					<span>{tabValue.label}</span>
+					{typeof count === 'number' ? (
+						<span className='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>{count}</span>
+					) : null}
+				</span>
+			)
+		},
+		[statusCounts],
+	)
 
 	const serverPaginationMeta = results.length
 		? {
@@ -129,7 +147,7 @@ export function TransportationMyPage() {
 									className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 									value={tab.value}
 								>
-									{tab.label}
+									{renderTabLabel(tab)}
 								</TabsTrigger>
 							))}
 						</TabsList>
@@ -153,7 +171,7 @@ export function TransportationMyPage() {
 								className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 								value={tab.value}
 							>
-								{tab.label}
+								{renderTabLabel(tab)}
 							</TabsTrigger>
 						))}
 					</TabsList>

@@ -10,8 +10,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
 import { AddDriver } from '@/components/ui/modals/AddDriver'
-import { OrderRatingModal } from './OrderRatingModal'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
+import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
+import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
 import {
 	DEFAULT_PLACEHOLDER,
 	formatDateTimeValue,
@@ -20,15 +22,13 @@ import {
 	formatPricePerKmValue,
 	formatPriceValue,
 } from '@/lib/formatters'
-import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
-import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
-import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
 import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
-import type { DriverStatus, IOrderDetail } from '@/shared/types/Order.interface'
+import type { DriverStatus } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { OrderRatingModal } from './OrderRatingModal'
 
 const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }> = {
 	en_route: { label: 'В пути', variant: 'info' },
@@ -78,23 +78,47 @@ export function OrderPage() {
 	const firstOtherDocumentDate = formatDateTimeValue(firstOtherDocument?.created_at, DEFAULT_PLACEHOLDER)
 	const shouldShowUnloadingSection = hasLoadingDocument || hasUnloadingDocument
 	const shouldShowTransportDetailsSection = hasUnloadingDocument || hasOtherDocument
-	const documentSectionsCount = 1 + Number(shouldShowUnloadingSection) + Number(shouldShowTransportDetailsSection)
 
 	const docsBasePath = orderId ? `/dashboard/order/${orderId}/docs` : ''
+	const currentDocumentAction = (() => {
+		if (orderStatus === OrderStatusEnum.IN_PROCESS) {
+			return {
+				hasDocument: hasUnloadingDocument,
+				documentDate: firstUnloadingDocumentDate,
+				href: `${docsBasePath}/unloading`,
+			}
+		}
+
+		if (orderStatus === OrderStatusEnum.DELIVERED || orderStatus === OrderStatusEnum.PAID) {
+			return {
+				hasDocument: hasOtherDocument,
+				documentDate: firstOtherDocumentDate,
+				href: `${docsBasePath}/other`,
+			}
+		}
+
+		return {
+			hasDocument: hasLoadingDocument,
+			documentDate: firstLoadingDocumentDate,
+			href: `${docsBasePath}/loading`,
+		}
+	})()
 	const renderDocumentAction = ({
 		hasDocument,
 		documentDate,
 		href,
 		buttonLabel,
 		allowUpload = true,
+		isButton = false,
 	}: {
 		hasDocument: boolean
 		documentDate: string
 		href: string
 		buttonLabel: string
 		allowUpload?: boolean
+		isButton?: boolean
 	}) => {
-		if (hasDocument) {
+		if (hasDocument && !isButton) {
 			return <span className="font-medium text-end">{documentDate}</span>
 		}
 
@@ -102,11 +126,19 @@ export function OrderPage() {
 			return <span className="font-medium text-end text-muted-foreground">{DEFAULT_PLACEHOLDER}</span>
 		}
 
-		return (
-			<Button asChild variant="outline" size="sm" className="h-8 rounded-full px-4 text-xs font-medium">
-				<Link href={href}>{buttonLabel}</Link>
-			</Button>
-		)
+		if (hasDocument && isButton) {
+			return
+		}
+
+		if (isButton) {
+			return (
+				<Button asChild variant="outline">
+					<Link href={href}>{buttonLabel}</Link>
+				</Button>
+			)
+		}
+
+
 	}
 	const loadingStatusPatchedRef = useRef(false)
 	const unloadingStatusPatchedRef = useRef(false)
@@ -264,7 +296,7 @@ export function OrderPage() {
 					{
 						title: 'Информация о посреднике',
 						rows: [
-							{ label: 'Логист', value: withFallback(order.logistic_name) },
+							{ label: 'Экспедитор', value: withFallback(order.logistic_name) },
 							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
 							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
 							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
@@ -392,8 +424,14 @@ export function OrderPage() {
 			</div>
 
 			<div className="flex flex-wrap items-center justify-end gap-3">
+				{role === RoleEnum.CARRIER && renderDocumentAction({
+					...currentDocumentAction,
+					isButton: true,
+					buttonLabel: 'Загрузить файл',
+				})}
 				{isCompleted ? null : hasDriver ? (
-					<Button className="bg-black/90 hover:bg-black">Скрыть контакты заказчика</Button>
+					// <Button className="bg-black/90 hover:bg-black">Скрыть контакты заказчика</Button>
+					''
 				) : (
 					<AddDriver />
 				)}
@@ -405,7 +443,7 @@ export function OrderPage() {
 					Поделиться
 				</Button>
 				{!isCompleted && (
-					<Button className="bg-error-500/90 hover:bg-error-500">Отменить перевозку</Button>
+					<Button disabled className="bg-error-500/90 hover:bg-error-500">Отменить перевозку</Button>
 				)}
 			</div>
 			{driverStatusButton}
@@ -464,4 +502,3 @@ function OrderPageSkeleton() {
 		</div>
 	)
 }
-

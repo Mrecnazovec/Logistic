@@ -1,14 +1,12 @@
-import { DASHBOARD_URL } from '@/config/url.config'
 import { loadsService } from '@/services/loads.service'
 import { PatchedCargoPublishDto } from '@/shared/types/CargoPublish.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const usePatchLoad = () => {
 	const queryClient = useQueryClient()
-	const router = useRouter()
 
 	const { mutate: patchLoad, isPending: isLoadingPatch } = useMutation({
 		mutationKey: ['load', 'patch'],
@@ -16,10 +14,10 @@ export const usePatchLoad = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			toast.success('Объявление обновлено')
-			router.push(DASHBOARD_URL.desk())
 		},
-		onError() {
-			toast.error('Не удалось обновить объявление')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось обновить объявление'
+			toast.error(message)
 		},
 	})
 

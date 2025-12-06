@@ -11,7 +11,7 @@ export function AddDriver() {
 			</Button>
 		</DialogTrigger>
 
-		<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
+		<DialogContent className='w-[900px] lg:max-w-none'>
 			<DialogHeader>
 				<DialogTitle className='text-center text-2xl font-bold'>
 					Добавление водителя

@@ -65,21 +65,15 @@ function DeskCard({ cargo }: DeskCardProps) {
 				title: 'Пункт отправления',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.origin_city || '—', secondary: 'Адрес' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
 				],
 			},
 			{
 				title: 'Пункт назначения',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.destination_city || '—', secondary: 'Адрес' },
-				],
-			},
-			{
-				title: 'Даты',
-				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Дата загрузки' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Дата выгрузки' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
+
 				],
 			},
 			{
@@ -96,6 +90,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 					{ icon: Wallet, primary: formatPricePerKmValue(300, cargo.price_currency), secondary: 'Цена за км' },
 				],
 			},
+
 		],
 		[cargo, transportName],
 	)

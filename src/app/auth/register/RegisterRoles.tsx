@@ -37,7 +37,7 @@ const RoleDialog = memo(({ role, onSelect }: { role: IRole; onSelect: (r: RoleEn
 					{role.buttonText}
 				</Button>
 			</DialogTrigger>
-			<DialogContent className='gap-0 rounded-[24px] sm:max-w-2xl'>
+			<DialogContent className='gap-0'>
 				<DialogTitle className='text-center mb-8 text-2xl font-bold'>Что такое роли?</DialogTitle>
 				<div className='flex items-center gap-4 mb-8'>
 					<div className='rounded-full p-2.5 bg-brand/40'>

@@ -2,6 +2,7 @@ import { ordersService } from '@/services/orders.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useDeleteOrder = () => {
 	const queryClient = useQueryClient()
@@ -9,14 +10,13 @@ export const useDeleteOrder = () => {
 	const { mutate: deleteOrder, isPending: isLoadingDelete } = useMutation({
 		mutationKey: ['order', 'delete'],
 		mutationFn: (id: string) => ordersService.deleteOrder(id),
-		onSuccess(_, id) {
+		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			queryClient.invalidateQueries({ queryKey: ['get order documents', id] })
-			toast.success('Order deleted')
+			toast.success('Заказ удален')
 		},
-		onError() {
-			toast.error('Unable to delete order')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Unable to delete order'
+			toast.error(message)
 		},
 	})
 

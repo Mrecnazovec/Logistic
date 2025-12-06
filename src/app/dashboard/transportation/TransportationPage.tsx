@@ -14,6 +14,7 @@ import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
+import { useTransportationStatusCounts } from './hooks/useTransportationStatusCounts'
 import { TransportationCardList } from './components/TransportationCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { createTransportationColumns } from './table/TransportationColumns'
@@ -39,6 +40,23 @@ export function TransportationPage() {
 	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
 
 	const results = data?.results ?? []
+	const { statusCounts } = useTransportationStatusCounts(STATUS_TABS, searchParams)
+
+	const renderTabLabel = useCallback(
+		(tabValue: typeof STATUS_TABS[number]) => {
+			const count = statusCounts[tabValue.value]
+
+			return (
+				<span className='inline-flex items-center gap-2'>
+					<span>{tabValue.label}</span>
+					{typeof count === 'number' ? (
+						<span>({count})</span>
+					) : null}
+				</span>
+			)
+		},
+		[statusCounts],
+	)
 
 	const serverPaginationMeta = results.length
 		? {
@@ -128,7 +146,7 @@ export function TransportationPage() {
 									className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 									value={tab.value}
 								>
-									{tab.label}
+									{renderTabLabel(tab)}
 								</TabsTrigger>
 							))}
 						</TabsList>
@@ -152,7 +170,7 @@ export function TransportationPage() {
 								className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 								value={tab.value}
 							>
-								{tab.label}
+								{renderTabLabel(tab)}
 							</TabsTrigger>
 						))}
 					</TabsList>

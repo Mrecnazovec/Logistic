@@ -1,5 +1,12 @@
 'use client'
 
+import { CardListLayout } from '@/components/card/CardListLayout'
+import { CardSections, type CardSection } from '@/components/card/CardSections'
+import { useCardPagination } from '@/components/pagination/CardPagination'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { AnnouncementDetailModal } from '@/components/ui/modals/AnnouncementDetailModal'
+import { OfferModal } from '@/components/ui/modals/OfferModal'
+import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import {
 	formatDateValue,
 	formatPlace,
@@ -8,16 +15,9 @@ import {
 	formatRelativeDate,
 	formatWeightValue,
 } from '@/lib/formatters'
-import { CardListLayout } from '@/components/card/CardListLayout'
-import { CardSections, type CardSection } from '@/components/card/CardSections'
-import { useCardPagination } from '@/components/pagination/CardPagination'
-import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { OfferModal } from '@/components/ui/modals/OfferModal'
-import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { CalendarDays, Home, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
+import { CalendarDays, Mail, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
 import { useMemo } from 'react'
 
 type AnnouncementsCardListProps = {
@@ -63,7 +63,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				title: 'Откуда',
 				items: [
 					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: Home, primary: cargo.origin_address || '—', secondary: 'Адрес погрузки' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
 				],
 			},
 			{
@@ -74,14 +74,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 						primary: formatPlace(cargo.destination_city, cargo.destination_country),
 						secondary: 'Город / страна',
 					},
-					{ icon: Home, primary: cargo.destination_address || '—', secondary: 'Адрес доставки' },
-				],
-			},
-			{
-				title: 'Даты',
-				items: [
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
+					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
 				],
 			},
 			{
@@ -103,11 +96,15 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				],
 			},
 			{
-				title: 'Контакты',
-				items: [{ icon: Phone, primary: contact || '—', secondary: 'Предпочтительный контакт' }],
+				title: 'Телефон',
+				items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
+			},
+			{
+				title: 'Почта',
+				items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
 			},
 		],
-		[cargo, transportName, contact],
+		[cargo, transportName],
 	)
 
 	return (
@@ -128,8 +125,9 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				<CardSections sections={sections} />
 			</CardContent>
 
-			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<OfferModal className='min-w-[140px] flex-1' selectedRow={cargo} />
+			<CardFooter className='flex max-sm:flex-col gap-3 border-t pt-4'>
+				<AnnouncementDetailModal cargo={cargo} />
+				<OfferModal className='min-w-[140px] flex-1 max-sm:w-full' title='Предложить' selectedRow={cargo} />
 			</CardFooter>
 		</Card>
 	)

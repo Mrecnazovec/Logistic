@@ -3,16 +3,18 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import type { ILogin } from '@/shared/types/Login.interface'
 import { authService } from '@/services/auth/auth.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useLogin = () => {
 	const { mutate: login, isPending: isLoading } = useMutation({
 		mutationKey: ['auth', 'login'],
 		mutationFn: (data: ILogin) => authService.login(data),
 		onSuccess() {
-			toast.success('Вы успешно вошли')
+			toast.success('Вход выполнен')
 		},
-		onError() {
-			toast.error('Не удалось выполнить вход')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось выполнить вход'
+			toast.error(message)
 		},
 	})
 

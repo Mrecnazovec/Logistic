@@ -3,6 +3,7 @@ import { IOfferCounter } from '@/shared/types/Offer.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCounterOffer = () => {
 	const queryClient = useQueryClient()
@@ -12,13 +13,16 @@ export const useCounterOffer = () => {
 		mutationFn: ({ id, data }: { id: string; data: IOfferCounter }) => offerService.counterOffer(id, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Контр-предложение отправлено')
 		},
-		onError() {
-			toast.error('Не удалось отправить контр-предложение')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось отправить контр-предложение'
+			toast.error(message)
 		},
 	})
 
-	return useMemo(() => ({ counterOffer, isLoadingCounter }), [counterOffer, isLoadingCounter])
+	return useMemo(
+		() => ({ counterOffer, isLoadingCounter }),
+		[counterOffer, isLoadingCounter],
+	)
 }

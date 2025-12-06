@@ -1,29 +1,30 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { Label } from '@/components/ui/form-control/Label'
 import dynamic from 'next/dynamic'
 const RichTextEditor = dynamic(() =>
 	import('@/components/ui/form-control/RichEditor/RichTextEditor').then(m => m.RichTextEditor),
 )
 
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
-
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
+import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
+import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 import { City } from '@/shared/types/Geo.interface'
 import { Banknote, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useEditForm } from './useEditForm'
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 
 const formatCityLabel = (city: City | null) => {
 	if (!city) return undefined
@@ -61,6 +62,9 @@ export function EditPage() {
 	useEffect(() => {
 		if (!load) return
 
+		const weightKg = Number(load.weight_kg ?? 0)
+		const weight_tons = Number.isFinite(weightKg) ? (weightKg / 1000) : 0
+
 		form.reset({
 			origin_city: load.origin_city ?? '',
 			origin_country: load.origin_country ?? '',
@@ -72,14 +76,15 @@ export function EditPage() {
 			delivery_date: load.delivery_date ?? '',
 			price_currency: load.price_currency ?? 'UZS',
 			price_value: load.price_value ?? '',
-			weight_kg: load.weight_kg ?? '',
 			product: load.product ?? '',
 			transport_type: load.transport_type ?? '',
 			contact_pref: load.contact_pref ?? '',
-			is_hidden: load.is_hidden ?? false,
 			description: load.description ?? '',
 			axles: load.axles ?? null,
 			volume_m3: load.volume_m3 ?? '',
+			payment_method: load.payment_method ?? '',
+			weight_kg: load.weight_kg ?? '',
+			weight_tons: weight_tons ?? ''
 		})
 	}, [load, form])
 
@@ -94,7 +99,10 @@ export function EditPage() {
 							rules={{ required: 'Город погрузки обязателен' }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
-									<FormLabel className='text-brand mb-6 font-bold text-xl'>Откуда</FormLabel>
+									<FormLabel className='flex flex-wrap items-center justify-between mb-6'>
+										<p className='text-brand font-bold text-xl'>Откуда</p>
+										<UuidCopy uuid={load?.uuid} isPlaceholder />
+									</FormLabel>
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
@@ -239,7 +247,14 @@ export function EditPage() {
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Цена' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
+												<InputGroupInput
+													placeholder='Цена'
+													{...field}
+													value={field.value ?? ''}
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													inputMode='decimal'
+													disabled={isLoadingPatch}
+												/>
 												<InputGroupAddon className='pr-2'>
 													<Banknote className={cn('text-grayscale size-5', field.value && 'text-black')} />
 												</InputGroupAddon>
@@ -264,6 +279,8 @@ export function EditPage() {
 													placeholder='Объем(Куб. М)'
 													{...field}
 													value={field.value ?? ''}
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													inputMode='decimal'
 													className='pl-4'
 													disabled={isLoadingPatch}
 												/>
@@ -281,7 +298,15 @@ export function EditPage() {
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
+												<InputGroupInput
+													placeholder='Оси (3-10)'
+													{...field}
+													value={field.value ?? ''}
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													inputMode='decimal'
+													className='pl-4'
+													disabled={isLoadingPatch}
+												/>
 											</InputGroup>
 										</FormControl>
 										<FormMessage />
@@ -304,22 +329,15 @@ export function EditPage() {
 						/>
 						<FormField
 							control={form.control}
-							name='is_hidden'
+							name='payment_method'
+							rules={{ required: 'Метод оплаты обязателен' }}
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel className='text-brand mb-6'>Выберите вариант размещения</FormLabel>
+								<FormItem className='mb-6'>
+									<FormLabel className='text-brand'>Выберите способ оплаты</FormLabel>
 									<FormControl>
-										<RadioGroup defaultValue='false' className='flex gap-6' onValueChange={(val) => field.onChange(val === 'true')} value={field.value ? 'true' : 'false'}>
-											<div className='flex items-center space-x-2'>
-												<RadioGroupItem value='false' id='visible' />
-												<Label htmlFor='visible'>Показывать</Label>
-											</div>
-											<div className='flex items-center space-x-2'>
-												<RadioGroupItem value='true' id='hidden' />
-												<Label htmlFor='hidden'>Скрывать</Label>
-											</div>
-										</RadioGroup>
+										<PaymentSelector onChange={field.onChange} value={field.value} />
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -329,7 +347,13 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='product'
-							rules={{ required: 'Наименование груза обязательно' }}
+							rules={{
+								required: 'Наименование груза обязательно',
+								maxLength: {
+									value: PRODUCT_MAX_LENGTH,
+									message: 'Название продукта максимум 120 символов',
+								},
+							}}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
@@ -338,6 +362,7 @@ export function EditPage() {
 												placeholder='Наименование груза'
 												{...field}
 												value={field.value ?? ''}
+												maxLength={PRODUCT_MAX_LENGTH}
 												className='pl-4'
 												disabled={isLoadingPatch}
 											/>
@@ -373,13 +398,27 @@ export function EditPage() {
 						/>
 						<FormField
 							control={form.control}
-							name='weight_kg'
-							rules={{ required: 'Вес обязателен' }}
+							name='weight_tons'
+							rules={{
+								required: 'Вес обязателен',
+								pattern: {
+									value: NUMERIC_REGEX,
+									message: 'Вес должен быть числом',
+								},
+							}}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Вес(кг)' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
+											<InputGroupInput
+												placeholder='Вес(т)'
+												{...field}
+												value={field.value ?? ''}
+												onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												inputMode='decimal'
+												className='pl-4'
+												disabled={isLoadingPatch}
+											/>
 										</InputGroup>
 									</FormControl>
 								</FormItem>

@@ -2,6 +2,7 @@ import { loadsService } from '@/services/loads.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCancelLoad = () => {
 	const queryClient = useQueryClient()
@@ -13,8 +14,9 @@ export const useCancelLoad = () => {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			toast.success('Объявление отменено')
 		},
-		onError() {
-			toast.error('Не удалось отменить объявление')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось отменить объявление'
+			toast.error(message)
 		},
 	})
 

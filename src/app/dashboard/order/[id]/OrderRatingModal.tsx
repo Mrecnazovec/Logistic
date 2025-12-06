@@ -120,7 +120,7 @@ export function OrderRatingModal({ order, currentRole, disabled }: OrderRatingMo
 					Оценить участников
 				</Button>
 			</DialogTrigger>
-			<DialogContent className='max-w-3xl rounded-3xl'>
+			<DialogContent>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>Оценка участников перевозки</DialogTitle>
 				</DialogHeader>

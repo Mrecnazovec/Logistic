@@ -3,25 +3,23 @@ import type { PatchedOrderDriverStatusUpdateDto } from '@/shared/types/Order.int
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-
-type UpdateStatusPayload = {
-	id: string
-	data: PatchedOrderDriverStatusUpdateDto
-}
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useUpdateOrderStatus = () => {
 	const queryClient = useQueryClient()
 
 	const { mutate: updateDriverStatus, isPending: isLoadingUpdateStatus } = useMutation({
-		mutationKey: ['order', 'driver-status', 'update'],
-		mutationFn: ({ id, data }: UpdateStatusPayload) => ordersService.updateDriverStatus(id, data),
-		onSuccess(_, { id }) {
+		mutationKey: ['order', 'driver-status'],
+		mutationFn: ({ id, data }: { id: string; data: PatchedOrderDriverStatusUpdateDto }) =>
+			ordersService.updateDriverStatus(id, data),
+		onSuccess(_, variables) {
+			queryClient.invalidateQueries({ queryKey: ['get order', variables.id] })
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			queryClient.invalidateQueries({ queryKey: ['get order', id] })
-			toast.success('Статус водителя обновлён')
+			toast.success('Driver status updated')
 		},
-		onError() {
-			toast.error('Ошибка при обновлении статуса водителя')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Failed to update driver status'
+			toast.error(message)
 		},
 	})
 

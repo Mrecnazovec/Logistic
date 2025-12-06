@@ -3,6 +3,7 @@ import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCreateRating = () => {
 	const queryClient = useQueryClient()
@@ -14,8 +15,9 @@ export const useCreateRating = () => {
 			queryClient.invalidateQueries({ queryKey: ['get ratings'] })
 			toast.success('Оценка отправлена')
 		},
-		onError() {
-			toast.error('Не удалось отправить оценку')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Не удалось отправить оценку'
+			toast.error(message)
 		},
 	})
 

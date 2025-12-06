@@ -7,6 +7,7 @@ import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCreateLoad = () => {
 	const queryClient = useQueryClient()
@@ -17,7 +18,7 @@ export const useCreateLoad = () => {
 		mutationFn: (data: CargoPublishRequestDto) => loadsService.createLoad(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			toast.success('Объявление отправлено на модерацию')
+			toast.success('Объявление успешно создано')
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
@@ -30,11 +31,16 @@ export const useCreateLoad = () => {
 				}
 
 				const { load_date, delivery_date, detail } = err.response.data
-				const message = formatError(load_date) ?? formatError(delivery_date) ?? detail
+				const message =
+					formatError(load_date) ??
+					formatError(delivery_date) ??
+					formatError(detail as FieldError) ??
+					getErrorMessage(error)
 
-				toast.error(message)
+				toast.error(message ?? 'Не удалось создать объявление')
 			} else {
-				toast.error('Не удалось создать объявление')
+				const message = getErrorMessage(error) ?? 'Не удалось создать объявление'
+				toast.error(message)
 			}
 		},
 	})

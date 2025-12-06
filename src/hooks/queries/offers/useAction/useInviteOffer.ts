@@ -3,6 +3,7 @@ import { IOfferInvite } from '@/shared/types/Offer.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useInviteOffer = () => {
 	const queryClient = useQueryClient()
@@ -12,13 +13,16 @@ export const useInviteOffer = () => {
 		mutationFn: (data: IOfferInvite) => offerService.inviteOffer(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get offers'] })
-			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Инвайт отправлен')
 		},
-		onError() {
-			toast.error('Ошибка при отправке инвайта')
+		onError(error) {
+			const message = getErrorMessage(error) ?? 'Ошибка при отправке инвайта'
+			toast.error(message)
 		},
 	})
 
-	return useMemo(() => ({ inviteOffer, isLoadingInvite }), [inviteOffer, isLoadingInvite])
+	return useMemo(
+		() => ({ inviteOffer, isLoadingInvite }),
+		[inviteOffer, isLoadingInvite],
+	)
 }

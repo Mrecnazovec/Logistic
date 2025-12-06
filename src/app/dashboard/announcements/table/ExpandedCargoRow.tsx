@@ -8,6 +8,7 @@ import {
 	formatDurationFromMinutes,
 	formatPlace,
 	formatPriceValue,
+	formatRelativeDate,
 } from '@/lib/formatters'
 import { getContactPrefName } from '@/shared/enums/ContactPref.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
@@ -68,7 +69,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					</div>
 					<UuidCopy uuid={cargo.uuid} id={cargo.id} isPlaceholder />
 				</div>
-				<p className='text-sm text-muted-foreground'>Опубликовано {formatAgeFromMinutes(cargo.age_minutes, EMPTY_VALUE)}</p>
+				<p className='text-sm text-muted-foreground'>Опубликовано {formatRelativeDate(cargo.created_at, EMPTY_VALUE)}</p>
 			</div>
 
 			<div className='grid grid-cols-1 gap-10 text-sm md:grid-cols-4'>

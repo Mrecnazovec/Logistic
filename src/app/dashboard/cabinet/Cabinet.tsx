@@ -1,5 +1,6 @@
 'use client'
 
+import { UuidCopy } from "@/components/ui/actions/UuidCopy"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
@@ -7,16 +8,14 @@ import { Input } from "@/components/ui/form-control/Input"
 import { Label } from "@/components/ui/form-control/Label"
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useGetAnalytics } from "@/hooks/queries/me/useGetAnalytics"
 import { useGetMe } from "@/hooks/queries/me/useGetMe"
 import { useLogout } from "@/hooks/useLogout"
-import { RoleSelect } from "@/shared/enums/Role.enum"
 import type { LucideIcon } from "lucide-react"
-import { BarChart3, BusFront, DoorOpen, PackageCheck, Star, Truck } from "lucide-react"
+import { BarChart3, DoorOpen, PackageCheck, Star, Truck } from "lucide-react"
 import Image from "next/image"
-import { useMemo } from "react"
 import type { CSSProperties } from "react"
+import { useMemo } from "react"
 
 type AnalyticsCard = {
 	id: string
@@ -47,19 +46,11 @@ const formatTrend = (value?: number | null) => {
 	const normalized = Math.abs(value) < 1 && value !== 0 ? value * 100 : value
 	const absoluteValue = Math.abs(normalized)
 
-	if (absoluteValue === 0) {
-		return "0%"
-	}
+	if (absoluteValue === 0) return "0%"
 
 	const sign = normalized > 0 ? "+" : "-"
 	return `${sign}${decimalFormatter.format(absoluteValue)}%`
 }
-
-const analyticsFilters = [
-	{ value: "current", label: "Этот месяц", indicatorClass: "bg-emerald-500" },
-	{ value: "previous", label: "Прошлый месяц" },
-	{ value: "custom", label: "Выбрать период" },
-]
 
 export function Cabinet() {
 	const { me, isLoading } = useGetMe()
@@ -83,11 +74,11 @@ export function Cabinet() {
 		const successPercent = dealsCount ? Math.round((successfulDeliveries / dealsCount) * 100) : 0
 		const donutStyle: CSSProperties = dealsCount
 			? {
-					backgroundImage: `conic-gradient(#10b981 0% ${successPercent}%, #f43f5e ${successPercent}% 100%)`,
-			  }
+				backgroundImage: `conic-gradient(#10b981 0% ${successPercent}%, #f43f5e ${successPercent}% 100%)`,
+			}
 			: {
-					backgroundImage: "conic-gradient(#e2e8f0 0% 100%)",
-			  }
+				backgroundImage: "conic-gradient(#e2e8f0 0% 100%)",
+			}
 
 		const shipmentCard: AnalyticsCard = {
 			id: "shipments",
@@ -95,7 +86,7 @@ export function Cabinet() {
 			value: formattedSuccess,
 			trend: formatTrend(analytics?.successful_deliveries_change),
 			trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? "danger" : "success",
-			description: analytics ? `Всего за месяц: ${formattedSuccess}` : undefined,
+			description: analytics ? "с прошлого месяца" : undefined,
 			icon: PackageCheck,
 			accentClass: "text-sky-600 bg-sky-100",
 		}
@@ -113,7 +104,7 @@ export function Cabinet() {
 				id: "rating",
 				title: "Рейтинг",
 				value: ratingValue,
-				description: analytics ? `На основе ${integerFormatter.format(dealsCount)} сделок` : undefined,
+				description: analytics ? `по ${integerFormatter.format(dealsCount)} сделкам` : undefined,
 				icon: Star,
 				accentClass: "text-amber-500 bg-amber-50",
 			},
@@ -121,7 +112,7 @@ export function Cabinet() {
 				id: "distance",
 				title: "Пройдено расстояния",
 				value: distanceValue,
-				description: analytics ? `За ${integerFormatter.format(dealsCount)} сделок` : undefined,
+				description: analytics ? `за ${integerFormatter.format(dealsCount)} сделок` : undefined,
 				icon: Truck,
 				accentClass: "text-blue-700 bg-blue-100",
 			},
@@ -129,9 +120,7 @@ export function Cabinet() {
 				id: "deals",
 				title: "Всего сделок",
 				value: dealsValue,
-				description: analytics
-					? `Успешно ${integerFormatter.format(successfulDeliveries)} доставок`
-					: undefined,
+				description: analytics ? `успешные: ${formattedSuccess}` : undefined,
 				icon: BarChart3,
 				accentClass: "text-brand bg-brand/10",
 			},
@@ -144,14 +133,19 @@ export function Cabinet() {
 			successPercentLabel: `${successPercent}%`,
 			donutStyle,
 			legend: [
-				{ id: "total", label: "Заказы", color: "bg-blue-500", value: integerFormatter.format(dealsCount) },
 				{ id: "success", label: "Успешные", color: "bg-emerald-500", value: integerFormatter.format(successfulDeliveries) },
 				{ id: "cancelled", label: "Отмененные", color: "bg-rose-500", value: integerFormatter.format(cancelledDeliveries) },
+				{ id: "total", label: "Всего перевозок", color: "bg-slate-400", value: integerFormatter.format(dealsCount) },
 			],
 		}
 
 		return { shipmentCard, detailCards, ordersStats }
 	}, [analytics])
+
+	const RegistrationIcon = detailCards[0].icon
+	const RatingIcon = detailCards[1].icon
+	const DistanceIcon = detailCards[2].icon
+	const DealsIcon = detailCards[3].icon
 
 	const profileFields = useMemo(
 		() => [
@@ -166,205 +160,255 @@ export function Cabinet() {
 	)
 
 	return (
-		<div className="flex h-full gap-3 max-lg:flex-col">
+		<div className="flex h-full flex-col gap-4 lg:flex-row lg:gap-6">
 			<h1 className="sr-only">Личный кабинет</h1>
-			<div className="flex h-full flex-col items-center justify-center gap-6 rounded-4xl bg-background px-4 py-16 lg:w-1/2 xl:w-[30%]">
-				<div className="centred flex-col gap-3 text-center">
-					{isLoading ? (
-						<>
-							<Skeleton className="size-24 rounded-full" />
-							<Skeleton className="h-3 w-28 rounded-full" />
-							<Skeleton className="h-8 w-36 rounded-full" />
-						</>
-					) : (
-						<>
-							{me?.photo ? (
-								<Image
-									src={me.photo}
-									alt="Фото профиля"
-									width={96}
-									height={96}
-									className="size-24 rounded-full object-cover"
-								/>
-							) : (
-								<NoPhoto className="size-24" />
-							)}
-							<p className="text-sm font-semibold text-muted-foreground">{RoleSelect.find((type) => type.type === me?.role)?.name ?? 'Неизвестно'}</p>
-							<p className="text-lg font-semibold">{me?.first_name || me?.email}</p>
-							<Button
-								onClick={() => logout("")}
-								variant="destructive"
-								size="sm"
-								className="rounded-4xl px-5"
-								disabled={isLoadingLogout}
-							>
-								Выйти из аккаунта
-							</Button>
-						</>
-					)}
-				</div>
 
-				<div className="mt-8 w-full space-y-5">
-					{profileFields.map((field) => (
-						<div key={field.id} className="space-y-2">
-							<Label className="text-sm text-muted-foreground" htmlFor={field.id}>
-								{field.label}
-							</Label>
-							{isLoading ? (
-								<Skeleton className="h-11 w-full rounded-3xl" />
-							) : (
-								<Input
-									disabled
-									value={field.value}
-									id={field.id}
-									className="disabled:opacity-100"
-									placeholder={field.label}
-								/>
-							)}
-						</div>
-					))}
-				</div>
+			<div className="lg:w-[32%] xl:w-[30%]">
+				<Card className="h-full items-center rounded-[32px] border-border/60 bg-background px-6 py-10 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+					<div className="centred w-full flex-col gap-3 text-center">
+						{isLoading ? (
+							<>
+								<Skeleton className="size-24 rounded-full" />
+								<Skeleton className="h-4 w-32 rounded-full" />
+								<Skeleton className="h-6 w-40 rounded-full" />
+							</>
+						) : (
+							<>
+								{me?.photo ? (
+									<Image
+										src={me.photo}
+										alt="Фото профиля"
+										width={96}
+										height={96}
+										className="size-24 rounded-full object-cover"
+									/>
+								) : (
+									<NoPhoto className="size-24" />
+								)}
+								<p className="text-lg font-semibold">{me?.company_name || me?.first_name || me?.email}</p>
+								<p className="text-sm text-muted-foreground">
+									{me?.first_name && me?.email ? me.email : me?.profile?.city || me?.profile?.country || ""}
+								</p>
+								<div className="flex items-center gap-2 text-sm text-muted-foreground">
+									<UuidCopy id={me?.id} isPlaceholder />
+								</div>
+								<Button
+									onClick={() => logout("")}
+									variant="destructive"
+									size="sm"
+									className="mt-2 rounded-full px-5"
+									disabled={isLoadingLogout}
+								>
+									Выйти из аккаунта
+								</Button>
+							</>
+						)}
+					</div>
+
+					<div className="mt-10 w-full space-y-4">
+						{profileFields.map((field) => (
+							<div key={field.id} className="space-y-2">
+								<Label className="text-sm text-muted-foreground" htmlFor={field.id}>
+									{field.label}
+								</Label>
+								{isLoading ? (
+									<Skeleton className="h-11 w-full rounded-3xl" />
+								) : (
+									<Input
+										disabled
+										value={field.value}
+										id={field.id}
+										className="disabled:opacity-100"
+										placeholder={field.label}
+									/>
+								)}
+							</div>
+						))}
+					</div>
+				</Card>
 			</div>
 
-			<div className="flex h-full flex-col gap-6 rounded-4xl bg-background p-6 xs:p-12 lg:w-1/2 xl:w-[70%]">
-				<div className="flex flex-col gap-2">
-					<h2 className="text-xl font-bold text-brand">Аналитика</h2>
-					<p className="text-sm text-muted-foreground">
-						Следите за ключевыми показателями, чтобы понимать динамику вашего бизнеса и реагировать вовремя.
-					</p>
-				</div>
-
-				<Tabs defaultValue="current" className="flex flex-col gap-6">
-					<TabsList className="flex h-auto flex-wrap gap-2 rounded-3xl bg-transparent p-1">
-						{analyticsFilters.map((filter) => (
-							<TabsTrigger
-								key={filter.value}
-								value={filter.value}
-								className="h-10 rounded-full px-4 text-sm font-medium data-[state=active]:border data-[state=active]:border-brand/40 data-[state=active]:bg-white data-[state=active]:text-foreground"
+			<div className="lg:w-[68%] xl:w-[70%]">
+				<div className="flex h-full flex-col gap-6 rounded-[32px] bg-background p-4 xs:p-6 xl:p-8">
+					<div className="flex flex-wrap items-center justify-between gap-3">
+						<h2 className="text-2xl font-bold text-brand">Аналитика</h2>
+						{!isLoadingAnalytics && shipmentCard.trend ? (
+							<Badge
+								variant={shipmentCard.trendVariant === "danger" ? "danger" : "success"}
+								className="before:hidden px-3 py-1.5 text-xs"
 							>
-								<span className="flex items-center gap-2">
-									{filter.indicatorClass ? (
-										<span className={`size-2 rounded-full ${filter.indicatorClass}`} aria-hidden="true" />
-									) : null}
-									{filter.label}
-								</span>
-							</TabsTrigger>
-						))}
-					</TabsList>
+								{shipmentCard.trend} с прошлого месяца
+							</Badge>
+						) : null}
+					</div>
 
-					{analyticsFilters.map((filter) => (
-						<TabsContent key={filter.value} value={filter.value} className="flex-1">
-							<div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-								<div className="space-y-6">
-									<Card className="rounded-[28px] border-border/40 px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
-										<div className="flex flex-wrap items-start justify-between gap-4">
-											<div className="space-y-2">
-												<p className="text-sm text-muted-foreground">{shipmentCard.title}</p>
-												{isLoadingAnalytics ? (
-													<Skeleton className="h-11 w-32 rounded-3xl" />
-												) : (
-													<p className="text-4xl font-semibold tracking-tight">{shipmentCard.value}</p>
-												)}
-											</div>
-											<div
-												className={`flex size-14 items-center justify-center rounded-full ${shipmentCard.accentClass}`}
-											>
-												<shipmentCard.icon className="size-6" />
-											</div>
-										</div>
-										<div className="mt-6 flex flex-wrap items-center gap-4">
-											{isLoadingAnalytics ? (
-												<Skeleton className="h-7 w-32 rounded-full" />
-											) : shipmentCard.trend ? (
-												<Badge
-													variant={shipmentCard.trendVariant === "danger" ? "danger" : "success"}
-													className="before:hidden px-3 py-1 text-xs"
-												>
-													{shipmentCard.trend} с прошлого месяца
-												</Badge>
-											) : null}
-											{isLoadingAnalytics ? (
-												<Skeleton className="h-4 w-40 rounded-full" />
-											) : shipmentCard.description ? (
-												<p className="text-sm text-muted-foreground">{shipmentCard.description}</p>
-											) : null}
-										</div>
-									</Card>
-
-									<Card className="rounded-[28px] border-border/40 px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
-										{isLoadingAnalytics ? (
-											<div className="flex flex-col gap-4">
-												<Skeleton className="h-4 w-32 rounded-full" />
-												<Skeleton className="h-9 w-48 rounded-2xl" />
-												<Skeleton className="h-32 w-full rounded-3xl" />
-											</div>
-										) : (
-											<div className="space-y-6">
-												<div className="space-y-2">
-													<p className="text-sm text-muted-foreground">Статистика заказов</p>
-													<p className="text-lg font-semibold">Успешность {ordersStats.successPercentLabel}</p>
-												</div>
-												<div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between">
-													<div
-														className="relative size-40 rounded-full p-3"
-														style={ordersStats.donutStyle}
-														aria-hidden="true"
-													>
-														<div className="absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-background shadow-inner">
-															<span className="text-3xl font-semibold">{ordersStats.total}</span>
-															<span className="text-sm text-muted-foreground">заказы</span>
-														</div>
-													</div>
-													<div className="w-full space-y-3 sm:max-w-[220px]">
-														{ordersStats.legend.map((item) => (
-															<div key={item.id} className="flex items-center justify-between text-sm font-medium">
-																<span className="flex items-center gap-2 text-muted-foreground">
-																	<span className={`size-2.5 rounded-full ${item.color}`} aria-hidden="true" />
-																	{item.label}
-																</span>
-																<span className="font-semibold text-foreground">{item.value}</span>
-															</div>
-														))}
-													</div>
-												</div>
-											</div>
-										)}
-									</Card>
+					<div className="grid gap-4 md:gap-6 md:grid-cols-2">
+						<Card className="rounded-[28px] border-border/40 px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+							<div className="flex flex-wrap items-start justify-between gap-4">
+								<div className="space-y-2">
+									<p className="text-sm text-muted-foreground">{shipmentCard.title}</p>
+									{isLoadingAnalytics ? (
+										<Skeleton className="h-11 w-32 rounded-3xl" />
+									) : (
+										<p className="text-4xl font-semibold tracking-tight">{shipmentCard.value}</p>
+									)}
 								</div>
-
-								<div className="grid gap-4 sm:grid-cols-2">
-									{detailCards.map((card) => (
-										<Card
-											key={`${filter.value}-${card.id}`}
-											className="rounded-[28px] border-border/40 px-6 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
-										>
-											<div className="flex items-start justify-between gap-4">
-												<div className="space-y-1.5">
-													<p className="text-sm text-muted-foreground">{card.title}</p>
-													{isLoadingAnalytics ? (
-														<Skeleton className="h-9 w-24 rounded-2xl" />
-													) : (
-														<p className="text-2xl font-semibold">{card.value}</p>
-													)}
-												</div>
-												<div className={`flex size-11 items-center justify-center rounded-full ${card.accentClass}`}>
-													<card.icon className="size-5" />
-												</div>
-											</div>
-											<div className="mt-4">
-												{isLoadingAnalytics ? (
-													<Skeleton className="h-4 w-28 rounded-full" />
-												) : card.description ? (
-													<p className="text-sm text-muted-foreground">{card.description}</p>
-												) : null}
-											</div>
-										</Card>
-									))}
+								<div className={`flex size-14 items-center justify-center rounded-full ${shipmentCard.accentClass}`}>
+									<shipmentCard.icon className="size-6" />
 								</div>
 							</div>
-						</TabsContent>
-					))}
-				</Tabs>
+							<div className="mt-6 flex flex-wrap items-center gap-4">
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-7 w-32 rounded-full" />
+								) : shipmentCard.trend ? (
+									<Badge
+										variant={shipmentCard.trendVariant === "danger" ? "danger" : "success"}
+										className="before:hidden px-3 py-1 text-xs"
+									>
+										{shipmentCard.trend} с прошлого месяца
+									</Badge>
+								) : null}
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-4 w-40 rounded-full" />
+								) : shipmentCard.description ? (
+									<p className="text-sm text-muted-foreground">{shipmentCard.description}</p>
+								) : null}
+							</div>
+						</Card>
+
+						<Card className="rounded-[28px] border-border/40 px-6 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+							<div className="flex items-start justify-between gap-4">
+								<div className="space-y-1.5">
+									<p className="text-sm text-muted-foreground">{detailCards[0].title}</p>
+									{isLoadingAnalytics ? (
+										<Skeleton className="h-9 w-24 rounded-2xl" />
+									) : (
+										<p className="text-2xl font-semibold">{detailCards[0].value}</p>
+									)}
+								</div>
+								<div className={`flex size-11 items-center justify-center rounded-full shrink-0 ${detailCards[0].accentClass}`}>
+									<RegistrationIcon className="size-5" />
+								</div>
+							</div>
+							<div className="mt-4">
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-4 w-28 rounded-full" />
+								) : detailCards[0].description ? (
+									<p className="text-sm text-muted-foreground">{detailCards[0].description}</p>
+								) : null}
+							</div>
+						</Card>
+
+						<Card className="rounded-[28px] border-border/40 px-6 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+							<div className="flex items-start justify-between gap-4">
+								<div className="space-y-1.5">
+									<p className="text-sm text-muted-foreground">{detailCards[1].title}</p>
+									{isLoadingAnalytics ? (
+										<Skeleton className="h-9 w-24 rounded-2xl" />
+									) : (
+										<p className="text-2xl font-semibold">{detailCards[1].value}</p>
+									)}
+								</div>
+								<div className={`flex size-11 items-center justify-center rounded-full shrink-0 ${detailCards[1].accentClass}`}>
+									<RatingIcon className="size-5" />
+								</div>
+							</div>
+							<div className="mt-4">
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-4 w-28 rounded-full" />
+								) : detailCards[1].description ? (
+									<p className="text-sm text-muted-foreground">{detailCards[1].description}</p>
+								) : null}
+							</div>
+						</Card>
+
+						<Card className="rounded-[28px] border-border/40 px-6 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+							<div className="flex items-start justify-between gap-4">
+								<div className="space-y-1.5">
+									<p className="text-sm text-muted-foreground">{detailCards[2].title}</p>
+									{isLoadingAnalytics ? (
+										<Skeleton className="h-9 w-24 rounded-2xl" />
+									) : (
+										<p className="text-2xl font-semibold">{detailCards[2].value}</p>
+									)}
+								</div>
+								<div className={`flex size-11 items-center justify-center rounded-full shrink-0 ${detailCards[2].accentClass}`}>
+									<DistanceIcon className="size-5" />
+								</div>
+							</div>
+							<div className="mt-4">
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-4 w-28 rounded-full" />
+								) : detailCards[2].description ? (
+									<p className="text-sm text-muted-foreground">{detailCards[2].description}</p>
+								) : null}
+							</div>
+						</Card>
+
+						<Card className="rounded-[28px] border-border/40 px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+							{isLoadingAnalytics ? (
+								<div className="flex flex-col gap-4">
+									<Skeleton className="h-4 w-32 rounded-full" />
+									<Skeleton className="h-9 w-48 rounded-2xl" />
+									<Skeleton className="h-32 w-full rounded-3xl" />
+								</div>
+							) : (
+								<div className="space-y-6">
+									<div className="space-y-1">
+										<p className="text-sm text-muted-foreground">Статистика перевозок</p>
+										<p className="text-lg font-semibold">Успешные: {ordersStats.successPercentLabel}</p>
+									</div>
+									<div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center flex-wrap">
+										<div
+											className="relative size-40 min-h-40 min-w-40 shrink-0 rounded-full p-3"
+											style={ordersStats.donutStyle}
+											aria-hidden="true"
+										>
+											<div className="absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-background shadow-inner">
+												<span className="text-3xl font-semibold">{ordersStats.total}</span>
+												<span className="text-sm text-center text-muted-foreground">Всего перевозок</span>
+											</div>
+										</div>
+										<div className="w-full space-y-3 sm:max-w-[240px]">
+											{ordersStats.legend.map((item) => (
+												<div key={item.id} className="flex items-center justify-between text-sm font-medium">
+													<span className="flex items-center gap-2 text-muted-foreground">
+														<span className={`size-2.5 rounded-full ${item.color}`} aria-hidden="true" />
+														{item.label}
+													</span>
+													<span className="font-semibold text-foreground">{item.value}</span>
+												</div>
+											))}
+										</div>
+									</div>
+								</div>
+							)}
+						</Card>
+
+						<Card className="rounded-[28px] border-border/40 px-6 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+							<div className="flex items-start justify-between gap-4">
+								<div className="space-y-1.5">
+									<p className="text-sm text-muted-foreground">{detailCards[3].title}</p>
+									{isLoadingAnalytics ? (
+										<Skeleton className="h-9 w-24 rounded-2xl" />
+									) : (
+										<p className="text-2xl font-semibold">{detailCards[3].value}</p>
+									)}
+								</div>
+								<div className={`flex size-11 items-center justify-center rounded-full shrink-0 ${detailCards[3].accentClass}`}>
+									<DealsIcon className="size-5" />
+								</div>
+							</div>
+							<div className="mt-4">
+								{isLoadingAnalytics ? (
+									<Skeleton className="h-4 w-28 rounded-full" />
+								) : detailCards[3].description ? (
+									<p className="text-sm text-muted-foreground">{detailCards[3].description}</p>
+								) : null}
+							</div>
+						</Card>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
