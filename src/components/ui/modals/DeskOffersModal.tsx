@@ -102,7 +102,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 
 										<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 											<ArrowRight className='mb-1 size-5' />
-											<span>-</span>
+											<span className='text-error-500'>НУЖНО РАССТОЯНИЕ</span>
 										</div>
 
 										<div>

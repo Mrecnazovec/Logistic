@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { ArrowRight, Link2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -20,6 +20,7 @@ import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 
 interface OfferModalProps {
 	selectedRow?: ICargoList
@@ -30,7 +31,9 @@ interface OfferModalProps {
 
 export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalProps) {
 	const [shareCopyStatus, setShareCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+	const [carrierId, setCarrierId] = useState('')
 	const { generateLoadInvite, invite, isLoadingGenerate, resetInvite } = useGenerateLoadInvite()
+	const { inviteOffer, isLoadingInvite } = useInviteOffer()
 
 	const transportName = useMemo(
 		() => (selectedRow ? getTransportName(selectedRow.transport_type) || '—' : null),
@@ -54,6 +57,31 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 			resetInvite()
 		}
 		onOpenChange?.(isOpen)
+	}
+
+	const handleInviteCarrier = () => {
+		if (!selectedRow?.id) {
+			toast.error('Не найден груз для приглашения перевозчика.')
+			return
+		}
+
+		const parsedCarrierId = Number(carrierId)
+		if (!carrierId || Number.isNaN(parsedCarrierId)) {
+			toast.error('Введите корректный ID перевозчика.')
+			return
+		}
+
+		inviteOffer(
+			{
+				cargo: selectedRow.id,
+				carrier_id: parsedCarrierId,
+				price_currency: selectedRow.price_currency ?? 'UZS',
+				price_value: selectedRow.price_value ?? undefined,
+			},
+			{
+				onSuccess: () => setCarrierId(''),
+			},
+		)
 	}
 
 	const handleGenerateInviteLink = () => {
@@ -86,9 +114,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 		<Dialog open={open} onOpenChange={handleModalOpenChange}>
 			<DialogContent className='w-[900px] lg:max-w-none rounded-3xl'>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>
-						Приглашение перевозчика
-					</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>Приглашение перевозчика</DialogTitle>
 				</DialogHeader>
 
 				{!selectedRow ? (
@@ -139,16 +165,41 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 								</div>
 
 								<div className='flex flex-col gap-3 pt-2'>
+
+									<div className='space-y-2'>
+										<p className='text-sm font-semibold text-foreground'>Пригласить перевозчика по ID</p>
+										<InputGroup className='bg-background'>
+											<InputGroupInput
+												type='number'
+												value={carrierId}
+												onChange={(event) => setCarrierId(event.target.value)}
+												placeholder='Введите ID перевозчика'
+											/>
+											<InputGroupAddon align='inline-end'>
+												<Button
+													size='sm'
+													variant='ghost'
+													className='flex items-center gap-2'
+													type='button'
+													onClick={handleInviteCarrier}
+													disabled={isLoadingInvite}
+												>
+													{isLoadingInvite ? 'Отправка...' : 'Пригласить'}
+													<Link2 className='size-4' />
+												</Button>
+											</InputGroupAddon>
+										</InputGroup>
+									</div>
 									<p className='text-sm font-semibold text-foreground'>Приглашение по ссылке</p>
 									<p className='text-sm text-muted-foreground'>
-										Ссылка действует три дня и доступна только авторизованным перевозчикам. Отправьте её, чтобы перевозчик
-										смог принять, отклонить или предложить свою цену на отдельной странице.
+										Ссылка ведёт на страницу оффера, где перевозчик сможет откликнуться на предложение.
+										Сгенерируйте ссылку и отправьте её партнёру или скопируйте для быстрого доступа.
 									</p>
 									<InputGroup className='bg-background'>
 										<InputGroupInput
 											readOnly
 											value={shareLink}
-											placeholder='Сгенерируйте ссылку, чтобы поделиться объявлением'
+											placeholder='Ссылка появится после генерации'
 										/>
 										<InputGroupAddon align='inline-end'>
 											<Button
@@ -159,7 +210,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 												onClick={shareLink ? handleCopyShareLink : handleGenerateInviteLink}
 												disabled={isLoadingGenerate}
 											>
-												{shareLink ? 'Скопировать' : isLoadingGenerate ? 'Создание...' : 'Сгенерировать ссылку'}
+												{shareLink ? 'Скопировать ссылку' : isLoadingGenerate ? 'Создаём...' : 'Сгенерировать ссылку'}
 												<Link2 className='size-4' />
 											</Button>
 										</InputGroupAddon>
@@ -168,9 +219,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 										<p className='text-sm text-success-500'>Ссылка скопирована в буфер обмена.</p>
 									)}
 									{shareCopyStatus === 'error' && (
-										<p className='text-sm text-error-500'>
-											Не удалось скопировать ссылку. Попробуйте снова.
-										</p>
+										<p className='text-sm text-error-500'>Не удалось скопировать ссылку.</p>
 									)}
 								</div>
 

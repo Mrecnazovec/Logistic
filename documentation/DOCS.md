@@ -64,11 +64,17 @@ useDeleteOrder — deletes order by id via ordersService.deleteOrder.
 useGetOrder — loads order details by id via ordersService.getOrder.
 useGetOrderDocuments — loads order documents via ordersService.getOrderDocuments.
 useGetOrderStatusHistory — loads driver status history via ordersService.getOrderStatusHistory.
-useGetOrders — loads orders list with filters via ordersService.getOrders.
-useUpdateOrder — full order update via ordersService.updateOrder.
-useUpdateOrderStatus — updates order status via ordersService.updateOrderStatus.
-useUploadOrderDocument — uploads document for order via ordersService.uploadOrderDocument.
-usePatchOrder — partial order update via ordersService.patchOrder.
+useGetOrders - loads orders list with filters via ordersService.getOrders.
+useUpdateOrder - full order update via ordersService.updateOrder.
+useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
+useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
+usePatchOrder - partial order update via ordersService.patchOrder.
+
+- ## Payments
+
+useConfirmPaymentCarrier - confirms payment as carrier via paymentsService.confirmPaymentCarrier.
+useConfirmPaymentCustomer - confirms payment as customer via paymentsService.confirmPaymentCustomer.
+useCreatePayment - creates payment via paymentsService.createPayment.
 
 - ## Ratings
 
@@ -116,9 +122,10 @@ auth-token.service — token storage in cookies (read/save/remove).
 loadsService — load CRUD, invites, visibility management via /loads API.
 meService — fetch/update profile and analytics.
 notificationsService — load notifications and mark as read.
-offersService — offer CRUD and actions (accept/reject/invite/counter).
-ordersService — order CRUD, status updates, document upload.
-ratingsService — user ratings CRUD.
+offersService - offer CRUD and actions (accept/reject/invite/counter).
+ordersService - order CRUD, status updates, document upload.
+paymentsService - payment creation and confirmations for customer/carrier endpoints.
+ratingsService - user ratings CRUD.
 
 ## Shared enums
 
@@ -130,9 +137,9 @@ OrderStatusEnum — order statuses pending/in_process/delivered/no_driver/paid.
 OrderDriverStatusEnum — driver statuses (stopped/en_route/problem) and selector.
 PaymentMethodEnum — payment methods (transfer/cash/both) and PaymentMethodSelector.
 PriceCurrencyEnum — currencies (UZS/KZT/RUB/USD/EUR) and PriceSelector.
-RoleEnum — roles (LOGISTIC/CUSTOMER/CARRIER) and RoleSelect.
-StatusEnum — cargo statuses (POSTED, MATCHED, DELIVERED, COMPLETED, CANCELLED).
-TransportTypeEnum — transport types (TENT/CONT/REEFER/DUMP/CARTR/GRAIN/LOG/PICKUP/MEGA/OTHER) and TransportSelect/getTransportName.
+RoleEnum - roles (LOGISTIC/CUSTOMER/CARRIER) and RoleSelect.
+StatusEnum - cargo statuses (POSTED, MATCHED, DELIVERED, COMPLETED, CANCELLED, HIDDEN).
+TransportTypeEnum - transport types (TENT/CONT/REEFER/DUMP/CARTR/GRAIN/LOG/PICKUP/MEGA/OTHER) and TransportSelect/getTransportName.
 
 ## Shared types
 
@@ -147,14 +154,15 @@ Login.interface.ts — types for login/tokens/forgot password/reset password.
 Logout.interface.ts — ILogoutRequest and ILogoutResponse for logout.
 Me.interface.ts — profile/update/role change types.
 Notification.interface.ts — INotification and IPaginatedNotificationList.
-Notifications.api.ts — query/response types for notifications.
-Offer.interface.ts — offer types for create/detail/invite/counter/reject responses.
-Order.interface.ts — order types, documents, status history, and upload DTO.
-PaginatedList.interface.ts — paginated lists for cargos, offers, orders, ratings.
-Rating.interface.ts — rating types and rating users list query.
-RatingTableRow.interface.ts — alias for rating table row type.
-Registration.interface.ts — registration/verification DTOs and refresh response.
-Search.interface.ts — ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
+Notifications.api.ts - query/response types for notifications.
+Offer.interface.ts - offer types for create/detail/invite/counter/reject responses.
+Order.interface.ts - order types, documents, status history, and upload DTO.
+PaginatedList.interface.ts - paginated lists for cargos, offers, orders, ratings.
+Payment.interface.ts - payment schemas (payment, create request, patched update) with method/status helpers.
+Rating.interface.ts - rating types and rating users list query.
+RatingTableRow.interface.ts - alias for rating table row type.
+Registration.interface.ts - registration/verification DTOs and refresh response.
+Search.interface.ts - ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
 
 ## Shared regex
 

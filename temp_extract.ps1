@@ -1,2 +1,2 @@
-(Get-Content src/shared/types/api.ts) -join '
-'
+ = Get-Content -Path src/shared/types/api.ts
+[920..980]

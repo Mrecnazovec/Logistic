@@ -770,6 +770,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/payments/{id}/confirm/carrier/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["payments_confirm_carrier_partial_update"];
+        trace?: never;
+    };
+    "/api/payments/{id}/confirm/customer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["payments_confirm_customer_partial_update"];
+        trace?: never;
+    };
+    "/api/payments/create/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["payments_create_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ratings/rating-users/": {
         parameters: {
             query?: never;
@@ -996,9 +1044,10 @@ export interface components {
              *     * `DELIVERED` - Доставлено
              *     * `COMPLETED` - Завершено
              *     * `CANCELLED` - Отменена
+             *     * `HIDDEN` - Скрыта
              * @enum {string}
              */
-            readonly status: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
+            readonly status: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED" | "HIDDEN";
             readonly age_minutes: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -1401,6 +1450,8 @@ export interface components {
             readonly cargo: number;
             /** Format: uuid */
             readonly cargo_uuid: string;
+            readonly cargo_title: string;
+            readonly company_name: string;
             readonly origin_city: string;
             readonly origin_country: string;
             /** Format: date */
@@ -1591,6 +1642,15 @@ export interface components {
             category: "licenses" | "contracts" | "loading" | "unloading" | "other";
             /** Format: binary */
             file: string;
+        };
+        OrderDriverStatusUpdate: {
+            /**
+             * @description * `stopped` - Остановился
+             *     * `en_route` - В пути
+             *     * `problem` - Проблема
+             * @enum {string}
+             */
+            driver_status: "stopped" | "en_route" | "problem";
         };
         OrderList: {
             readonly id: number;
@@ -1876,6 +1936,28 @@ export interface components {
             /** Format: date-time */
             unloading_datetime?: string | null;
         };
+        PatchedOrderDriverStatusUpdateRequest: {
+            /**
+             * @description * `stopped` - Остановился
+             *     * `en_route` - В пути
+             *     * `problem` - Проблема
+             * @enum {string}
+             */
+            driver_status?: "stopped" | "en_route" | "problem";
+        };
+        PatchedPaymentRequest: {
+            /** Format: decimal */
+            amount?: string;
+            currency?: string;
+            external_transaction_id?: string | null;
+            /**
+             * @description * `cash` - Наличные
+             *     * `bank_transfer` - Перечисление
+             * @enum {string}
+             */
+            method?: "cash" | "bank_transfer";
+            order?: number;
+        };
         PatchedUpdateMeRequest: {
             /** Имя */
             first_name?: string;
@@ -1895,6 +1977,58 @@ export interface components {
             score?: number;
             /** Комментарий */
             comment?: string | null;
+        };
+        Payment: {
+            readonly id: number;
+            /** Format: decimal */
+            amount: string;
+            currency?: string;
+            readonly confirmed_by_customer: boolean;
+            readonly confirmed_by_carrier: boolean;
+            external_transaction_id?: string | null;
+            /**
+             * @description * `cash` - Наличные
+             *     * `bank_transfer` - Перечисление
+             * @enum {string}
+             */
+            method?: "cash" | "bank_transfer";
+            /**
+             * @description * `PENDING` - Создано
+             *     * `CONFIRMED_BY_CUSTOMER` - Оплачено заказчиком
+             *     * `CONFIRMED_BY_CARRIER` - Получено перевозчиком
+             *     * `COMPLETED` - Завершено
+             * @enum {string}
+             */
+            readonly status: "PENDING" | "CONFIRMED_BY_CUSTOMER" | "CONFIRMED_BY_CARRIER" | "COMPLETED";
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly completed_at: string | null;
+            order: number;
+        };
+        PaymentCreate: {
+            order: number;
+            /** Format: decimal */
+            amount: string;
+            currency?: string;
+            /**
+             * @description * `cash` - Наличные
+             *     * `bank_transfer` - Перечисление
+             * @enum {string}
+             */
+            method?: "cash" | "bank_transfer";
+        };
+        PaymentCreateRequest: {
+            order: number;
+            /** Format: decimal */
+            amount: string;
+            currency?: string;
+            /**
+             * @description * `cash` - Наличные
+             *     * `bank_transfer` - Перечисление
+             * @enum {string}
+             */
+            method?: "cash" | "bank_transfer";
         };
         Profile: {
             /** Страна */
@@ -3447,7 +3581,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderDetail"];
+                    "application/json": components["schemas"]["OrderDriverStatusUpdate"];
                 };
             };
         };
@@ -3464,9 +3598,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PatchedOrderDetailRequest"];
-                "multipart/form-data": components["schemas"]["PatchedOrderDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDetailRequest"];
+                "application/json": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDriverStatusUpdateRequest"];
             };
         };
         responses: {
@@ -3475,7 +3609,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderDetail"];
+                    "application/json": components["schemas"]["OrderDriverStatusUpdate"];
                 };
             };
         };
@@ -3498,6 +3632,85 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusHistory"];
+                };
+            };
+        };
+    };
+    payments_confirm_carrier_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPaymentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPaymentRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPaymentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    payments_confirm_customer_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPaymentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPaymentRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPaymentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    payments_create_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PaymentCreateRequest"];
+                "multipart/form-data": components["schemas"]["PaymentCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentCreate"];
                 };
             };
         };

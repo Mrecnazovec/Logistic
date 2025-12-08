@@ -4,6 +4,7 @@ export const StatusEnum = {
 	DELIVERED: 'DELIVERED',
 	COMPLETED: 'COMPLETED',
 	CANCELLED: 'CANCELLED',
+	HIDDEN: 'HIDDEN',
 } as const
 
 export type StatusEnum = (typeof StatusEnum)[keyof typeof StatusEnum]
