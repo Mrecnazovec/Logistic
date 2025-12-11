@@ -21,6 +21,18 @@ const hasOffersValue = (cargo: ICargoList) => {
 	return normalized === 'true' || normalized === '1'
 }
 
+export const getDeskRowClassName = (cargo: ICargoList) => {
+	const classes: string[] = []
+	const moderation = (cargo.moderation_status || '').toLowerCase()
+	const status = (cargo.status || '').toUpperCase()
+
+	if (moderation === 'pending') classes.push('bg-purple-50')
+	if (moderation === 'rejected') classes.push('bg-red-50')
+	if (status === 'HIDDEN') classes.push('opacity-60')
+
+	return classes.join(' ')
+}
+
 
 export const deskColumns: ColumnDef<ICargoList>[] = [
 	{
@@ -189,5 +201,4 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 		</>
 	)
 }
-
 

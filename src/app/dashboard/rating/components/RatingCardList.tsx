@@ -41,6 +41,16 @@ function RatingCard({ rating }: RatingCardProps) {
 		? format(new Date(rating.registered_at), 'dd.MM.yyyy')
 		: '-'
 
+	const toNumber = (value: number | string | null | undefined) => {
+		if (value === null || value === undefined) return null
+		const num = typeof value === 'string' ? Number(value) : value
+		return Number.isFinite(num) ? num : null
+	}
+
+	const avgRatingValue = toNumber(rating.avg_rating)
+	const ratingCount = toNumber(rating.rating_count)
+	const completedOrders = toNumber(rating.completed_orders)
+
 	const sections = useMemo(
 		() => [
 			{
@@ -63,12 +73,12 @@ function RatingCard({ rating }: RatingCardProps) {
 				items: [
 					{
 						icon: Star,
-						primary: `${rating.avg_rating ? rating.avg_rating.toFixed(1) : '—'} / 5`,
-						secondary: `${rating.rating_count.toLocaleString('ru-RU')} отзывов`,
+						primary: `${avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'} / 5`,
+						secondary: `${ratingCount !== null ? ratingCount.toLocaleString('ru-RU') : '—'} отзывов`,
 					},
 					{
 						icon: Briefcase,
-						primary: rating.completed_orders.toLocaleString('ru-RU'),
+						primary: completedOrders !== null ? completedOrders.toLocaleString('ru-RU') : '—',
 						secondary: 'Выполненных заказов',
 					},
 				],
@@ -90,12 +100,12 @@ function RatingCard({ rating }: RatingCardProps) {
 			},
 		],
 		[
-			rating.avg_rating,
-			rating.completed_orders,
+			avgRatingValue,
+			completedOrders,
 			rating.company_name,
 			rating.country,
 			rating.display_name,
-			rating.rating_count,
+			ratingCount,
 			registeredAt,
 		],
 	)
@@ -109,7 +119,7 @@ function RatingCard({ rating }: RatingCardProps) {
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
 						<Star className='size-4 fill-yellow-400 text-yellow-400' aria-hidden />
-						{rating.avg_rating ? rating.avg_rating.toFixed(1) : '—'}
+						{avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'}
 					</span>
 				</div>
 			</CardHeader>

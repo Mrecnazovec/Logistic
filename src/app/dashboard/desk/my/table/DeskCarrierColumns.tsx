@@ -4,7 +4,7 @@ import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { getStatusBadge } from '@/components/ui/selectors/BadgeSelector'
+import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
@@ -13,24 +13,27 @@ import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
+import { useRoleStore } from '@/store/useRoleStore'
+
 
 
 export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
-		cell: ({ row }) => <UuidCopy id={row.original.id} />,
+		cell: ({ row }) => <UuidCopy uuid={row.original.cargo_uuid} />,
 	},
 	{
-		accessorKey: 'company_name',
+		accessorKey: 'customer_company',
 		header: 'Компания',
 	},
 	{
 		accessorKey: 'status_display',
 		header: 'Статус',
 		cell: ({ row }) => {
-			const { variant, label } = getStatusBadge(row.original.status_display)
-			return <Badge variant={variant}>{label}</Badge>
+			const role = useRoleStore.getState().role
+			const { variant, label, highlight } = getOfferStatusMeta(row.original, role)
+			return <Badge variant={variant} className={highlight ? 'animate-pulse' : undefined}>{label}</Badge>
 		},
 	},
 	{

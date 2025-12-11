@@ -23,11 +23,19 @@ export function ExpandedRatingRow({ user }: { user: IRatingUserList }) {
 	const registeredAt = user.registered_at
 		? format(new Date(user.registered_at), 'dd.MM.yyyy')
 		: '-'
+	const toNumber = (value?: number | string | null) => {
+		if (value === null || value === undefined) return null
+		const numericValue = typeof value === 'string' ? Number(value) : value
+		return Number.isFinite(numericValue) ? numericValue : null
+	}
+	const avgRatingNumber = toNumber(user.avg_rating)
+	const avgRatingValue = avgRatingNumber !== null ? avgRatingNumber.toFixed(1) : '-'
+	const ratingCount = formatNumber(user.rating_count)
 
 	const stats = [
 		{
 			label: 'Общий рейтинг',
-			value: `${user.avg_rating ? user.avg_rating.toFixed(1) : '—'} / ${user.rating_count.toLocaleString('ru-RU')} отзывов`,
+			value: `${avgRatingValue !== '-' ? avgRatingValue : '-'} / ${ratingCount !== '-' ? ratingCount : '-'} отзывов`,
 		},
 		{
 			label: 'Выполненных заказов',

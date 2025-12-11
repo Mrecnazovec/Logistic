@@ -14,11 +14,13 @@ import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { DeskDriverCardList } from './components/DeskDriverCardList'
 import { DeskMyCardList } from './components/DeskMyCardList'
 import { deskCarrierColumns } from './table/DeskCarrierColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
+import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 
 
 export function DeskMyPage() {
@@ -30,6 +32,7 @@ export function DeskMyPage() {
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []
+	const role = useRoleStore((state) => state.role)
 
 	const deskPagination = deskResults.length
 		? {
@@ -51,19 +54,27 @@ export function DeskMyPage() {
 
 	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()
 	const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false)
+	const [decisionNote, setDecisionNote] = useState<string | undefined>()
+	const [decisionActionable, setDecisionActionable] = useState(false)
+
+	const openDecisionModal = (offer: IOfferShort) => {
+		const meta = getOfferStatusMeta(offer, role)
+		setSelectedOffer(offer)
+		setDecisionNote(meta.note)
+		setDecisionActionable(Boolean(meta.requireDecision))
+		setIsDecisionModalOpen(true)
+	}
 
 	const handleRowClick = (offer: IOfferShort) => {
-		const status = (offer.status_display || '').toLowerCase()
-		if (status.includes('ожидает')) {
-			setSelectedOffer(offer)
-			setIsDecisionModalOpen(true)
-		}
+		openDecisionModal(offer)
 	}
 
 	const handleModalOpenChange = (open: boolean) => {
 		setIsDecisionModalOpen(open)
 		if (!open) {
 			setSelectedOffer(undefined)
+			setDecisionNote(undefined)
+			setDecisionActionable(false)
 		}
 	}
 
@@ -102,7 +113,12 @@ export function DeskMyPage() {
 						) : myResults.length === 0 ? (
 							<EmptyTableState />
 						) : tableType === 'card' ? (
-							<DeskMyCardList cargos={myResults} serverPagination={deskPagination} />
+							<DeskMyCardList
+								cargos={myResults}
+								serverPagination={deskPagination}
+								onOpenDecision={openDecisionModal}
+								role={role}
+							/>
 						) : (
 							<DataTable
 								columns={deskCarrierColumns}
@@ -123,7 +139,12 @@ export function DeskMyPage() {
 						) : deskResults.length === 0 ? (
 							<EmptyTableState />
 						) : tableType === 'card' ? (
-							<DeskDriverCardList cargos={deskResults} serverPagination={myPagination} />
+							<DeskDriverCardList
+								cargos={deskResults}
+								serverPagination={myPagination}
+								onOpenDecision={openDecisionModal}
+								role={role}
+							/>
 						) : (
 							<DataTable
 								columns={deskMyColumns}
@@ -160,7 +181,12 @@ export function DeskMyPage() {
 						) : myResults.length === 0 ? (
 							<EmptyTableState />
 						) : (
-							<DeskMyCardList cargos={myResults} serverPagination={deskPagination} />
+							<DeskMyCardList
+								cargos={myResults}
+								serverPagination={deskPagination}
+								onOpenDecision={openDecisionModal}
+								role={role}
+							/>
 						)}
 					</TabsContent>
 					<TabsContent value='drivers'>
@@ -169,7 +195,12 @@ export function DeskMyPage() {
 						) : deskResults.length === 0 ? (
 							<EmptyTableState />
 						) : (
-							<DeskDriverCardList cargos={deskResults} serverPagination={myPagination} />
+							<DeskDriverCardList
+								cargos={deskResults}
+								serverPagination={myPagination}
+								onOpenDecision={openDecisionModal}
+								role={role}
+							/>
 						)}
 					</TabsContent>
 				</Tabs>
@@ -180,6 +211,8 @@ export function DeskMyPage() {
 				offer={selectedOffer}
 				open={isDecisionModalOpen}
 				onOpenChange={handleModalOpenChange}
+				statusNote={decisionNote}
+				allowActions={decisionActionable}
 			/>
 		</div>
 	)

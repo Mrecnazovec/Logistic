@@ -134,10 +134,6 @@ export function AnnouncementDetailModal({ cargo }: Props) {
 							<DetailRow label='Способ оплаты' value={paymentMethod} />
 							<DetailRow label='Почта' value={email} />
 							<DetailRow label='Номер телефона' value={phone} />
-							<DetailRow
-								label='Примерное время'
-								value={formatDurationFromMinutes(cargo.age_minutes, EMPTY_VALUE)}
-							/>
 							<DetailRow label='Цена/Валюта' value={formattedPrice} />
 						</DetailSection>
 					</div>

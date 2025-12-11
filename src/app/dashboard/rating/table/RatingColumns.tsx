@@ -21,6 +21,12 @@ const renderSortableHeader = (column: any, label: string) => (
 	</Button>
 )
 
+const toNumber = (value: number | string | null | undefined) => {
+	if (value === null || value === undefined) return null
+	const num = typeof value === 'string' ? Number(value) : value
+	return Number.isFinite(num) ? num : null
+}
+
 export const ratingColumns: ColumnDef<IRatingUserList>[] = [
 	{
 		accessorKey: 'id',
@@ -43,33 +49,39 @@ export const ratingColumns: ColumnDef<IRatingUserList>[] = [
 		cell: ({ row }) => (
 			<span className='flex items-center gap-2 font-medium'>
 				<Star className='size-4 text-yellow-400 fill-yellow-400' />
-				{row.original.avg_rating ? row.original.avg_rating.toFixed(1) : <Minus />}
+				{toNumber(row.original.avg_rating) !== null ? toNumber(row.original.avg_rating)?.toFixed(1) : <Minus />}
 			</span>
 		),
-		sortingFn: (a, b) => a.original.avg_rating - b.original.avg_rating,
+		sortingFn: (a, b) => (toNumber(a.original.avg_rating) ?? 0) - (toNumber(b.original.avg_rating) ?? 0),
 	},
 	{
 		accessorKey: 'rating_count',
 		header: ({ column }) => renderSortableHeader(column, 'Отзывов'),
-		cell: ({ row }) => row.original.rating_count.toLocaleString('ru-RU'),
-		sortingFn: (a, b) => a.original.rating_count - b.original.rating_count,
+		cell: ({ row }) => {
+			const value = toNumber(row.original.rating_count)
+			return value !== null ? value.toLocaleString('ru-RU') : '-'
+		},
+		sortingFn: (a, b) => (toNumber(a.original.rating_count) ?? 0) - (toNumber(b.original.rating_count) ?? 0),
 	},
 	{
 		accessorKey: 'completed_orders',
 		header: ({ column }) => renderSortableHeader(column, 'Выполненных заказов'),
-		cell: ({ row }) => row.original.completed_orders.toLocaleString('ru-RU'),
-		sortingFn: (a, b) => a.original.completed_orders - b.original.completed_orders,
+		cell: ({ row }) => {
+			const value = toNumber(row.original.completed_orders)
+			return value !== null ? value.toLocaleString('ru-RU') : '-'
+		},
+		sortingFn: (a, b) => (toNumber(a.original.completed_orders) ?? 0) - (toNumber(b.original.completed_orders) ?? 0),
 	},
 	{
 		accessorKey: 'registered_at',
 		header: ({ column }) => renderSortableHeader(column, 'Зарегистрирован с'),
 		cell: ({ row }) => {
-			const date = new Date(row.original.registered_at)
+			const date = new Date(row.original.registered_at ?? '')
 			return Number.isNaN(date.getTime()) ? '-' : format(date, 'dd.MM.yyyy', { locale: ru })
 		},
 		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.registered_at).getTime()
-			const dateB = new Date(b.original.registered_at).getTime()
+			const dateA = new Date(a.original.registered_at ?? '').getTime()
+			const dateB = new Date(b.original.registered_at ?? '').getTime()
 			return dateA - dateB
 		},
 	},

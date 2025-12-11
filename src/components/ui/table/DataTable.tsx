@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
 	renderFooterActions?: (selectedRow?: TData) => React.ReactNode
 	serverPagination?: ServerPaginationMeta
 	onRowClick?: (record: TData) => void
+	rowClassName?: (record: TData) => string | undefined
 }
 
 export function DataTable<TData, TValue>({
@@ -49,6 +50,7 @@ export function DataTable<TData, TValue>({
 	isButton = false,
 	serverPagination,
 	onRowClick,
+	rowClassName,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -197,6 +199,7 @@ export function DataTable<TData, TValue>({
 										className={cn(
 											(renderExpandedRow || onRowClick) &&
 											'cursor-pointer hover:bg-muted/40 transition-colors',
+											rowClassName?.(row.original),
 										)}
 									>
 										{row.getVisibleCells().map((cell) => (

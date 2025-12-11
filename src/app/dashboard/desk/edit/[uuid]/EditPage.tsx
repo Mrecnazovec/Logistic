@@ -293,7 +293,7 @@ export function EditPage() {
 							<FormField
 								control={form.control}
 								name='axles'
-								rules={{ required: 'Оси обязательны' }}
+								// rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
@@ -368,6 +368,8 @@ export function EditPage() {
 											/>
 										</InputGroup>
 									</FormControl>
+									<FormMessage />
+
 								</FormItem>
 							)}
 						/>
@@ -393,6 +395,8 @@ export function EditPage() {
 									<FormControl>
 										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingPatch} />
 									</FormControl>
+									<FormMessage />
+
 								</FormItem>
 							)}
 						/>
@@ -421,6 +425,8 @@ export function EditPage() {
 											/>
 										</InputGroup>
 									</FormControl>
+									<FormMessage />
+
 								</FormItem>
 							)}
 						/>

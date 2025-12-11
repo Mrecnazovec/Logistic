@@ -231,7 +231,7 @@ export function PostingPage() {
 							<FormField
 								control={form.control}
 								name='axles'
-								rules={{ required: 'Оси обязательны' }}
+								// rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
@@ -299,6 +299,7 @@ export function PostingPage() {
 											/>
 										</InputGroup>
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -325,6 +326,8 @@ export function PostingPage() {
 									<FormControl>
 										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingCreate} />
 									</FormControl>
+									<FormMessage />
+									
 								</FormItem>
 							)}
 						/>
@@ -354,6 +357,8 @@ export function PostingPage() {
 											/>
 										</InputGroup>
 									</FormControl>
+									<FormMessage />
+
 								</FormItem>
 							)}
 						/>

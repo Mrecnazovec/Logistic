@@ -18,7 +18,7 @@ import { useEffect } from 'react'
 import { DeskCardDriverList } from './components/DeskCardDriverList'
 import { DeskCardList } from './components/DeskCardList'
 import { useSearchForm } from './Searching/useSearchForm'
-import { deskColumns } from './table/DeskColumns'
+import { deskColumns, getDeskRowClassName } from './table/DeskColumns'
 import { deskDriverColumns } from './table/DeskDriverColumns'
 
 
@@ -78,6 +78,7 @@ export function DeskPage() {
 							<DataTable
 								columns={deskColumns}
 								data={data.results}
+								rowClassName={getDeskRowClassName}
 								serverPagination={{
 									next: data.next,
 									previous: data.previous,

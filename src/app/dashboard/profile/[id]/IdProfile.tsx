@@ -23,6 +23,7 @@ export function IdProfile() {
 
 	const roleLabel = ratingUser ? RoleSelect.find((type) => type.type === ratingUser.role)?.name : ""
 	const registeredAt = ratingUser?.registered_at ? dateFormatter.format(new Date(ratingUser.registered_at)) : "-"
+	const completedOrders = parseDistance(ratingUser?.completed_orders)
 
 	const stats = [
 		{
@@ -35,7 +36,7 @@ export function IdProfile() {
 		{
 			id: "orders",
 			label: "Завершенных сделок",
-			value: ratingUser ? integerFormatter.format(ratingUser.completed_orders) : "-",
+			value: completedOrders !== null ? integerFormatter.format(completedOrders) : "-",
 			sub: "за всё время",
 			icon: PackageCheck,
 		},
@@ -127,3 +128,4 @@ export function IdProfile() {
 		</div>
 	)
 }
+

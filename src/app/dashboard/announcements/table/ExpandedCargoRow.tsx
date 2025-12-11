@@ -1,5 +1,6 @@
 'use client'
 
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import {
@@ -77,7 +78,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					<p className='text-base font-semibold text-brand'>Информация о компании</p>
 					<dl className='space-y-2'>
 						<InfoRow label='Название' value={cargo.company_name || EMPTY_VALUE} />
-						<InfoRow label='Контакты' value={`${contactName}${contactValue ? `: ${contactValue}` : ''}`} />
+						<InfoRow label='Представитель' value={<ProfileLink name={cargo.user_name} id={Number(cargo.user_id)} />} />
 						<InfoRow
 							label='Рейтинг'
 							value={
@@ -87,8 +88,8 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 								</span>
 							}
 						/>
-						<InfoRow label='Телефон' value={cargo.phone || EMPTY_VALUE} />
-						<InfoRow label='Email' value={cargo.email || EMPTY_VALUE} />
+						<InfoRow label='Телефон' value={cargo.contact_pref === 'both' || cargo.contact_pref === 'phone' ? cargo.phone : EMPTY_VALUE} />
+						<InfoRow label='Email' value={cargo.contact_pref === 'both' || cargo.contact_pref === 'email' ? cargo.email : EMPTY_VALUE} />
 					</dl>
 				</div>
 
@@ -128,7 +129,6 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 						<InfoRow label='Способ оплаты' value={paymentMethod} />
 						<InfoRow label='Email' value={cargo.email || EMPTY_VALUE} />
 						<InfoRow label='Телефон' value={cargo.phone || EMPTY_VALUE} />
-						<InfoRow label='Примерное время' value={formatDurationFromMinutes(cargo.age_minutes, EMPTY_VALUE)} />
 						<InfoRow label='Стоимость' value={formattedPrice} />
 					</dl>
 				</div>

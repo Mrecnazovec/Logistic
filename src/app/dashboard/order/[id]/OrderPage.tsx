@@ -28,6 +28,7 @@ import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { DriverStatus } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { OrderRatingModal } from './OrderRatingModal'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 
 const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }> = {
 	en_route: { label: 'В пути', variant: 'info' },
@@ -37,8 +38,9 @@ const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 's
 
 const DRIVER_STATUS_BADGE_ENTRIES = Object.entries(DRIVER_STATUS_BADGE_MAP) as Array<[DriverStatus, (typeof DRIVER_STATUS_BADGE_MAP)[DriverStatus]]>
 
-const withFallback = (value?: string | number | null) => {
+const withFallback = (value?: string | number | null, id?: number | null) => {
 	if (value === null || value === undefined || value === '') return DEFAULT_PLACEHOLDER
+	if (id) return <ProfileLink name={String(value)} id={id} />
 	return String(value)
 }
 
@@ -253,7 +255,7 @@ export function OrderPage() {
 					{
 						title: 'Информация о заказчике',
 						rows: [
-							{ label: 'Заказчик', value: withFallback(order.roles.customer.name) },
+							{ label: 'Заказчик', value: withFallback(order.roles.customer.name, order.roles.customer.id) },
 							{ label: 'Компания', value: withFallback(order.roles.customer.company) },
 							{ label: 'Контакты', value: withFallback(order.roles.customer.phone) },
 						],
@@ -261,7 +263,7 @@ export function OrderPage() {
 					{
 						title: 'Информация о логисте',
 						rows: [
-							{ label: 'Логист', value: withFallback(order.roles.logistic?.name) },
+							{ label: 'Логист', value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id) },
 							{ label: 'Компания', value: withFallback(order.roles.logistic?.company) },
 							{ label: 'Контакты', value: withFallback(order.roles.logistic?.phone) },
 						],
@@ -269,7 +271,7 @@ export function OrderPage() {
 					{
 						title: 'Информация о перевозчике',
 						rows: [
-							{ label: 'Перевозчик', value: hasDriver ? withFallback(order.roles.carrier?.name) : DEFAULT_PLACEHOLDER },
+							{ label: 'Перевозчик', value: hasDriver ? withFallback(order.roles.carrier?.name, order.roles.carrier?.id) : DEFAULT_PLACEHOLDER },
 							{ label: 'Компания', value: withFallback(order.roles.carrier?.company) },
 							{ label: 'Контакты', value: withFallback(order.roles.carrier?.phone) },
 						],

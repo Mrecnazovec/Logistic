@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 interface Props {
-	id: string
+	id: number
 	name: string
-	className: string
+	className?: string
 }
 
 export function ProfileLink({ id, name, className }: Props) {
-	return <Link className={cn('', className)} href={DASHBOARD_URL.profile(id)}>{name}</Link>
+	return <Link className={cn('text-brand hover:text-brand/80 font-semibold', className)} href={DASHBOARD_URL.profile(String(id))}>{name}</Link>
 }

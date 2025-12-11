@@ -27,6 +27,7 @@ import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { formatPriceValue } from '@/lib/formatters'
 
 
 type OfferRow = ICargoList & { id?: number }
@@ -122,46 +123,35 @@ function OfferDetails({ selectedRow, createOffer, isLoadingCreate }: OfferDetail
 	return (
 		<div className='space-y-6'>
 			<div className='flex flex-col'>
-				<div className='flex justify-between gap-6 items-center border-b-2 pb-6 flex-wrap'>
+				<div className='flex flex-wrap items-start justify-between gap-6 border-b pb-6'>
 					<div>
-						<p>
+						<p className='font-semibold text-foreground'>
 							{selectedRow.origin_city}, {selectedRow.origin_country}
 						</p>
-						<p>{format(selectedRow.load_date, 'dd.MM.yyyy', { locale: ru })}</p>
+						<p className='text-sm text-muted-foreground'>{selectedRow.load_date}</p>
 					</div>
-					<div className='flex flex-col items-center justify-center gap-3'>
-						<ArrowRight className='size-5' />
-						<p>{selectedRow.route_km} км</p>
+					<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
+						<ArrowRight className='mb-1 size-5' />
+						{selectedRow.route_km}
 					</div>
 					<div>
-						<p>
+						<p className='font-semibold text-foreground'>
 							{selectedRow.destination_city}, {selectedRow.destination_country}
 						</p>
+						<p className='text-sm text-muted-foreground'>{selectedRow.delivery_date}</p>
+					</div>
+					<div className='space-y-1 text-sm text-muted-foreground'>
 						<p>
-							{selectedRow.delivery_date
-								? format(selectedRow.delivery_date, 'dd.MM.yyyy', { locale: ru })
-								: '—'}
+							<span className='font-semibold text-foreground'>Тип транспорта: </span>
+							{transportName}
 						</p>
-					</div>
-					<div>
-						<p>Транспорт: {transportName}</p>
-						<p>Вес: {selectedRow.weight_t} т</p>
-						<p>Цена: {formattedPrice}</p>
-						<p>({formattedPricePerKm})</p>
-					</div>
-				</div>
-
-				<div className='flex justify-between gap-6 items-center border-b-2 py-6'>
-					<div>
 						<p>
-							<span className='font-semibold'>Компания: </span>
-							{selectedRow.company_name}
+							<span className='font-semibold text-foreground'>Вес: </span>
+							{selectedRow.weight_t}
 						</p>
-					</div>
-					<div>
 						<p>
-							<span className='font-semibold'>Предложение: </span>
-							{formattedPrice} ({formattedPricePerKm})
+							<span className='font-semibold text-foreground'>Цена: </span>
+							{formatPriceValue(selectedRow.price_value, selectedRow.price_currency)}, ({formatCurrencyPerKmValue(selectedRow.price_per_km)})
 						</p>
 					</div>
 				</div>
