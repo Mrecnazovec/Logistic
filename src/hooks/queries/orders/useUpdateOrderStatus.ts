@@ -10,21 +10,17 @@ export const useUpdateOrderStatus = () => {
 
 	const { mutate: updateDriverStatus, isPending: isLoadingUpdateStatus } = useMutation({
 		mutationKey: ['order', 'driver-status'],
-		mutationFn: ({ id, data }: { id: string; data: PatchedOrderDriverStatusUpdateDto }) =>
-			ordersService.updateDriverStatus(id, data),
+		mutationFn: ({ id, data }: { id: string; data: PatchedOrderDriverStatusUpdateDto }) => ordersService.updateDriverStatus(id, data),
 		onSuccess(_, variables) {
 			queryClient.invalidateQueries({ queryKey: ['get order', variables.id] })
 			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			toast.success('Driver status updated')
+			toast.success('Статус водителя обновлён')
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Failed to update driver status'
+			const message = getErrorMessage(error) ?? 'Ошибка при обновлении статуса водителя'
 			toast.error(message)
 		},
 	})
 
-	return useMemo(
-		() => ({ updateDriverStatus, isLoadingUpdateStatus }),
-		[updateDriverStatus, isLoadingUpdateStatus],
-	)
+	return useMemo(() => ({ updateDriverStatus, isLoadingUpdateStatus }), [updateDriverStatus, isLoadingUpdateStatus])
 }

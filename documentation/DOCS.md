@@ -157,7 +157,7 @@ Me.interface.ts — profile/update/role change types.
 Notification.interface.ts — INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses; IOfferShort includes invite_token and invite_offer.
-Order.interface.ts - order types, documents, status history, and upload DTO.
+Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
 PaginatedList.interface.ts - paginated lists for cargos, offers, orders, ratings.
 Payment.interface.ts - payment schemas (payment, create request, patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.

@@ -35,28 +35,31 @@ export function OrderRatingModal({ order, currentRole, disabled }: OrderRatingMo
 	const [formState, setFormState] = useState<Record<number, { score: number | ''; comment: string }>>({})
 	const { createRating, isLoadingCreate } = useCreateRating()
 
+	console.log(order);
+
+
 	const participants = useMemo(() => {
 		const logisticId = (order as unknown as { logistic?: number | null }).logistic ?? null
 		const list: Participant[] = []
 
-		if (order.customer) {
+		if (order.roles.customer) {
 			list.push({
-				id: order.customer,
-				name: order.customer_name,
+				id: order.roles.customer.id,
+				name: order.roles.customer.name,
 				role: RoleEnum.CUSTOMER,
 			})
 		}
-		if (order.carrier) {
+		if (order.roles.carrier) {
 			list.push({
-				id: order.carrier,
-				name: order.carrier_name,
+				id: order.roles.carrier.id,
+				name: order.roles.carrier.name,
 				role: RoleEnum.CARRIER,
 			})
 		}
-		if (logisticId) {
+		if (order.roles.logistic) {
 			list.push({
-				id: logisticId,
-				name: order.logistic_name,
+				id: order.roles.logistic.id,
+				name: order.roles.logistic.name,
 				role: RoleEnum.LOGISTIC,
 			})
 		}

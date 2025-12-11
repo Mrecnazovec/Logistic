@@ -15,14 +15,14 @@ import { IOfferShort } from '@/shared/types/Offer.interface'
 import { Mail, MapPin, Phone, Scale, Truck, Wallet } from 'lucide-react'
 import { InfoChip, InfoSection } from './DeskCardShared'
 
-type DeskDriverCardListProps = {
+type DeskMyCardListProps = {
 	cargos: IOfferShort[]
 	serverPagination?: ServerPaginationMeta
 	onOpenDecision?: (offer: IOfferShort) => void
 	role?: RoleEnum
 }
 
-export function DeskDriverCardList({ cargos, serverPagination, onOpenDecision, role }: DeskDriverCardListProps) {
+export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role }: DeskMyCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 
 	if (!cargos.length) {

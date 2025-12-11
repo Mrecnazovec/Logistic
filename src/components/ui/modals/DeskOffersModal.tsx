@@ -281,7 +281,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 							onValueChange={(value) => setActiveTab(value as 'incoming' | 'accepted')}
 							className='space-y-4'
 						>
-							<TabsList className='w-full justify-center gap-8 bg-transparent p-0'>
+							<TabsList className='w-full justify-center gap-8 bg-transparent p-0 border-b'>
 								<TabsTrigger
 									value='incoming'
 									className='rounded-none border-2 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:text-foreground data-[state=active]:border-b-brand'

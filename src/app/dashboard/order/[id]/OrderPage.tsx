@@ -300,12 +300,12 @@ export function OrderPage() {
 					</p>
 					<p className="flex justify-between gap-3">
 						<span className="text-grayscale">Адрес</span>
-						<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
+						<span className="font-medium text-end">{withFallback(order.origin_address)}</span>
 					</p>
 					<p className="flex justify-between gap-3">
 						<span className="text-grayscale">Дата погрузки</span>
 						<span className="font-medium text-end">
-							{formatDateValue(order.load_date, DEFAULT_PLACEHOLDER)}
+							{order.load_date}
 						</span>
 					</p>
 					<p className="flex justify-between gap-3">
@@ -329,12 +329,12 @@ export function OrderPage() {
 						</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Адрес</span>
-							<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
+							<span className="font-medium text-end">{withFallback(order.destination_address)}</span>
 						</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Дата разгрузки</span>
 							<span className="font-medium text-end">
-								{formatDateValue(order.delivery_date, DEFAULT_PLACEHOLDER)}
+								{order.delivery_date}
 							</span>
 						</p>
 						<p className="flex justify-between gap-3">

@@ -1494,6 +1494,7 @@ export interface components {
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
+            readonly invite_token: string;
             /** Format: date-time */
             readonly updated_at: string;
         };
@@ -1600,6 +1601,7 @@ export interface components {
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
+            readonly invite_token: string;
         };
         OpenInviteResponse: {
             cargo_id: number;
@@ -1658,9 +1660,11 @@ export interface components {
             /** Format: double */
             readonly price_per_km: number;
             readonly origin_city: string;
+            readonly origin_address: string;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
+            readonly destination_address: string;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
@@ -1794,9 +1798,11 @@ export interface components {
             /** Format: double */
             readonly price_per_km: number;
             readonly origin_city: string;
+            readonly origin_address: string;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
+            readonly destination_address: string;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;

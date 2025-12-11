@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Form } from '@/components/ui/form-control/Form'
 import { OfferDecisionModal } from '@/components/ui/modals/OfferDecisionModal'
 import { SearchFields } from '@/components/ui/search/SearchFields'
+import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
@@ -13,14 +14,12 @@ import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomi
 import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
-import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useRoleStore } from '@/store/useRoleStore'
+import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useSearchForm } from '../Searching/useSearchForm'
-import { DeskDriverCardList } from './components/DeskDriverCardList'
-import { DeskMyCardList } from './components/DeskMyCardList'
-import { deskCarrierColumns } from './table/DeskCarrierColumns'
+import { DeskMyCardList } from './components/DeskIncomeCardList'
+import { deskIncomeColumns } from './table/DeskIncomeColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
-import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 
 
 export function DeskMyPage() {
@@ -121,7 +120,7 @@ export function DeskMyPage() {
 							/>
 						) : (
 							<DataTable
-								columns={deskCarrierColumns}
+								columns={deskMyColumns}
 								data={myResults}
 								serverPagination={{
 									next: dataMy?.next,
@@ -139,7 +138,7 @@ export function DeskMyPage() {
 						) : deskResults.length === 0 ? (
 							<EmptyTableState />
 						) : tableType === 'card' ? (
-							<DeskDriverCardList
+							<DeskMyCardList
 								cargos={deskResults}
 								serverPagination={myPagination}
 								onOpenDecision={openDecisionModal}
@@ -147,7 +146,7 @@ export function DeskMyPage() {
 							/>
 						) : (
 							<DataTable
-								columns={deskMyColumns}
+								columns={deskIncomeColumns}
 								data={deskResults}
 								serverPagination={{
 									next: data?.next,
@@ -195,7 +194,7 @@ export function DeskMyPage() {
 						) : deskResults.length === 0 ? (
 							<EmptyTableState />
 						) : (
-							<DeskDriverCardList
+							<DeskMyCardList
 								cargos={deskResults}
 								serverPagination={myPagination}
 								onOpenDecision={openDecisionModal}

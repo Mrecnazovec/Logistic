@@ -15,9 +15,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 import { useRoleStore } from '@/store/useRoleStore'
 
-
-
-export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
+export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -37,6 +35,10 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 		},
 	},
 	{
+		accessorKey: 'price_pref',
+		header: 'Предпочтение оплаты',
+	},
+	{
 		id: 'origin',
 		header: ({ column }) => (
 			<Button
@@ -50,10 +52,11 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 		),
 		cell: ({ row }) => {
 			const { origin_city, origin_country, load_date } = row.original
+			const formattedDate = formatDateValue(load_date, 'dd.MM.yyyy', '—')
 			return (
 				<div className='flex flex-col'>
 					<span>{formatPlace(origin_city, origin_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>{formatDateValue(load_date, 'dd.MM.yyyy', '—')}</span>
+					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
 				</div>
 			)
 		},
@@ -73,12 +76,11 @@ export const deskCarrierColumns: ColumnDef<IOfferShort>[] = [
 		),
 		cell: ({ row }) => {
 			const { destination_city, destination_country, delivery_date } = row.original
+			const formattedDate = formatDateValue(delivery_date, 'dd.MM.yyyy', '—')
 			return (
 				<div className='flex flex-col'>
 					<span>{formatPlace(destination_city, destination_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>
-						{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}
-					</span>
+					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
 				</div>
 			)
 		},
