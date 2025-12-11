@@ -47,6 +47,7 @@ export const useNotifications = (enabled: boolean) => {
 					})),
 				}
 			})
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 		},
 	})
 
@@ -64,6 +65,7 @@ export const useNotifications = (enabled: boolean) => {
 					})),
 				}
 			})
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 		},
 	})
 

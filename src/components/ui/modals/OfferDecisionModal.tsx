@@ -93,7 +93,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange }: OfferDecisionM
 							</div>
 							<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 								<ArrowRight className='mb-1 size-5' />
-								<span>—</span>
+								{offer.route_km}
 							</div>
 							<div>
 								<p className='font-semibold text-foreground'>

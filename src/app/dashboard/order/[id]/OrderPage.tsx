@@ -1,8 +1,6 @@
-'use client'
+﻿'use client'
 
-import { Share2 } from 'lucide-react'
 import Link from 'next/link'
-import toast from 'react-hot-toast'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -177,40 +175,6 @@ export function OrderPage() {
 		patchOrder({ id: orderId, data: { status: OrderStatusEnum.PAID } })
 	}, [hasOtherDocument, order?.status, orderId, patchOrder])
 
-	const handleShareClick = useCallback(async () => {
-		if (typeof window === 'undefined') return
-
-		const shareUrl = window.location.href
-
-		const fallbackCopy = () => {
-			const textarea = document.createElement('textarea')
-			textarea.value = shareUrl
-			textarea.style.position = 'fixed'
-			textarea.style.opacity = '0'
-			document.body.appendChild(textarea)
-			textarea.focus()
-			textarea.select()
-			document.execCommand('copy')
-			document.body.removeChild(textarea)
-		}
-
-		try {
-			if (navigator?.clipboard?.writeText) {
-				await navigator.clipboard.writeText(shareUrl)
-			} else {
-				fallbackCopy()
-			}
-			toast.success('Ссылка скопирована')
-		} catch (error) {
-			try {
-				fallbackCopy()
-				toast.success('Ссылка скопирована')
-			} catch {
-				toast.error('Не удалось скопировать ссылку')
-			}
-		}
-	}, [])
-
 	const handleDriverStatusSelect = useCallback(
 		(nextStatus: OrderDriverStatusEnum) => {
 			if (!orderId || nextStatus === currentDriverStatus) return
@@ -221,7 +185,7 @@ export function OrderPage() {
 
 	const renderOrderStatusBadge = () => {
 		if (!orderStatus) {
-			return <Badge variant="secondary">Статус недоступен</Badge>
+			return <Badge variant="secondary">Статус не задан</Badge>
 		}
 
 		return <Badge variant={getOrderStatusVariant(orderStatus)}>{getOrderStatusLabel(orderStatus)}</Badge>
@@ -239,11 +203,6 @@ export function OrderPage() {
 		)
 	}
 
-	const loadDate = formatDateValue(order.load_date)
-	const deliveryDate = formatDateValue(order.delivery_date)
-	const distance = formatDistanceKm(order.route_distance_km, DEFAULT_PLACEHOLDER)
-	const price = formatPriceValue(order.price_total, order.currency)
-	const pricePerKm = formatPricePerKmValue(order.price_per_km, order.currency)
 	const driverStatusButton = canChangeDriverStatus ? (
 		<div className="fixed bottom-6 right-6 z-50">
 			<DropdownMenu>
@@ -253,7 +212,7 @@ export function OrderPage() {
 							variant={driverStatusMeta?.variant ?? 'secondary'}
 							className="cursor-pointer px-4 py-2 text-sm shadow-lg data-[state=open]:ring-2 data-[state=open]:ring-ring"
 						>
-							{isLoadingUpdateStatus ? 'Сохраняем...' : driverStatusMeta ? `${driverStatusMeta.label}` : 'Сменить статус водителя'}
+							{isLoadingUpdateStatus ? 'Обновление...' : driverStatusMeta ? `${driverStatusMeta.label}` : 'Выберите статус водителя'}
 						</Badge>
 					</button>
 				</DropdownMenuTrigger>
@@ -288,28 +247,28 @@ export function OrderPage() {
 						title: 'Информация о заказчике',
 						rows: [
 							{ label: 'Заказчик', value: withFallback(order.customer_name) },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
 							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
 						],
 					},
 					{
-						title: 'Информация о посреднике',
+						title: 'Информация о логисте',
 						rows: [
-							{ label: 'Экспедитор', value: withFallback(order.logistic_name) },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Логист', value: withFallback(order.logistic_name) },
+							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
 							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
 						],
 					},
 					{
-						title: 'Информация о водителе',
+						title: 'Информация о перевозчике',
 						rows: [
-							{ label: 'Водитель', value: hasDriver ? withFallback(order.carrier_name) : DEFAULT_PLACEHOLDER },
-							{ label: 'Логин', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Перевозчик', value: hasDriver ? withFallback(order.carrier_name) : DEFAULT_PLACEHOLDER },
+							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
 							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Транспорт', value: DEFAULT_PLACEHOLDER },
-							{ label: 'На платформе с', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Тип транспорта', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
 						],
 					},
 				].map((section) => (
@@ -331,7 +290,7 @@ export function OrderPage() {
 				<div className="space-y-3">
 					<p className="font-medium text-brand">Погрузка</p>
 					<p className="flex justify-between gap-3">
-						<span className="text-grayscale">Город</span>
+						<span className="text-grayscale">Город отправления</span>
 						<span className="font-medium text-end">{withFallback(order.origin_city)}</span>
 					</p>
 					<p className="flex justify-between gap-3">
@@ -339,11 +298,13 @@ export function OrderPage() {
 						<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
 					</p>
 					<p className="flex justify-between gap-3">
-						<span className="text-grayscale">Дата</span>
-						<span className="font-medium text-end">{loadDate}</span>
+						<span className="text-grayscale">Дата погрузки</span>
+						<span className="font-medium text-end">
+							{formatDateValue(order.load_date, DEFAULT_PLACEHOLDER)}
+						</span>
 					</p>
 					<p className="flex justify-between gap-3">
-						<span className="text-success-500">Отправлен</span>
+						<span className="text-success-500">Документ</span>
 						{renderDocumentAction({
 							hasDocument: hasLoadingDocument,
 							documentDate: firstLoadingDocumentDate,
@@ -358,7 +319,7 @@ export function OrderPage() {
 					<div className="space-y-3">
 						<p className="font-medium text-brand">Разгрузка</p>
 						<p className="flex justify-between gap-3">
-							<span className="text-grayscale">Город</span>
+							<span className="text-grayscale">Город назначения</span>
 							<span className="font-medium text-end">{withFallback(order.destination_city)}</span>
 						</p>
 						<p className="flex justify-between gap-3">
@@ -366,11 +327,13 @@ export function OrderPage() {
 							<span className="font-medium text-end">{DEFAULT_PLACEHOLDER}</span>
 						</p>
 						<p className="flex justify-between gap-3">
-							<span className="text-grayscale">Дата</span>
-							<span className="font-medium text-end">{deliveryDate}</span>
+							<span className="text-grayscale">Дата разгрузки</span>
+							<span className="font-medium text-end">
+								{formatDateValue(order.delivery_date, DEFAULT_PLACEHOLDER)}
+							</span>
 						</p>
 						<p className="flex justify-between gap-3">
-							<span className="text-success-500">Прибыл</span>
+							<span className="text-success-500">Документ</span>
 							{renderDocumentAction({
 								hasDocument: hasUnloadingDocument,
 								documentDate: firstUnloadingDocumentDate,
@@ -384,17 +347,21 @@ export function OrderPage() {
 
 				{shouldShowTransportDetailsSection && (
 					<div className="space-y-3">
-						<p className="font-medium text-brand">Детали перевозки</p>
+						<p className="font-medium text-brand">Параметры перевозки</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Расстояние</span>
-							<span className="font-medium text-end">{distance}</span>
+							<span className="font-medium text-end">
+								{formatDistanceKm(order.route_distance_km, DEFAULT_PLACEHOLDER)}
+							</span>
 						</p>
 						<p className="flex justify-between gap-3">
 							<span className="text-grayscale">Стоимость</span>
-							<span className="font-medium text-end">{price}</span>
+							<span className="font-medium text-end">
+								{formatPriceValue(order.price_total, order.currency)}
+							</span>
 						</p>
 						<p className="flex justify-between gap-3">
-							<span className="text-success-500">Подтверждение</span>
+							<span className="text-success-500">Прочие документы</span>
 							{renderDocumentAction({
 								hasDocument: hasOtherDocument,
 								documentDate: firstOtherDocumentDate,
@@ -413,24 +380,28 @@ export function OrderPage() {
 				<div className="space-y-3">
 					<p className="font-medium text-brand">Финансы</p>
 					<p className="flex justify-between gap-3 text-error-500">
-						<span className="text-grayscale">Итого</span>
-						<span className="font-medium">{price}</span>
+						<span className="text-grayscale">Стоимость</span>
+						<span className="font-medium">
+							{formatPriceValue(order.price_total, order.currency)}
+						</span>
 					</p>
 					<p className="flex justify-between gap-3 text-success-500">
 						<span className="text-grayscale">Цена за километр</span>
-						<span className="font-medium">{pricePerKm}</span>
+						<span className="font-medium">
+							{formatPricePerKmValue(order.price_per_km, order.currency)}
+						</span>
 					</p>
 				</div>
 			</div>
 
 			<div className="flex flex-wrap items-center justify-end gap-3">
-				{role === RoleEnum.CARRIER && renderDocumentAction({
-					...currentDocumentAction,
-					isButton: true,
-					buttonLabel: 'Загрузить файл',
-				})}
+				{role === RoleEnum.CARRIER &&
+					renderDocumentAction({
+						...currentDocumentAction,
+						isButton: true,
+						buttonLabel: 'Загрузить файл',
+					})}
 				{isCompleted ? null : hasDriver ? (
-					// <Button className="bg-black/90 hover:bg-black">Скрыть контакты заказчика</Button>
 					''
 				) : (
 					<AddDriver />
@@ -438,14 +409,8 @@ export function OrderPage() {
 				{canRateParticipants && order && (
 					<OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />
 				)}
-				<Button onClick={handleShareClick} className="bg-warning-500/90 hover:bg-warning-500">
-					<Share2 className="size-4" aria-hidden="true" />
-					Поделиться
-				</Button>
-				{!isCompleted && (
-					<Button disabled className="bg-error-500/90 hover:bg-error-500">Отменить перевозку</Button>
-				)}
 			</div>
+
 			{driverStatusButton}
 		</div>
 	)
@@ -502,3 +467,13 @@ function OrderPageSkeleton() {
 		</div>
 	)
 }
+
+
+
+
+
+
+
+
+
+

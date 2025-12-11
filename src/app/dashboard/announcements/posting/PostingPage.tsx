@@ -393,7 +393,7 @@ export function PostingPage() {
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
-					<Button type='submit'>Опубликовать</Button>
+					<Button disabled={isLoadingCreate} type='submit'>Опубликовать</Button>
 				</div>
 			</form>
 		</Form>

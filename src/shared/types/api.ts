@@ -754,6 +754,38 @@ export interface paths {
         patch: operations["orders_driver_status_partial_update"];
         trace?: never;
     };
+    "/api/orders/{id}/generate-invite/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_generate_invite_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/invite-by-id/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_invite_by_id_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/{id}/status-history/": {
         parameters: {
             query?: never;
@@ -764,6 +796,22 @@ export interface paths {
         get: operations["orders_status_history_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/accept-invite/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_accept_invite_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1076,6 +1124,8 @@ export interface components {
             /** Format: double */
             readonly dest_radius_km: number;
             readonly is_hidden_for_me: string;
+            readonly user_name: string;
+            readonly user_id: string;
         };
         CargoPublish: {
             /** Format: uuid */
@@ -1530,6 +1580,7 @@ export interface components {
             readonly carrier: number | null;
             readonly carrier_name: string;
             readonly logistic_name: string;
+            readonly roles: string;
             /**
              * @description * `pending` - В ожидании
              *     * `in_process` - В процессе
@@ -1615,10 +1666,9 @@ export interface components {
              *     * `loading` - Документы о погрузке
              *     * `unloading` - Документы о разгрузке
              *     * `other` - Дополнительно
-             * @default other
              * @enum {string}
              */
-            category: "licenses" | "contracts" | "loading" | "unloading" | "other";
+            category?: "licenses" | "contracts" | "loading" | "unloading" | "other";
             readonly category_display: string;
             /** Format: uri */
             file: string;
@@ -1636,10 +1686,9 @@ export interface components {
              *     * `loading` - Документы о погрузке
              *     * `unloading` - Документы о разгрузке
              *     * `other` - Дополнительно
-             * @default other
              * @enum {string}
              */
-            category: "licenses" | "contracts" | "loading" | "unloading" | "other";
+            category?: "licenses" | "contracts" | "loading" | "unloading" | "other";
             /** Format: binary */
             file: string;
         };
@@ -1661,6 +1710,7 @@ export interface components {
             readonly carrier: number | null;
             readonly carrier_name: string;
             readonly logistic_name: string;
+            readonly roles: string;
             /**
              * @description * `pending` - В ожидании
              *     * `in_process` - В процессе
@@ -3614,6 +3664,62 @@ export interface operations {
             };
         };
     };
+    orders_generate_invite_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_invite_by_id_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
     orders_status_history_retrieve: {
         parameters: {
             query?: never;
@@ -3632,6 +3738,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusHistory"];
+                };
+            };
+        };
+    };
+    orders_accept_invite_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
                 };
             };
         };

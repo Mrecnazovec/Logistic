@@ -56,6 +56,7 @@ const normalizeOffer = (offer: IOfferShort) => {
 		weight: offer.weight_t ? `${offer.weight_t} т` : EMPTY,
 		price: formatCurrencyValue(offer.price_value, priceCurrency),
 		company: offer.carrier_name,
+		route_km: offer.route_km
 	}
 }
 
@@ -102,7 +103,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 
 										<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 											<ArrowRight className='mb-1 size-5' />
-											<span className='text-error-500'>НУЖНО РАССТОЯНИЕ</span>
+											{offer.route_km}
 										</div>
 
 										<div>

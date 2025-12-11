@@ -134,7 +134,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 									</div>
 									<div className='flex flex-col items-center justify-center gap-3 text-sm text-muted-foreground'>
 										<ArrowRight className='size-5' />
-										<p>{selectedRow.origin_dist_km} км</p>
+										<p>{selectedRow.route_km} км</p>
 									</div>
 									<div>
 										<p>

@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useEffect, useMemo } from "react"
+import { useForm, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/form-control/Input"
 import { Label } from "@/components/ui/form-control/Label"
@@ -29,7 +29,7 @@ export function SettingPage() {
 	const { me, isLoading } = useGetMe()
 	const { updateMe, isLoadingUpdate } = useUpdateMe()
 
-	const { register, handleSubmit, reset, setValue, watch } = useForm<UpdateMeDto>({
+	const { register, handleSubmit, reset, setValue, control } = useForm<UpdateMeDto>({
 		defaultValues: {
 			first_name: "",
 			company_name: "",
@@ -42,10 +42,14 @@ export function SettingPage() {
 		},
 	})
 
-	const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
+	const watchedCountryCode = useWatch({ control, name: "profile.country_code" })
+	const watchedCity = useWatch({ control, name: "profile.city" }) || ""
+	const watchedCountryName = useWatch({ control, name: "profile.country" }) || ""
 
-	const watchedCountryCode = watch("profile.country_code")
-	const watchedCity = watch("profile.city") || ""
+	const selectedCountry: Country | null = useMemo(
+		() => (watchedCountryName && watchedCountryCode ? { name: watchedCountryName, code: watchedCountryCode } : null),
+		[watchedCountryCode, watchedCountryName],
+	)
 
 	useEffect(() => {
 		if (!me) return
@@ -61,11 +65,6 @@ export function SettingPage() {
 				region: me.profile?.region,
 			},
 		})
-		setSelectedCountry(
-			me.profile?.country && me.profile.country_code
-				? { name: me.profile.country, code: me.profile.country_code }
-				: null,
-		)
 	}, [me, reset])
 
 	const onSubmit = handleSubmit((values) => {
@@ -129,7 +128,6 @@ export function SettingPage() {
 						<CountrySelector
 							value={selectedCountry}
 							onChange={(country) => {
-								setSelectedCountry(country)
 								setValue("profile.country", country.name)
 								setValue("profile.country_code", country.code)
 								setValue("profile.city", "")
@@ -161,7 +159,6 @@ export function SettingPage() {
 							onChange={(value, city) => {
 								setValue("profile.city", value)
 								if (city?.country_code) {
-									setSelectedCountry({ name: city.country, code: city.country_code })
 									setValue("profile.country", city.country)
 									setValue("profile.country_code", city.country_code)
 								}

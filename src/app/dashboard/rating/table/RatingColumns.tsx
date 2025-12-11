@@ -4,7 +4,7 @@ import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { IRatingUser } from '@/shared/types/Rating.interface'
+import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -21,7 +21,7 @@ const renderSortableHeader = (column: any, label: string) => (
 	</Button>
 )
 
-export const ratingColumns: ColumnDef<IRatingUser>[] = [
+export const ratingColumns: ColumnDef<IRatingUserList>[] = [
 	{
 		accessorKey: 'id',
 		header: 'ID',

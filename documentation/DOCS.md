@@ -61,10 +61,13 @@ usePutOffer — full offer update by uuid via offersService.putOffer.
 
 useCreateOrder — creates order via ordersService.createOrder.
 useDeleteOrder — deletes order by id via ordersService.deleteOrder.
-useGetOrder — loads order details by id via ordersService.getOrder.
-useGetOrderDocuments — loads order documents via ordersService.getOrderDocuments.
-useGetOrderStatusHistory — loads driver status history via ordersService.getOrderStatusHistory.
+useGetOrder - loads order details by id via ordersService.getOrder.
+useGetOrderDocuments - loads order documents via ordersService.getOrderDocuments.
+useGetOrderStatusHistory - loads driver status history via ordersService.getOrderStatusHistory.
 useGetOrders - loads orders list with filters via ordersService.getOrders.
+useGenerateOrderInvite - posts invite generation for an order via ordersService.generateOrderInvite.
+useInviteOrderById - sends an order invite to a specific user id via ordersService.inviteOrderById.
+useAcceptOrderInvite - accepts an order invite via ordersService.acceptOrderInvite.
 useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
 useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
@@ -123,7 +126,7 @@ loadsService — load CRUD, invites, visibility management via /loads API.
 meService — fetch/update profile and analytics.
 notificationsService — load notifications and mark as read.
 offersService - offer CRUD and actions (accept/reject/invite/counter).
-ordersService - order CRUD, status updates, document upload.
+ordersService - order CRUD, invites, status updates, document upload.
 paymentsService - payment creation and confirmations for customer/carrier endpoints.
 ratingsService - user ratings CRUD.
 

@@ -12,6 +12,7 @@ export const useRefreshLoad = () => {
 		mutationFn: ({ uuid, detail }: { uuid: string; detail: string }) => loadsService.refreshLoad(uuid, detail),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success('Объявление обновлено')
 		},
 		onError(error) {

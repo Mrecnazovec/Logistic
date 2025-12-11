@@ -1,3 +1,3 @@
-import { IRatingUser } from './Rating.interface'
+import { IRatingUserList } from './Rating.interface'
 
-export type IRatingTableRow = IRatingUser
+export type IRatingTableRow = IRatingUserList

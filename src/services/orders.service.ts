@@ -8,6 +8,7 @@ import {
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
 	OrdersListQuery,
+	OrderInvitePayload,
 	PatchedOrderDetailDto,
 	PatchedOrderDriverStatusUpdateDto,
 } from '@/shared/types/Order.interface'
@@ -65,6 +66,36 @@ class OrdersService {
 		})
 
 		return createdOrder
+	}
+
+	async generateOrderInvite(id: string | number, payload: OrderInvitePayload) {
+		const { data } = await axiosWithAuth<IOrderDetail>({
+			url: API_URL.orders(`${id}/generate-invite`),
+			method: 'POST',
+			data: payload,
+		})
+
+		return data
+	}
+
+	async inviteOrderById(id: string | number, payload: OrderInvitePayload) {
+		const { data } = await axiosWithAuth<IOrderDetail>({
+			url: API_URL.orders(`${id}/invite-by-id`),
+			method: 'POST',
+			data: payload,
+		})
+
+		return data
+	}
+
+	async acceptOrderInvite(payload: OrderInvitePayload) {
+		const { data } = await axiosWithAuth<IOrderDetail>({
+			url: API_URL.orders('accept-invite'),
+			method: 'POST',
+			data: payload,
+		})
+
+		return data
 	}
 
 	async uploadOrderDocument(id: string | number, payload: OrderDocumentUploadDto, category: string) {

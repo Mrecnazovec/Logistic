@@ -10,9 +10,11 @@ export const usePatchLoad = () => {
 
 	const { mutate: patchLoad, isPending: isLoadingPatch } = useMutation({
 		mutationKey: ['load', 'patch'],
-		mutationFn: ({ uuid, data }: { uuid: string; data: PatchedCargoPublishDto }) => loadsService.patchLoad(uuid, data),
+		mutationFn: ({ uuid, data }: { uuid: string; data: PatchedCargoPublishDto }) =>
+			loadsService.patchLoad(uuid, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success('Объявление обновлено')
 		},
 		onError(error) {

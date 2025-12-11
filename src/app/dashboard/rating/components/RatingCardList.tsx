@@ -5,13 +5,13 @@ import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
-import { IRatingUser } from '@/shared/types/Rating.interface'
-import { BadgeCheck, Briefcase, CalendarDays, Globe2, Star, UserRound } from 'lucide-react'
+import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
+import { BadgeCheck, Briefcase, CalendarDays, Globe2, Star, UserRound } from 'lucide-react'
 import { useMemo } from 'react'
 
 type RatingCardListProps = {
-	items: IRatingUser[]
+	items: IRatingUserList[]
 	serverPagination?: ServerPaginationMeta
 }
 
@@ -33,7 +33,7 @@ export function RatingCardList({ items, serverPagination }: RatingCardListProps)
 }
 
 type RatingCardProps = {
-	rating: IRatingUser
+	rating: IRatingUserList
 }
 
 function RatingCard({ rating }: RatingCardProps) {

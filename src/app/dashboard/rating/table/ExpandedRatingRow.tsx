@@ -1,10 +1,10 @@
 'use client'
 
 import { RoleSelect } from '@/shared/enums/Role.enum'
-import { IRatingUser } from '@/shared/types/Rating.interface'
+import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
 
-const roleLabels: Record<IRatingUser['role'], string> = {
+const roleLabels: Record<IRatingUserList['role'], string> = {
 	LOGISTIC: 'Logistic',
 	CUSTOMER: 'Customer',
 	CARRIER: 'Carrier',
@@ -16,7 +16,7 @@ const formatNumber = (value?: number | null) => {
 	return value.toLocaleString('ru-RU')
 }
 
-export function ExpandedRatingRow({ user }: { user: IRatingUser }) {
+export function ExpandedRatingRow({ user }: { user: IRatingUserList }) {
 	const registeredAt = user.registered_at
 		? format(new Date(user.registered_at), 'dd.MM.yyyy')
 		: '-'

@@ -4,7 +4,7 @@ export type IUserRating = components['schemas']['UserRating']
 export type UserRatingRequestDto = components['schemas']['UserRatingRequest']
 export type PatchedUserRatingRequestDto = components['schemas']['PatchedUserRatingRequest']
 
-export type IRatingUser = components['schemas']['RatingUserList']
+export type IRatingUserList = components['schemas']['RatingUserList']
 export type PaginatedRatingUserListList = components['schemas']['PaginatedRatingUserListList']
 
 export type RatingsListQuery =

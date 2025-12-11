@@ -19,6 +19,7 @@ export const useToggleLoadVisibility = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			queryClient.invalidateQueries({ queryKey: ['get load'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success('Видимость объявления изменена')
 		},
 		onError(error) {

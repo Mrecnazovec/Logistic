@@ -14,4 +14,6 @@ export type OrdersListQuery = paths['/api/orders/']['get'] extends { parameters:
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
 
+export type OrderInvitePayload = Partial<OrderDetailRequestDto> & { carrier_id?: number }
+
 export type DriverStatus = IOrderDriverStatusUpdate['driver_status']
