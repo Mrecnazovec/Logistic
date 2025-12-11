@@ -11,6 +11,11 @@ const integerFormatter = new Intl.NumberFormat("ru-RU")
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" })
 
 const getInitials = (value?: string | null) => value?.trim().charAt(0)?.toUpperCase() || "?"
+const parseDistance = (value?: number | string | null) => {
+	if (value === null || value === undefined) return null
+	const numericValue = typeof value === "string" ? Number(value) : value
+	return Number.isFinite(numericValue) ? numericValue : null
+}
 
 export function IdProfile() {
 	const params = useParams<{ id: string }>()
@@ -37,7 +42,10 @@ export function IdProfile() {
 		{
 			id: "distance",
 			label: "Пройдено расстояния",
-			value: ratingUser?.total_distance ? `${integerFormatter.format(Math.round(ratingUser.total_distance))} км` : "-",
+			value: (() => {
+				const totalDistance = parseDistance(ratingUser?.total_distance)
+				return totalDistance !== null ? `${integerFormatter.format(Math.round(totalDistance))} км` : "-"
+			})(),
 			sub: "по данным сделкам",
 			icon: Truck,
 		},

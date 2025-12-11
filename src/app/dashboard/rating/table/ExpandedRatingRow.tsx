@@ -10,10 +10,13 @@ const roleLabels: Record<IRatingUserList['role'], string> = {
 	CARRIER: 'Carrier',
 }
 
-const formatNumber = (value?: number | null) => {
+const formatNumber = (value?: number | string | null) => {
 	if (value === null || value === undefined) return '-'
 
-	return value.toLocaleString('ru-RU')
+	const numericValue = typeof value === 'string' ? Number(value) : value
+	if (!Number.isFinite(numericValue)) return '-'
+
+	return numericValue.toLocaleString('ru-RU')
 }
 
 export function ExpandedRatingRow({ user }: { user: IRatingUserList }) {

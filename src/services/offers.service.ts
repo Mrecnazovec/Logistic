@@ -8,8 +8,6 @@ import {
 	IOfferInvite,
 	IOfferRejectResponse,
 	OfferCreateDto,
-	OfferDetailDto,
-	PatchedOfferDetailDto,
 } from '@/shared/types/Offer.interface'
 import { IPaginatedOfferShortList } from '@/shared/types/PaginatedList.interface'
 
@@ -104,27 +102,6 @@ class OffersService {
 	}
 
 	/* PUT */
-
-	async putOffer(id: string, data: OfferDetailDto) {
-		const { data: putOffer } = await axiosWithAuth<IOfferDetail>({
-			url: API_URL.offers(`${id}`),
-			method: 'PUT',
-			data,
-		})
-		return putOffer
-	}
-
-	/* PATCH */
-
-	async patchOffer(id: string, data: PatchedOfferDetailDto) {
-		const { data: patchedOffer } = await axiosWithAuth<IOfferDetail>({
-			url: API_URL.offers(`${id}`),
-			method: 'PATCH',
-			data,
-		})
-		return patchedOffer
-	}
-
 	/* DELETE */
 
 	async deleteOffer(id: string) {

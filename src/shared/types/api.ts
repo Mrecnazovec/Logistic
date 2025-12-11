@@ -898,22 +898,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/ratings/rating-users/countries/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ratings_rating_users_countries_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/ratings/ratings/": {
         parameters: {
             query?: never;
@@ -1393,6 +1377,8 @@ export interface components {
             detail: string;
             accepted_by_customer: boolean;
             accepted_by_carrier: boolean;
+            accepted_by_logistic: boolean;
+            order_id?: number | null;
         };
         /** @description Контр-предложение (любой стороной). */
         OfferCounterRequest: {
@@ -1426,10 +1412,51 @@ export interface components {
             price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
             message?: string;
         };
+        /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
+         *     и добавляет служебные поля вроде `updated_at`. */
         OfferDetail: {
             readonly id: number;
+            readonly cargo: number;
+            /** Format: uuid */
+            readonly cargo_uuid: string;
+            readonly cargo_title: string;
+            /** @description Название компании заказчика (строго только компания). */
+            readonly customer_company: string;
+            readonly customer_id: number;
+            /** @description Полное имя заказчика (строго ФИО). */
+            readonly customer_full_name: string;
+            readonly origin_city: string;
+            readonly origin_country: string;
+            /** Format: date */
+            readonly load_date: string;
+            readonly destination_city: string;
+            readonly destination_country: string;
+            /** Format: date */
+            readonly delivery_date: string | null;
+            readonly transport_type: string;
+            /** @description Для колонки «Тип» в макете (Т, Р, М, С, П...).
+             *     Если в Cargo есть choices, берём label и первую букву. */
+            readonly transport_type_display: string;
+            /**
+             * Format: double
+             * @description Вес в тоннах для колонки «Вес (т)».
+             */
+            readonly weight_t: number | null;
+            /** @description Название компании перевозчика (строго только компания). */
+            readonly carrier_company: string;
+            /** @description Полное имя перевозчика (строго ФИО). */
+            readonly carrier_full_name: string;
+            readonly carrier_id: number;
+            /** Format: double */
+            readonly carrier_rating: number;
+            /** @description Телефон перевозчика (вместо contact_value). */
+            readonly phone: string;
+            /** @description Email перевозчика (вместо contact_value). */
+            readonly email: string;
+            /** Format: double */
+            readonly route_km: number | null;
             /** Format: decimal */
-            price_value?: string | null;
+            readonly price_value: string | null;
             /**
              * @description * `UZS` - сум
              *     * `KZT` - тнг
@@ -1438,39 +1465,37 @@ export interface components {
              *     * `EUR` - EUR
              * @enum {string}
              */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            message?: string;
+            readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /** @description Способ оплаты: «Картой» / «Наличными».
+             *
+             *     Ожидается, что в модели Offer есть поле payment_method или payment_type
+             *     с кодами вида: CARD / CASH / BY_CARD / BY_CASH.
+             *     Если поля нет — вернётся пустая строка (getattr с default). */
+            readonly payment_method: string;
+            /**
+             * Format: double
+             * @description Рассчитывает цену за километр, используя цену оффера и расстояние груза.
+             */
+            readonly price_per_km: number | null;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
-            /**
-             * @description * `CUSTOMER` - Заказчик
-             *     * `CARRIER` - Перевозчик
-             * @enum {string}
-             */
-            readonly initiator: "CUSTOMER" | "CARRIER";
-            /** @default true */
+            readonly accepted_by_logistic: boolean;
             readonly is_active: boolean;
+            /** @description Человекочитаемый статус под макет.
+             *     Можно потом подправить формулировки под точные ТЗ. */
+            readonly status_display: string;
+            /** @description Флаг, что оффер принят обеими сторонами
+             *     (для зелёной галочки / завершённой сделки). */
+            readonly is_handshake: boolean;
+            /** @description Статусы:
+             *     - «Предложение от заказчика» (инициатор CUSTOMER)
+             *     - «Предложение от посредника» (инициатор CARRIER) */
+            readonly source_status: string;
+            readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             readonly updated_at: string;
-            cargo: number;
-            readonly carrier: number;
-        };
-        OfferDetailRequest: {
-            /** Format: decimal */
-            price_value?: string | null;
-            /**
-             * @description * `UZS` - сум
-             *     * `KZT` - тнг
-             *     * `RUB` - руб
-             *     * `USD` - USD
-             *     * `EUR` - EUR
-             * @enum {string}
-             */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            message?: string;
-            cargo: number;
         };
         /** @description Инвайт от ЗАКАЗЧИКА конкретному перевозчику. */
         OfferInviteRequest: {
@@ -1501,7 +1526,11 @@ export interface components {
             /** Format: uuid */
             readonly cargo_uuid: string;
             readonly cargo_title: string;
-            readonly company_name: string;
+            /** @description Название компании заказчика (строго только компания). */
+            readonly customer_company: string;
+            readonly customer_id: number;
+            /** @description Полное имя заказчика (строго ФИО). */
+            readonly customer_full_name: string;
             readonly origin_city: string;
             readonly origin_country: string;
             /** Format: date */
@@ -1519,8 +1548,11 @@ export interface components {
              * @description Вес в тоннах для колонки «Вес (т)».
              */
             readonly weight_t: number | null;
-            /** @description Название перевозчика для колонки «Перевозчик». */
-            readonly carrier_name: string;
+            /** @description Название компании перевозчика (строго только компания). */
+            readonly carrier_company: string;
+            /** @description Полное имя перевозчика (строго ФИО). */
+            readonly carrier_full_name: string;
+            readonly carrier_id: number;
             /** Format: double */
             readonly carrier_rating: number;
             /** @description Телефон перевозчика (вместо contact_value). */
@@ -1546,8 +1578,14 @@ export interface components {
              *     с кодами вида: CARD / CASH / BY_CARD / BY_CASH.
              *     Если поля нет — вернётся пустая строка (getattr с default). */
             readonly payment_method: string;
+            /**
+             * Format: double
+             * @description Рассчитывает цену за километр, используя цену оффера и расстояние груза.
+             */
+            readonly price_per_km: number | null;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
+            readonly accepted_by_logistic: boolean;
             readonly is_active: boolean;
             /** @description Человекочитаемый статус под макет.
              *     Можно потом подправить формулировки под точные ТЗ. */
@@ -1575,10 +1613,16 @@ export interface components {
             readonly id: number;
             cargo: number;
             readonly cargo_id: number;
-            readonly customer: number;
+            readonly customer: number | null;
+            readonly customer_id: number;
+            readonly customer_company: string;
             readonly customer_name: string;
             readonly carrier: number | null;
+            readonly carrier_id: number;
+            readonly carrier_company: string;
             readonly carrier_name: string;
+            readonly logistic_id: number;
+            readonly logistic_company: string;
             readonly logistic_name: string;
             readonly roles: string;
             /**
@@ -1705,10 +1749,16 @@ export interface components {
             readonly id: number;
             cargo: number;
             readonly cargo_id: number;
-            readonly customer: number;
+            readonly customer: number | null;
+            readonly customer_id: number;
+            readonly customer_company: string;
             readonly customer_name: string;
             readonly carrier: number | null;
+            readonly carrier_id: number;
+            readonly carrier_company: string;
             readonly carrier_name: string;
+            readonly logistic_id: number;
+            readonly logistic_company: string;
             readonly logistic_name: string;
             readonly roles: string;
             /**
@@ -1942,21 +1992,6 @@ export interface components {
              */
             payment_method: "transfer" | "cash" | "both";
         };
-        PatchedOfferDetailRequest: {
-            /** Format: decimal */
-            price_value?: string | null;
-            /**
-             * @description * `UZS` - сум
-             *     * `KZT` - тнг
-             *     * `RUB` - руб
-             *     * `USD` - USD
-             *     * `EUR` - EUR
-             * @enum {string}
-             */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            message?: string;
-            cargo?: number;
-        };
         PatchedOrderDetailRequest: {
             cargo?: number;
             /**
@@ -2112,14 +2147,19 @@ export interface components {
             readonly role: "LOGISTIC" | "CUSTOMER" | "CARRIER";
             readonly company_name: string;
             readonly display_name: string;
+            readonly phone: string;
+            /** Format: email */
+            readonly email: string;
+            readonly city: string;
             readonly country: string;
             /** Format: double */
             readonly avg_rating: number;
             readonly rating_count: number;
             readonly completed_orders: number;
-            readonly total_distance: number | null;
+            readonly total_distance: string;
             /** Format: date-time */
             readonly registered_at: string;
+            readonly orders_stats: string;
         };
         RefreshResponse: {
             detail: string;
@@ -3176,13 +3216,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OfferDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["OfferDetailRequest"];
-                "multipart/form-data": components["schemas"]["OfferDetailRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
@@ -3225,13 +3259,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["PatchedOfferDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedOfferDetailRequest"];
-                "multipart/form-data": components["schemas"]["PatchedOfferDetailRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
@@ -3876,25 +3904,6 @@ export interface operations {
                 /** @description A unique integer value identifying this user. */
                 id: number;
             };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RatingUserList"];
-                };
-            };
-        };
-    };
-    ratings_rating_users_countries_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
             cookie?: never;
         };
         requestBody?: never;

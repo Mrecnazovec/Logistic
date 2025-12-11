@@ -55,7 +55,7 @@ const normalizeOffer = (offer: IOfferShort) => {
 		transport: offer.transport_type_display || offer.transport_type || EMPTY,
 		weight: offer.weight_t ? `${offer.weight_t} т` : EMPTY,
 		price: formatCurrencyValue(offer.price_value, priceCurrency),
-		company: offer.carrier_name,
+		company: offer.carrier_company || offer.carrier_full_name || EMPTY,
 		route_km: offer.route_km
 	}
 }

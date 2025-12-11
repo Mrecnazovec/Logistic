@@ -1,7 +1,25 @@
+import { RoleEnum } from '../enums/Role.enum'
 import type { components, paths } from './api'
 
+type OrderDetailBase = components['schemas']['OrderDetail']
+
+export type OrderRole = {
+  id: number
+  name: string
+  login: string
+  phone: string
+  company: string
+  role: RoleEnum
+}
+
 export type IOrderList = components['schemas']['OrderList']
-export type IOrderDetail = components['schemas']['OrderDetail']
+export type IOrderDetail = Omit<OrderDetailBase, 'roles'> & {
+  roles: {
+    customer: OrderRole
+    logistic: OrderRole | null
+    carrier: OrderRole | null
+  }
+}
 export type OrderDetailRequestDto = components['schemas']['OrderDetailRequest']
 export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailRequest']
 export type IOrderDocument = components['schemas']['OrderDocument']
@@ -14,6 +32,6 @@ export type OrdersListQuery = paths['/api/orders/']['get'] extends { parameters:
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
 
-export type OrderInvitePayload = Partial<OrderDetailRequestDto> & { carrier_id?: number }
+export type OrderInvitePayload = Partial<OrderDetailRequestDto> & { driver_id?: number; token?: string }
 
 export type DriverStatus = IOrderDriverStatusUpdate['driver_status']

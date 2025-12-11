@@ -1,14 +1,17 @@
 ﻿'use client'
 
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
-import { AddDriver } from '@/components/ui/modals/AddDriver'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { InviteDriverModal } from '@/components/ui/modals/InviteDriverModal'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
@@ -24,8 +27,6 @@ import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStat
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { DriverStatus } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
-import { useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { OrderRatingModal } from './OrderRatingModal'
 
 const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }> = {
@@ -45,6 +46,7 @@ export function OrderPage() {
 	const { order, isLoading } = useGetOrder()
 	const { patchOrder } = usePatchOrder()
 	const { role } = useRoleStore()
+	const { me } = useGetMe()
 	const { updateDriverStatus, isLoadingUpdateStatus } = useUpdateOrderStatus()
 	const searchParams = useSearchParams()
 	const statusFromQuery = searchParams.get('driver_status') as DriverStatus | null
@@ -57,6 +59,11 @@ export function OrderPage() {
 	const orderId = order ? String(order.id) : ''
 	const canChangeDriverStatus = Boolean(order && isCarrier)
 	const orderStatus = order?.status ?? null
+	const orderLogisticId = order?.roles?.logistic?.id ?? null
+	const isOrderLogistic = Boolean(orderLogisticId && me?.id === orderLogisticId)
+	const canInviteDriver = orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic
+	const canCarrierAcceptInvite = orderStatus === OrderStatusEnum.NODRIVER && isCarrier
+	const shouldShowInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && (isOrderLogistic || isCarrier))
 	const firstOtherDocument = useMemo(() => {
 		const docs = order?.documents ?? []
 		const filtered = docs.filter((document) => document.category === 'other')
@@ -246,29 +253,25 @@ export function OrderPage() {
 					{
 						title: 'Информация о заказчике',
 						rows: [
-							{ label: 'Заказчик', value: withFallback(order.customer_name) },
-							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Заказчик', value: withFallback(order.roles.customer.name) },
+							{ label: 'Компания', value: withFallback(order.roles.customer.company) },
+							{ label: 'Контакты', value: withFallback(order.roles.customer.phone) },
 						],
 					},
 					{
 						title: 'Информация о логисте',
 						rows: [
-							{ label: 'Логист', value: withFallback(order.logistic_name) },
-							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Логист', value: withFallback(order.roles.logistic?.name) },
+							{ label: 'Компания', value: withFallback(order.roles.logistic?.company) },
+							{ label: 'Контакты', value: withFallback(order.roles.logistic?.phone) },
 						],
 					},
 					{
 						title: 'Информация о перевозчике',
 						rows: [
-							{ label: 'Перевозчик', value: hasDriver ? withFallback(order.carrier_name) : DEFAULT_PLACEHOLDER },
-							{ label: 'Компания', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Контакты', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Тип транспорта', value: DEFAULT_PLACEHOLDER },
-							{ label: 'Роль', value: DEFAULT_PLACEHOLDER },
+							{ label: 'Перевозчик', value: hasDriver ? withFallback(order.roles.carrier?.name) : DEFAULT_PLACEHOLDER },
+							{ label: 'Компания', value: withFallback(order.roles.carrier?.company) },
+							{ label: 'Контакты', value: withFallback(order.roles.carrier?.phone) },
 						],
 					},
 				].map((section) => (
@@ -401,10 +404,12 @@ export function OrderPage() {
 						isButton: true,
 						buttonLabel: 'Загрузить файл',
 					})}
-				{isCompleted ? null : hasDriver ? (
-					''
-				) : (
-					<AddDriver />
+				{!isCompleted && shouldShowInviteDriver && order && (
+					<InviteDriverModal
+						order={order}
+						canInviteById={canInviteDriver}
+						canAcceptInvite={canCarrierAcceptInvite}
+					/>
 				)}
 				{canRateParticipants && order && (
 					<OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />
@@ -467,13 +472,3 @@ function OrderPageSkeleton() {
 		</div>
 	)
 }
-
-
-
-
-
-
-
-
-
-

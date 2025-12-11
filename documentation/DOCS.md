@@ -54,8 +54,6 @@ useGetIncomingOffers — loads incoming offers with pagination via offersService
 useGetMyOffers — loads my offers with pagination via offersService.getMyOffers.
 useGetOfferById — loads offer details by uuid via offersService.getOfferById.
 useGetOffers — loads offers list with filters via offersService.getOffers.
-usePatchOffer — partial offer update by uuid via offersService.patchOffer.
-usePutOffer — full offer update by uuid via offersService.putOffer.
 
 - ## Orders
 
@@ -223,24 +221,25 @@ CounterOfferModal — modal to send counter offer.
 DeskOfferModal — modal with offer details and actions.
 DeskOffersModal — modal with offers list for cargo/order.
 OfferDecisionModal — modal to accept/reject offer invitation.
-OfferModal — modal to create offer for cargo.
-CardPagination — hook useCardPagination and pagination controls for cards.
-CardListLayout — card grid with pagination.
-CardSections — renders card sections with icons.
-cycleColumnSort — table column sort direction helper.
-TableStates — empty/error table states.
-Table — base table component with header/body/cells.
-SortIcon — sort icon for tables.
-DataTable — data table with pagination/sorting/page selection.
-DashboardLayout — dashboard layout with navigation and content.
-Header — dashboard header with search/notifications/profile.
-HeaderNavConfig — nav links/roles config for header.
-MobileNav — dashboard mobile menu.
-NavItems — sidebar nav items list.
-Sidebar — dashboard sidebar with logo and links.
-MainLayout — base layout for public pages.
-Header (main-layout) — public pages header.
-Footer — public pages footer.
+OfferModal – modal to create offer for cargo.
+CardPagination – hook useCardPagination and pagination controls for cards.
+CardListLayout – card grid with pagination.
+CardSections – renders card sections with icons.
+cycleColumnSort – table column sort direction helper.
+TableStates – empty/error table states.
+Table – base table component with header/body/cells.
+SortIcon – sort icon for tables.
+DataTable – data table with pagination/sorting/page selection.
+DashboardLayout – dashboard layout with navigation and content.
+Header – dashboard header with search/notifications/profile.
+HeaderNavConfig – nav links/roles config for header.
+MobileNav – dashboard mobile menu.
+NavItems – sidebar nav items list.
+Sidebar – dashboard sidebar with logo and links.
+MainLayout – base layout for public pages.
+Header (main-layout) – public pages header.
+Footer – public pages footer.
+InviteDriverModal – modal to invite driver to order by id or link and allow accepting invite token.
 
 ## Stores
 

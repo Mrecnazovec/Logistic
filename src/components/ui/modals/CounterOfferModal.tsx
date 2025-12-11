@@ -83,7 +83,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 					<div className='rounded-2xl border border-border p-5 text-sm text-muted-foreground space-y-2'>
 						<p>
 							<span className='font-semibold text-foreground'>Компания: </span>
-							{offer.carrier_name}
+							{offer.carrier_company || offer.carrier_full_name || '—'}
 						</p>
 						<p>
 							<span className='font-semibold text-foreground'>Текущее предложение: </span>

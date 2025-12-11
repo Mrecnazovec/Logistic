@@ -14,13 +14,14 @@ import {
 	DialogTitle,
 } from '@/components/ui/Dialog'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
+import { DASHBOARD_URL } from '@/config/url.config'
 import { useGenerateLoadInvite } from '@/hooks/queries/loads/useGenerateLoadInvite'
+import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 
 interface OfferModalProps {
 	selectedRow?: ICargoList
@@ -41,15 +42,16 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 	)
 	const formattedPrice = formatCurrencyValue(selectedRow?.price_value, selectedRow?.price_currency)
 	const formattedPricePerKm = formatCurrencyPerKmValue(selectedRow?.price_per_km, selectedRow?.price_currency)
+	const inviteToken = invite?.token
+
 
 	const shareLink = useMemo(() => {
-		const token = invite?.token
-		if (token) {
-			return invite.invite_url
+		if (!inviteToken) {
+			return ''
 		}
 
-		return invite?.invite_url ?? ''
-	}, [invite?.invite_url, invite?.token])
+		return `${window.location.origin}${DASHBOARD_URL.desk(`invite/${inviteToken}`)}`
+	}, [inviteToken])
 
 	const handleModalOpenChange = (isOpen: boolean) => {
 		if (!isOpen) {

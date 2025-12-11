@@ -120,7 +120,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange }: OfferDecisionM
 						<div className='flex flex-wrap items-center justify-between gap-3 border-b pb-6 text-sm text-muted-foreground'>
 							<p>
 								<span className='font-semibold text-foreground'>Компания: </span>
-								{offer.carrier_name || EMPTY}
+								{offer.carrier_company || offer.carrier_full_name || EMPTY}
 							</p>
 							<p className='font-semibold text-foreground'>
 								Текущая ставка: {formattedPrice || EMPTY}
