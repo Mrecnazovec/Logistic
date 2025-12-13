@@ -56,8 +56,15 @@ const getOrderDocsFolderInfo = (pathname: string) => {
 	return { orderId, folder }
 }
 
-const getOrderNavItems = (orderId: string): HeaderNavItem[] => {
+const canShowPaymentNav = (orderId: string, pathname?: string) => {
+	if (pathname && normalizePath(pathname).includes('/payment')) return true
+	if (typeof window === 'undefined') return false
+	return localStorage.getItem(`orderPaymentAvailable:${orderId}`) === 'true'
+}
+
+const getOrderNavItems = (orderId: string, pathname?: string): HeaderNavItem[] => {
 	const basePath = orderId
+	const withPayment = canShowPaymentNav(orderId, pathname)
 
 	return [
 		{
@@ -72,6 +79,14 @@ const getOrderNavItems = (orderId: string): HeaderNavItem[] => {
 			label: 'Статусы',
 			href: DASHBOARD_URL.order(`${basePath}/status`),
 		},
+		...(withPayment
+			? [
+					{
+						label: 'Оплата',
+						href: DASHBOARD_URL.order(`${basePath}/payment`),
+					},
+			  ]
+			: []),
 	]
 }
 
@@ -154,6 +169,16 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 	},
 
 	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
+		items: [
+			{
+				label: 'Заказы',
+				href: DASHBOARD_URL.transportation(),
+			},
+		],
+	},
+
+	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
 		items: [
 			{
@@ -173,7 +198,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			if (!orderId) return []
 
-			return getOrderNavItems(orderId)
+			return getOrderNavItems(orderId, pathname)
 		},
 		backLink: (pathname) => {
 			const info = getOrderDocsFolderInfo(pathname)
@@ -193,7 +218,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			if (!orderId) return []
 
-			return getOrderNavItems(orderId)
+			return getOrderNavItems(orderId, pathname)
 		},
 		backLink: {
 			label: 'Назад к моим грузам',

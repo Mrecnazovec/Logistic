@@ -32,7 +32,7 @@ export function AnnouncementsPage() {
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden max-md:hidden'>
+			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} onSubmit={form.handleSubmit(onSubmit)} />

@@ -1,17 +1,9 @@
-'use client'
+﻿'use client'
 
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
-import {
-	formatAgeFromMinutes,
-	formatDateValue,
-	formatDurationFromMinutes,
-	formatPlace,
-	formatPriceValue,
-	formatRelativeDate,
-} from '@/lib/formatters'
-import { getContactPrefName } from '@/shared/enums/ContactPref.enum'
+import { formatDateValue, formatPlace, formatPriceValue, formatRelativeDate } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
@@ -37,15 +29,7 @@ const InfoRow = ({ label, value }: InfoRowProps) => (
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const { role } = useRoleStore()
 
-	const contactValue =
-		cargo.contact_pref === 'email'
-			? cargo.email
-			: cargo.contact_pref === 'phone'
-				? cargo.phone
-				: cargo.phone || cargo.email || EMPTY_VALUE
-
 	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type || EMPTY_VALUE
-	const contactName = getContactPrefName(cargo.contact_pref) || EMPTY_VALUE
 	const ratingDisplay =
 		Number.isFinite(cargo.company_rating) && cargo.company_rating > 0 ? cargo.company_rating.toFixed(1) : EMPTY_VALUE
 	const formattedPrice = formatPriceValue(cargo.price_value, cargo.price_currency)
@@ -88,7 +72,10 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 								</span>
 							}
 						/>
-						<InfoRow label='Телефон' value={cargo.contact_pref === 'both' || cargo.contact_pref === 'phone' ? cargo.phone : EMPTY_VALUE} />
+						<InfoRow
+							label='Телефон'
+							value={cargo.contact_pref === 'both' || cargo.contact_pref === 'phone' ? cargo.phone : EMPTY_VALUE}
+						/>
 						<InfoRow label='Email' value={cargo.contact_pref === 'both' || cargo.contact_pref === 'email' ? cargo.email : EMPTY_VALUE} />
 					</dl>
 				</div>
@@ -104,10 +91,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					<div className='space-y-2'>
 						<p className='text-base font-semibold text-brand'>Куда</p>
 						<dl className='space-y-2'>
-							<InfoRow
-								label='Город/страна'
-								value={formatPlace(cargo.destination_city, cargo.destination_country, EMPTY_VALUE)}
-							/>
+							<InfoRow label='Город/страна' value={formatPlace(cargo.destination_city, cargo.destination_country, EMPTY_VALUE)} />
 							<InfoRow label='Дата выгрузки' value={formatDateValue(cargo.delivery_date, 'dd.MM.yyyy', EMPTY_VALUE)} />
 						</dl>
 					</div>
@@ -147,7 +131,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 			</div>
 
 			{role !== RoleEnum.CUSTOMER && (
-				<div className='mt-2 flex lg:justify-center justify-start'>
+				<div className='mt-2 flex justify-start lg:justify-center'>
 					<OfferModal selectedRow={cargo} title='Подтвердить предложение' />
 				</div>
 			)}

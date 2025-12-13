@@ -76,6 +76,8 @@ export const getOfferStatusMeta = (offer?: IOfferShort, role?: RoleEnum): OfferS
 		variant: 'warning',
 		label: 'В ожидании ответа',
 		// requireDecision: true,
+		requireDecision: true,
+
 		note: `Ожидайте ответа ${getCounterpartyLabel(role)}`,
 	}
 }

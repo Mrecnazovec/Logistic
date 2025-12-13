@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -21,36 +21,67 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { deskColumns, getDeskRowClassName } from './table/DeskColumns'
 import { deskDriverColumns } from './table/DeskDriverColumns'
 
+const tabs = [
+	{ value: 'desk', label: 'Заявки' },
+	{ value: 'drivers', label: 'Офферы для водителей' },
+]
 
 export function DeskPage() {
 	const { data, isLoading } = useGetLoadsBoard()
 	const { data: dataOffers, isLoading: isLoadingOffers } = useGetIncomingOffers()
-
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
 	const tableType = useTableTypeStore((state) => state.tableType)
-	const serverPaginationMeta = data?.results
-		? {
-			next: data.next,
-			previous: data.previous,
-			totalCount: data.count,
-			pageSize: data.results.length,
-		}
-		: undefined
-
 	const router = useRouter()
 
 	useEffect(() => {
-		if (role === RoleEnum.CARRIER) {
-			router.push(DASHBOARD_URL.desk('my'))
-		}
+		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
 	}, [role, router])
 
+	const cargos = data?.results || []
+	const offers = dataOffers?.results || []
+	const serverPaginationMeta = cargos.length
+		? {
+			next: data?.next,
+			previous: data?.previous,
+			totalCount: data?.count,
+			pageSize: cargos.length,
+		}
+		: undefined
+
+	const renderDesk = () => {
+		if (isLoading) return <LoaderTable />
+		if (!cargos.length) return <EmptyTableState />
+		return tableType === 'card' ? (
+			<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
+		) : (
+			<DataTable
+				columns={deskColumns}
+				data={cargos}
+				rowClassName={getDeskRowClassName}
+				serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
+			/>
+		)
+	}
+
+	const renderDrivers = () => {
+		if (isLoadingOffers) return <LoaderTable />
+		if (!offers.length) return <EmptyTableState />
+		return tableType === 'card' ? (
+			<DeskCardDriverList cargos={offers} serverPagination={serverPaginationMeta} />
+		) : (
+			<DataTable
+				columns={deskDriverColumns}
+				data={offers}
+				serverPagination={{ next: dataOffers?.next, previous: dataOffers?.previous, totalCount: dataOffers?.count }}
+			/>
+		)
+	}
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
-			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
+			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields form={form} showOffersFilter onSubmit={form.handleSubmit(onSubmit)} />
@@ -58,74 +89,37 @@ export function DeskPage() {
 				</Form>
 			</div>
 
-			{isDesktop ? (
-				<Tabs defaultValue='desk' className='flex-1'>
-					<div className='flex flex-wrap items-end gap-4'>
-						<TabsList className='bg-transparent -mb-2'>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-							<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-						</TabsList>
+			<Tabs defaultValue='desk' className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}>
+				<div className='flex flex-wrap items-end gap-4'>
+					<TabsList className='-mb-2 bg-transparent'>
+						{tabs.map((tab) => (
+							<TabsTrigger
+								key={tab.value}
+								value={tab.value}
+								className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
+							>
+								{tab.label}
+							</TabsTrigger>
+						))}
+					</TabsList>
+					{isDesktop && (
 						<div className='ml-auto'>
 							<TableTypeSelector />
 						</div>
-					</div>
-					<TabsContent value='desk' className='flex-1'>
-						{isLoading ? <LoaderTable /> : data?.results?.length === 0 || !data?.results ? (
-							<EmptyTableState />
-						) : tableType === 'card' ? (
-							<DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />
+					)}
+				</div>
+
+				<TabsContent value='desk'>{isDesktop ? renderDesk() : <DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />}</TabsContent>
+				<TabsContent value='drivers'>
+					{isDesktop ? renderDrivers() : (
+						isLoadingOffers ? <LoaderTable /> : offers.length ? (
+							<DeskCardDriverList cargos={offers} serverPagination={serverPaginationMeta} />
 						) : (
-							<DataTable
-								columns={deskColumns}
-								data={data.results}
-								rowClassName={getDeskRowClassName}
-								serverPagination={{
-									next: data.next,
-									previous: data.previous,
-									totalCount: data.count,
-								}}
-							/>
-						)}
-					</TabsContent>
-					<TabsContent value='drivers'>
-						{isLoadingOffers ? <LoaderTable /> : dataOffers?.results?.length === 0 || !dataOffers?.results ? (
 							<EmptyTableState />
-						) : tableType === 'card' ? (
-							<DeskCardDriverList cargos={dataOffers?.results || []} serverPagination={serverPaginationMeta} />
-						) : (
-							<DataTable
-								columns={deskDriverColumns}
-								data={dataOffers?.results || []}
-								serverPagination={{
-									next: dataOffers.next,
-									previous: dataOffers.previous,
-									totalCount: dataOffers.count,
-								}}
-							/>
-						)}
-					</TabsContent>
-				</Tabs>
-			) : (
-				<Tabs defaultValue='desk' className='xs:bg-background rounded-4xl h-full'>
-					<TabsList className='bg-transparent -mb-2'>
-						<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='desk'>Заявки</TabsTrigger>
-						<TabsTrigger className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none' value='drivers'>Офферы для водителей</TabsTrigger>
-					</TabsList>
-					<TabsContent value='desk'>
-						{isLoading ? <LoaderTable /> : data?.results?.length === 0 || !data?.results ? (
-							<EmptyTableState />
-						) :
-							< DeskCardList cargos={data.results} serverPagination={serverPaginationMeta} />}
-					</TabsContent>
-					<TabsContent value='drivers'>
-						{isLoading ? <LoaderTable /> : dataOffers?.results?.length === 0 || !dataOffers?.results ? (
-							<EmptyTableState />
-						) :
-							< DeskCardDriverList cargos={dataOffers.results} serverPagination={serverPaginationMeta} />}
-					</TabsContent>
-				</Tabs>
-			)
-			}
+						)
+					)}
+				</TabsContent>
+			</Tabs>
 		</div>
 	)
 }

@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { useCardPagination } from '@/components/pagination/CardPagination'
@@ -24,22 +24,14 @@ type DeskMyCardListProps = {
 
 export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role }: DeskMyCardListProps) {
 	const pagination = useCardPagination(serverPagination)
-
-	if (!cargos.length) {
-		return null
-	}
+	if (!cargos.length) return null
 
 	return (
 		<CardListLayout
 			items={cargos}
 			getKey={(cargo) => cargo.cargo_uuid || String(cargo.id)}
 			renderItem={(cargo, index) => (
-				<DeskDriverCard
-					cargo={cargo}
-					index={index}
-					onOpenDecision={onOpenDecision}
-					role={role}
-				/>
+				<DeskDriverCard cargo={cargo} index={index} onOpenDecision={onOpenDecision} role={role} />
 			)}
 			pagination={pagination}
 		/>
@@ -53,20 +45,17 @@ type DeskDriverCardProps = {
 	role?: RoleEnum
 }
 
-function DeskDriverCard({ cargo, index, onOpenDecision, role }: DeskDriverCardProps) {
+function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.symb ?? cargo.transport_type
-	const statusMeta = getOfferStatusMeta(cargo, role)
-	const { variant, label, highlight } = statusMeta
-
+	const { variant, label, highlight } = getOfferStatusMeta(cargo, role)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
-	const contactPhone = cargo.phone || '-'
-	const contactEmail = cargo.email || '-'
-
-	const rating = cargo.carrier_rating ?? '-'
+	const contactPhone = cargo.phone || '—'
+	const contactEmail = cargo.email || '—'
+	const rating = cargo.carrier_rating ?? '—'
 
 	return (
-		<Card className={`h-full rounded-3xl border-0 xs:bg-neutral-500`}>
+		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<Badge variant={variant}>{label}</Badge>
@@ -82,11 +71,7 @@ function DeskDriverCard({ cargo, index, onOpenDecision, role }: DeskDriverCardPr
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<InfoSection title='Откуда'>
-					<InfoChip
-						icon={MapPin}
-						primary={formatPlace(cargo.origin_city, cargo.origin_country, '—')}
-						secondary={formattedLoadDate || '—'}
-					/>
+					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '—')} secondary={formattedLoadDate || '—'} />
 				</InfoSection>
 
 				<InfoSection title='Куда'>

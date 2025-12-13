@@ -1,6 +1,5 @@
 'use client'
 
-import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
@@ -9,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import type { IOrderList } from '@/shared/types/Order.interface'
 import { Building2, CalendarDays, Home, MapPin, Wallet } from 'lucide-react'
 import Link from 'next/link'
@@ -41,8 +41,7 @@ type TransportationCardProps = {
 	statusValue: string
 }
 
-function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
-
+function TransportationCard({ cargo }: TransportationCardProps) {
 	const sections: CardSection[] = [
 		{
 			title: 'Заказчик / Посредник',
@@ -96,9 +95,6 @@ function TransportationCard({ cargo, statusValue }: TransportationCardProps) {
 					</div>
 					<span className='ml-auto text-xs text-muted-foreground'>Документы: {cargo.documents_count ?? 0}</span>
 				</div>
-
-
-
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>

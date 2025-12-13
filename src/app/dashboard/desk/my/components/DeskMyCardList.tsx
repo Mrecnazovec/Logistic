@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { useCardPagination } from '@/components/pagination/CardPagination'
@@ -24,18 +24,13 @@ type DeskMyCardListProps = {
 
 export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role }: DeskMyCardListProps) {
 	const pagination = useCardPagination(serverPagination)
-
-	if (!cargos.length) {
-		return null
-	}
+	if (!cargos.length) return null
 
 	return (
 		<CardListLayout
 			items={cargos}
 			getKey={(cargo) => cargo.cargo_uuid || String(cargo.id)}
-			renderItem={(cargo) => (
-				<DeskMyCard cargo={cargo} onOpenDecision={onOpenDecision} role={role} />
-			)}
+			renderItem={(cargo) => <DeskMyCard cargo={cargo} onOpenDecision={onOpenDecision} role={role} />}
 			pagination={pagination}
 		/>
 	)
@@ -49,13 +44,11 @@ type DeskMyCardProps = {
 
 function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.symb ?? cargo.transport_type
-	const statusMeta = getOfferStatusMeta(cargo, role)
-	const { variant, label, highlight } = statusMeta
-
+	const { variant, label, highlight } = getOfferStatusMeta(cargo, role)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
-	const contactPhone = cargo.phone || '-'
-	const contactEmail = cargo.email || '-'
+	const contactPhone = cargo.phone || '—'
+	const contactEmail = cargo.email || '—'
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -63,22 +56,16 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<Badge variant={variant} className={highlight ? 'animate-pulse' : undefined}>{label}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.customer_full_name || '-'}
+						{cargo.customer_full_name || '—'}
 					</CardTitle>
 					<UuidCopy uuid={cargo.cargo_uuid || String(cargo.id)} />
 				</div>
-				<p className='text-sm text-muted-foreground'>
-					{formatPriceValue(cargo.price_value, cargo.price_currency)}
-				</p>
+				<p className='text-sm text-muted-foreground'>{formatPriceValue(cargo.price_value, cargo.price_currency)}</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<InfoSection title='Откуда'>
-					<InfoChip
-						icon={MapPin}
-						primary={formatPlace(cargo.origin_city, cargo.origin_country, '—')}
-						secondary={formattedLoadDate || '—'}
-					/>
+					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '—')} secondary={formattedLoadDate || '—'} />
 				</InfoSection>
 
 				<InfoSection title='Куда'>

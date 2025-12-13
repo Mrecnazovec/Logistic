@@ -1,10 +1,10 @@
-import { Metadata } from "next";
-import { Cabinet } from "./Cabinet";
+﻿import { Metadata } from "next"
+import { Cabinet } from "./Cabinet"
 
 export const metadata: Metadata = {
-	title: 'Личный кабинет'
+    title: 'Личный кабинет'
 }
 
 export default function page() {
-	return <Cabinet />
+    return <Cabinet />
 }

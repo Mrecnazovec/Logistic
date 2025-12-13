@@ -1,4 +1,4 @@
-# COMMANDS.md
+﻿# COMMANDS.md
 
 This file describes the commands that the agent must execute when the user types:  
 `use command <commandName> <value?>`  
@@ -37,7 +37,7 @@ Where `<description>` is the user-provided commit message.
 
 4. Format of every `DOCS.md` entry must be strictly one line:
 
-- Name – short description (what it does, what parameters it takes)
+- Name — short description (what it does, what parameters it takes)
 
 ---
 
@@ -51,44 +51,18 @@ Where `<description>` is the user-provided commit message.
 - If provided → the agent refactors only that specific file or directory.
 - If not provided → the agent refactors the entire project.
 
-### Refactoring Rules (based on AGENTS.md)
+### Refactoring Rules (AGENTS.md + current constraints)
 
-1. A component must not contain more than **two helper functions**.
-2. If a component has more:
-
-- Extract extra functions into:
-  - separate subcomponents (UI-related logic),
-  - `lib/` (pure utilities or formatters),
-  - `hooks/` (stateful or reusable React logic),
-  - `services/` (API calls or business logic).
-
-3. After extraction:
-
-- Fix imports in the original component.
-- Ensure strong TypeScript typing.
-- If a new helper/hook/service was created, add its entry to `DOCS.md`.
-
-4. The agent must also:
-
-- Ensure usage of shadcn/ui or existing `/src/components/ui/` components.
-- Remove dead code, unused variables, and duplicated logic.
-- Improve code readability and structure:
-  - Simplify conditions,
-  - Split oversized JSX into smaller subcomponents,
-  - Improve naming consistency.
-
-5. After the refactor, the agent must internally “run” (simulate):
-
-- `npm run lint`
-- `npm run build`
-  And resolve any issues.
-
-6. The agent must provide:
-
-- A clear explanation of performed changes,
-- Before/after code blocks (when needed),
-- Extracted helper components or utils,
-- Any updates made to `DOCS.md`.
+1. Goal: make code shorter and simpler without changing behavior — minimal layers, straightforward JSX, keep type safety.
+2. No more than two local helper functions per component. If you need more, move logic into child components/`lib`/`hooks`/`services` as appropriate.
+3. Drop `useMemo`/`useCallback` unless needed for heavy work, effect dependencies, or real rerender prevention.
+4. Skip data “normalization” and extra intermediate arrays/constants when simple `map/filter` and inline conditions/JSX are enough.
+5. Format values (dates, prices, etc.) at the usage site or minimally locally; don’t create extra formatters just for cosmetics.
+6. File layout: `"use client"`, imports, types/interfaces, shared constants, then the component with hooks at the top and `return` with no important logic after it. One component per file (tiny skeletons are fine).
+7. Always use shadcn/ui or existing `/src/components/ui/` components. Follow shared rules (enums/types/regex) and update DOCS.md when entities are added/removed/renamed.
+8. Remove dead code and duplication. Keep code concise but readable.
+9. After refactor, run `npm run lint` and `npm run build` and fix issues.
+10. In the response, give a brief description of changes and note any DOCS.md updates (if applicable).
 
 ---
 
@@ -126,7 +100,7 @@ The agent must respond:
 
 4. Format of every `DOCS.md` entry must be strictly one line:
 
-- Name – short description (what it does, what parameters it takes)
+- Name — short description (what it does, what parameters it takes)
 
 ---
 

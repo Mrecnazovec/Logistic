@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections } from '@/components/card/CardSections'
@@ -9,25 +9,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
-import {
-	CalendarDays,
-	CircleCheck,
-	EyeOff,
-	Handshake,
-	Home,
-	MapPin,
-	Minus,
-	Pen,
-	RefreshCcw,
-	Scale,
-	Truck,
-	Wallet,
-} from 'lucide-react'
+import { CalendarDays, CircleCheck, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { useState } from 'react'
 
 type DeskCardListProps = {
 	cargos: IOfferShort[]
@@ -36,10 +23,7 @@ type DeskCardListProps = {
 
 export function DeskCardDriverList({ cargos, serverPagination }: DeskCardListProps) {
 	const pagination = useCardPagination(serverPagination)
-
-	if (!cargos.length) {
-		return null
-	}
+	if (!cargos.length) return null
 
 	return (
 		<CardListLayout
@@ -56,44 +40,37 @@ type DeskCardProps = {
 }
 
 function DeskCard({ cargo }: DeskCardProps) {
-	const transportName =
-		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
-
-	const sections = useMemo(
-		() => [
-			{
-				title: 'Пункт отправления',
-				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
-				],
-			},
-			{
-				title: 'Пункт назначения',
-				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
-
-				],
-			},
-			{
-				title: 'Транспорт / вес',
-				items: [
-					{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
-					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
-				],
-			},
-			{
-				title: 'Стоимость',
-				items: [
-					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Оплата' },
-					{ icon: Wallet, primary: formatPricePerKmValue(300, cargo.price_currency), secondary: 'Цена за км' },
-				],
-			},
-
-		],
-		[cargo, transportName],
-	)
+	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const sections = [
+		{
+			title: 'Пункт отправления',
+			items: [
+				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
+			],
+		},
+		{
+			title: 'Пункт назначения',
+			items: [
+				{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
+			],
+		},
+		{
+			title: 'Транспорт / вес',
+			items: [
+				{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
+				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
+			],
+		},
+		{
+			title: 'Стоимость',
+			items: [
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Оплата' },
+				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: 'Цена за км' },
+			],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -102,7 +79,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>Запрос перевозчика</CardTitle>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<span className='font-semibold text-foreground'>ID:</span>
-						<UuidCopy id={cargo.id} />
+						<UuidCopy uuid={cargo.cargo_uuid} />
 					</div>
 				</div>
 				<p className='text-sm text-muted-foreground'>Заявка: запрос перевозчика</p>
@@ -110,7 +87,6 @@ function DeskCard({ cargo }: DeskCardProps) {
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<CardSections sections={sections} />
-
 				<section className='flex flex-col gap-2'>
 					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Предложения</span>
 					<HasOffersField cargo={cargo} />
@@ -118,18 +94,18 @@ function DeskCard({ cargo }: DeskCardProps) {
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
-				<Button variant='outline' className='flex-1 min-w-[140px] bg-[#111827] text-white'>
+				<Button variant='outline' className='min-w-[140px] flex-1 bg-[#111827] text-white'>
 					<RefreshCcw /> Обновить
 				</Button>
-				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.edit(String(cargo.id))}>
+				<Link className='min-w-[140px] flex-1' href={DASHBOARD_URL.edit(String(cargo.cargo_uuid))}>
 					<Button variant='outline' className='w-full bg-warning-400 text-white'>
 						<Pen /> Изменить
 					</Button>
 				</Link>
-				<Button variant='outline' className='flex-1 min-w-[140px] bg-error-500 text-white'>
+				<Button variant='outline' className='min-w-[140px] flex-1 bg-error-500 text-white'>
 					<EyeOff /> Скрыть
 				</Button>
-				<Button variant='outline' className='flex items-center gap-2 flex-1 min-w-[240px] bg-brand text-white'>
+				<Button variant='outline' className='min-w-[240px] flex flex-1 items-center gap-2 bg-brand text-white'>
 					<Handshake className='size-4' />
 					Сделать предложение
 				</Button>
@@ -147,9 +123,9 @@ function HasOffersField({ cargo }: { cargo: IOfferShort }) {
 			<Button
 				type='button'
 				variant='outline'
-				className='flex items-center gap-2 p-0 text-sm font-semibold text-foreground disabled:text-muted-foreground border-0 shadow-none'
-				disabled={!hasOffers}
+				className='flex items-center gap-2 border-0 p-0 text-sm font-semibold text-foreground shadow-none disabled:text-muted-foreground'
 				onClick={() => setOpen(true)}
+				disabled={!hasOffers}
 			>
 				{hasOffers ? (
 					<>

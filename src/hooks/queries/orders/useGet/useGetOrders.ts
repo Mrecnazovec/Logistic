@@ -13,8 +13,17 @@ export const useGetOrders = (defaultStatus: OrderStatusEnum = 'no_driver') => {
 		searchParams.forEach((value, key) => {
 			obj[key] = value
 		})
-		if (!obj.status) {
-			obj.status = defaultStatus ?? 'no_driver'
+
+		const allowedStatuses = new Set<OrderStatusEnum>([
+			OrderStatusEnum.NODRIVER,
+			OrderStatusEnum.PENDING,
+			OrderStatusEnum.IN_PROCESS,
+			OrderStatusEnum.DELIVERED,
+			OrderStatusEnum.PAID,
+		])
+
+		if (!obj.status || !allowedStatuses.has(obj.status as OrderStatusEnum)) {
+			obj.status = defaultStatus ?? OrderStatusEnum.NODRIVER
 		}
 
 		return obj as OrdersListQuery

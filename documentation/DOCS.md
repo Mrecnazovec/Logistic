@@ -55,6 +55,13 @@ useGetMyOffers — loads my offers with pagination via offersService.getMyOffers
 useGetOfferById — loads offer details by uuid via offersService.getOfferById.
 useGetOffers — loads offers list with filters via offersService.getOffers.
 
+- ## Agreements
+
+useGetAgreements — loads agreements list with optional pagination via agreementsService.getAgreements.
+useGetAgreement — loads agreement detail by id via agreementsService.getAgreement.
+useAcceptAgreement — accepts agreement by id via agreementsService.acceptAgreement.
+useRejectAgreement — rejects agreement by id via agreementsService.rejectAgreement.
+
 - ## Orders
 
 useCreateOrder — creates order via ordersService.createOrder.
@@ -66,6 +73,7 @@ useGetOrders - loads orders list with filters via ordersService.getOrders.
 useGenerateOrderInvite - posts invite generation for an order via ordersService.generateOrderInvite.
 useInviteOrderById - sends an order invite to a specific user id via ordersService.inviteOrderById.
 useAcceptOrderInvite - accepts an order invite via ordersService.acceptOrderInvite.
+useConfirmOrderTerms - confirms accepted order terms via ordersService.confirmOrderTerms.
 useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
 useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
@@ -127,6 +135,7 @@ offersService - offer CRUD and actions (accept/reject/invite/counter).
 ordersService - order CRUD, invites, status updates, document upload.
 paymentsService - payment creation and confirmations for customer/carrier endpoints.
 ratingsService - user ratings CRUD.
+agreementsService - agreements list/detail plus accept/reject actions.
 
 ## Shared enums
 
@@ -146,6 +155,7 @@ TransportTypeEnum - transport types (TENT/CONT/REEFER/DUMP/CARTR/GRAIN/LOG/PICKU
 
 Analytics.interface.ts — IAnalytics schema type from api.
 api.ts — generated OpenAPI components/operations types for backend.
+Agreement.interface.ts - agreement list/detail types and query params for agreements endpoints.
 CargoList.interface.ts — ICargoList type for cargo list.
 CargoPublish.interface.ts — ICargoPublish and DTOs for create/update cargo.
 Error.interface.ts — IErrorResponse and FieldError for error responses.
@@ -158,7 +168,7 @@ Notification.interface.ts — INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses; IOfferShort includes invite_token and invite_offer.
 Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
-PaginatedList.interface.ts - paginated lists for cargos, offers, orders, ratings.
+PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, orders, ratings.
 Payment.interface.ts - payment schemas (payment, create request, patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.
 RatingTableRow.interface.ts - alias for rating table row type.

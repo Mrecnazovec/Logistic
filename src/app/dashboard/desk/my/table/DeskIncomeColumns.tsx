@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -41,22 +41,17 @@ export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
 		id: 'origin',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Отправление / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
 			const { origin_city, origin_country, load_date } = row.original
-			const formattedDate = formatDateValue(load_date, 'dd.MM.yyyy', '—')
 			return (
 				<div className='flex flex-col'>
 					<span>{formatPlace(origin_city, origin_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(load_date, 'dd.MM.yyyy', '—')}</span>
 				</div>
 			)
 		},
@@ -65,22 +60,17 @@ export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
 		id: 'destination',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Назначение / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => {
 			const { destination_city, destination_country, delivery_date } = row.original
-			const formattedDate = formatDateValue(delivery_date, 'dd.MM.yyyy', '—')
 			return (
 				<div className='flex flex-col'>
 					<span>{formatPlace(destination_city, destination_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>{formattedDate}</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}</span>
 				</div>
 			)
 		},
@@ -89,10 +79,7 @@ export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'transport_type',
 		header: 'Транспорт',
-		cell: ({ row }) => {
-			const transportName = TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—'
-			return transportName
-		},
+		cell: ({ row }) => TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—',
 	},
 	{
 		accessorKey: 'weight_t',
@@ -106,21 +93,13 @@ export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Цена
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
-		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_value || 0)
-			const priceB = Number(b.original.price_value || 0)
-			return priceA - priceB
-		},
+		sortingFn: (a, b) => Number(a.original.price_value || 0) - Number(b.original.price_value || 0),
 	},
 	{
 		accessorKey: 'phone',

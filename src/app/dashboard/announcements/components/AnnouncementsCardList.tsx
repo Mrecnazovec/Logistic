@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
@@ -18,7 +18,6 @@ import {
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, Mail, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
-import { useMemo } from 'react'
 
 type AnnouncementsCardListProps = {
 	cargos: ICargoList[]
@@ -50,62 +49,52 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 	const transportName =
 		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
 
-	const contact =
-		cargo.contact_pref === 'email'
-			? cargo.email
-			: cargo.contact_pref === 'phone'
-				? cargo.phone
-				: cargo.phone || cargo.email
-
-	const sections = useMemo<CardSection[]>(
-		() => [
-			{
-				title: 'Откуда',
-				items: [
-					{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-					{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
-				],
-			},
-			{
-				title: 'Куда',
-				items: [
-					{
-						icon: MapPin,
-						primary: formatPlace(cargo.destination_city, cargo.destination_country),
-						secondary: 'Город / страна',
-					},
-					{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
-				],
-			},
-			{
-				title: 'Транспорт / вес',
-				items: [
-					{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
-					{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
-				],
-			},
-			{
-				title: 'Цена / км',
-				items: [
-					{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Стоимость перевозки' },
-					{
-						icon: Wallet,
-						primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency),
-						secondary: 'Цена за км',
-					},
-				],
-			},
-			{
-				title: 'Телефон',
-				items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
-			},
-			{
-				title: 'Почта',
-				items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
-			},
-		],
-		[cargo, transportName],
-	)
+	const sections: CardSection[] = [
+		{
+			title: 'Откуда',
+			items: [
+				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
+			],
+		},
+		{
+			title: 'Куда',
+			items: [
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.destination_city, cargo.destination_country),
+					secondary: 'Город / страна',
+				},
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
+			],
+		},
+		{
+			title: 'Транспорт / вес',
+			items: [
+				{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
+				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
+			],
+		},
+		{
+			title: 'Цена / км',
+			items: [
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Стоимость перевозки' },
+				{
+					icon: Wallet,
+					primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency),
+					secondary: 'Цена за км',
+				},
+			],
+		},
+		{
+			title: 'Телефон',
+			items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
+		},
+		{
+			title: 'Почта',
+			items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -117,7 +106,9 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					<CardTitle className='text-lg font-semibold leading-tight text-grayscale'>
 						{cargo.company_name || '—'}
 					</CardTitle>
-					<span className='text-lg font-semibold leading-tight text-grayscale'>{formatRelativeDate(cargo.created_at)}</span>
+					<span className='text-lg font-semibold leading-tight text-grayscale'>
+						{formatRelativeDate(cargo.created_at)}
+					</span>
 				</div>
 			</CardHeader>
 

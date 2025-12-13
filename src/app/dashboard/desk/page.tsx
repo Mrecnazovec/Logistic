@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
+﻿import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { DeskPage } from './DeskPage'
 import { LoaderTable } from '@/components/ui/table/TableStates'
+import { DeskPage } from './DeskPage'
 
 export const metadata: Metadata = {
-	title: 'Торговля'
+	title: 'Торговля',
 }
 
 export default function page() {

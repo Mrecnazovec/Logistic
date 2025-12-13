@@ -1,10 +1,16 @@
-import type { Metadata } from 'next'
+﻿import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Notifications } from './Notifications'
+import { LoaderTable } from '@/components/ui/table/TableStates'
 
 export const metadata: Metadata = {
-	title: 'Уведомления',
+    title: 'Уведомления',
 }
 
-export default function Page() {
-	return <Notifications />
+export default function page() {
+    return (
+        <Suspense fallback={<LoaderTable />}>
+            <Notifications />
+        </Suspense>
+    )
 }

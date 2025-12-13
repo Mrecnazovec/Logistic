@@ -1,4 +1,4 @@
-# AGENTS.md for LogisticProject
+﻿# AGENTS.md for LogisticProject
 
 ## Project Overview
 
@@ -22,12 +22,12 @@ This project is a web application with a React frontend, a Node.js backend using
 
 ## Specific Task Instructions
 
-- Rely on api.ts when interacting with the backend
+- Rely on api.ts when interacting with the backend.
 - For UI changes, prioritize accessibility and responsive design.
 - When refactoring, aim for clear, modular code and update relevant documentation.
-- Always use shadcn/ui components
-- Use strict mode typescript
-- After changes use `npm run lint` and `npm run build` to check correctness
+- Always use shadcn/ui components.
+- Use strict mode TypeScript.
+- After changes use `npm run lint` and `npm run build` to check correctness.
 - After making changes, check the spelling of words; there should be no incomprehensible characters left in the files.
 - Never use hieroglyphs or obscure symbols. Use only Cyrillic and Latin scripts.
 
@@ -45,12 +45,21 @@ This project is a web application with a React frontend, a Node.js backend using
 - If you need more than 2 helpers:
   - Decompose the logic:
     - Move UI-related parts into child components in `components/`.
-    - Move pure logic into utilities/hooks/services in lib/, hooks/ or services/ (see rules below).
+    - Move pure logic into utilities/hooks/services in `lib/`, `hooks/` or `services/` (see rules below).
   - Helper functions should be:
     - Small.
     - Focused on a single responsibility.
     - Typed explicitly in TypeScript.
 - Always use shadcn/ui components as a base for UI when possible.
+
+### Minimal, direct code (refactor focus)
+- Keep code short and straightforward; avoid unnecessary layers/configs; preserve behavior.
+- Skip `useMemo`/`useCallback` unless needed for heavy work, effect dependencies, or real rerender prevention.
+- Avoid data “normalization” and extra arrays/constants when simple inline `map`/`filter` or conditions suffice.
+- Format values (dates, prices, etc.) where they are rendered or minimally locally.
+- One component per file (tiny skeletons are fine). File order: `"use client"`, imports, types/interfaces, shared constants, component with hooks at top and `return` as the end of logic.
+- Remove dead code and duplication; keep readability while shortening.
+- Always run `npm run lint` and `npm run build` after changes.
 
 - If a component needs a utility / service / hook / formatter:
 
@@ -61,9 +70,9 @@ This project is a web application with a React frontend, a Node.js backend using
     - Immediately add a short description entry for this helper into DOCS.md (see format below).
 
 - Placement guidelines:
-  - `lib/` – pure utilities, formatters, common helpers.
-  - `hooks/` – React hooks.
-  - `services/` – API/services layer, business logic, data fetching abstractions.
+  - `lib/` - pure utilities, formatters, common helpers.
+  - `hooks/` - React hooks.
+  - `services/` - API/services layer, business logic, data fetching abstractions.
 
 ## `documentation/DOCS.md` Requirements
 

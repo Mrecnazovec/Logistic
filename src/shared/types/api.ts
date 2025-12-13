@@ -4,6 +4,74 @@
  */
 
 export interface paths {
+    "/api/agreements/agreements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Вкладка «Соглашения» */
+        get: operations["agreements_agreements_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agreements/agreements/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Вкладка «Соглашения» */
+        get: operations["agreements_agreements_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agreements/agreements/{id}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Вкладка «Соглашения» */
+        post: operations["agreements_agreements_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agreements/agreements/{id}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Вкладка «Соглашения» */
+        post: operations["agreements_agreements_reject_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/change-role/": {
         parameters: {
             query?: never;
@@ -722,6 +790,26 @@ export interface paths {
         patch: operations["orders_partial_update"];
         trace?: never;
     };
+    "/api/orders/{id}/confirm-terms/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Подтверждение условий заказа Перевозчиком/Водителем
+         * @description Перевозчик, принявший инвайт, подтверждает условия и переводит заказ в рабочий статус.
+         */
+        post: operations["orders_confirm_terms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/{id}/documents/": {
         parameters: {
             query?: never;
@@ -976,6 +1064,26 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AgreementList: {
+            readonly id: number;
+            readonly offer_id: number;
+            readonly cargo_id: number;
+            /**
+             * @description * `pending` - Ожидает подтверждения
+             *     * `accepted` - Принято
+             *     * `expired` - Истекло
+             *     * `cancelled` - Отменено
+             * @enum {string}
+             */
+            readonly status: "pending" | "accepted" | "expired" | "cancelled";
+            /** Format: date-time */
+            readonly expires_at: string;
+            readonly accepted_by_customer: boolean;
+            readonly accepted_by_carrier: boolean;
+            readonly accepted_by_logistic: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         Analytics: {
             successful_deliveries: number;
             /** Format: double */
@@ -1835,6 +1943,21 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
+        PaginatedAgreementListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AgreementList"][];
+        };
         PaginatedCargoListList: {
             /** @example 123 */
             count: number;
@@ -2321,6 +2444,92 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    agreements_agreements_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAgreementListList"];
+                };
+            };
+        };
+    };
+    agreements_agreements_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this agreement. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementList"];
+                };
+            };
+        };
+    };
+    agreements_agreements_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this agreement. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    agreements_agreements_reject_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this agreement. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_change_role_create: {
         parameters: {
             query?: never;
@@ -3585,6 +3794,34 @@ export interface operations {
                 "application/json": components["schemas"]["PatchedOrderDetailRequest"];
                 "multipart/form-data": components["schemas"]["PatchedOrderDetailRequest"];
                 "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_confirm_terms_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
             };
         };
         responses: {

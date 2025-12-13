@@ -1,19 +1,21 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { buildSearchDefaultValues } from '@/lib/search/buildSearchDefaultValues'
 import { ISearch } from '@/shared/types/Search.interface'
+import { useMemo } from 'react'
 
 export function useSearchForm() {
 	const router = useRouter()
 	const queryClient = useQueryClient()
 	const searchParams = useSearchParams()
 
-	const defaultValues = useMemo(() => {
-		return buildSearchDefaultValues(searchParams)
-	}, [searchParams])
+	const defaultValues = useMemo(
+		() => buildSearchDefaultValues(searchParams),
+		[searchParams],
+	)
 
 	const form = useForm<ISearch>({
 		mode: 'onChange',

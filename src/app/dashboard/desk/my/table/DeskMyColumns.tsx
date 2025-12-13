@@ -1,4 +1,4 @@
-'use client'
+﻿"use client"
 
 import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -14,8 +14,6 @@ import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 import { useRoleStore } from '@/store/useRoleStore'
-
-
 
 export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{
@@ -39,11 +37,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{
 		id: 'origin',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Отправление / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -62,11 +56,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{
 		id: 'destination',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Назначение / дата
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -76,9 +66,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 			return (
 				<div className='flex flex-col'>
 					<span>{formatPlace(destination_city, destination_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>
-						{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}
-					</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}</span>
 				</div>
 			)
 		},
@@ -87,10 +75,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'transport_type',
 		header: 'Транспорт',
-		cell: ({ row }) => {
-			const transportName = TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—'
-			return transportName
-		},
+		cell: ({ row }) => TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—',
 	},
 	{
 		accessorKey: 'weight_t',
@@ -104,21 +89,13 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button
-				variant='ghost'
-				className='p-0 hover:bg-transparent'
-				onClick={(event) => cycleColumnSort(event, column)}
-			>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Цена
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
 		cell: ({ row }) => formatCurrencyValue(row.original.price_value, row.original.price_currency),
-		sortingFn: (a, b) => {
-			const priceA = Number(a.original.price_value || 0)
-			const priceB = Number(b.original.price_value || 0)
-			return priceA - priceB
-		},
+		sortingFn: (a, b) => Number(a.original.price_value || 0) - Number(b.original.price_value || 0),
 	},
 	{
 		accessorKey: 'phone',

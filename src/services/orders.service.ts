@@ -98,6 +98,16 @@ class OrdersService {
 		return data
 	}
 
+	async confirmOrderTerms(id: string | number, data: OrderDetailRequestDto) {
+		const { data: order } = await axiosWithAuth<IOrderDetail>({
+			url: API_URL.orders(`${id}/confirm-terms`),
+			method: 'POST',
+			data,
+		})
+
+		return order
+	}
+
 	async uploadOrderDocument(id: string | number, payload: OrderDocumentUploadDto, category: string) {
 		const formData = new FormData()
 

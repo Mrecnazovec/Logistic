@@ -1,12 +1,12 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { formatPriceValue } from '@/lib/formatters'
 import {
 	formatDateValue,
 	formatDistanceKm,
+	formatPriceValue,
 	formatRelativeDate,
 	formatWeightValue,
 	parseDateToTimestamp,
@@ -20,7 +20,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Опубликован
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -31,7 +31,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Цена
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -50,7 +50,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'route_km',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Дистанция (км)
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -84,7 +84,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'load_date',
 		header: ({ column }) => (
-			<Button variant='ghost' className='hover:bg-transparent p-0' onClick={(event) => cycleColumnSort(event, column)}>
+			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
 				Дата загрузки
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
@@ -95,10 +95,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	{
 		accessorKey: 'transport_type',
 		header: 'Транспорт',
-		cell: ({ row }) => {
-			const transportName = TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—'
-			return transportName
-		},
+		cell: ({ row }) => TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—',
 	},
 	{
 		accessorKey: 'company_name',

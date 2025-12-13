@@ -25,7 +25,7 @@ interface OfferDecisionModalProps {
 	allowActions?: boolean
 }
 
-const EMPTY = '-'
+const EMPTY = '—'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
 export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allowActions = true }: OfferDecisionModalProps) {
@@ -34,18 +34,18 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 
 	const [priceValue, setPriceValue] = useState(initialPriceValue)
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(initialCurrency)
+	const dialogKey = offer ? `${offer.id}-${open}` : 'empty'
 
 	const { acceptOffer, isLoadingAccept } = useAcceptOffer()
 	const { rejectOffer, isLoadingReject } = useRejectOffer()
 	const { counterOffer, isLoadingCounter } = useCounterOffer()
 	const { acceptOrderInvite, isLoadingAcceptInvite } = useAcceptOrderInvite()
 
-	const formattedLoadDate = formatDateValue(offer?.load_date, 'dd.MM.yyyy', EMPTY)
-	const formattedDeliveryDate = formatDateValue(offer?.delivery_date, 'dd.MM.yyyy', EMPTY)
+	const transport = offer
+		? TransportSelect.find((type) => type.type === offer.transport_type)?.name || offer.transport_type || EMPTY
+		: EMPTY
 
-	const transport = offer ? (TransportSelect.find((type) => type.type === offer.transport_type)?.name ?? offer.transport_type) || offer.transport_type || EMPTY : EMPTY
 	const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)
-
 	const isCounterDisabled = !priceValue || !currency || isLoadingCounter || !offer
 	const inviteToken = (offer as { invite_token?: string } | undefined)?.invite_token
 	const isInviteFlow = Boolean(inviteToken)
@@ -59,6 +59,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 			},
 		)
 	}
+
 	const handleAccept = () => {
 		if (!offer) return
 		acceptOffer(String(offer.id), {
@@ -91,7 +92,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='w-[900px] max-w-[calc(100vw-2rem)] rounded-3xl'>
+			<DialogContent key={dialogKey} className='w-[900px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>Предложение</DialogTitle>
 				</DialogHeader>
@@ -117,7 +118,9 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										<p className='font-semibold text-foreground'>
 											{offer.origin_city}, {offer.origin_country}
 										</p>
-										<p className='text-sm text-muted-foreground'>{formattedLoadDate}</p>
+										<p className='text-sm text-muted-foreground'>
+											{formatDateValue(offer.load_date, 'dd.MM.yyyy', EMPTY)}
+										</p>
 									</div>
 									<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 										<ArrowRight className='mb-1 size-5' />
@@ -127,7 +130,9 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										<p className='font-semibold text-foreground'>
 											{offer.destination_city}, {offer.destination_country}
 										</p>
-										<p className='text-sm text-muted-foreground'>{formattedDeliveryDate}</p>
+										<p className='text-sm text-muted-foreground'>
+											{formatDateValue(offer.delivery_date, 'dd.MM.yyyy', EMPTY)}
+										</p>
 									</div>
 									<div className='space-y-1 text-sm text-muted-foreground'>
 										<p>
@@ -140,7 +145,8 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										</p>
 										<p>
 											<span className='font-semibold text-foreground'>Цена: </span>
-											{formattedPrice || EMPTY} {formatCurrencyPerKmValue(offer.price_per_km)}
+											{formattedPrice || EMPTY}{' '}
+											{formatCurrencyPerKmValue(offer.price_per_km, offer.price_currency as PriceCurrencyCode)}
 										</p>
 									</div>
 								</div>
@@ -150,9 +156,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										<span className='font-semibold text-foreground'>Компания: </span>
 										{offer.carrier_company || offer.carrier_full_name || EMPTY}
 									</p>
-									<p className='font-semibold text-foreground'>
-										Текущая ставка: {formattedPrice || EMPTY}
-									</p>
+									<p className='font-semibold text-foreground'>Текущая ставка: {formattedPrice || EMPTY}</p>
 								</div>
 
 								{!isInviteFlow ? (
