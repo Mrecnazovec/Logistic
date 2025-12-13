@@ -28,7 +28,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
-	const isHiddenForMe = String(cargo.status ?? '').toLowerCase() === 'hidden'
+	const isHiddenForMe = Boolean(cargo.is_hidden)
 	const visibilityActionLabel = isHiddenForMe ? 'Показать' : 'Скрыть'
 	const VisibilityIcon = isHiddenForMe ? Eye : EyeOff
 

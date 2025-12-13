@@ -26,7 +26,7 @@ export const getDeskRowClassName = (cargo: ICargoList) => {
 	const status = (cargo.status || '').toUpperCase()
 	if (moderation === 'pending') classes.push('bg-purple-50')
 	if (moderation === 'rejected') classes.push('bg-red-50')
-	if (status === 'HIDDEN') classes.push('opacity-60')
+	if (cargo.is_hidden) classes.push('opacity-60')
 	return classes.join(' ')
 }
 
