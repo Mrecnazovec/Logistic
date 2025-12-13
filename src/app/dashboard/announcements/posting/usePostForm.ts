@@ -7,6 +7,9 @@ export function usePostForm() {
 
 	const form = useForm<CargoPublishRequestDto>({
 		mode: 'onChange',
+		defaultValues: {
+			is_hidden: false,
+		},
 	})
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
@@ -17,6 +20,7 @@ export function usePostForm() {
 			...data,
 			weight_kg,
 			payment_method: data.payment_method ?? 'transfer',
+			is_hidden: data.is_hidden ?? false,
 		})
 	}
 

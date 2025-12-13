@@ -9,6 +9,8 @@ const RichTextEditor = dynamic(() =>
 	import('@/components/ui/form-control/RichEditor/RichTextEditor').then(m => m.RichTextEditor),
 )
 
+import { UuidCopy } from '@/components/ui/actions/UuidCopy'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
@@ -24,7 +26,6 @@ import { Banknote, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useEditForm } from './useEditForm'
-import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 
 const formatCityLabel = (city: City | null) => {
 	if (!city) return undefined
@@ -84,7 +85,8 @@ export function EditPage() {
 			volume_m3: load.volume_m3 ?? '',
 			payment_method: load.payment_method ?? '',
 			weight_kg: load.weight_kg ?? '',
-			weight_tons: weight_tons ?? ''
+			weight_tons: weight_tons ?? '',
+			is_hidden: Boolean(load.is_hidden),
 		})
 	}, [load, form])
 
@@ -336,6 +338,36 @@ export function EditPage() {
 									<FormLabel className='text-brand'>Выберите способ оплаты</FormLabel>
 									<FormControl>
 										<PaymentSelector onChange={field.onChange} value={field.value} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='is_hidden'
+							render={({ field }) => (
+								<FormItem className='mb-6'>
+									<FormLabel className='text-brand mb-3'>Видимость объявления</FormLabel>
+									<FormControl>
+										<RadioGroup
+											onValueChange={(value) => field.onChange(value === 'true')}
+											value={(field.value ?? false) ? 'true' : 'false'}
+											className='space-y-3'
+										>
+											<FormItem className='flex items-center gap-3'>
+												<FormControl>
+													<RadioGroupItem value='false' disabled={isLoadingPatch} />
+												</FormControl>
+												<FormLabel className='m-0 font-semibold'>Видна</FormLabel>
+											</FormItem>
+											<FormItem className='flex items-center gap-3'>
+												<FormControl>
+													<RadioGroupItem value='true' disabled={isLoadingPatch} />
+												</FormControl>
+												<FormLabel className='m-0 font-semibold'>Скрыта</FormLabel>
+											</FormItem>
+										</RadioGroup>
 									</FormControl>
 									<FormMessage />
 								</FormItem>

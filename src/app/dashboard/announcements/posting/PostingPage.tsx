@@ -9,17 +9,18 @@ const RichTextEditor = dynamic(() =>
 	import('@/components/ui/form-control/RichEditor/RichTextEditor').then(m => m.RichTextEditor),
 )
 
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 import { Banknote, Home, } from 'lucide-react'
 import { usePostForm } from './usePostForm'
-import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 
 export function PostingPage() {
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
@@ -272,6 +273,36 @@ export function PostingPage() {
 								</FormItem>
 							)}
 						/>
+						<FormField
+							control={form.control}
+							name='is_hidden'
+							render={({ field }) => (
+								<FormItem className='mb-6'>
+									<FormLabel className='text-brand mb-3'>Видимость объявления</FormLabel>
+									<FormControl>
+										<RadioGroup
+											onValueChange={(value) => field.onChange(value === 'true')}
+											value={(field.value ?? false) ? 'true' : 'false'}
+											className='space-y-3'
+										>
+											<FormItem className='flex items-center gap-3'>
+												<FormControl>
+													<RadioGroupItem value='false' disabled={isLoadingCreate} />
+												</FormControl>
+												<FormLabel className='m-0 font-semibold'>Видна</FormLabel>
+											</FormItem>
+											<FormItem className='flex items-center gap-3'>
+												<FormControl>
+													<RadioGroupItem value='true' disabled={isLoadingCreate} />
+												</FormControl>
+												<FormLabel className='m-0 font-semibold'>Скрыта</FormLabel>
+											</FormItem>
+										</RadioGroup>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 					</div>
 					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>
 						<p className='text-xl font-bold text-brand'>Детали оборудования</p>
@@ -327,7 +358,7 @@ export function PostingPage() {
 										<TransportSelector onChange={field.onChange} value={field.value} disabled={isLoadingCreate} />
 									</FormControl>
 									<FormMessage />
-									
+
 								</FormItem>
 							)}
 						/>

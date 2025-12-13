@@ -11,6 +11,9 @@ export function useEditForm() {
 
 	const form = useForm<CargoPublishRequestDto>({
 		mode: 'onChange',
+		defaultValues: {
+			is_hidden: false,
+		},
 	})
 
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
@@ -18,7 +21,10 @@ export function useEditForm() {
 
 		patchLoad({
 			uuid: param.uuid,
-			data,
+			data: {
+				...data,
+				is_hidden: data.is_hidden ?? false,
+			},
 		})
 
 		router.push(DASHBOARD_URL.desk())
