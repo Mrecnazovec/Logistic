@@ -169,13 +169,17 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 	},
 
 	{
-		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/profile'),
 		items: [
 			{
-				label: 'Заказы',
-				href: DASHBOARD_URL.transportation(),
+				label: '',
+				href: DASHBOARD_URL.profile(),
 			},
 		],
+		backLink: {
+			label: 'Назад к списку объявлений',
+			href: DASHBOARD_URL.announcements(),
+		},
 	},
 
 	{

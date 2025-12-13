@@ -8,6 +8,7 @@ import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
@@ -40,7 +41,43 @@ export function TransportationMyPage() {
 	const role = useRoleStore((state) => state.role)
 	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
 
-	const results = data?.results ?? []
+	const results = useMemo<IOrderList[]>(() => {
+		const rawResults = data?.results ?? []
+
+		return rawResults.map((order) => ({
+			...order,
+			roles: {
+				customer: {
+					id: (order as any).customer_id ?? 0,
+					name: order.customer_name ?? '',
+					login: '',
+					phone: (order as any).customer_phone ?? '',
+					company: order.customer_company ?? '',
+					role: RoleEnum.CUSTOMER,
+				},
+				logistic: (order as any).logistic_id
+					? {
+							id: (order as any).logistic_id,
+							name: order.logistic_name ?? '',
+							login: '',
+							phone: (order as any).logistic_phone ?? '',
+							company: order.logistic_company ?? '',
+							role: RoleEnum.LOGISTIC,
+					  }
+					: null,
+				carrier: (order as any).carrier_id
+					? {
+							id: (order as any).carrier_id,
+							name: order.carrier_name ?? '',
+							login: '',
+							phone: (order as any).carrier_phone ?? '',
+							company: order.carrier_company ?? '',
+							role: RoleEnum.CARRIER,
+					  }
+					: null,
+			},
+		}))
+	}, [data?.results])
 	const { statusCounts } = useTransportationStatusCounts(STATUS_TABS, searchParams)
 
 	const renderTabLabel = useCallback(

@@ -17,10 +17,13 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
     {
         accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_name' : 'customer_name',
         header: role === RoleEnum.CUSTOMER ? 'Перевозчик' : 'Заказчик',
+        cell: ({ row }) => (role === RoleEnum.CUSTOMER ? row.original.roles.carrier?.name : row.original.roles.customer.name),
+
     },
     {
         accessorKey: role === RoleEnum.LOGISTIC ? 'carrier_name' : 'logistic_name',
         header: role === RoleEnum.LOGISTIC ? 'Перевозчик' : 'Посредник',
+        cell: ({ row }) => (role === RoleEnum.LOGISTIC ? row.original.roles.carrier?.name : row.original.roles.logistic?.name),
     },
     {
         id: 'origin',

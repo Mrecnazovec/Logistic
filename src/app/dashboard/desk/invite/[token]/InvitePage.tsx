@@ -30,6 +30,7 @@ import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import type { InviteResponseActionsProps } from '@/shared/types/Invite.interface'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 
 const EMPTY = '-'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
@@ -38,7 +39,7 @@ export function InvitePage() {
 	const isHydrated = useSyncExternalStore(
 		(callback) => {
 			callback()
-			return () => {}
+			return () => { }
 		},
 		() => true,
 		() => false,
@@ -223,6 +224,7 @@ function InvitePageContent() {
 						</div>
 						<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
 							<span className='font-semibold text-foreground'>Компания:</span> {cargo.company_name}
+							<span className='font-semibold text-foreground'>Представитель:</span> {<ProfileLink id={Number(cargo.user_id)} name={cargo.user_name} />}
 						</div>
 					</CardContent>
 				</Card>

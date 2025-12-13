@@ -13,7 +13,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { DeskCardDriverList } from './components/DeskCardDriverList'
 import { DeskCardList } from './components/DeskCardList'
@@ -34,6 +34,8 @@ export function DeskPage() {
 	const { role } = useRoleStore()
 	const tableType = useTableTypeStore((state) => state.tableType)
 	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 
 	useEffect(() => {
 		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
@@ -79,6 +81,13 @@ export function DeskPage() {
 		)
 	}
 
+	const handleTabChange = (tab: string) => {
+		const params = new URLSearchParams(searchParams.toString())
+		params.delete('page')
+		const query = params.toString()
+		router.replace(query ? `${pathname}?${query}` : pathname)
+	}
+
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
 			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
@@ -89,7 +98,11 @@ export function DeskPage() {
 				</Form>
 			</div>
 
-			<Tabs defaultValue='desk' className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}>
+			<Tabs
+				defaultValue='desk'
+				className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}
+				onValueChange={handleTabChange}
+			>
 				<div className='flex flex-wrap items-end gap-4'>
 					<TabsList className='-mb-2 bg-transparent'>
 						{tabs.map((tab) => (

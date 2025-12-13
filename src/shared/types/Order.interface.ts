@@ -4,21 +4,29 @@ import type { components, paths } from './api'
 type OrderDetailBase = components['schemas']['OrderDetail']
 
 export type OrderRole = {
-  id: number
-  name: string
-  login: string
-  phone: string
-  company: string
-  role: RoleEnum
+	id: number
+	name: string
+	login: string
+	phone: string
+	company: string
+	role: RoleEnum
 }
 
-export type IOrderList = components['schemas']['OrderList']
+export type IOrderListBase = components['schemas']['OrderList']
+export type IOrderList = Omit<IOrderListBase, 'roles'> & {
+	roles: {
+		customer: OrderRole
+		logistic: OrderRole | null
+		carrier: OrderRole | null
+	}
+}
+
 export type IOrderDetail = Omit<OrderDetailBase, 'roles'> & {
-  roles: {
-    customer: OrderRole
-    logistic: OrderRole | null
-    carrier: OrderRole | null
-  }
+	roles: {
+		customer: OrderRole
+		logistic: OrderRole | null
+		carrier: OrderRole | null
+	}
 }
 export type OrderDetailRequestDto = components['schemas']['OrderDetailRequest']
 export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailRequest']

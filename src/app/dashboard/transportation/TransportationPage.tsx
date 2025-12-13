@@ -65,6 +65,7 @@ export function TransportationPage() {
         if (nextStatus === status) return
         const params = new URLSearchParams(searchParams.toString())
         params.set('status', nextStatus)
+        params.delete('page')
         router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
     }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { RoleSelect } from '@/shared/enums/Role.enum'
 import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
@@ -60,7 +61,7 @@ export function ExpandedRatingRow({ user }: { user: IRatingUserList }) {
 				</div>
 				<div>
 					<p className='text-sm text-muted-foreground'>Имя</p>
-					<p className='text-base font-medium text-foreground'>{user.display_name ?? '-'}</p>
+					<p className='text-base font-medium text-foreground'>{<ProfileLink id={user.id} name={user.display_name} />}</p>
 				</div>
 				<div>
 					<p className='text-sm text-muted-foreground'>Роль</p>

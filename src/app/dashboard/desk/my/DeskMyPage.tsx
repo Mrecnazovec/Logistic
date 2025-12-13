@@ -19,6 +19,7 @@ import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { DeskMyCardList } from './components/DeskIncomeCardList'
 import { deskIncomeColumns } from './table/DeskIncomeColumns'
@@ -37,6 +38,8 @@ export function DeskMyPage() {
 	const tableType = useTableTypeStore((state) => state.tableType)
 	const role = useRoleStore((state) => state.role)
 	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []
@@ -100,6 +103,13 @@ export function DeskMyPage() {
 		)
 	}
 
+	const handleTabChange = (tab: string) => {
+		const params = new URLSearchParams(searchParams.toString())
+		params.delete('page')
+		const query = params.toString()
+		router.replace(query ? `${pathname}?${query}` : pathname)
+	}
+
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
 			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
@@ -110,7 +120,11 @@ export function DeskMyPage() {
 				</Form>
 			</div>
 
-			<Tabs defaultValue='desk' className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}>
+			<Tabs
+				defaultValue='desk'
+				className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}
+				onValueChange={handleTabChange}
+			>
 				<div className='flex items-end justify-between'>
 					<TabsList className='-mb-2 bg-transparent'>
 						{tabs.map((tab) => (
