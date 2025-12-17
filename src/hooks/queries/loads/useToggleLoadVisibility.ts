@@ -6,7 +6,7 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type ToggleLoadPayload = {
 	uuid: string
-	isHiddenForMe: boolean
+	isHidden: boolean
 }
 
 export const useToggleLoadVisibility = () => {
@@ -14,8 +14,7 @@ export const useToggleLoadVisibility = () => {
 
 	const { mutate: toggleLoadVisibility, isPending: isLoadingToggle } = useMutation({
 		mutationKey: ['load', 'visibility'],
-		mutationFn: ({ uuid, isHiddenForMe }: ToggleLoadPayload) =>
-			loadsService.toggleLoadVisibility(uuid, isHiddenForMe),
+		mutationFn: ({ uuid, isHidden }: ToggleLoadPayload) => loadsService.toggleLoadVisibility(uuid, isHidden),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			queryClient.invalidateQueries({ queryKey: ['get load'] })

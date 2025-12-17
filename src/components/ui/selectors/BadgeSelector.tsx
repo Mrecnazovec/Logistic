@@ -25,7 +25,6 @@ const getCounterpartyLabel = (role?: RoleEnum) => (role === RoleEnum.CARRIER ? '
 export const getOfferStatusMeta = (offer?: IOfferShort, role?: RoleEnum): OfferStatusMeta => {
 	if (!offer) return { variant: 'secondary', label: '-' }
 
-	const statusLabel = offer.status_display || '-'
 	const isCancelled = isCancelledStatus(offer.status_display)
 	if (offer.invite_token) {
 		return {
@@ -75,7 +74,6 @@ export const getOfferStatusMeta = (offer?: IOfferShort, role?: RoleEnum): OfferS
 	return {
 		variant: 'warning',
 		label: 'В ожидании ответа',
-		// requireDecision: true,
 		requireDecision: true,
 
 		note: `Ожидайте ответа ${getCounterpartyLabel(role)}`,

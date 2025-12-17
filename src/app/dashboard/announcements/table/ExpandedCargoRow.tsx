@@ -132,7 +132,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 
 			{role !== RoleEnum.CUSTOMER && (
 				<div className='mt-2 flex justify-start lg:justify-center'>
-					<OfferModal selectedRow={cargo} title='Подтвердить предложение' />
+					<OfferModal selectedRow={cargo} title='Отправить предложение' />
 				</div>
 			)}
 		</div>

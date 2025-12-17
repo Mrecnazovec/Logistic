@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
@@ -14,6 +15,7 @@ import { useAcceptOrderInvite } from '@/hooks/queries/orders/useAcceptOrderInvit
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue } from '@/lib/formatters'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 
@@ -25,15 +27,17 @@ interface OfferDecisionModalProps {
 	allowActions?: boolean
 }
 
-const EMPTY = '—'
+const EMPTY = '-'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
 export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allowActions = true }: OfferDecisionModalProps) {
 	const initialPriceValue = offer?.price_value ? String(offer.price_value) : ''
 	const initialCurrency = (offer?.price_currency as PriceCurrencyCode) ?? ''
+	const initialPaymentMethod = (offer?.payment_method as PaymentMethodEnum) ?? ''
 
 	const [priceValue, setPriceValue] = useState(initialPriceValue)
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(initialCurrency)
+	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(initialPaymentMethod)
 	const dialogKey = offer ? `${offer.id}-${open}` : 'empty'
 
 	const { acceptOffer, isLoadingAccept } = useAcceptOffer()
@@ -46,7 +50,8 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 		: EMPTY
 
 	const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)
-	const isCounterDisabled = !priceValue || !currency || isLoadingCounter || !offer
+	const formattedPricePerKm = formatCurrencyPerKmValue(offer?.price_per_km, offer?.price_currency as PriceCurrencyCode)
+	const isCounterDisabled = !priceValue || !currency || !paymentMethod || isLoadingCounter || !offer
 	const inviteToken = (offer as { invite_token?: string } | undefined)?.invite_token
 	const isInviteFlow = Boolean(inviteToken)
 
@@ -98,19 +103,17 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 				</DialogHeader>
 
 				{!offer ? (
-					<p className='py-6 text-center text-muted-foreground'>Данные предложения недоступны</p>
+					<p className='py-6 text-center text-muted-foreground'>Данные предложения недоступны.</p>
 				) : (
 					<div className='space-y-6'>
 						{!allowActions ? (
 							<p className='py-10 text-center text-base font-semibold text-muted-foreground'>
-								{statusNote || 'Предложение доступно только для просмотра'}
+								{statusNote || 'Действия с предложением недоступны в текущем статусе'}
 							</p>
 						) : (
 							<>
 								{statusNote ? (
-									<p className='rounded-2xl bg-muted/60 px-4 py-3 text-center text-sm font-semibold text-muted-foreground'>
-										{statusNote}
-									</p>
+									<p className='rounded-2xl bg-muted/60 px-4 py-3 text-center text-sm font-semibold text-muted-foreground'>{statusNote}</p>
 								) : null}
 
 								<div className='flex flex-wrap items-start justify-between gap-6 border-b pb-6'>
@@ -118,9 +121,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										<p className='font-semibold text-foreground'>
 											{offer.origin_city}, {offer.origin_country}
 										</p>
-										<p className='text-sm text-muted-foreground'>
-											{formatDateValue(offer.load_date, 'dd.MM.yyyy', EMPTY)}
-										</p>
+										<p className='text-sm text-muted-foreground'>{formatDateValue(offer.load_date, 'dd.MM.yyyy', EMPTY)}</p>
 									</div>
 									<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 										<ArrowRight className='mb-1 size-5' />
@@ -145,8 +146,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										</p>
 										<p>
 											<span className='font-semibold text-foreground'>Цена: </span>
-											{formattedPrice || EMPTY}{' '}
-											{formatCurrencyPerKmValue(offer.price_per_km, offer.price_currency as PriceCurrencyCode)}
+											{formattedPrice || EMPTY} {formattedPricePerKm}
 										</p>
 									</div>
 								</div>
@@ -161,9 +161,9 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 
 								{!isInviteFlow ? (
 									<>
-										<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
+										<div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
 											<Input
-												placeholder='Введите сумму'
+												placeholder='Укажите сумму'
 												value={priceValue}
 												onChange={(event) => setPriceValue(event.target.value)}
 												type='number'
@@ -183,9 +183,15 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 													))}
 												</SelectContent>
 											</Select>
+											<PaymentSelector
+												value={paymentMethod}
+												onChange={(value) => setPaymentMethod(value)}
+												placeholder='Способ оплаты'
+												className='bg-muted/40 shadow-none'
+											/>
 										</div>
 
-										<div className='flex flex-wrap justify-end gap-3'>
+										<div className='flex max-sm:flex-col justify-end gap-3'>
 											<Button
 												onClick={handleAccept}
 												disabled={isLoadingAccept || !offer}
@@ -198,14 +204,14 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 												disabled={isCounterDisabled}
 												className='rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60'
 											>
-												Сделать встречное
+												Торговаться
 											</Button>
 											<Button
 												onClick={handleReject}
 												disabled={isLoadingReject || !offer}
 												className='rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60'
 											>
-												Отклонить
+												Отказать
 											</Button>
 										</div>
 									</>

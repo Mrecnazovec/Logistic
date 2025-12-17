@@ -9,8 +9,6 @@ import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { ColumnDef } from '@tanstack/react-table'
 
-const parseHiddenForMe = (value: unknown) => String(value ?? '').toLowerCase() === 'true'
-
 export const createTransportationColumns = (role?: RoleEnum): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'uuid',
@@ -113,10 +111,10 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<ICargoLi
 		},
 	},
 	{
-		accessorKey: 'is_hidden_for_me',
+		accessorKey: 'is_hidden',
 		header: 'Visibility',
 		cell: ({ row }) => {
-			const hidden = parseHiddenForMe(row.original.is_hidden_for_me)
+			const hidden = Boolean(row.original.is_hidden)
 
 			return (
 				<div
@@ -135,4 +133,3 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<ICargoLi
 		header: 'Цена за км',
 	},
 ]
-

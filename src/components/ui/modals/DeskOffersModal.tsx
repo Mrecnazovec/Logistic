@@ -14,10 +14,12 @@ import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
 import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
-import { formatDateValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
-import { PaymentMethodSelector } from '@/shared/enums/PaymentMethod.enum'
+import { formatDateValue, formatWeightValue } from '@/lib/formatters'
+import { cn } from '@/lib/utils'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
+import { PaymentSelector } from '../selectors/PaymentSelector'
 
 interface DeskOffersModalProps {
     cargoUuid?: string
@@ -26,7 +28,7 @@ interface DeskOffersModalProps {
 }
 
 type OfferFormState = {
-    paymentMethod?: string
+    paymentMethod?: PaymentMethodEnum | ''
     currency?: PriceCurrencyCode
     price?: string
 }
@@ -43,30 +45,52 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
     const { counterOffer, isLoadingCounter } = useCounterOffer()
 
     const offers = data?.results ?? []
-    const incomingOffers = offers.filter((offer) => !offer.accepted_by_customer)
-    const acceptedOffers = offers.filter((offer) => offer.accepted_by_customer)
+    const incomingOffers = offers.filter(
+        (offer) => !offer.accepted_by_customer && !offer.accepted_by_logistic && !offer.accepted_by_carrier
+    )
+    const acceptedOffers = offers.filter((offer) => offer.accepted_by_logistic || offer.accepted_by_carrier)
 
     const cargoInfo = offers[0]
         ? {
-              origin: `${offers[0].origin_city}, ${offers[0].origin_country}`,
-              originDate: formatDateValue(offers[0].load_date, 'dd MMM, EEE', '-'),
-              destination: `${offers[0].destination_city}, ${offers[0].destination_country}`,
-              destinationDate: formatDateValue(offers[0].delivery_date, 'dd MMM, EEE', '-'),
-              transport: TransportSelect.find((type) => type.type === offers[0].transport_type)?.name ?? offers[0].transport_type,
-              weight: offers[0].weight_t ? formatWeightValue(offers[0].weight_t) : '-'
-          }
+            origin: `${offers[0].origin_city}, ${offers[0].origin_country}`,
+            originDate: formatDateValue(offers[0].load_date, 'dd MMM, EEE', '-'),
+            destination: `${offers[0].destination_city}, ${offers[0].destination_country}`,
+            destinationDate: formatDateValue(offers[0].delivery_date, 'dd MMM, EEE', '-'),
+            transport: TransportSelect.find((type) => type.type === offers[0].transport_type)?.name ?? offers[0].transport_type,
+            weight: offers[0].weight_t ? formatWeightValue(offers[0].weight_t) : '-',
+            route_km: offers[0].route_km
+        }
         : null
 
-    const renderOfferCard = (offer: IOfferShort, isReadOnly = false) => {
+    const renderOfferCard = (offer: IOfferShort, mode: 'incoming' | 'accepted') => {
         const priceCurrency = offer.price_currency as PriceCurrencyCode
-        const form = formState[offer.id] ?? {}
-        const isCounterDisabled = !form.price || !form.currency || isLoadingCounter
+        const defaultForm: OfferFormState = {
+            paymentMethod: (offer.payment_method as PaymentMethodEnum) || '',
+            currency: priceCurrency,
+            price: offer.price_value ?? ''
+        }
+        const form = { ...defaultForm, ...formState[offer.id] }
+        const isCounterDisabled = !form.price || !form.currency || !form.paymentMethod || isLoadingCounter
+
+        const updateForm = (next: Partial<OfferFormState>) =>
+            setFormState((prev) => ({
+                ...prev,
+                [offer.id]: { ...defaultForm, ...prev[offer.id], ...next }
+            }))
+
+        const handleCounterOffer = () => {
+            if (isCounterDisabled) return
+            counterOffer({
+                id: String(offer.id),
+                data: { price_value: form.price as string, price_currency: form.currency as PriceCurrencyCode }
+            })
+        }
 
         return (
-            <div key={offer.id} className='space-y-4 rounded-2xl border border-border p-5'>
+            <div key={offer.id} className='space-y-4'>
                 <div className='flex flex-wrap items-start justify-between gap-3 text-sm'>
                     <div className='space-y-1'>
-                        <p className='font-semibold text-foreground'>{offer.carrier_full_name || '—'}</p>
+                        <p className='font-semibold text-foreground'>{offer.carrier_full_name || '-'}</p>
                         <p className='text-muted-foreground'>
                             <span className='font-semibold text-foreground'>Компания: </span>
                             {offer.carrier_company || '—'}
@@ -79,8 +103,8 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                                 {offer.carrier_rating}
                             </p>
                         ) : null}
-                        <p className='font-semibold text-foreground'>
-                            Предложение: {formatCurrencyValue(offer.price_value, priceCurrency)}
+                        <p className='font-semibold text-foreground text-start'>
+                            Цена: {formatCurrencyValue(offer.price_value, priceCurrency)}
                             {offer.price_per_km ? (
                                 <span className='text-muted-foreground'> ({formatCurrencyPerKmValue(offer.price_per_km, priceCurrency)})</span>
                             ) : null}
@@ -88,60 +112,67 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                     </div>
                 </div>
 
-                {!isReadOnly && (
-                    <>
-                        <div className='grid gap-3 pt-2 md:grid-cols-3'>
-                            <Select
-                                value={form.paymentMethod}
-                                onValueChange={(value) =>
-                                    setFormState((prev) => ({ ...prev, [offer.id]: { ...prev[offer.id], paymentMethod: value } }))
-                                }
+                <div className='grid gap-3 pt-2 md:grid-cols-[1fr_auto_auto]'>
+                    <Input
+                        type='number'
+                        inputMode='decimal'
+                        min='0'
+                        step='0.01'
+                        value={form.price ?? ''}
+                        onChange={(event) => updateForm({ price: event.target.value })}
+                        placeholder='Введите цену'
+                        className='w-full rounded-full border-none bg-muted/40 placeholder:text-muted-foreground'
+                    />
+
+
+                    <Select
+                        value={form.currency}
+                        onValueChange={(value) => updateForm({ currency: value as PriceCurrencyCode })}
+                    >
+                        <SelectTrigger className={cn(
+                            'w-full rounded-full bg-grayscale-50 border-none ',
+                            '*:data-[slot=select-value]:text-black',
+                        )}>
+                            <SelectValue placeholder='Выберите валюту' />
+                        </SelectTrigger>
+                        <SelectContent align='start'>
+                            {currencyOptions.map((currency) => (
+                                <SelectItem key={`${offer.id}-${currency}`} value={currency}>
+                                    {currency}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <PaymentSelector
+                        value={form.paymentMethod}
+                        onChange={(value) => updateForm({ paymentMethod: value })}
+                        placeholder='Способ оплаты'
+                        className='bg-muted/40 shadow-none [&>button]:border-none [&>button]:bg-transparent'
+                    />
+
+
+                </div>
+
+                <div className='flex justify-end gap-3 pt-4 max-sm:flex-col '>
+                    {mode === 'incoming' ? (
+                        <>
+                            <Button
+                                className='rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60'
+                                onClick={handleCounterOffer}
+                                disabled={isCounterDisabled}
                             >
-                                <SelectTrigger className='w-full rounded-full border-none bg-muted/40 shadow-none'>
-                                    <SelectValue placeholder='Способ оплаты' />
-                                </SelectTrigger>
-                                <SelectContent align='start'>
-                                    {PaymentMethodSelector.map((option) => (
-                                        <SelectItem key={`${offer.id}-${option.type}`} value={option.type}>
-                                            {option.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-
-                            <Select
-                                value={form.currency}
-                                onValueChange={(value) =>
-                                    setFormState((prev) => ({ ...prev, [offer.id]: { ...prev[offer.id], currency: value as PriceCurrencyCode } }))
-                                }
+                                Контрпредложение
+                            </Button>
+                            <Button
+                                className='rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60'
+                                onClick={() => rejectOffer(String(offer.id))}
+                                disabled={isLoadingReject}
                             >
-                                <SelectTrigger className='w-full rounded-full border-none bg-muted/40 shadow-none'>
-                                    <SelectValue placeholder='Выберите валюту' />
-                                </SelectTrigger>
-                                <SelectContent align='start'>
-                                    {currencyOptions.map((currency) => (
-                                        <SelectItem key={`${offer.id}-${currency}`} value={currency}>
-                                            {currency}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-
-                            <Input
-                                type='number'
-                                inputMode='decimal'
-                                min='0'
-                                step='0.01'
-                                value={form.price ?? ''}
-                                onChange={(event) =>
-                                    setFormState((prev) => ({ ...prev, [offer.id]: { ...prev[offer.id], price: event.target.value } }))
-                                }
-                                placeholder='Введите цену'
-                                className='w-full rounded-full border-none bg-muted/40 text-sm font-medium text-foreground placeholder:text-muted-foreground'
-                            />
-                        </div>
-
-                        <div className='flex justify-end gap-3 pt-4'>
+                                Отказать
+                            </Button></>
+                    ) : (
+                        <>
                             <Button
                                 className='rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60'
                                 onClick={() => acceptOffer(String(offer.id))}
@@ -151,13 +182,10 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                             </Button>
                             <Button
                                 className='rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60'
-                                onClick={() => {
-                                    if (!form.price || !form.currency) return
-                                    counterOffer({ id: String(offer.id), data: { price_value: form.price, price_currency: form.currency } })
-                                }}
+                                onClick={handleCounterOffer}
                                 disabled={isCounterDisabled}
                             >
-                                Ответить
+                                Торговаться
                             </Button>
                             <Button
                                 className='rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60'
@@ -166,16 +194,16 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                             >
                                 Отказать
                             </Button>
-                        </div>
-                    </>
-                )}
+                        </>
+                    )}
+                </div>
             </div>
         )
     }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='max-w-[900px] rounded-3xl'>
+            <DialogContent>
                 <DialogHeader className='pb-6 text-center'>
                     <DialogTitle className='text-center text-2xl font-bold'>Предложения</DialogTitle>
                 </DialogHeader>
@@ -196,6 +224,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                                 </div>
                                 <div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
                                     <ArrowRight className='mb-1 size-5' />
+                                    {cargoInfo.route_km}
                                 </div>
                                 <div>
                                     <p className='font-semibold text-foreground'>{cargoInfo.destination}</p>
@@ -215,7 +244,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                         )}
 
                         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'incoming' | 'accepted')} className='space-y-4'>
-                            <TabsList className='flex w-full justify-center gap-8 border-b bg-transparent p-0'>
+                            <TabsList className='flex w-full justify-center gap-8 border-b bg-transparent p-0 overflow-x-auto'>
                                 <TabsTrigger
                                     value='incoming'
                                     className='rounded-none border-2 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground'
@@ -232,7 +261,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 
                             <TabsContent value='incoming' className='space-y-4'>
                                 {incomingOffers.length ? (
-                                    incomingOffers.map((offer) => renderOfferCard(offer))
+                                    incomingOffers.map((offer) => renderOfferCard(offer, 'incoming'))
                                 ) : (
                                     <p className='py-6 text-center text-muted-foreground'>Нет входящих предложений.</p>
                                 )}
@@ -240,7 +269,7 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 
                             <TabsContent value='accepted' className='space-y-4'>
                                 {acceptedOffers.length ? (
-                                    acceptedOffers.map((offer) => renderOfferCard(offer, true))
+                                    acceptedOffers.map((offer) => renderOfferCard(offer, 'accepted'))
                                 ) : (
                                     <p className='py-6 text-center text-muted-foreground'>Нет принятых предложений.</p>
                                 )}

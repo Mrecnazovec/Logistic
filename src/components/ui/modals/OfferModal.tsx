@@ -20,15 +20,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/Select'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
 import { formatCurrencyPerKmValue } from '@/lib/currency'
 import { formatPriceValue } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { PriceCurrencyEnum } from '@/shared/enums/PriceCurrency.enum'
 
 type OfferRow = ICargoList & { id?: number }
-type CurrencyCode = NonNullable<ICargoList['price_currency']>
+type CurrencyCode = PriceCurrencyEnum
 
 interface OfferModalProps {
     selectedRow?: OfferRow
@@ -52,6 +55,7 @@ export function OfferModal({
     const { createOffer, isLoadingCreate } = useCreateOffer()
     const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({})
     const [currencyDrafts, setCurrencyDrafts] = useState<Record<string, CurrencyCode | ''>>({})
+    const [paymentDrafts, setPaymentDrafts] = useState<Record<string, PaymentMethodEnum | ''>>({})
 
     const priceValue = selectedRow
         ? priceDrafts[selectedRow.uuid] ?? (selectedRow.price_value ? String(selectedRow.price_value) : '')
@@ -59,10 +63,14 @@ export function OfferModal({
     const currency = selectedRow
         ? currencyDrafts[selectedRow.uuid] ?? (selectedRow.price_currency ?? '')
         : ''
+    const paymentMethod = selectedRow
+        ? paymentDrafts[selectedRow.uuid] ??
+          (((selectedRow as { payment_method?: PaymentMethodEnum }).payment_method as PaymentMethodEnum | undefined) ?? '')
+        : ''
 
     const cargoId = selectedRow?.id
     const transportName = selectedRow ? getTransportName(selectedRow.transport_type) || '-' : '-'
-    const isCounterDisabled = !cargoId || !priceValue || !currency || isLoadingCreate
+    const isCounterDisabled = !cargoId || !priceValue || !currency || !paymentMethod || isLoadingCreate
 
     const handleCounterOffer = () => {
         if (isCounterDisabled || !cargoId || !selectedRow?.uuid) return
@@ -129,7 +137,7 @@ export function OfferModal({
                             </div>
                         </div>
 
-                        <div className='flex flex-col gap-3 pt-6 md:flex-row'>
+                        <div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
                             <Input
                                 placeholder='Укажите сумму'
                                 value={priceValue}
@@ -157,6 +165,12 @@ export function OfferModal({
                                     ))}
                                 </SelectContent>
                             </Select>
+                            <PaymentSelector
+                                value={paymentMethod}
+                                onChange={(value) =>
+                                    selectedRow?.uuid && setPaymentDrafts((prev) => ({ ...prev, [selectedRow.uuid]: value }))
+                                }
+                            />
                         </div>
 
                         <div className='mt-6 flex gap-3 max-md:flex-col md:justify-end'>

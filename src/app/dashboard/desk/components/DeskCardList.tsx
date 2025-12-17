@@ -54,9 +54,9 @@ function DeskCard({ cargo }: DeskCardProps) {
 	const { refreshLoad } = useRefreshLoad()
 	const [offerOpen, setOfferOpen] = useState(false)
 
-	const isHiddenForMe = String(cargo.is_hidden_for_me ?? '').toLowerCase() === 'true'
-	const visibilityActionLabel = isHiddenForMe ? 'Показать' : 'Скрыть'
-	const VisibilityIcon = isHiddenForMe ? Eye : EyeOff
+	const isHidden = Boolean(cargo.is_hidden)
+	const visibilityActionLabel = isHidden ? 'Показать' : 'Скрыть'
+	const VisibilityIcon = isHidden ? Eye : EyeOff
 
 	const sections = [
 		{
@@ -136,7 +136,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 				<Button
 					variant='outline'
 					className='min-w-[140px] flex-1 bg-error-500 text-white'
-					onClick={() => toggleLoadVisibility({ uuid: cargo.uuid, isHiddenForMe: !isHiddenForMe })}
+					onClick={() => toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })}
 					disabled={isLoadingToggle}
 				>
 					<VisibilityIcon className='size-4' />

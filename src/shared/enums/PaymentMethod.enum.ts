@@ -7,7 +7,7 @@ export const PaymentMethodEnum = {
 export type PaymentMethodEnum = (typeof PaymentMethodEnum)[keyof typeof PaymentMethodEnum]
 
 export const PaymentMethodSelector = [
-	{ type: PaymentMethodEnum.TRANSFER, name: 'Безналичный расчет' },
-	{ type: PaymentMethodEnum.CASH, name: 'Наличный расчет' },
-	{ type: PaymentMethodEnum.BOTH, name: 'Наличный и безналичный' },
+	{ type: PaymentMethodEnum.TRANSFER, name: 'Безналичный расчёт' },
+	{ type: PaymentMethodEnum.CASH, name: 'Наличные' },
+	{ type: PaymentMethodEnum.BOTH, name: 'Любой способ' },
 ]

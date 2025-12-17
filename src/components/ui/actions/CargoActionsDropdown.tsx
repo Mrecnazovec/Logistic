@@ -28,12 +28,12 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
-	const isHiddenForMe = Boolean(cargo.is_hidden)
-	const visibilityActionLabel = isHiddenForMe ? 'Показать' : 'Скрыть'
-	const VisibilityIcon = isHiddenForMe ? Eye : EyeOff
+	const isHidden = Boolean(cargo.is_hidden)
+	const visibilityActionLabel = isHidden ? 'Показать' : 'Скрыть'
+	const VisibilityIcon = isHidden ? Eye : EyeOff
 
 	const handleToggleVisibility = () => {
-		toggleLoadVisibility({ uuid: cargo.uuid, isHiddenForMe: !isHiddenForMe })
+		toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })
 		setOpen(false)
 	}
 

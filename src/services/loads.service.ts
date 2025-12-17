@@ -86,8 +86,8 @@ class LoadsService {
 		return createdLoad
 	}
 
-	async toggleLoadVisibility(uuid: string, isHiddenForMe: boolean) {
-		const payload: CargoVisibilityRequest = { is_hidden: isHiddenForMe }
+	async toggleLoadVisibility(uuid: string, isHidden: boolean) {
+		const payload: CargoVisibilityRequest = { is_hidden: isHidden }
 		const { data } = await axiosWithAuth<CargoVisibilityResponse>({
 			url: API_URL.loads(`${uuid}/visibility`),
 			method: 'POST',

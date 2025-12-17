@@ -8,10 +8,12 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from '@
 import { Input } from '@/components/ui/form-control/Input'
 import { Textarea } from '@/components/ui/form-control/Textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue } from '@/lib/formatters'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
@@ -26,11 +28,12 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 	const { counterOffer, isLoadingCounter } = useCounterOffer()
 	const [price, setPrice] = useState(() => (offer.price_value ? String(offer.price_value) : ''))
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(() => offer.price_currency ?? '')
+	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(() => (offer.payment_method as PaymentMethodEnum) ?? '')
 	const [message, setMessage] = useState('')
 
 	const formattedPrice = formatCurrencyValue(offer.price_value, offer.price_currency as PriceCurrencyCode)
 	const formattedPricePerKm = formatCurrencyPerKmValue(offer.price_per_km, offer.price_currency as PriceCurrencyCode)
-	const isDisabled = !price || !currency || isLoadingCounter
+	const isDisabled = !price || !currency || !paymentMethod || isLoadingCounter
 
 	const handleSubmit = () => {
 		if (isDisabled) return
@@ -54,7 +57,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className='w-[720px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>Контр-предложение</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>Контрпредложение</DialogTitle>
 				</DialogHeader>
 
 				<div className='space-y-6'>
@@ -63,37 +66,37 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 							<p className='font-semibold text-foreground'>
 								{offer.origin_city}, {offer.origin_country}
 							</p>
-							<p className='text-sm text-muted-foreground'>{formatDateValue(offer.load_date, 'dd MMM, EEE', '—')}</p>
+							<p className='text-sm text-muted-foreground'>{formatDateValue(offer.load_date, 'dd MMM, EEE', '-')}</p>
 						</div>
 
 						<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 							<ArrowRight className='mb-2 size-5' />
-							<span>—</span>
+							<span>-</span>
 						</div>
 
 						<div>
 							<p className='font-semibold text-foreground'>
 								{offer.destination_city}, {offer.destination_country}
 							</p>
-							<p className='text-sm text-muted-foreground'>{formatDateValue(offer.delivery_date, 'dd MMM, EEE', '—')}</p>
+							<p className='text-sm text-muted-foreground'>{formatDateValue(offer.delivery_date, 'dd MMM, EEE', '-')}</p>
 						</div>
 					</div>
 
 					<div className='space-y-2 rounded-2xl border border-border p-5 text-sm text-muted-foreground'>
 						<p>
 							<span className='font-semibold text-foreground'>Компания: </span>
-							{offer.carrier_company || offer.carrier_full_name || '—'}
+							{offer.carrier_company || offer.carrier_full_name || '-'}
 						</p>
 						<p>
-							<span className='font-semibold text-foreground'>Текущее предложение: </span>
+							<span className='font-semibold text-foreground'>Текущая ставка: </span>
 							{formattedPrice}
 							{formattedPricePerKm ? ` (${formattedPricePerKm})` : null}
 						</p>
 					</div>
 
-					<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
+					<div className='grid gap-3 md:grid-cols-3'>
 						<Input
-							placeholder='Введите цену'
+							placeholder='Укажите сумму'
 							value={price}
 							onChange={(event) => setPrice(event.target.value)}
 							type='number'
@@ -103,7 +106,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 						/>
 						<Select value={currency || undefined} onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}>
 							<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none'>
-								<SelectValue placeholder='Валюта' />
+								<SelectValue placeholder='Выберите валюту' />
 							</SelectTrigger>
 							<SelectContent>
 								{currencyOptions.map((option) => (
@@ -113,10 +116,16 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 								))}
 							</SelectContent>
 						</Select>
+						<PaymentSelector
+							value={paymentMethod}
+							onChange={(value) => setPaymentMethod(value)}
+							placeholder='Способ оплаты'
+							className='bg-muted/40 shadow-none'
+						/>
 					</div>
 
 					<Textarea
-						placeholder='Комментарий (необязательно)'
+						placeholder='Комментарий (по желанию)'
 						value={message}
 						onChange={(event) => setMessage(event.target.value)}
 						className='rounded-2xl'

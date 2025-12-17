@@ -1184,10 +1184,9 @@ export interface components {
              *     * `DELIVERED` - Доставлено
              *     * `COMPLETED` - Завершено
              *     * `CANCELLED` - Отменена
-             *     * `HIDDEN` - Скрыта
              * @enum {string}
              */
-            readonly status: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED" | "HIDDEN";
+            readonly status: "POSTED" | "MATCHED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
             readonly age_minutes: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -1215,7 +1214,7 @@ export interface components {
             readonly origin_radius_km: number;
             /** Format: double */
             readonly dest_radius_km: number;
-            readonly is_hidden_for_me: string;
+            readonly is_hidden: boolean;
             readonly user_name: string;
             readonly user_id: string;
         };
@@ -1293,6 +1292,8 @@ export interface components {
              * @enum {string}
              */
             payment_method: "transfer" | "cash" | "both";
+            /** Скрыта от других пользователей */
+            is_hidden?: boolean;
         };
         CargoPublishRequest: {
             /** Название груза */
@@ -1366,6 +1367,8 @@ export interface components {
              * @enum {string}
              */
             payment_method: "transfer" | "cash" | "both";
+            /** Скрыта от других пользователей */
+            is_hidden?: boolean;
         };
         CargoVisibilityRequestRequest: {
             is_hidden: boolean;
@@ -2120,6 +2123,8 @@ export interface components {
              * @enum {string}
              */
             payment_method: "transfer" | "cash" | "both";
+            /** Скрыта от других пользователей */
+            is_hidden?: boolean;
         };
         PatchedOrderDetailRequest: {
             cargo?: number;
