@@ -1602,6 +1602,10 @@ export interface components {
              *     - «Предложение от заказчика» (инициатор CUSTOMER)
              *     - «Предложение от посредника» (инициатор CARRIER) */
             readonly source_status: string;
+            /** @description - waiting — пользователь уже ответил, ждёт другую сторону
+             *     - action_required — пользователю нужно ответить
+             *     - rejected — оффер отклонён / неактивен */
+            readonly response_status: string;
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;
@@ -1709,6 +1713,10 @@ export interface components {
              *     - «Предложение от заказчика» (инициатор CUSTOMER)
              *     - «Предложение от посредника» (инициатор CARRIER) */
             readonly source_status: string;
+            /** @description - waiting — пользователь уже ответил, ждёт другую сторону
+             *     - action_required — пользователю нужно ответить
+             *     - rejected — оффер отклонён / неактивен */
+            readonly response_status: string;
             readonly message: string;
             /** Format: date-time */
             readonly created_at: string;

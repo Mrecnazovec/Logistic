@@ -18,6 +18,7 @@ import { formatDateValue } from '@/lib/formatters'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
+import { ProfileLink } from '../actions/ProfileLink'
 
 interface OfferDecisionModalProps {
 	offer?: IOfferShort
@@ -152,10 +153,15 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 								</div>
 
 								<div className='flex flex-wrap items-center justify-between gap-3 border-b pb-6 text-sm text-muted-foreground'>
-									<p>
-										<span className='font-semibold text-foreground'>Компания: </span>
-										{offer.carrier_company || offer.carrier_full_name || EMPTY}
-									</p>
+									<div className='space-y-1'>
+										<p className='font-semibold text-foreground'><ProfileLink name={offer.customer_full_name} id={offer.customer_id} />
+										</p>
+										<p className='text-muted-foreground'>
+											<span className='font-semibold text-foreground'>Компания: </span>
+											{offer.customer_company || '—'}
+										</p>
+										<span className='text-error-500 font-bold'>{offer.response_status}</span>
+									</div>
 									<p className='font-semibold text-foreground'>Текущая ставка: {formattedPrice || EMPTY}</p>
 								</div>
 

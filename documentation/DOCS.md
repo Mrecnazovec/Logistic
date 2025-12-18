@@ -145,8 +145,9 @@ InitiatorEnum — initiator of event (CUSTOMER or CARRIER).
 ModerationStatusEnum — moderation statuses pending/approved/rejected.
 OrderStatusEnum — order statuses pending/in_process/delivered/no_driver/paid.
 OrderDriverStatusEnum — driver statuses (stopped/en_route/problem) and selector.
-PaymentMethodEnum — payment methods (transfer/cash/both) and PaymentMethodSelector.
-PriceCurrencyEnum — currencies (UZS/KZT/RUB/USD/EUR) and PriceSelector.
+PaymentMethodEnum - payment methods (transfer/cash/both) and PaymentMethodSelector.
+OfferResponseStatusEnum - offer response statuses (waiting/action_required/rejected).
+PriceCurrencyEnum - currencies (UZS/KZT/RUB/USD/EUR) and PriceSelector.
 RoleEnum - roles (LOGISTIC/CUSTOMER/CARRIER) and RoleSelect.
 StatusEnum - cargo statuses (POSTED, MATCHED, DELIVERED, COMPLETED, CANCELLED, HIDDEN).
 TransportTypeEnum - transport types (TENT/CONT/REEFER/DUMP/CARTR/GRAIN/LOG/PICKUP/MEGA/OTHER) and TransportSelect/getTransportName.

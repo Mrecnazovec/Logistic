@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
+import { ProfileLink } from '../actions/ProfileLink'
 import { PaymentSelector } from '../selectors/PaymentSelector'
 
 interface DeskOffersModalProps {
@@ -90,11 +91,14 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
             <div key={offer.id} className='space-y-4'>
                 <div className='flex flex-wrap items-start justify-between gap-3 text-sm'>
                     <div className='space-y-1'>
-                        <p className='font-semibold text-foreground'>{offer.carrier_full_name || '-'}</p>
+                        <p className='font-semibold text-foreground'><ProfileLink name={offer.carrier_full_name} id={offer.carrier_id} />
+
+                        </p>
                         <p className='text-muted-foreground'>
                             <span className='font-semibold text-foreground'>Компания: </span>
                             {offer.carrier_company || '—'}
                         </p>
+                        <span className='text-error-500 font-bold'>{offer.response_status}</span>
                     </div>
                     <div className='space-y-1 text-right text-sm text-muted-foreground'>
                         {offer.carrier_rating !== null && offer.carrier_rating !== undefined ? (
