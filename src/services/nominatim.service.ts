@@ -3,7 +3,7 @@ import axios from 'axios'
 import type { City } from '@/shared/types/Geo.interface'
 import type { CityCoordinates, NominatimResult } from '@/shared/types/Nominatim.interface'
 
-const NOMINATIM_ENDPOINT = 'https://nominatim.openstreetmap.org/search'
+const NOMINATIM_ENDPOINT = '/api-next/nominatim'
 
 class NominatimService {
 	private client = axios.create({
