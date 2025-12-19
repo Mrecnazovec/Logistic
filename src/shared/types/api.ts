@@ -906,6 +906,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/payments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["payments_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/payments/{id}/confirm/carrier/": {
         parameters: {
             query?: never;
@@ -938,7 +954,7 @@ export interface paths {
         patch: operations["payments_confirm_customer_partial_update"];
         trace?: never;
     };
-    "/api/payments/create/": {
+    "/api/payments/{id}/confirm/logistic/": {
         parameters: {
             query?: never;
             header?: never;
@@ -947,11 +963,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["payments_create_create"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["payments_confirm_logistic_partial_update"];
         trace?: never;
     };
     "/api/ratings/rating-users/": {
@@ -1200,12 +1216,11 @@ export interface components {
             readonly route_km: number | null;
             /**
              * Способ оплаты
-             * @description * `transfer` - Перечисление
-             *     * `cash` - Наличными
-             *     * `both` - Оба варианта
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
              * @enum {string}
              */
-            readonly payment_method: "transfer" | "cash" | "both";
+            readonly payment_method: "cash" | "cashless";
             /** Format: double */
             readonly price_per_km: number;
             /** Format: double */
@@ -1285,13 +1300,12 @@ export interface components {
              */
             contact_pref: "email" | "phone" | "both";
             /**
-             * @description * `transfer` - Перечисление
-             *     * `cash` - Наличными
-             *     * `both` - Оба варианта
-             * @default transfer
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @default cash
              * @enum {string}
              */
-            payment_method: "transfer" | "cash" | "both";
+            payment_method: "cash" | "cashless";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
         };
@@ -1360,13 +1374,12 @@ export interface components {
              */
             contact_pref: "email" | "phone" | "both";
             /**
-             * @description * `transfer` - Перечисление
-             *     * `cash` - Наличными
-             *     * `both` - Оба варианта
-             * @default transfer
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @default cash
              * @enum {string}
              */
-            payment_method: "transfer" | "cash" | "both";
+            payment_method: "cash" | "cashless";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
         };
@@ -1504,6 +1517,12 @@ export interface components {
              * @enum {string}
              */
             price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @enum {string}
+             */
+            payment_method?: "cash" | "cashless";
             message?: string;
         };
         /** @description Создание оффера ПЕРЕВОЗЧИКОМ на чужую заявку. */
@@ -1521,6 +1540,13 @@ export interface components {
              * @enum {string}
              */
             price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @default cash
+             * @enum {string}
+             */
+            payment_method: "cash" | "cashless";
             message?: string;
         };
         /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
@@ -1577,12 +1603,13 @@ export interface components {
              * @enum {string}
              */
             readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            /** @description Способ оплаты: «Картой» / «Наличными».
-             *
-             *     Ожидается, что в модели Offer есть поле payment_method или payment_type
-             *     с кодами вида: CARD / CASH / BY_CARD / BY_CASH.
-             *     Если поля нет — вернётся пустая строка (getattr с default). */
-            readonly payment_method: string;
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @enum {string}
+             */
+            payment_method: "cash" | "cashless";
+            readonly payment_method_display: string;
             /**
              * Format: double
              * @description Рассчитывает цену за километр, используя цену оффера и расстояние груза.
@@ -1602,9 +1629,6 @@ export interface components {
              *     - «Предложение от заказчика» (инициатор CUSTOMER)
              *     - «Предложение от посредника» (инициатор CARRIER) */
             readonly source_status: string;
-            /** @description - waiting — пользователь уже ответил, ждёт другую сторону
-             *     - action_required — пользователю нужно ответить
-             *     - rejected — оффер отклонён / неактивен */
             readonly response_status: string;
             readonly message: string;
             /** Format: date-time */
@@ -1613,10 +1637,20 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
+         *     и добавляет служебные поля вроде `updated_at`. */
+        OfferDetailRequest: {
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @enum {string}
+             */
+            payment_method: "cash" | "cashless";
+        };
         /** @description Инвайт от ЗАКАЗЧИКА конкретному перевозчику. */
         OfferInviteRequest: {
             cargo: number;
-            carrier_id: number;
+            invited_user_id: number;
             /** Format: decimal */
             price_value?: string | null;
             /**
@@ -1629,6 +1663,13 @@ export interface components {
              * @enum {string}
              */
             price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @default cash
+             * @enum {string}
+             */
+            payment_method: "cash" | "cashless";
             message?: string;
         };
         OfferRejectResponse: {
@@ -1688,12 +1729,13 @@ export interface components {
              * @enum {string}
              */
             readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
-            /** @description Способ оплаты: «Картой» / «Наличными».
-             *
-             *     Ожидается, что в модели Offer есть поле payment_method или payment_type
-             *     с кодами вида: CARD / CASH / BY_CARD / BY_CASH.
-             *     Если поля нет — вернётся пустая строка (getattr с default). */
-            readonly payment_method: string;
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @enum {string}
+             */
+            payment_method: "cash" | "cashless";
+            readonly payment_method_display: string;
             /**
              * Format: double
              * @description Рассчитывает цену за километр, используя цену оффера и расстояние груза.
@@ -1713,9 +1755,6 @@ export interface components {
              *     - «Предложение от заказчика» (инициатор CUSTOMER)
              *     - «Предложение от посредника» (инициатор CARRIER) */
             readonly source_status: string;
-            /** @description - waiting — пользователь уже ответил, ждёт другую сторону
-             *     - action_required — пользователю нужно ответить
-             *     - rejected — оффер отклонён / неактивен */
             readonly response_status: string;
             readonly message: string;
             /** Format: date-time */
@@ -1794,6 +1833,7 @@ export interface components {
             /** Format: date-time */
             unloading_datetime?: string | null;
             readonly documents: components["schemas"]["OrderDocument"][];
+            readonly payment: string;
         };
         OrderDetailRequest: {
             cargo: number;
@@ -2124,15 +2164,24 @@ export interface components {
              */
             contact_pref?: "email" | "phone" | "both";
             /**
-             * @description * `transfer` - Перечисление
-             *     * `cash` - Наличными
-             *     * `both` - Оба варианта
-             * @default transfer
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @default cash
              * @enum {string}
              */
-            payment_method: "transfer" | "cash" | "both";
+            payment_method: "cash" | "cashless";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
+        };
+        /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
+         *     и добавляет служебные поля вроде `updated_at`. */
+        PatchedOfferDetailRequest: {
+            /**
+             * @description * `cash` - Наличные
+             *     * `cashless` - Безналичный расчёт
+             * @enum {string}
+             */
+            payment_method?: "cash" | "cashless";
         };
         PatchedOrderDetailRequest: {
             cargo?: number;
@@ -2211,6 +2260,7 @@ export interface components {
             amount: string;
             currency?: string;
             readonly confirmed_by_customer: boolean;
+            readonly confirmed_by_logistic: boolean;
             readonly confirmed_by_carrier: boolean;
             external_transaction_id?: string | null;
             /**
@@ -2232,30 +2282,6 @@ export interface components {
             /** Format: date-time */
             readonly completed_at: string | null;
             order: number;
-        };
-        PaymentCreate: {
-            order: number;
-            /** Format: decimal */
-            amount: string;
-            currency?: string;
-            /**
-             * @description * `cash` - Наличные
-             *     * `bank_transfer` - Перечисление
-             * @enum {string}
-             */
-            method?: "cash" | "bank_transfer";
-        };
-        PaymentCreateRequest: {
-            order: number;
-            /** Format: decimal */
-            amount: string;
-            currency?: string;
-            /**
-             * @description * `cash` - Наличные
-             *     * `bank_transfer` - Перечисление
-             * @enum {string}
-             */
-            method?: "cash" | "bank_transfer";
         };
         Profile: {
             /** Страна */
@@ -3444,7 +3470,13 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferDetailRequest"];
+                "multipart/form-data": components["schemas"]["OfferDetailRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -3487,7 +3519,13 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOfferDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOfferDetailRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOfferDetailRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -4051,6 +4089,27 @@ export interface operations {
             };
         };
     };
+    payments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
     payments_confirm_carrier_partial_update: {
         parameters: {
             query?: never;
@@ -4105,27 +4164,29 @@ export interface operations {
             };
         };
     };
-    payments_create_create: {
+    payments_confirm_logistic_partial_update: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["PaymentCreateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PaymentCreateRequest"];
-                "multipart/form-data": components["schemas"]["PaymentCreateRequest"];
+                "application/json": components["schemas"]["PatchedPaymentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPaymentRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPaymentRequest"];
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaymentCreate"];
+                    "application/json": components["schemas"]["Payment"];
                 };
             };
         };

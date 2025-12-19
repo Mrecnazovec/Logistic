@@ -88,6 +88,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 				data: {
 					price_value: priceValue,
 					price_currency: currency as PriceCurrencyCode,
+					payment_method: paymentMethod as PaymentMethodEnum,
 				},
 			},
 			{

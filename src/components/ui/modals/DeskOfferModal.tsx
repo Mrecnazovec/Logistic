@@ -19,6 +19,7 @@ import { useGenerateLoadInvite } from '@/hooks/queries/loads/useGenerateLoadInvi
 import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -76,9 +77,10 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 		inviteOffer(
 			{
 				cargo: selectedRow.id,
-				carrier_id: parsedCarrierId,
+				invited_user_id: parsedCarrierId,
 				price_currency: selectedRow.price_currency ?? 'UZS',
 				price_value: selectedRow.price_value ?? undefined,
+				payment_method: (selectedRow as { payment_method?: PaymentMethodEnum }).payment_method ?? PaymentMethodEnum.CASH,
 			},
 			{
 				onSuccess: () => setCarrierId(''),
@@ -176,6 +178,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 												value={carrierId}
 												onChange={(event) => setCarrierId(event.target.value)}
 												placeholder='Введите ID перевозчика'
+												className='pl-3'
 											/>
 											<InputGroupAddon align='inline-end'>
 												<Button

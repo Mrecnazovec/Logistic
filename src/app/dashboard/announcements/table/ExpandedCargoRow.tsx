@@ -37,13 +37,11 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const sanitizedDescription = cargo.description ? DOMPurify.sanitize(cargo.description) : ''
 
 	const paymentMethod =
-		paymentMethodRaw === 'transfer'
+		paymentMethodRaw === 'cashless'
 			? 'Безналичный расчет'
 			: paymentMethodRaw === 'cash'
 				? 'Наличный расчет'
-				: paymentMethodRaw === 'both'
-					? 'Наличный или безналичный'
-					: paymentMethodRaw || EMPTY_VALUE
+				: paymentMethodRaw || EMPTY_VALUE
 
 	return (
 		<div className='flex flex-col gap-6'>

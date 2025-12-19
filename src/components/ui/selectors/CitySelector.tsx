@@ -12,7 +12,9 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { useCitySuggest } from '@/hooks/queries/geo/useGetCitySuggest'
 import { cn } from '@/lib/utils'
+import { nominatimService } from '@/services/nominatim.service'
 import { City } from '@/shared/types/Geo.interface'
+import type { CityCoordinates } from '@/shared/types/Nominatim.interface'
 import { Loader2, MapPin } from 'lucide-react'
 import { useState } from 'react'
 
@@ -20,6 +22,7 @@ interface CitySelectorProps {
     value?: string
     displayValue?: string
     onChange: (value: string, city?: City | null) => void
+    onCoordinates?: (coordinates: CityCoordinates | null, city: City) => void
     countryCode?: string
     placeholder?: string
     disabled?: boolean
@@ -30,6 +33,7 @@ export function CitySelector({
     value = '',
     displayValue,
     onChange,
+    onCoordinates,
     countryCode,
     placeholder = 'Выберите город',
     disabled,
@@ -50,10 +54,21 @@ export function CitySelector({
         onChange(nextValue, null)
     }
 
-    const handleSelect = (city: City) => {
+    const handleSelect = async (city: City) => {
         setSelectedCity(city)
         onChange(city.name, city)
         setOpen(false)
+
+        const coordinates = await nominatimService.getCityCoordinates(city)
+
+        if (onCoordinates) {
+            onCoordinates(coordinates, city)
+        }
+
+        console.log('Nominatim coordinates', {
+            city: `${city.name}, ${city.country}`,
+            coordinates,
+        })
     }
 
     return (

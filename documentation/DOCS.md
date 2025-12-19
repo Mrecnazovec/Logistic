@@ -83,7 +83,8 @@ usePatchOrder - partial order update via ordersService.patchOrder.
 
 useConfirmPaymentCarrier - confirms payment as carrier via paymentsService.confirmPaymentCarrier.
 useConfirmPaymentCustomer - confirms payment as customer via paymentsService.confirmPaymentCustomer.
-useCreatePayment - creates payment via paymentsService.createPayment.
+useConfirmPaymentLogistic - confirms payment as logistic via paymentsService.confirmPaymentLogistic.
+useGetPayment - fetches payment details by id via paymentsService.getPayment.
 
 - ## Ratings
 
@@ -128,14 +129,15 @@ getPageNumberFromUrl – extracts a valid positive page number from a URL search
 
 authService — auth, registration, role change, password recovery, email verification APIs.
 auth-token.service — token storage in cookies (read/save/remove).
-loadsService — load CRUD, invites, visibility management via /loads API.
-meService — fetch/update profile and analytics.
-notificationsService — load notifications and mark as read.
+loadsService - load CRUD, invites, visibility management via /loads API.
+meService - fetch/update profile and analytics.
+notificationsService - load notifications and mark as read.
 offersService - offer CRUD and actions (accept/reject/invite/counter).
 ordersService - order CRUD, invites, status updates, document upload.
-paymentsService - payment creation and confirmations for customer/carrier endpoints.
+paymentsService - fetches payment by id and confirms payments for customer/carrier/logistic endpoints.
 ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.
+nominatimService - OpenStreetMap Nominatim lookup for city coordinates.
 
 ## Shared enums
 
@@ -143,9 +145,9 @@ CategoryEnum — categories (licenses, contracts, loading, unloading, other).
 ContactPrefEnum — contact preferences (email/phone/both) plus ContactPrefSelector and getContactPrefName.
 InitiatorEnum — initiator of event (CUSTOMER or CARRIER).
 ModerationStatusEnum — moderation statuses pending/approved/rejected.
-OrderStatusEnum — order statuses pending/in_process/delivered/no_driver/paid.
-OrderDriverStatusEnum — driver statuses (stopped/en_route/problem) and selector.
-PaymentMethodEnum - payment methods (transfer/cash/both) and PaymentMethodSelector.
+OrderStatusEnum - order statuses pending/in_process/delivered/no_driver/paid.
+OrderDriverStatusEnum - driver statuses (stopped/en_route/problem) and selector.
+PaymentMethodEnum - payment methods (cash/cashless) and PaymentMethodSelector.
 OfferResponseStatusEnum - offer response statuses (waiting/action_required/rejected).
 PriceCurrencyEnum - currencies (UZS/KZT/RUB/USD/EUR) and PriceSelector.
 RoleEnum - roles (LOGISTIC/CUSTOMER/CARRIER) and RoleSelect.
@@ -170,11 +172,12 @@ Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses; IOfferShort includes invite_token and invite_offer.
 Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
 PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, orders, ratings.
-Payment.interface.ts - payment schemas (payment, create request, patched update) with method/status helpers.
+Payment.interface.ts - payment schemas (payment and patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.
 RatingTableRow.interface.ts - alias for rating table row type.
 Registration.interface.ts - registration/verification DTOs and refresh response.
 Search.interface.ts - ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
+Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
 
 ## Shared regex
 
@@ -204,7 +207,7 @@ Tooltip — Radix tooltip.
 Checkbox — Radix checkbox (file Сheckbox.tsx).
 NoPhoto — profile image placeholder.
 BadgeSelector — badge status selector dropdown.
-CitySelector — city selector with suggestions/search.
+CitySelector — city selector with suggestions/search and optional Nominatim coordinates callback.
 ContactSelector — preferred contact selector.
 CountrySelector — country selector with suggestions.
 CurrencySelector — currency selector based on PriceSelector.

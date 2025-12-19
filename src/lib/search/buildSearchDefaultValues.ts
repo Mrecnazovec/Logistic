@@ -14,6 +14,8 @@ const numericKeys = new Set([
 	'dest_lat',
 	'dest_lng',
 	'dest_radius_km',
+	'lat',
+	'lng',
 ])
 
 const booleanKeys = new Set(['has_offers'])

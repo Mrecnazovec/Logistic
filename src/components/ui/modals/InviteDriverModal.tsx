@@ -139,6 +139,7 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
                                             value={carrierId}
                                             onChange={(event) => setCarrierId(event.target.value)}
                                             placeholder='Введите ID перевозчика'
+                                            className='pl-3'
                                         />
                                         <InputGroupAddon align='inline-end'>
                                             <Button

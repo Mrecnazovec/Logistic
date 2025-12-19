@@ -45,6 +45,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 					price_value: price,
 					price_currency: currency,
 					message: message || undefined,
+					payment_method: paymentMethod as PaymentMethodEnum,
 				},
 			},
 			{

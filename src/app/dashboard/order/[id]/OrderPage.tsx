@@ -171,7 +171,7 @@ export function OrderPage() {
     }
 
     const driverStatusButton = canChangeDriverStatus ? (
-        <div className='fixed bottom-6 right-6 z-50'>
+        <div className='fixed md:bottom-6 bottom-20 right-6 z-50'>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild disabled={isLoadingUpdateStatus}>
                     <button type='button' className='outline-none' aria-label='Изменить статус водителя' disabled={isLoadingUpdateStatus}>
@@ -187,7 +187,7 @@ export function OrderPage() {
                         </Badge>
                     </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='min-w-52'>
+                <DropdownMenuContent align='end'>
                     {DRIVER_STATUS_BADGE_ENTRIES.map(([status, meta]) => (
                         <DropdownMenuItem
                             key={status}
@@ -306,7 +306,7 @@ export function OrderPage() {
                     </p> */}
                     <p className='flex items-center justify-between gap-3'>
                         <span className='text-grayscale'>Статус водителя</span>
-                        {driverStatusMeta ? (
+                        {order.status !== 'no_driver' && driverStatusMeta ? (
                             <Badge variant={driverStatusMeta.variant}>{driverStatusMeta.label}</Badge>
                         ) : (
                             <span className='text-end font-medium text-muted-foreground'>{DEFAULT_PLACEHOLDER}</span>

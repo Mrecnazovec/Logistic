@@ -79,6 +79,7 @@ export function OfferModal({
             cargo: cargoId,
             price_value: priceValue,
             price_currency: currency as NonNullable<ICargoList['price_currency']>,
+            payment_method: paymentMethod as PaymentMethodEnum,
         })
     }
 

@@ -6,18 +6,18 @@ import { paymentsService } from '@/services/payments.service'
 import type { PatchedPaymentRequestDto } from '@/shared/types/Payment.interface'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
-type ConfirmPaymentCustomerPayload = {
+type ConfirmPaymentLogisticPayload = {
 	id: number | string
 	orderId?: number | string
 	data?: PatchedPaymentRequestDto
 }
 
-export const useConfirmPaymentCustomer = () => {
+export const useConfirmPaymentLogistic = () => {
 	const queryClient = useQueryClient()
 
-	const { mutate: confirmPaymentCustomer, isPending: isLoadingConfirmPaymentCustomer } = useMutation({
-		mutationKey: ['payments', 'confirm', 'customer'],
-		mutationFn: ({ id, data }: ConfirmPaymentCustomerPayload) => paymentsService.confirmPaymentCustomer(id, data),
+	const { mutate: confirmPaymentLogistic, isPending: isLoadingConfirmPaymentLogistic } = useMutation({
+		mutationKey: ['payments', 'confirm', 'logistic'],
+		mutationFn: ({ id, data }: ConfirmPaymentLogisticPayload) => paymentsService.confirmPaymentLogistic(id, data),
 		onSuccess(payment, variables) {
 			const orderId = payment?.order ?? variables.orderId
 
@@ -25,16 +25,16 @@ export const useConfirmPaymentCustomer = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(orderId)] })
 			}
 
-			toast.success('Платёж подтверждён заказчиком')
+			toast.success('Платёж подтверждён логистом')
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Failed to confirm payment as customer'
+			const message = getErrorMessage(error) ?? 'Failed to confirm payment as logistic'
 			toast.error(message)
 		},
 	})
 
 	return useMemo(
-		() => ({ confirmPaymentCustomer, isLoadingConfirmPaymentCustomer }),
-		[confirmPaymentCustomer, isLoadingConfirmPaymentCustomer],
+		() => ({ confirmPaymentLogistic, isLoadingConfirmPaymentLogistic }),
+		[confirmPaymentLogistic, isLoadingConfirmPaymentLogistic],
 	)
 }

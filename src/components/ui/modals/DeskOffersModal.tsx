@@ -83,7 +83,11 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
             if (isCounterDisabled) return
             counterOffer({
                 id: String(offer.id),
-                data: { price_value: form.price as string, price_currency: form.currency as PriceCurrencyCode }
+                data: {
+                    price_value: form.price as string,
+                    price_currency: form.currency as PriceCurrencyCode,
+                    payment_method: form.paymentMethod as PaymentMethodEnum,
+                }
             })
         }
 

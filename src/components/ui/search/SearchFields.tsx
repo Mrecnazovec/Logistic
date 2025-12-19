@@ -17,6 +17,7 @@ import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX } from '@/shared/regex/regex'
 import { ISearch } from '@/shared/types/Search.interface'
+import type { CityCoordinates } from '@/shared/types/Nominatim.interface'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { CurrencySelector } from '../selectors/CurrencySelector'
@@ -41,6 +42,11 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 	const isMobile = !isTablet
 	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
 	const [showAdvanced, setShowAdvanced] = useState(false)
+
+	const handleCoordinates = (coordinates: CityCoordinates | null) => {
+		form.setValue('lat', coordinates?.lat)
+		form.setValue('lng', coordinates?.lon)
+	}
 
 	const handleDeleteFilter = () => {
 		router.push(pathname)
@@ -243,7 +249,12 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 					render={({ field }) => (
 						<FormItem className='w-full'>
 							<FormControl>
-								<CitySelector {...field} countryCode={undefined} placeholder='Откуда' />
+								<CitySelector
+									{...field}
+									countryCode={undefined}
+									placeholder='Откуда'
+									onCoordinates={handleCoordinates}
+								/>
 							</FormControl>
 						</FormItem>
 					)}
@@ -270,7 +281,12 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 					render={({ field }) => (
 						<FormItem className='w-full'>
 							<FormControl>
-								<CitySelector {...field} countryCode={' '} placeholder='Куда' />
+								<CitySelector
+									{...field}
+									countryCode={' '}
+									placeholder='Куда'
+									onCoordinates={handleCoordinates}
+								/>
 							</FormControl>
 						</FormItem>
 					)}

@@ -21,6 +21,8 @@ type SearchExtras = Partial<{
 	dest_lat: number
 	dest_lng: number
 	dest_radius_km: number
+	lat: number
+	lng: number
 	rating_min: number
 	rating_max: number
 	order: 'path_km' | '-path_km' | 'origin_dist_km' | '-origin_dist_km' | 'price_value' | '-price_value' | 'load_date' | '-load_date'
