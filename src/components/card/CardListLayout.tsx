@@ -10,7 +10,12 @@ type CardListLayoutProps<TItem> = {
 	pagination?: CardPaginationState
 }
 
-export function CardListLayout<TItem>({ items, getKey, renderItem, pagination }: CardListLayoutProps<TItem>) {
+export function CardListLayout<TItem>({
+	items,
+	getKey,
+	renderItem,
+	pagination,
+}: CardListLayoutProps<TItem>) {
 	return (
 		<div className='flex flex-1 flex-col gap-4'>
 			<div className='flex-1 overflow-hidden rounded-4xl xs:bg-background xs:p-4'>

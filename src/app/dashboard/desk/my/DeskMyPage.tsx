@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Form } from '@/components/ui/form-control/Form'
-import { OfferDecisionModal } from '@/components/ui/modals/OfferDecisionModal'
 import { SearchFields } from '@/components/ui/search/SearchFields'
 import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
@@ -24,6 +23,9 @@ import { DeskMyCardList } from './components/DeskIncomeCardList'
 import { deskIncomeColumns } from './table/DeskIncomeColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import dynamic from 'next/dynamic'
+
+const OfferDecisionModal = dynamic(() => import('@/components/ui/modals/OfferDecisionModal').then((mod) => mod.OfferDecisionModal))
 
 function useDecisionModal(role?: RoleEnum) {
 	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()

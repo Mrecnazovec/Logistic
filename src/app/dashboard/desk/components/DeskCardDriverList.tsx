@@ -6,15 +6,17 @@ import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { getTransportName, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { CalendarDays, CircleCheck, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
+
+const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal').then((mod) => mod.DeskOffersModal))
 
 type DeskCardListProps = {
 	cargos: IOfferShort[]

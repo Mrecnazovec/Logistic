@@ -5,13 +5,11 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
-import { OrderRatingModal } from '@/app/dashboard/order/[id]/OrderRatingModal'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
-import { InviteDriverModal } from '@/components/ui/modals/InviteDriverModal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
@@ -29,6 +27,7 @@ import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStat
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { DriverStatus } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
+import dynamic from 'next/dynamic'
 
 const DRIVER_STATUS_BADGE_MAP: Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }> = {
     en_route: { label: 'В пути', variant: 'info' },
@@ -40,6 +39,13 @@ const DRIVER_STATUS_BADGE_ENTRIES = Object.entries(DRIVER_STATUS_BADGE_MAP) as A
     DriverStatus,
     (typeof DRIVER_STATUS_BADGE_MAP)[DriverStatus],
 ]>
+
+const InviteDriverModal = dynamic(() =>
+    import('@/components/ui/modals/InviteDriverModal').then((mod) => mod.InviteDriverModal),
+)
+const OrderRatingModal = dynamic(() =>
+    import('@/app/dashboard/order/[id]/OrderRatingModal').then((mod) => mod.OrderRatingModal),
+)
 
 const withFallback = (value?: string | number | null, id?: number | null) => {
     if (value === null || value === undefined || value === '') return DEFAULT_PLACEHOLDER

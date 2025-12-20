@@ -16,6 +16,7 @@ export const useAcceptAgreement = () => {
 		onSuccess(_, agreementId) {
 			queryClient.invalidateQueries({ queryKey: ['get agreements'] })
 			queryClient.invalidateQueries({ queryKey: ['get agreement', agreementId] })
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
 			toast.success('Соглашение подтверждено')
 			router.push(DASHBOARD_URL.transportation())
 		},
@@ -25,8 +26,5 @@ export const useAcceptAgreement = () => {
 		},
 	})
 
-	return useMemo(
-		() => ({ acceptAgreement, isLoadingAcceptAgreement }),
-		[acceptAgreement, isLoadingAcceptAgreement],
-	)
+	return useMemo(() => ({ acceptAgreement, isLoadingAcceptAgreement }), [acceptAgreement, isLoadingAcceptAgreement])
 }

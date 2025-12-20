@@ -6,8 +6,6 @@ import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
-import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
@@ -16,8 +14,12 @@ import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisi
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, CircleCheck, Eye, EyeOff, Handshake, Mail, MapPin, Minus, Pen, Phone, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
+
+const DeskOfferModal = dynamic(() => import('@/components/ui/modals/DeskOfferModal').then((mod) => mod.DeskOfferModal))
+const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal').then((mod) => mod.DeskOffersModal))
 
 const hasOffersValue = (cargo: ICargoList) => {
 	if (cargo.offers_count && cargo.offers_count > 0) return true

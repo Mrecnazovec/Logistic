@@ -57,7 +57,12 @@ export function DeskPage() {
 	) : isCardView ? (
 		<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
 	) : (
-		<DataTable columns={deskColumns} data={cargos} rowClassName={getDeskRowClassName} serverPagination={tablePagination} />
+		<DataTable
+			columns={deskColumns}
+			data={cargos}
+			rowClassName={getDeskRowClassName}
+			serverPagination={tablePagination}
+		/>
 	)
 
 	const handleTabChange = (tab: string) => {

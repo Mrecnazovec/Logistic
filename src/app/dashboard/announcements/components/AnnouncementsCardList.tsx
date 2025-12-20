@@ -4,8 +4,6 @@ import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
-import { AnnouncementDetailModal } from '@/components/ui/modals/AnnouncementDetailModal'
-import { OfferModal } from '@/components/ui/modals/OfferModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import {
 	formatDateValue,
@@ -18,6 +16,12 @@ import {
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, Mail, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+const AnnouncementDetailModal = dynamic(() =>
+	import('@/components/ui/modals/AnnouncementDetailModal').then((mod) => mod.AnnouncementDetailModal),
+)
+const OfferModal = dynamic(() => import('@/components/ui/modals/OfferModal').then((mod) => mod.OfferModal))
 
 type AnnouncementsCardListProps = {
 	cargos: ICargoList[]

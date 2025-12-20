@@ -80,6 +80,8 @@ export function TransportationPage() {
             columns={AGREEMENT_COLUMNS}
             data={agreements}
             onRowClick={(agreement: IAgreement) => router.push(`/dashboard/order/agreement/${agreement.id}`)}
+            getRowHref={(agreement: IAgreement) => `/dashboard/order/agreement/${agreement.id}`}
+            prefetchOnRowHover
             serverPagination={agreementPaginationMeta}
         />
     )
@@ -95,6 +97,8 @@ export function TransportationPage() {
             columns={tableColumns}
             data={orders}
             onRowClick={(order: IOrderList) => router.push(DASHBOARD_URL.order(`${order.id}`))}
+            getRowHref={(order: IOrderList) => DASHBOARD_URL.order(`${order.id}`)}
+            prefetchOnRowHover
             serverPagination={serverPaginationMeta}
         />
     )

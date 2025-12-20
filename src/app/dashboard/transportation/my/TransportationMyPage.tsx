@@ -97,6 +97,8 @@ export function TransportationMyPage() {
 			columns={tableColumns}
 			data={results}
 			onRowClick={(order: IOrderList) => router.push(DASHBOARD_URL.order(`${order.id}`))}
+			getRowHref={(order: IOrderList) => DASHBOARD_URL.order(`${order.id}`)}
+			prefetchOnRowHover
 			serverPagination={serverPaginationMeta}
 		/>
 	)

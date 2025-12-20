@@ -38,6 +38,8 @@ interface DataTableProps<TData, TValue> {
 	renderFooterActions?: (selectedRow?: TData) => React.ReactNode
 	serverPagination?: ServerPaginationMeta
 	onRowClick?: (record: TData) => void
+	getRowHref?: (record: TData) => string | null
+	prefetchOnRowHover?: boolean
 	rowClassName?: (record: TData) => string | undefined
 }
 
@@ -50,6 +52,8 @@ export function DataTable<TData, TValue>({
 	isButton = false,
 	serverPagination,
 	onRowClick,
+	getRowHref,
+	prefetchOnRowHover = false,
 	rowClassName,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -63,6 +67,8 @@ export function DataTable<TData, TValue>({
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const renderExpandedRowSafe =
+		renderExpandedRow as ((row: TData) => React.ReactNode) | undefined
 
 	// eslint-disable-next-line react-hooks/incompatible-library
 	const table = useReactTable({
@@ -77,6 +83,8 @@ export function DataTable<TData, TValue>({
 		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,
 	})
+
+	const rows = table.getRowModel().rows
 
 	const selectedRow = table.getFilteredSelectedRowModel().rows[0]?.original
 	const currentPage = Math.max(Number(searchParams.get('page')) || 1, 1)
@@ -151,6 +159,16 @@ export function DataTable<TData, TValue>({
 	)
 
 	const footerActions = renderFooterActions?.(selectedRow)
+	const handleRowHover = useCallback(
+		(record: TData) => {
+			if (!prefetchOnRowHover || !getRowHref) return
+			const href = getRowHref(record)
+			if (href) {
+				router.prefetch(href)
+			}
+		},
+		[getRowHref, prefetchOnRowHover, router],
+	)
 
 	return (
 		<div className={containerClassName}>
@@ -181,8 +199,8 @@ export function DataTable<TData, TValue>({
 					</TableHeader>
 
 					<TableBody className='[&_tr]:border-b-0 [&_td]:first:pl-12 [&_td]:py-5'>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
+						{rows?.length ? (
+							rows.map((row) => (
 								<React.Fragment key={row.id}>
 									<TableRow
 										data-state={row.getIsSelected() && 'selected'}
@@ -196,6 +214,7 @@ export function DataTable<TData, TValue>({
 												setExpandedRow(expandedRow === row.id ? null : row.id)
 											}
 										}}
+										onMouseEnter={() => handleRowHover(row.original)}
 										className={cn(
 											(renderExpandedRow || onRowClick) &&
 											'cursor-pointer hover:bg-muted/40 transition-colors',
@@ -209,10 +228,10 @@ export function DataTable<TData, TValue>({
 										))}
 									</TableRow>
 
-									{renderExpandedRow && expandedRow === row.id && (
+									{typeof renderExpandedRowSafe === 'function' && expandedRow === row.id && (
 										<TableRow className='bg-muted/20'>
 											<TableCell colSpan={columns.length} className='py-6 px-12'>
-												{renderExpandedRow(row.original)}
+												{renderExpandedRowSafe(row.original)}
 											</TableCell>
 										</TableRow>
 									)}
