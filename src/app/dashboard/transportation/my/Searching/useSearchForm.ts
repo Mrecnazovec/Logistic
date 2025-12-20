@@ -25,13 +25,17 @@ export function useSearchForm() {
 	}, [defaultValues, form])
 
 	const onSubmit: SubmitHandler<ISearch> = async (params) => {
-		const cleanParams: Record<string, string> = {}
-
-		Object.entries(params).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && value !== '' && !(typeof value === 'object' && Object.keys(value).length === 0)) {
-				cleanParams[key] = String(value)
-			}
-		})
+		const cleanParams = Object.fromEntries(
+			Object.entries(params)
+				.filter(
+					([, value]) =>
+						value !== undefined &&
+						value !== null &&
+						value !== '' &&
+						!(typeof value === 'object' && Object.keys(value).length === 0),
+				)
+				.map(([key, value]) => [key, String(value)]),
+		)
 
 		const queryString = new URLSearchParams(cleanParams).toString()
 

@@ -11,9 +11,9 @@ import { formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatPlace, parseDateToTimestamp } from '@/lib/formatters'
 import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
-import { useRoleStore } from '@/store/useRoleStore'
 
 export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 	{
@@ -33,10 +33,6 @@ export const deskIncomeColumns: ColumnDef<IOfferShort>[] = [
 			const { variant, label, highlight } = getOfferStatusMeta(row.original, role)
 			return <Badge variant={variant} className={highlight ? 'animate-pulse' : undefined}>{label}</Badge>
 		},
-	},
-	{
-		accessorKey: 'price_pref',
-		header: 'Предпочтение оплаты',
 	},
 	{
 		id: 'origin',

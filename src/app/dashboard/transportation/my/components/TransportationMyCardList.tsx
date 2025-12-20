@@ -11,11 +11,10 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, FileText, Home, MapPin, Scale, Truck, Wallet } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo } from 'react'
 
 type TransportationMyCardListProps = {
 	cargos: ICargoList[]
@@ -47,11 +46,9 @@ type TransportationMyCardProps = {
 
 function TransportationMyCard({ cargo, statusLabel }: TransportationMyCardProps) {
 	const { badgeVariant, label: normalizedStatusLabel } = getTransportationStatusMeta(statusLabel)
-	const transportName =
-		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type
 
-	const sections = useMemo(
-		() => [
+	const sections = [
 			{
 				title: 'Откуда',
 				items: [
@@ -93,9 +90,7 @@ function TransportationMyCard({ cargo, statusLabel }: TransportationMyCardProps)
 					{ icon: FileText, primary: cargo.weight_t || '—', secondary: 'Документы' },
 				],
 			},
-		],
-		[cargo, transportName],
-	)
+		]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>

@@ -1,12 +1,28 @@
-﻿# AGENTS.md for LogisticProject
+﻿---
+name: kad-one.com Development Rules
+description: Strict coding, refactoring and architecture rules for LogisticProject (Next.js frontend, Python backend, PostgreSQL).
+metadata:
+  short-description: Forces minimal refactors, strict shared types usage and disciplined structure in a Next.js codebase.
+---
 
-## Project Overview
+## Context
 
-This project is a web application with a React frontend, a Node.js backend using Express, and a PostgreSQL database.
+This skill defines mandatory development and refactoring rules for the LogisticProject web application.
 
-- **Frontend:** Located in the root directory.
-- **Backend:** Located in the `https://kad-one.com/api`.
-- **Database schemas:** Defined in `/src/shared/types/api.ts`.
+The project consists of:
+
+- Next.js frontend (root directory)
+- Python backend (https://kad-one.com/api)
+- Shared API contracts defined in `src/shared/types/api.ts`
+
+Use this skill whenever you:
+
+- Write new frontend code
+- Refactor existing components or logic
+- Add helpers, hooks, services or shared types
+- Modify UI or interact with the backend API
+
+---
 
 ## Development Environment Tips
 
@@ -53,6 +69,7 @@ This project is a web application with a React frontend, a Node.js backend using
 - Always use shadcn/ui components as a base for UI when possible.
 
 ### Minimal, direct code (refactor focus)
+
 - Keep code short and straightforward; avoid unnecessary layers/configs; preserve behavior.
 - Skip `useMemo`/`useCallback` unless needed for heavy work, effect dependencies, or real rerender prevention.
 - Avoid data “normalization” and extra arrays/constants when simple inline `map`/`filter` or conditions suffice.

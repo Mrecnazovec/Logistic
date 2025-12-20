@@ -246,7 +246,7 @@ function InvitePageContent() {
 									return
 								}
 								acceptOffer(String(offerId), {
-									onSuccess: () => router.push(DASHBOARD_URL.desk()),
+									onSuccess: () => router.push(DASHBOARD_URL.desk('my')),
 								})
 							}}
 							onCounter={({ offerId, data }) => {
@@ -257,7 +257,7 @@ function InvitePageContent() {
 								counterOffer(
 									{ id: String(offerId), data },
 									{
-										onSuccess: () => router.push(DASHBOARD_URL.desk()),
+										onSuccess: () => router.push(DASHBOARD_URL.desk('my')),
 									},
 								)
 							}}
@@ -267,7 +267,7 @@ function InvitePageContent() {
 									return
 								}
 								rejectOffer(String(offerId), {
-									onSuccess: () => router.push(DASHBOARD_URL.desk()),
+									onSuccess: () => router.push(DASHBOARD_URL.desk('my')),
 								})
 							}}
 							isLoadingAccept={isLoadingAccept}

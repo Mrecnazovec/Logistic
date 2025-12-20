@@ -16,7 +16,6 @@ import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomi
 import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
-import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -24,33 +23,9 @@ import { useSearchForm } from '../Searching/useSearchForm'
 import { DeskMyCardList } from './components/DeskIncomeCardList'
 import { deskIncomeColumns } from './table/DeskIncomeColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 
-const tabs = [
-	{ value: 'desk', label: 'Я предложил' },
-	{ value: 'drivers', label: 'Предложили мне' },
-]
-
-export function DeskMyPage() {
-	const { data, isLoading } = useGetIncomingOffers()
-	const { data: dataMy, isLoading: isLoadingMy } = useGetMyOffers()
-	const { form, onSubmit } = useSearchForm()
-	const isDesktop = useMediaQuery('(min-width: 768px)')
-	const tableType = useTableTypeStore((state) => state.tableType)
-	const role = useRoleStore((state) => state.role)
-	const router = useRouter()
-	const pathname = usePathname()
-	const searchParams = useSearchParams()
-
-	const deskResults = data?.results ?? []
-	const myResults = dataMy?.results ?? []
-
-	const deskPagination = deskResults.length
-		? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: deskResults.length }
-		: undefined
-	const myPagination = myResults.length
-		? { next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count, pageSize: myResults.length }
-		: undefined
-
+function useDecisionModal(role?: RoleEnum) {
 	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()
 	const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false)
 	const [decisionNote, setDecisionNote] = useState<string | undefined>()
@@ -73,35 +48,85 @@ export function DeskMyPage() {
 		}
 	}
 
-	const renderMyOffers = () => {
-		if (isLoadingMy) return <LoaderTable />
-		if (!myResults.length) return <EmptyTableState />
-		return tableType === 'card' ? (
-			<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
-		) : (
-			<DataTable
-				columns={deskMyColumns}
-				data={myResults}
-				serverPagination={{ next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count }}
-				onRowClick={openDecisionModal}
-			/>
-		)
+	return {
+		selectedOffer,
+		isDecisionModalOpen,
+		decisionNote,
+		decisionActionable,
+		openDecisionModal,
+		closeDecisionModal,
 	}
+}
 
-	const renderIncoming = () => {
-		if (isLoading) return <LoaderTable />
-		if (!deskResults.length) return <EmptyTableState />
-		return tableType === 'card' ? (
-			<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={openDecisionModal} role={role} />
-		) : (
-			<DataTable
-				columns={deskIncomeColumns}
-				data={deskResults}
-				serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
-				onRowClick={openDecisionModal}
-			/>
-		)
-	}
+export function DeskMyPage() {
+	const { data, isLoading } = useGetIncomingOffers()
+	const { data: dataMy, isLoading: isLoadingMy } = useGetMyOffers()
+	const { form, onSubmit } = useSearchForm()
+	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const tableType = useTableTypeStore((state) => state.tableType)
+	const role = useRoleStore((state) => state.role)
+	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
+	const {
+		selectedOffer,
+		isDecisionModalOpen,
+		decisionNote,
+		decisionActionable,
+		openDecisionModal,
+		closeDecisionModal,
+	} = useDecisionModal(role ?? undefined)
+
+	const tabs =
+		role === RoleEnum.LOGISTIC
+			? [
+				{ value: 'drivers', label: 'Я предложил' },
+				{ value: 'desk', label: 'Предложили мне' },
+			]
+			: [
+				{ value: 'desk', label: 'Я предложил' },
+				{ value: 'drivers', label: 'Предложили мне' },
+			]
+
+	const deskResults = data?.results ?? []
+	const myResults = dataMy?.results ?? []
+
+	const deskPagination = deskResults.length
+		? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: deskResults.length }
+		: undefined
+	const myPagination = myResults.length
+		? { next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count, pageSize: myResults.length }
+		: undefined
+
+	const myDesktopContent = isLoadingMy ? (
+		<LoaderTable />
+	) : !myResults.length ? (
+		<EmptyTableState />
+	) : tableType === 'card' ? (
+		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
+	) : (
+		<DataTable
+			columns={deskMyColumns}
+			data={myResults}
+			serverPagination={{ next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count }}
+			onRowClick={openDecisionModal}
+		/>
+	)
+
+	const incomingDesktopContent = isLoading ? (
+		<LoaderTable />
+	) : !deskResults.length ? (
+		<EmptyTableState />
+	) : tableType === 'card' ? (
+		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={openDecisionModal} role={role} />
+	) : (
+		<DataTable
+			columns={deskIncomeColumns}
+			data={deskResults}
+			serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
+			onRowClick={openDecisionModal}
+		/>
+	)
 
 	const handleTabChange = (tab: string) => {
 		const params = new URLSearchParams(searchParams.toString())
@@ -145,11 +170,15 @@ export function DeskMyPage() {
 				</div>
 
 				<TabsContent value='desk'>
-					{isDesktop ? renderMyOffers() : <DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />}
+					{isDesktop ? (
+						myDesktopContent
+					) : (
+						<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
+					)}
 				</TabsContent>
 				<TabsContent value='drivers'>
 					{isDesktop ? (
-						renderIncoming()
+						incomingDesktopContent
 					) : isLoading ? (
 						<LoaderTable />
 					) : deskResults.length ? (

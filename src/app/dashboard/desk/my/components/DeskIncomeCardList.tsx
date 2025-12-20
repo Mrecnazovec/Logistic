@@ -47,7 +47,7 @@ type DeskDriverCardProps = {
 
 function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.symb ?? cargo.transport_type
-	const { variant, label, highlight } = getOfferStatusMeta(cargo, role)
+	const { variant, label } = getOfferStatusMeta(cargo, role)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
 	const contactPhone = cargo.phone || '—'

@@ -1,7 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
-
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { useGetOrderStatusHistory } from "@/hooks/queries/orders/useGet/useGetOrderStatusHistory"
@@ -33,28 +31,29 @@ const timeFormatter = new Intl.DateTimeFormat("ru-RU", {
 	minute: "2-digit",
 })
 
+const statusNameMap = new Map<string, string>(
+	OrderDriverStatusSelector.map((status) => [status.type, status.name]),
+)
+
 export function StatusPage() {
 	const { orderStatusHistory, isLoading } = useGetOrderStatusHistory()
 
-	const timelineSections = useMemo(
-		() => buildTimelineSections(orderStatusHistory),
-		[orderStatusHistory],
-	)
+	const timelineSections = buildTimelineSections(orderStatusHistory)
 
 	const hasHistory = timelineSections.length > 0
 
 	return (
-		<div className="h-full rounded-3xl bg-background p-8">
+		<div className="h-full rounded-3xl bg-background p-4 sm:p-6 lg:p-8">
 			{isLoading ? (
 				<StatusTimelineSkeleton />
 			) : hasHistory ? (
 				<div className="space-y-12">
 					{timelineSections.map((section) => (
 						<section key={section.id} className="space-y-6">
-							<h2 className="text-2xl font-semibold text-foreground">{section.title}</h2>
+							<h2 className="text-lg font-semibold text-foreground sm:text-xl lg:text-2xl">{section.title}</h2>
 
-							<div className="relative pl-12">
-								<span aria-hidden className="absolute left-4 top-4 bottom-6 w-px bg-border" />
+							<div className="relative pl-8 sm:pl-12">
+								<span aria-hidden className="absolute left-3 top-4 bottom-6 w-px bg-border sm:left-4" />
 
 								<div className="space-y-8">
 									{section.events.map((event, eventIndex) => {
@@ -63,11 +62,11 @@ export function StatusPage() {
 										return (
 											<article
 												key={event.id}
-												className="relative grid grid-cols-[120px_minmax(0,1fr)] items-start gap-8"
+												className="relative grid grid-cols-1 items-start gap-4 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-8"
 											>
 												<div
 													aria-hidden
-													className="absolute -left-[39px] top-2 size-4 rounded-full bg-brand/30"
+													className="absolute -left-[27px] top-2 size-4 rounded-full bg-brand/30 sm:-left-[39px]"
 												>
 													<span className="absolute inset-0 m-auto size-3 rounded-full bg-brand" />
 												</div>
@@ -75,13 +74,13 @@ export function StatusPage() {
 												{isLastEvent ? (
 													<span
 														aria-hidden
-														className="pointer-events-none absolute -left-8 top-6 bottom-0 z-10 w-px bg-background"
+														className="pointer-events-none absolute -left-6 top-6 bottom-0 z-10 w-px bg-background sm:-left-8"
 													/>
 												) : null}
 
 												<div className="text-sm font-medium text-muted-foreground">{event.timeLabel}</div>
 
-												<div className="ml-6 rounded-2xl bg-muted px-6 py-5">
+												<div className="rounded-2xl bg-muted px-4 py-4 sm:ml-6 sm:px-6 sm:py-5">
 													<div className="space-y-4">
 														<div className="flex items-center gap-2">
 															<NoPhoto className="size-12 shrink-0" />
@@ -90,8 +89,8 @@ export function StatusPage() {
 
 														<p className="text-sm text-muted-foreground">
 															Статус изменён с &quot;
-															<span className="font-semibold text-foreground">{OrderDriverStatusSelector.find((t) => t.type === event.statusFrom)?.name}</span>&quot; на
-															&quot;<span className="font-semibold text-foreground">{OrderDriverStatusSelector.find((t) => t.type === event.statusTo)?.name}</span>&quot;
+															<span className="font-semibold text-foreground">{getStatusName(event.statusFrom)}</span>&quot; на &quot;
+															<span className="font-semibold text-foreground">{getStatusName(event.statusTo)}</span>&quot;
 														</p>
 													</div>
 												</div>
@@ -172,25 +171,29 @@ const normalizeStatusLabel = (value?: string | null) => {
 	return value?.trim() || "Not specified"
 }
 
+const getStatusName = (value: string) => {
+	return statusNameMap.get(value) ?? value
+}
+
 function StatusTimelineSkeleton() {
 	return (
 		<div className="space-y-12">
 			{Array.from({ length: 3 }).map((_, sectionIndex) => (
 				<section key={sectionIndex} className="space-y-6">
 					<Skeleton className="h-6 w-52" />
-					<div className="relative pl-12">
-						<span aria-hidden className="absolute left-4 top-4 bottom-6 w-px bg-border" />
+					<div className="relative pl-8 sm:pl-12">
+						<span aria-hidden className="absolute left-3 top-4 bottom-6 w-px bg-border sm:left-4" />
 						<div className="space-y-8">
 							{Array.from({ length: 2 }).map((__, eventIndex) => (
 								<article
 									key={eventIndex}
-									className="relative grid grid-cols-[120px_minmax(0,1fr)] items-start gap-8"
+									className="relative grid grid-cols-1 items-start gap-4 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-8"
 								>
-									<div className="absolute -left-[39px] top-2 size-4 rounded-full bg-muted" />
+									<div className="absolute -left-[27px] top-2 size-4 rounded-full bg-muted sm:-left-[39px]" />
 									<div className="text-sm font-medium text-muted-foreground">
 										<Skeleton className="h-4 w-16" />
 									</div>
-									<div className="ml-6 rounded-2xl bg-muted px-6 py-5">
+									<div className="rounded-2xl bg-muted px-4 py-4 sm:ml-6 sm:px-6 sm:py-5">
 										<div className="space-y-3">
 											<div className="flex items-center gap-2">
 												<Skeleton className="size-12 rounded-full" />

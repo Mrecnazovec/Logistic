@@ -25,7 +25,7 @@ export const useConfirmPaymentCustomer = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(orderId)] })
 			}
 
-			toast.success('Платёж подтверждён заказчиком')
+			toast.success('Оплата подтверждена заказчиком')
 		},
 		onError(error) {
 			const message = getErrorMessage(error) ?? 'Failed to confirm payment as customer'

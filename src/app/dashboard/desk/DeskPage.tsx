@@ -8,27 +8,20 @@ import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetLoadsBoard } from '@/hooks/queries/loads/useGet/useGetLoadsBoard'
-import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import { DeskCardDriverList } from './components/DeskCardDriverList'
 import { DeskCardList } from './components/DeskCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { deskColumns, getDeskRowClassName } from './table/DeskColumns'
-import { deskDriverColumns } from './table/DeskDriverColumns'
 
-const tabs = [
-	{ value: 'desk', label: 'Заявки' },
-	{ value: 'drivers', label: 'Офферы для водителей' },
-]
+const tabs = [{ value: 'desk', label: 'Заявки' }]
 
 export function DeskPage() {
 	const { data, isLoading } = useGetLoadsBoard()
-	const { data: dataOffers, isLoading: isLoadingOffers } = useGetIncomingOffers()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
@@ -42,8 +35,8 @@ export function DeskPage() {
 	}, [role, router])
 
 	const cargos = data?.results || []
-	const offers = dataOffers?.results || []
-	const serverPaginationMeta = cargos.length
+	const hasCargos = cargos.length > 0
+	const serverPaginationMeta = hasCargos
 		? {
 			next: data?.next,
 			previous: data?.previous,
@@ -52,34 +45,20 @@ export function DeskPage() {
 		}
 		: undefined
 
-	const renderDesk = () => {
-		if (isLoading) return <LoaderTable />
-		if (!cargos.length) return <EmptyTableState />
-		return tableType === 'card' ? (
-			<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
-		) : (
-			<DataTable
-				columns={deskColumns}
-				data={cargos}
-				rowClassName={getDeskRowClassName}
-				serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
-			/>
-		)
-	}
+	const tablePagination = serverPaginationMeta
+		? { next: serverPaginationMeta.next, previous: serverPaginationMeta.previous, totalCount: serverPaginationMeta.totalCount }
+		: undefined
+	const isCardView = tableType === 'card'
 
-	const renderDrivers = () => {
-		if (isLoadingOffers) return <LoaderTable />
-		if (!offers.length) return <EmptyTableState />
-		return tableType === 'card' ? (
-			<DeskCardDriverList cargos={offers} serverPagination={serverPaginationMeta} />
-		) : (
-			<DataTable
-				columns={deskDriverColumns}
-				data={offers}
-				serverPagination={{ next: dataOffers?.next, previous: dataOffers?.previous, totalCount: dataOffers?.count }}
-			/>
-		)
-	}
+	const desktopContent = isLoading ? (
+		<LoaderTable />
+	) : !hasCargos ? (
+		<EmptyTableState />
+	) : isCardView ? (
+		<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
+	) : (
+		<DataTable columns={deskColumns} data={cargos} rowClassName={getDeskRowClassName} serverPagination={tablePagination} />
+	)
 
 	const handleTabChange = (tab: string) => {
 		const params = new URLSearchParams(searchParams.toString())
@@ -122,15 +101,8 @@ export function DeskPage() {
 					)}
 				</div>
 
-				<TabsContent value='desk'>{isDesktop ? renderDesk() : <DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />}</TabsContent>
-				<TabsContent value='drivers'>
-					{isDesktop ? renderDrivers() : (
-						isLoadingOffers ? <LoaderTable /> : offers.length ? (
-							<DeskCardDriverList cargos={offers} serverPagination={serverPaginationMeta} />
-						) : (
-							<EmptyTableState />
-						)
-					)}
+				<TabsContent value='desk'>
+					{isDesktop ? desktopContent : <DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />}
 				</TabsContent>
 			</Tabs>
 		</div>

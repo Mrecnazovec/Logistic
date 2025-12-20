@@ -1,6 +1,5 @@
 ﻿"use client"
 
-import { useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { Form } from '@/components/ui/form-control/Form'
@@ -24,6 +23,8 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { createAgreementColumns } from './table/AgreementColumns'
 import { createTransportationColumns } from './table/TransportationColumns'
 
+const AGREEMENT_COLUMNS = createAgreementColumns()
+
 const AGREEMENTS_TAB = { value: 'agreements', label: 'Соглашения' } as const
 
 const STATUS_TABS = [
@@ -45,8 +46,7 @@ export function TransportationPage() {
     const status = searchParams.get('status') ?? 'agreements'
     const tableType = useTableTypeStore((state) => state.tableType)
     const role = useRoleStore((state) => state.role)
-    const tableColumns = useMemo(() => createTransportationColumns(role), [role])
-    const agreementColumns = useMemo(() => createAgreementColumns(), [])
+    const tableColumns = createTransportationColumns(role)
 
     const agreements = agreementsData?.results ?? []
     const orders = data?.results ?? []
@@ -69,70 +69,35 @@ export function TransportationPage() {
         router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
     }
 
-    const handleOrderRowClick = (order: IOrderList) => {
-        router.push(DASHBOARD_URL.order(`${order.id}`))
-    }
+    const agreementsContent = isLoadingAgreements ? (
+        <LoaderTable />
+    ) : !agreements.length ? (
+        <EmptyTableState />
+    ) : !isDesktop || tableType === 'card' ? (
+        <AgreementsCardList agreements={agreements} serverPagination={agreementPaginationMeta} />
+    ) : (
+        <DataTable
+            columns={AGREEMENT_COLUMNS}
+            data={agreements}
+            onRowClick={(agreement: IAgreement) => router.push(`/dashboard/order/agreement/${agreement.id}`)}
+            serverPagination={agreementPaginationMeta}
+        />
+    )
 
-    const handleAgreementRowClick = (agreement: IAgreement) => {
-        router.push(`/dashboard/order/agreement/${agreement.id}`)
-    }
-
-    const renderTabLabel = (tabValue: (typeof STATUS_TABS)[number] | typeof AGREEMENTS_TAB) => {
-        if (tabValue.value === AGREEMENTS_TAB.value) {
-            return (
-                <span className='inline-flex items-center gap-2'>
-                    <span>{tabValue.label}</span>
-                    {typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null}
-                </span>
-            )
-        }
-
-        const count = statusCounts[tabValue.value]
-        return (
-            <span className='inline-flex items-center gap-2'>
-                <span>{tabValue.label}</span>
-                {typeof count === 'number' ? <span>({count})</span> : null}
-            </span>
-        )
-    }
-
-    const renderAgreementsContent = (forceCards = false) => {
-        if (isLoadingAgreements) return <LoaderTable />
-        if (!agreements.length) return <EmptyTableState />
-
-        if (forceCards || tableType === 'card') {
-            return <AgreementsCardList agreements={agreements} serverPagination={agreementPaginationMeta} />
-        }
-
-        return (
-            <DataTable
-                columns={agreementColumns}
-                data={agreements}
-                onRowClick={handleAgreementRowClick}
-                serverPagination={agreementPaginationMeta}
-            />
-        )
-    }
-
-    const renderDesktopContent = (tabValue: string) => {
-        if (tabValue === AGREEMENTS_TAB.value) return renderAgreementsContent()
-        if (isLoading) return <LoaderTable />
-        if (!orders.length) return <EmptyTableState />
-
-        return tableType === 'card' ? (
-            <TransportationCardList cargos={orders} serverPagination={serverPaginationMeta} statusValue={tabValue} />
-        ) : (
-            <DataTable columns={tableColumns} data={orders} onRowClick={handleOrderRowClick} serverPagination={serverPaginationMeta} />
-        )
-    }
-
-    const renderMobileContent = (tabValue: string) => {
-        if (tabValue === AGREEMENTS_TAB.value) return renderAgreementsContent(true)
-        if (isLoading) return <LoaderTable />
-        if (!orders.length) return <EmptyTableState />
-
-        return <TransportationCardList cargos={orders} serverPagination={serverPaginationMeta} statusValue={tabValue} />
-    }
+    const ordersContent = isLoading ? (
+        <LoaderTable />
+    ) : !orders.length ? (
+        <EmptyTableState />
+    ) : !isDesktop || tableType === 'card' ? (
+        <TransportationCardList cargos={orders} serverPagination={serverPaginationMeta} statusValue={status} />
+    ) : (
+        <DataTable
+            columns={tableColumns}
+            data={orders}
+            onRowClick={(order: IOrderList) => router.push(DASHBOARD_URL.order(`${order.id}`))}
+            serverPagination={serverPaginationMeta}
+        />
+    )
 
     return (
         <div className='flex h-full flex-col gap-4'>
@@ -154,7 +119,14 @@ export function TransportationPage() {
                                     className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
                                     value={tab.value}
                                 >
-                                    {renderTabLabel(tab)}
+                                    <span className='inline-flex items-center gap-2'>
+                                        <span>{tab.label}</span>
+                                        {tab.value === AGREEMENTS_TAB.value ? (
+                                            typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
+                                        ) : typeof statusCounts[tab.value] === 'number' ? (
+                                            <span>({statusCounts[tab.value]})</span>
+                                        ) : null}
+                                    </span>
                                 </TabsTrigger>
                             ))}
                         </TabsList>
@@ -165,7 +137,7 @@ export function TransportationPage() {
 
                     {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
-                            {renderDesktopContent(tab.value)}
+                            {tab.value === AGREEMENTS_TAB.value ? agreementsContent : ordersContent}
                         </TabsContent>
                     ))}
                 </Tabs>
@@ -178,14 +150,21 @@ export function TransportationPage() {
                                 className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
                                 value={tab.value}
                             >
-                                {renderTabLabel(tab)}
+                                <span className='inline-flex items-center gap-2'>
+                                    <span>{tab.label}</span>
+                                    {tab.value === AGREEMENTS_TAB.value ? (
+                                        typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
+                                    ) : typeof statusCounts[tab.value] === 'number' ? (
+                                        <span>({statusCounts[tab.value]})</span>
+                                    ) : null}
+                                </span>
                             </TabsTrigger>
                         ))}
                     </TabsList>
 
                     {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
-                            {renderMobileContent(tab.value)}
+                            {tab.value === AGREEMENTS_TAB.value ? agreementsContent : ordersContent}
                         </TabsContent>
                     ))}
                 </Tabs>

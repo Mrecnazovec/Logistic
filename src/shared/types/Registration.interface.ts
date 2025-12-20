@@ -6,6 +6,7 @@ type CarrierExtras = Partial<{
 	transport_name: string
 	car_number: string
 	trailer_number: string
+	driver_license: string
 }>
 
 export type IRefreshResponse = components['schemas']['RefreshResponse']

@@ -7,12 +7,13 @@ import { cn } from '@/lib/utils'
 import { useRoleStore } from '@/store/useRoleStore'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { navItems, type NavItem } from './NavItems'
+import { getNavItems, type NavItem } from './NavItems'
 
 export function Sidebar() {
 	const pathname = usePathname()
 	const filteredPathname = `${pathname}/`
 	const role = useRoleStore((state) => state.role)
+	const navItems = getNavItems(role)
 
 	const isAllowed = (roles?: NavItem['roles']) => {
 		if (!roles) return true

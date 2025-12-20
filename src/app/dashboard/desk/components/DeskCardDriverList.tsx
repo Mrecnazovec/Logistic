@@ -10,7 +10,7 @@ import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { CalendarDays, CircleCheck, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
 import Link from 'next/link'
@@ -40,7 +40,7 @@ type DeskCardProps = {
 }
 
 function DeskCard({ cargo }: DeskCardProps) {
-	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const transportName = getTransportName(cargo.transport_type as TransportTypeEnum) || cargo.transport_type || '-'
 	const sections = [
 		{
 			title: 'Пункт отправления',
@@ -59,7 +59,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 		{
 			title: 'Транспорт / вес',
 			items: [
-				{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
+				{ icon: Truck, primary: transportName, secondary: 'Тип транспорта' },
 				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
 			],
 		},

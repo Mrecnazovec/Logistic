@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Star } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
@@ -17,6 +17,7 @@ import { useCreateRating } from '@/hooks/queries/ratings/useCreateRating'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 
 type Participant = {
 	id: number
@@ -30,43 +31,42 @@ interface OrderRatingModalProps {
 	disabled?: boolean
 }
 
-export function OrderRatingModal({ order, currentRole, disabled }: OrderRatingModalProps) {
+const getParticipants = (order: IOrderDetail, meId?: number) => {
+	const list: Participant[] = []
+
+	if (order.roles.customer) {
+		list.push({
+			id: order.roles.customer.id,
+			name: order.roles.customer.name,
+			role: RoleEnum.CUSTOMER,
+		})
+	}
+	if (order.roles.carrier) {
+		list.push({
+			id: order.roles.carrier.id,
+			name: order.roles.carrier.name,
+			role: RoleEnum.CARRIER,
+		})
+	}
+	if (order.roles.logistic) {
+		list.push({
+			id: order.roles.logistic.id,
+			name: order.roles.logistic.name,
+			role: RoleEnum.LOGISTIC,
+		})
+	}
+
+	if (!meId) return list
+	return list.filter((participant) => participant.id !== meId)
+}
+
+export function OrderRatingModal({ order, currentRole: _currentRole, disabled }: OrderRatingModalProps) {
 	const [open, setOpen] = useState(false)
 	const [formState, setFormState] = useState<Record<number, { score: number | ''; comment: string }>>({})
 	const { createRating, isLoadingCreate } = useCreateRating()
+	const { me } = useGetMe()
 
-	console.log(order);
-
-
-	const participants = useMemo(() => {
-		const logisticId = (order as unknown as { logistic?: number | null }).logistic ?? null
-		const list: Participant[] = []
-
-		if (order.roles.customer) {
-			list.push({
-				id: order.roles.customer.id,
-				name: order.roles.customer.name,
-				role: RoleEnum.CUSTOMER,
-			})
-		}
-		if (order.roles.carrier) {
-			list.push({
-				id: order.roles.carrier.id,
-				name: order.roles.carrier.name,
-				role: RoleEnum.CARRIER,
-			})
-		}
-		if (order.roles.logistic) {
-			list.push({
-				id: order.roles.logistic.id,
-				name: order.roles.logistic.name,
-				role: RoleEnum.LOGISTIC,
-			})
-		}
-
-		if (!currentRole) return list
-		return list.filter((participant) => participant.role !== currentRole)
-	}, [currentRole, order])
+	const participants = getParticipants(order, me?.id)
 
 	const handleChange = (id: number, field: 'score' | 'comment', value: string) => {
 		setFormState((prev) => {

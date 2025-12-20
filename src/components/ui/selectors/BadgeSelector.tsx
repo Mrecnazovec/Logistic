@@ -61,7 +61,7 @@ export const getOfferStatusMeta = (offer?: IOfferShort, role?: RoleEnum): OfferS
 		}
 	}
 
-	if (counterpartyAccepted && !selfAccepted) {
+	if (counterpartyAccepted && !selfAccepted || offer.response_status === 'counter_from_customer' && !selfAccepted) {
 		return {
 			variant: 'violet',
 			label: 'Требуется ответ',
@@ -74,7 +74,7 @@ export const getOfferStatusMeta = (offer?: IOfferShort, role?: RoleEnum): OfferS
 	return {
 		variant: 'warning',
 		label: 'В ожидании ответа',
-		requireDecision: true,
+		// requireDecision: true,
 
 		note: `Ожидайте ответа ${getCounterpartyLabel(role)}`,
 	}

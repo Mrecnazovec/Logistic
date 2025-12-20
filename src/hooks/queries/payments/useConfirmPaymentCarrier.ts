@@ -25,7 +25,7 @@ export const useConfirmPaymentCarrier = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(orderId)] })
 			}
 
-			toast.success('Платёж подтверждён перевозчиком')
+			toast.success('Оплата подтверждена перевозчиком')
 		},
 		onError(error) {
 			const message = getErrorMessage(error) ?? 'Failed to confirm payment as carrier'

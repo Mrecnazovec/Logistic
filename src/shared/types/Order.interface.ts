@@ -1,4 +1,5 @@
 import { RoleEnum } from '../enums/Role.enum'
+import type { IPayment } from './Payment.interface'
 import type { components, paths } from './api'
 
 type OrderDetailBase = components['schemas']['OrderDetail']
@@ -21,12 +22,13 @@ export type IOrderList = Omit<IOrderListBase, 'roles'> & {
 	}
 }
 
-export type IOrderDetail = Omit<OrderDetailBase, 'roles'> & {
+export type IOrderDetail = Omit<OrderDetailBase, 'roles' | 'payment'> & {
 	roles: {
 		customer: OrderRole
 		logistic: OrderRole | null
 		carrier: OrderRole | null
 	}
+	payment: IPayment | null
 }
 export type OrderDetailRequestDto = components['schemas']['OrderDetailRequest']
 export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailRequest']

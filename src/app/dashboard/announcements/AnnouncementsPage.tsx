@@ -20,8 +20,10 @@ export function AnnouncementsPage() {
 	const tableType = useTableTypeStore((state) => state.tableType)
 
 	const results = data?.results ?? []
+	const hasResults = results.length > 0
+	const isCardView = !isDesktop || tableType === 'card'
 
-	const serverPaginationMeta = results.length
+	const serverPaginationMeta = hasResults
 		? {
 			next: data?.next,
 			previous: data?.previous,
@@ -29,6 +31,30 @@ export function AnnouncementsPage() {
 			pageSize: results.length,
 		}
 		: undefined
+
+	const tablePagination = serverPaginationMeta
+		? {
+			next: serverPaginationMeta.next,
+			previous: serverPaginationMeta.previous,
+			totalCount: serverPaginationMeta.totalCount,
+		}
+		: undefined
+
+	const content = isLoading ? (
+		<LoaderTable />
+	) : !hasResults ? (
+		<EmptyTableState />
+	) : isCardView ? (
+		<AnnouncementsCardList cargos={results} serverPagination={serverPaginationMeta} />
+	) : (
+		<DataTable
+			columns={cargoColumns}
+			data={results}
+			isButton
+			serverPagination={tablePagination}
+			renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
+		/>
+	)
 
 	return (
 		<div className='flex h-full flex-col md:gap-4'>
@@ -44,29 +70,7 @@ export function AnnouncementsPage() {
 				<TableTypeSelector />
 			</div>
 
-			{isLoading ? (
-				<LoaderTable />
-			) : results.length === 0 ? (
-				<EmptyTableState />
-			) : isDesktop ? (
-				tableType === 'card' ? (
-					<AnnouncementsCardList cargos={results} serverPagination={serverPaginationMeta} />
-				) : (
-					<DataTable
-						columns={cargoColumns}
-						data={results}
-						isButton
-						serverPagination={{
-							next: data?.next,
-							previous: data?.previous,
-							totalCount: data?.count,
-						}}
-						renderExpandedRow={(row) => <ExpandedCargoRow cargo={row} />}
-					/>
-				)
-			) : (
-				<AnnouncementsCardList cargos={results} serverPagination={serverPaginationMeta} />
-			)}
+			{content}
 		</div>
 	)
 }

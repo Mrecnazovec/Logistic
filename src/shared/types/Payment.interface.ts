@@ -5,3 +5,9 @@ export type PatchedPaymentRequestDto = components['schemas']['PatchedPaymentRequ
 
 export type PaymentMethod = IPayment['method']
 export type PaymentStatus = IPayment['status']
+
+export type PaymentConfirmationPayload = {
+	confirmed_by_customer?: boolean
+	confirmed_by_logistic?: boolean
+	confirmed_by_carrier?: boolean
+}

@@ -13,7 +13,6 @@ import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useMemo } from 'react'
 import { useSearchForm } from './Searching/useSearchForm'
 import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { createTransportationColumns } from '../table/TransportationColumns'
@@ -28,6 +27,41 @@ const STATUS_TABS = [
 	{ value: 'paid', label: 'Оплачен' },
 ] as const
 
+const normalizeOrders = (orders: IOrderList[] = []): IOrderList[] =>
+	orders.map((order) => ({
+		...order,
+		roles: {
+			customer: {
+				id: (order as any).customer_id ?? 0,
+				name: order.customer_name ?? '',
+				login: '',
+				phone: (order as any).customer_phone ?? '',
+				company: order.customer_company ?? '',
+				role: RoleEnum.CUSTOMER,
+			},
+			logistic: (order as any).logistic_id
+				? {
+						id: (order as any).logistic_id,
+						name: order.logistic_name ?? '',
+						login: '',
+						phone: (order as any).logistic_phone ?? '',
+						company: order.logistic_company ?? '',
+						role: RoleEnum.LOGISTIC,
+				  }
+				: null,
+			carrier: (order as any).carrier_id
+				? {
+						id: (order as any).carrier_id,
+						name: order.carrier_name ?? '',
+						login: '',
+						phone: (order as any).carrier_phone ?? '',
+						company: order.carrier_company ?? '',
+						role: RoleEnum.CARRIER,
+				  }
+				: null,
+		},
+	}))
+
 export function TransportationMyPage() {
 	const { data, isLoading } = useGetOrders()
 
@@ -39,62 +73,9 @@ export function TransportationMyPage() {
 	const status = searchParams.get('status') ?? 'no_driver'
 	const tableType = useTableTypeStore((state) => state.tableType)
 	const role = useRoleStore((state) => state.role)
-	const tableColumns = useMemo(() => createTransportationColumns(role), [role])
-
-	const results = useMemo<IOrderList[]>(() => {
-		const rawResults = data?.results ?? []
-
-		return rawResults.map((order) => ({
-			...order,
-			roles: {
-				customer: {
-					id: (order as any).customer_id ?? 0,
-					name: order.customer_name ?? '',
-					login: '',
-					phone: (order as any).customer_phone ?? '',
-					company: order.customer_company ?? '',
-					role: RoleEnum.CUSTOMER,
-				},
-				logistic: (order as any).logistic_id
-					? {
-							id: (order as any).logistic_id,
-							name: order.logistic_name ?? '',
-							login: '',
-							phone: (order as any).logistic_phone ?? '',
-							company: order.logistic_company ?? '',
-							role: RoleEnum.LOGISTIC,
-					  }
-					: null,
-				carrier: (order as any).carrier_id
-					? {
-							id: (order as any).carrier_id,
-							name: order.carrier_name ?? '',
-							login: '',
-							phone: (order as any).carrier_phone ?? '',
-							company: order.carrier_company ?? '',
-							role: RoleEnum.CARRIER,
-					  }
-					: null,
-			},
-		}))
-	}, [data?.results])
+	const tableColumns = createTransportationColumns(role)
+	const results = normalizeOrders(data?.results ?? [])
 	const { statusCounts } = useTransportationStatusCounts(STATUS_TABS, searchParams)
-
-	const renderTabLabel = useCallback(
-		(tabValue: typeof STATUS_TABS[number]) => {
-			const count = statusCounts[tabValue.value]
-
-			return (
-				<span className='inline-flex items-center gap-2'>
-					<span>{tabValue.label}</span>
-					{typeof count === 'number' ? (
-						<span className='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>{count}</span>
-					) : null}
-				</span>
-			)
-		},
-		[statusCounts],
-	)
 
 	const serverPaginationMeta = results.length
 		? {
@@ -105,64 +86,20 @@ export function TransportationMyPage() {
 		}
 		: undefined
 
-	const handleStatusChange = useCallback(
-		(nextStatus: string) => {
-			if (nextStatus === status) return
-
-			const params = new URLSearchParams(searchParams.toString())
-			params.set('status', nextStatus)
-
-			const queryString = params.toString()
-			const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
-
-			router.replace(nextRoute)
-		},
-		[pathname, router, searchParams, status],
+	const ordersContent = isLoading ? (
+		<LoaderTable />
+	) : !results.length ? (
+		<EmptyTableState />
+	) : !isDesktop || tableType === 'card' ? (
+		<TransportationCardList cargos={results} serverPagination={serverPaginationMeta} statusValue={status} />
+	) : (
+		<DataTable
+			columns={tableColumns}
+			data={results}
+			onRowClick={(order: IOrderList) => router.push(DASHBOARD_URL.order(`${order.id}`))}
+			serverPagination={serverPaginationMeta}
+		/>
 	)
-
-	const handleRowClick = useCallback(
-		(order: IOrderList) => {
-			router.push(DASHBOARD_URL.order(`${order.id}`))
-		},
-		[router],
-	)
-
-	const renderDesktopContent = (tabValue: string) => {
-		if (isLoading) return <LoaderTable />
-		if (!results.length) return <EmptyTableState />
-
-		if (tableType === 'card') {
-			return (
-				<TransportationCardList
-					cargos={results}
-					serverPagination={serverPaginationMeta}
-					statusValue={tabValue}
-				/>
-			)
-		}
-
-		return (
-			<DataTable
-				columns={tableColumns}
-				data={results}
-				onRowClick={handleRowClick}
-				serverPagination={serverPaginationMeta}
-			/>
-		)
-	}
-
-	const renderMobileContent = (tabValue: string) => {
-		if (isLoading) return <LoaderTable />
-		if (!results.length) return <EmptyTableState />
-
-		return (
-			<TransportationCardList
-				cargos={results}
-				serverPagination={serverPaginationMeta}
-				statusValue={tabValue}
-			/>
-		)
-	}
 
 	return (
 		<div className='flex h-full flex-col gap-4'>
@@ -175,7 +112,18 @@ export function TransportationMyPage() {
 			</div>
 
 			{isDesktop ? (
-				<Tabs className='h-full' value={status} onValueChange={handleStatusChange}>
+				<Tabs
+					className='h-full'
+					value={status}
+					onValueChange={(nextStatus) => {
+						if (nextStatus === status) return
+						const params = new URLSearchParams(searchParams.toString())
+						params.set('status', nextStatus)
+						const queryString = params.toString()
+						const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
+						router.replace(nextRoute)
+					}}
+				>
 					<div className='flex flex-wrap items-end gap-4'>
 						<TabsList className='bg-transparent -mb-2'>
 							{STATUS_TABS.map((tab) => (
@@ -184,7 +132,12 @@ export function TransportationMyPage() {
 									className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 									value={tab.value}
 								>
-									{renderTabLabel(tab)}
+									<span className='inline-flex items-center gap-2'>
+										<span>{tab.label}</span>
+										{typeof statusCounts[tab.value] === 'number' ? (
+											<span className='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>{statusCounts[tab.value]}</span>
+										) : null}
+									</span>
 								</TabsTrigger>
 							))}
 						</TabsList>
@@ -195,12 +148,23 @@ export function TransportationMyPage() {
 
 					{STATUS_TABS.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderDesktopContent(tab.value)}
+							{ordersContent}
 						</TabsContent>
 					))}
 				</Tabs>
 			) : (
-				<Tabs value={status} onValueChange={handleStatusChange} className='xs:bg-background rounded-4xl p-4'>
+				<Tabs
+					value={status}
+					onValueChange={(nextStatus) => {
+						if (nextStatus === status) return
+						const params = new URLSearchParams(searchParams.toString())
+						params.set('status', nextStatus)
+						const queryString = params.toString()
+						const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
+						router.replace(nextRoute)
+					}}
+					className='xs:bg-background rounded-4xl p-4'
+				>
 					<TabsList className='bg-transparent -mb-2'>
 						{STATUS_TABS.map((tab) => (
 							<TabsTrigger
@@ -208,14 +172,19 @@ export function TransportationMyPage() {
 								className='data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand rounded-none'
 								value={tab.value}
 							>
-								{renderTabLabel(tab)}
+								<span className='inline-flex items-center gap-2'>
+									<span>{tab.label}</span>
+									{typeof statusCounts[tab.value] === 'number' ? (
+										<span className='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>{statusCounts[tab.value]}</span>
+									) : null}
+								</span>
 							</TabsTrigger>
 						))}
 					</TabsList>
 
 					{STATUS_TABS.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderMobileContent(tab.value)}
+							{ordersContent}
 						</TabsContent>
 					))}
 				</Tabs>

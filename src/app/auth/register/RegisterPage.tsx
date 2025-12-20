@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from '@/components/ui/Button'
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/Select'
@@ -7,17 +7,18 @@ import Image from 'next/image'
 import { useRegisterForm } from './useRegisterForm'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/form-control/Form'
-import { RegisterFields } from './RegisterField'
+import { RegisterAuthFields } from './RegisterField'
 import Link from 'next/link'
 import { SITE_NAME } from '@/constants/seo.constants'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AsCargoSaver } from '@/app/svg/AsCargoSaver'
 import TruckIcon from '@/app/svg/TruckIcon'
 import LogistIcon from '@/app/svg/LogistIcon'
 import { RegisterRoles } from './RegisterRoles'
 import { RoleEnum } from '@/shared/enums/Role.enum'
-import { RegisterCarrierFields } from './RegisterCarrier'
+import { RegisterCompanyFields, RegisterTransportField, RegisterVehicleFields } from './RegisterCarrier'
+import { RegisterDto } from '@/shared/types/Registration.interface'
 
 const ROLES = [
 	{
@@ -47,25 +48,84 @@ const ROLES = [
 	},
 ]
 
+const AUTH_FIELDS = ['email', 'password', 'password2'] as const
+const COMPANY_FIELDS = ['first_name', 'phone', 'country', 'country_code', 'city', 'company_name'] as const
+const VEHICLE_FIELDS = ['car_number', 'trailer_number', 'driver_license'] as const
+
 export function RegisterPage() {
 	const { form, isPending, onSubmit } = useRegisterForm()
 
 	const [role, setRole] = useState<RoleEnum>()
-	const [step, setStep] = useState<1 | 2>(1)
+	const [step, setStep] = useState<1 | 2 | 3>(1)
+	const transportName = form.watch('transport_name') ?? ''
+	const hasTransportName = transportName.trim().length > 0
 
-	const handleNext = async () => {
-		const isValid = await form.trigger()
-		if (isValid) {
+	const totalSteps = useMemo(() => {
+		if (!role) {
+			return 2
+		}
+		return role === RoleEnum.CARRIER && hasTransportName ? 3 : 2
+	}, [role, hasTransportName])
+
+	const handleTransportChange = (value: string) => {
+		if (step === 3 && value.trim().length === 0) {
 			setStep(2)
-		} else {
-			const firstErrorField = Object.keys(form.formState.errors)[0]
-			if (firstErrorField) {
-				const element = document.querySelector(`[name="${firstErrorField}"]`)
-				element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-			}
 		}
 	}
-	const handleBack = () => setStep(1)
+
+	const scrollToFirstError = () => {
+		const firstErrorField = Object.keys(form.formState.errors)[0]
+		if (firstErrorField) {
+			const element = document.querySelector(`[name="${firstErrorField}"]`)
+			element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+		}
+	}
+
+	const handleBack = () => {
+		if (step === 2) {
+			setStep(1)
+			return
+		}
+
+		if (step === 3) {
+			setStep(2)
+		}
+	}
+
+	const handleNext = async () => {
+		if (!role) {
+			return
+		}
+
+		let fields: readonly (keyof RegisterDto)[] = AUTH_FIELDS
+
+		if (step === 2) {
+			fields = [...AUTH_FIELDS, ...COMPANY_FIELDS]
+		} else if (step === 3) {
+			fields = [...AUTH_FIELDS, ...COMPANY_FIELDS, ...VEHICLE_FIELDS]
+		}
+
+		const isValid = await form.trigger(fields)
+		if (!isValid) {
+			scrollToFirstError()
+			return
+		}
+
+		if (step === 1) {
+			setStep(2)
+			return
+		}
+
+		if (step === 2 && role === RoleEnum.CARRIER && hasTransportName) {
+			setStep(3)
+			return
+		}
+
+		onSubmit({
+			...form.getValues(),
+			role,
+		})
+	}
 
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
@@ -139,36 +199,45 @@ export function RegisterPage() {
 						) : (
 							<Form {...form}>
 								<form
-									onSubmit={form.handleSubmit((data) =>
-										onSubmit({
-											...data,
-											role,
-										})
-									)}
+									onSubmit={(event) => {
+										event.preventDefault()
+										void handleNext()
+									}}
 								>
 									<CardContent>
-										{role !== RoleEnum.CARRIER || step === 1 ? (
+										{step === 1 && (
 											<>
-												<RegisterFields form={form} isPending={isPending} role={role} />
-												{role === RoleEnum.CARRIER ? (
-													<Button type='button' className='w-full' disabled={isPending} onClick={handleNext}>
-														Продолжить
-													</Button>
-												) : (
-													<Button type='submit' className='w-full' disabled={isPending}>
-														Зарегистрироваться
-													</Button>
-												)}
+												<RegisterAuthFields form={form} isPending={isPending} />
+												<Button type='button' className='w-full' disabled={isPending} onClick={handleNext}>
+													Продолжить
+												</Button>
 											</>
-										) : (
+										)}
+										{step === 2 && (
 											<>
-												<RegisterCarrierFields role={role} form={form} isPending={isPending} />
-												<div className='flex justify-between items-center gap-4'>
-													<Button type='button' variant={'outline'} onClick={handleBack} disabled={isPending}>
+												<RegisterCompanyFields form={form} isPending={isPending} />
+												{role === RoleEnum.CARRIER && (
+													<RegisterTransportField form={form} isPending={isPending} onChange={handleTransportChange} />
+												)}
+												<div className='flex items-center gap-4'>
+													<Button type='button' variant={'outline'} disabled={isPending} onClick={handleBack}>
 														Назад
 													</Button>
-													<Button type='submit' disabled={isPending}>
-														Зарегистрироваться
+													<Button type='button' className='flex-1' disabled={isPending} onClick={handleNext}>
+														Продолжить
+													</Button>
+												</div>
+											</>
+										)}
+										{step === 3 && role === RoleEnum.CARRIER && hasTransportName && (
+											<>
+												<RegisterVehicleFields form={form} isPending={isPending} showTransportName={false} />
+												<div className='flex items-center gap-4'>
+													<Button type='button' variant={'outline'} disabled={isPending} onClick={handleBack}>
+														Назад
+													</Button>
+													<Button type='button' className='flex-1' disabled={isPending} onClick={handleNext}>
+														Продолжить
 													</Button>
 												</div>
 											</>
@@ -182,9 +251,12 @@ export function RegisterPage() {
 
 				<div className='flex gap-4 items-center justify-end'>
 					<div className='flex items-center gap-3'>
-						<div className={`w-[39px] h-[4px] rounded-[6px] ${!role ? 'bg-brand' : 'bg-brand/40'}`}></div>
-						<div className={`w-[39px] h-[4px] rounded-[6px] ${role && step !== 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>
-						{role === RoleEnum.CARRIER && <div className={`w-[39px] h-[4px] rounded-[6px] ${step === 2 ? 'bg-brand' : 'bg-brand/40'}`}></div>}
+						{Array.from({ length: totalSteps }).map((_, index) => (
+							<div
+								key={`register-step-${index + 1}`}
+								className={`w-[39px] h-[4px] rounded-[6px] ${step === index + 1 ? 'bg-brand' : 'bg-brand/40'}`}
+							></div>
+						))}
 					</div>
 				</div>
 			</div>

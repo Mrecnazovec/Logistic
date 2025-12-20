@@ -4,7 +4,7 @@ export type IUserRating = components['schemas']['UserRating']
 export type UserRatingRequestDto = components['schemas']['UserRatingRequest']
 export type PatchedUserRatingRequestDto = components['schemas']['PatchedUserRatingRequest']
 
-type RatingUserOrdersStats = {
+export type RatingUserOrdersStats = {
 	total: number
 	completed: number
 	in_progress: number
@@ -21,7 +21,7 @@ export type IRatingUserList = Omit<
 	avg_rating?: number | null
 	rating_count?: number | null
 	total_distance?: number | string | null
-	orders_stats?: RatingUserOrdersStats | string | null
+	orders_stats?: RatingUserOrdersStats | null
 	completed_orders?: number | null
 	city?: string | null
 	country?: string | null

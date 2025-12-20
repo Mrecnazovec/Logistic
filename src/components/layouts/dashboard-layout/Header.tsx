@@ -15,16 +15,23 @@ import { Bell, CheckCheck, ChevronLeft, Loader2, Search } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { resolveHeaderNavItems } from './HeaderNavConfig'
+
+const SEARCH_ENABLED_ROUTES = [
+	'/dashboard/transportation',
+	'/dashboard/transportation/my',
+	'/dashboard/announcements',
+	'/dashboard/history',
+	'/dashboard/desk',
+	'/dashboard/desk/my',
+	'/dashboard/rating',
+]
 
 export function Header() {
 	const pathname = usePathname()
 	const role = useRoleStore((state) => state.role)
-	const { items: navItems, backLink } = useMemo(
-		() => resolveHeaderNavItems(pathname, role),
-		[pathname, role],
-	)
+	const { items: navItems, backLink } = resolveHeaderNavItems(pathname, role)
 	const { me, isLoading } = useGetMe()
 	const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 	const {
@@ -44,17 +51,7 @@ export function Header() {
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
 
-	const searchEnabledRoutes = [
-		'/dashboard/transportation',
-		'/dashboard/transportation/my',
-		'/dashboard/announcements',
-		'/dashboard/history',
-		'/dashboard/desk',
-		'/dashboard/desk/my',
-		'/dashboard/rating',
-	]
-
-	const isSearchAvailable = searchEnabledRoutes.some((route) => pathname?.startsWith(route))
+	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => pathname?.startsWith(route))
 
 	useEffect(() => {
 		audioRef.current = new Audio('/sounds/notification.mp3')
@@ -74,10 +71,7 @@ export function Header() {
 		return () => clearInterval(interval)
 	}, [isNotificationsEnabled, refetchNotifications])
 
-	const unreadCount = useMemo(
-		() => notifications.filter((item) => !item.is_read).length,
-		[notifications],
-	)
+	const unreadCount = notifications.filter((item) => !item.is_read).length
 
 	useEffect(() => {
 		const currentUnread = unreadCount
@@ -87,24 +81,18 @@ export function Header() {
 		lastUnreadRef.current = currentUnread
 	}, [unreadCount])
 
-	const handleMarkRead = (id: number, isRead?: boolean) => {
-		if (!isRead) {
-			markRead(id)
-		}
-	}
-
-	const handleScroll = useCallback(() => {
+	const handleScroll = () => {
 		const node = scrollRef.current
 		if (!node || isFetchingNextPage || !hasNextPage) return
 		const threshold = 40
 		if (node.scrollTop + node.clientHeight >= node.scrollHeight - threshold) {
 			fetchNextPage()
 		}
-	}, [fetchNextPage, hasNextPage, isFetchingNextPage])
+	}
 
 	return (
 		<header className='h-auto md:min-h-24 flex items-center justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg md:px-4 px-3 max-md:pt-3 gap-4 sticky top-0 z-30'>
-			<div className='flex flex-col items-center gap-3 self-end'>
+			<div className='flex flex-col items-center gap-3 self-end flex-1 min-w-0'>
 				{backLink && (
 					<Link
 						className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1'
@@ -114,13 +102,13 @@ export function Header() {
 					</Link>
 				)}
 				{navItems.length > 0 && (
-					<nav className='flex self-start gap-6 font-medium text-gray-700'>
+					<nav className='flex self-start gap-4 sm:gap-6 font-medium text-gray-700 overflow-x-auto max-w-full whitespace-nowrap'>
 						{navItems.map((item) => (
 							<Link
 								key={item.href}
 								href={item.href}
 								className={cn(
-									'pb-2 border-b-4 max-md:text-xs text-center transition-colors',
+									'pb-2 border-b-4 max-md:text-xs text-center transition-colors shrink-0',
 									item.active
 										? 'border-b-brand text-brand font-semibold'
 										: 'border-b-transparent hover:text-brand/70',
@@ -133,7 +121,7 @@ export function Header() {
 				)}
 			</div>
 
-			<div className='flex items-center gap-3 max-md:self-start'>
+			<div className='flex items-center gap-3 max-md:self-start shrink-0'>
 				{isLoading ? (
 					<Loader2 className='md:size-9 size-7 animate-spin max-md:mb-3 max-md:mr-3' />
 				) : (

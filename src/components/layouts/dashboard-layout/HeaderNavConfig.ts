@@ -56,15 +56,8 @@ const getOrderDocsFolderInfo = (pathname: string) => {
 	return { orderId, folder }
 }
 
-const canShowPaymentNav = (orderId: string, pathname?: string) => {
-	if (pathname && normalizePath(pathname).includes('/payment')) return true
-	if (typeof window === 'undefined') return false
-	return localStorage.getItem(`orderPaymentAvailable:${orderId}`) === 'true'
-}
-
 const getOrderNavItems = (orderId: string, pathname?: string): HeaderNavItem[] => {
 	const basePath = orderId
-	const withPayment = canShowPaymentNav(orderId, pathname)
 
 	return [
 		{
@@ -79,14 +72,10 @@ const getOrderNavItems = (orderId: string, pathname?: string): HeaderNavItem[] =
 			label: 'Статусы',
 			href: DASHBOARD_URL.order(`${basePath}/status`),
 		},
-		...(withPayment
-			? [
-					{
-						label: 'Оплата',
-						href: DASHBOARD_URL.order(`${basePath}/payment`),
-					},
-			  ]
-			: []),
+		{
+			label: 'Оплата',
+			href: DASHBOARD_URL.order(`${basePath}/payment`),
+		},
 	]
 }
 
@@ -167,6 +156,19 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			},
 		],
 	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/order/agreement'),
+		items: [
+			{
+				label: '',
+				href: DASHBOARD_URL.profile(),
+			},
+		],
+		backLink: {
+			label: 'Назад моим грузам',
+			href: DASHBOARD_URL.transportation(),
+		},
+	},
 
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/profile'),
@@ -236,10 +238,10 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 				label: 'Заказы',
 				href: DASHBOARD_URL.transportation(),
 			},
-			{
-				label: 'Везу',
-				href: DASHBOARD_URL.transportation('my'),
-			},
+			// {
+			// 	label: 'Везу',
+			// 	href: DASHBOARD_URL.transportation('my'),
+			// },
 		],
 	},
 	// {

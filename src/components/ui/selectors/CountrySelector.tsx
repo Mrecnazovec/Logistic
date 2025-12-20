@@ -32,7 +32,7 @@ export function CountrySelector(props: CountrySelectorProps) {
 function CountrySelectorInner({
     value = null,
     onChange,
-    placeholder = 'Select country',
+    placeholder = 'Страна',
     disabled,
     className,
 }: CountrySelectorProps) {

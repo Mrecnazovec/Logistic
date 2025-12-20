@@ -1,16 +1,17 @@
-﻿import { Metadata } from "next"
-import { Suspense } from "react"
-import { IdProfile } from "./IdProfile"
-import { LoaderTable } from "@/components/ui/table/TableStates"
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
+
+import { LoaderTable } from '@/components/ui/table/TableStates'
+import { IdProfile } from './IdProfile'
 
 export const metadata: Metadata = {
-    title: 'Профиль',
+	title: 'Профиль',
 }
 
 export default function page() {
-    return (
-        <Suspense fallback={<LoaderTable />}>
-            <IdProfile />
-        </Suspense>
-    )
+	return (
+		<Suspense fallback={<LoaderTable />}>
+			<IdProfile />
+		</Suspense>
+	)
 }

@@ -25,7 +25,7 @@ export const useConfirmPaymentLogistic = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(orderId)] })
 			}
 
-			toast.success('Платёж подтверждён логистом')
+			toast.success('Оплата подтверждена логистом')
 		},
 		onError(error) {
 			const message = getErrorMessage(error) ?? 'Failed to confirm payment as logistic'

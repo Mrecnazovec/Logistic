@@ -13,7 +13,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, CircleCheck, Eye, EyeOff, Handshake, Mail, MapPin, Minus, Pen, Phone, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
 import Link from 'next/link'
@@ -49,10 +49,12 @@ type DeskCardProps = {
 }
 
 function DeskCard({ cargo }: DeskCardProps) {
-	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type || '-'
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const { refreshLoad } = useRefreshLoad()
 	const [offerOpen, setOfferOpen] = useState(false)
+	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
+	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
 
 	const isHidden = Boolean(cargo.is_hidden)
 	const visibilityActionLabel = isHidden ? 'Показать' : 'Скрыть'
@@ -76,7 +78,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 		{
 			title: 'Тип транспорта / Вес',
 			items: [
-				{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
+				{ icon: Truck, primary: transportName, secondary: 'Тип транспорта' },
 				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
 			],
 		},
@@ -89,11 +91,11 @@ function DeskCard({ cargo }: DeskCardProps) {
 		},
 		{
 			title: 'Телефон',
-			items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
+			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-' }],
 		},
 		{
 			title: 'Почта',
-			items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
+			items: [{ icon: Mail, primary: canShowEmail ? cargo.email : '-' }],
 		},
 	]
 

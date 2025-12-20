@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/Button'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
 import { cn } from '@/lib/utils'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { Bell, ChevronRight, MoreHorizontal, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo, useState } from 'react'
-import { navItems } from './NavItems'
+import { getNavItems, type NavItem } from './NavItems'
 
 export function MobileNav() {
 	const pathname = usePathname()
@@ -17,6 +18,8 @@ export function MobileNav() {
 	const role = useRoleStore((state) => state.role)
 	const [isMoreOpen, setIsMoreOpen] = useState(false)
 	const { notifications } = useNotifications(true)
+	const navItems = useMemo(() => getNavItems(role), [role])
+	const deskHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk()
 
 	const unreadCount = useMemo(
 		() => notifications.filter((item) => !item.is_read).length,
@@ -28,15 +31,15 @@ export function MobileNav() {
 	const labelOverrides: Record<string, string> = useMemo(
 		() => ({
 			[DASHBOARD_URL.announcements()]: 'Доска объявлений',
-			[DASHBOARD_URL.desk()]: 'Торговля',
+			[deskHref]: 'Торговля',
 			[DASHBOARD_URL.transportation()]: 'Мои грузы',
 			[DASHBOARD_URL.notifications()]: 'Уведомления',
 		}),
-		[],
+		[deskHref],
 	)
 
 	const isAllowed = useMemo(
-		() => (roles?: (typeof navItems)[number]['roles']) => {
+		() => (roles?: NavItem['roles']) => {
 			if (!roles) return true
 			if (Array.isArray(roles)) return role ? roles.includes(role) : false
 			return roles(role)
@@ -53,7 +56,7 @@ export function MobileNav() {
 					items: group.items.filter((item) => isAllowed(item.roles)),
 				}))
 				.filter((group) => group.items.length > 0),
-		[isAllowed],
+		[isAllowed, navItems],
 	)
 
 	const allItems = useMemo(
@@ -63,7 +66,7 @@ export function MobileNav() {
 
 	const prioritizedHrefs = [
 		DASHBOARD_URL.announcements(),
-		DASHBOARD_URL.desk(),
+		deskHref,
 		DASHBOARD_URL.transportation(),
 	]
 
@@ -248,3 +251,7 @@ export function MobileNav() {
 		</nav>
 	)
 }
+
+
+
+

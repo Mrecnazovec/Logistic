@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { ArrowRight, Link2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/Button'
@@ -37,22 +37,15 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 	const { generateLoadInvite, invite, isLoadingGenerate, resetInvite } = useGenerateLoadInvite()
 	const { inviteOffer, isLoadingInvite } = useInviteOffer()
 
-	const transportName = useMemo(
-		() => (selectedRow ? getTransportName(selectedRow.transport_type) || '—' : null),
-		[selectedRow],
-	)
+	const transportName = selectedRow ? getTransportName(selectedRow.transport_type) || '-' : null
 	const formattedPrice = formatCurrencyValue(selectedRow?.price_value, selectedRow?.price_currency)
 	const formattedPricePerKm = formatCurrencyPerKmValue(selectedRow?.price_per_km, selectedRow?.price_currency)
 	const inviteToken = invite?.token
 
-
-	const shareLink = useMemo(() => {
-		if (!inviteToken) {
-			return ''
-		}
-
-		return `${window.location.origin}${DASHBOARD_URL.desk(`invite/${inviteToken}`)}`
-	}, [inviteToken])
+	const shareLink =
+		inviteToken && typeof window !== 'undefined'
+			? `${window.location.origin}${DASHBOARD_URL.desk(`invite/${inviteToken}`)}`
+			: ''
 
 	const handleModalOpenChange = (isOpen: boolean) => {
 		if (!isOpen) {

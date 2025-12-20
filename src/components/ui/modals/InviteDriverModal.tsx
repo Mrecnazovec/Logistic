@@ -63,14 +63,7 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
     const handleGenerateInviteLink = () => {
         if (!canInviteById) return
         setShareCopyStatus('idle')
-        generateOrderInvite(
-            { id: String(order.id), payload: { cargo: order.cargo } },
-            {
-                onSuccess: () => {
-                    setShareCopyStatus('idle')
-                },
-            },
-        )
+        generateOrderInvite({ id: String(order.id), payload: { cargo: order.cargo } })
     }
 
     const handleCopyShareLink = async () => {

@@ -1,11 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { buildSearchDefaultValues } from '@/lib/search/buildSearchDefaultValues'
 import { ISearch } from '@/shared/types/Search.interface'
-import { useMemo } from 'react'
 
 export function useSearchForm() {
 	const router = useRouter()
@@ -27,13 +26,17 @@ export function useSearchForm() {
 	}, [defaultValues, form])
 
 	const onSubmit: SubmitHandler<ISearch> = async (params) => {
-		const cleanParams: Record<string, string> = {}
-
-		Object.entries(params).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && value !== '' && !(typeof value === 'object' && Object.keys(value).length === 0)) {
-				cleanParams[key] = String(value)
-			}
-		})
+		const cleanParams = Object.fromEntries(
+			Object.entries(params)
+				.filter(
+					([, value]) =>
+						value !== undefined &&
+						value !== null &&
+						value !== '' &&
+						!(typeof value === 'object' && Object.keys(value).length === 0),
+				)
+				.map(([key, value]) => [key, String(value)]),
+		)
 
 		const queryString = new URLSearchParams(cleanParams).toString()
 

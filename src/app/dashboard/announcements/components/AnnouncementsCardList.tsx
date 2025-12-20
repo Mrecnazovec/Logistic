@@ -15,7 +15,7 @@ import {
 	formatRelativeDate,
 	formatWeightValue,
 } from '@/lib/formatters'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, Mail, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
 
@@ -46,8 +46,9 @@ type AnnouncementCardProps = {
 }
 
 function AnnouncementCard({ cargo }: AnnouncementCardProps) {
-	const transportName =
-		TransportSelect.find((type) => type.type === cargo.transport_type)?.name ?? cargo.transport_type
+	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type || '-'
+	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
+	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
 
 	const sections: CardSection[] = [
 		{
@@ -88,11 +89,11 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 		},
 		{
 			title: 'Телефон',
-			items: [{ icon: Phone, primary: cargo.contact_pref === 'phone' || cargo.contact_pref === 'both' ? cargo.phone : '—' }],
+			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-' }],
 		},
 		{
 			title: 'Почта',
-			items: [{ icon: Mail, primary: cargo.contact_pref === 'email' || cargo.contact_pref === 'both' ? cargo.email : '—' }],
+			items: [{ icon: Mail, primary: canShowEmail ? cargo.email : '-' }],
 		},
 	]
 

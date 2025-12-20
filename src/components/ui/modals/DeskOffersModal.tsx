@@ -47,9 +47,9 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
 
     const offers = data?.results ?? []
     const incomingOffers = offers.filter(
-        (offer) => !offer.accepted_by_customer && !offer.accepted_by_logistic && !offer.accepted_by_carrier
+        (offer) => !offer.accepted_by_customer && !offer.accepted_by_logistic && !offer.accepted_by_carrier && offer.response_status !== 'counter_from_customer'
     )
-    const acceptedOffers = offers.filter((offer) => offer.accepted_by_logistic || offer.accepted_by_carrier)
+    const acceptedOffers = offers.filter((offer) => offer.accepted_by_logistic && !offer.accepted_by_customer || offer.accepted_by_carrier && !offer.accepted_by_customer)
 
     const cargoInfo = offers[0]
         ? {

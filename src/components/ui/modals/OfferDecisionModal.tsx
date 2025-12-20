@@ -16,7 +16,7 @@ import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue } from '@/lib/formatters'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportName, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { ProfileLink } from '../actions/ProfileLink'
 
@@ -47,7 +47,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 	const { acceptOrderInvite, isLoadingAcceptInvite } = useAcceptOrderInvite()
 
 	const transport = offer
-		? TransportSelect.find((type) => type.type === offer.transport_type)?.name || offer.transport_type || EMPTY
+		? getTransportName(offer.transport_type as TransportTypeEnum) || offer.transport_type || EMPTY
 		: EMPTY
 
 	const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)
@@ -148,7 +148,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										</p>
 										<p>
 											<span className='font-semibold text-foreground'>Цена: </span>
-											{formattedPrice || EMPTY} {formattedPricePerKm}
+											{formattedPrice || EMPTY} ({formattedPricePerKm})
 										</p>
 									</div>
 								</div>

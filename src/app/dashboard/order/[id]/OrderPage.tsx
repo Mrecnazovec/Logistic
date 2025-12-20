@@ -47,6 +47,26 @@ const withFallback = (value?: string | number | null, id?: number | null) => {
     return String(value)
 }
 
+const getFirstDocumentByCategory = <T extends { category?: string | null; created_at?: string | null }>(
+    documents: T[],
+    category: string,
+) => {
+    const matches = documents.filter((document) => (document.category ?? '').toLowerCase() === category.toLowerCase())
+    if (!matches.length) return null
+    return (
+        matches.sort(
+            (a, b) => new Date(a.created_at ?? '').getTime() - new Date(b.created_at ?? '').getTime()
+        )[0] ?? null
+    )
+}
+
+const getDocumentAction = (status: OrderStatusEnum | null, actions: Record<string, { hasDocument: boolean; documentDate: string; href: string }>) => {
+    if (!status) return actions.loading
+    if (status === OrderStatusEnum.IN_PROCESS) return actions.unloading
+    if (status === OrderStatusEnum.DELIVERED || status === OrderStatusEnum.PAID) return actions.other
+    return actions.loading
+}
+
 export function OrderPage() {
     const { order, isLoading } = useGetOrder()
     const { patchOrder } = usePatchOrder()
@@ -60,21 +80,17 @@ export function OrderPage() {
     const driverStatusMeta = currentDriverStatus ? DRIVER_STATUS_BADGE_MAP[currentDriverStatus] : null
     const hasDriver = Boolean(order?.carrier_name)
     const isCompleted = order?.status === OrderStatusEnum.DELIVERED || order?.status === OrderStatusEnum.PAID
-    const canRateParticipants = order?.status === OrderStatusEnum.PAID
+    const canRateParticipants = order?.status === OrderStatusEnum.PAID || order?.status === OrderStatusEnum.DELIVERED
     const isCarrier = role === RoleEnum.CARRIER
     const orderId = order ? String(order.id) : ''
     const canChangeDriverStatus = Boolean(order && isCarrier)
     const orderStatus = order?.status ?? null
     const orderLogisticId = order?.roles?.logistic?.id ?? null
     const isOrderLogistic = Boolean(orderLogisticId && me?.id === orderLogisticId)
-    const canInviteDriver = orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic
-    const shouldShowInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
+    const canInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
 
     const documents = order?.documents ?? []
-    const firstOtherDocument = documents
-        .filter((document) => document.category === 'other')
-        .sort((a, b) => new Date(a.created_at ?? '').getTime() - new Date(b.created_at ?? '').getTime())[0]
-        || null
+    const firstOtherDocument = getFirstDocumentByCategory(documents, 'other')
 
     const hasLoadingDocument = Boolean(order?.loading_datetime)
     const hasUnloadingDocument = Boolean(order?.unloading_datetime)
@@ -83,11 +99,11 @@ export function OrderPage() {
     const firstUnloadingDocumentDate = formatDateTimeValue(order?.unloading_datetime, DEFAULT_PLACEHOLDER)
     const firstOtherDocumentDate = formatDateTimeValue(firstOtherDocument?.created_at, DEFAULT_PLACEHOLDER)
     const docsBasePath = orderId ? `/dashboard/order/${orderId}/docs` : ''
-    const currentDocumentAction = orderStatus === OrderStatusEnum.IN_PROCESS
-        ? { hasDocument: hasUnloadingDocument, documentDate: firstUnloadingDocumentDate, href: `${docsBasePath}/unloading` }
-        : orderStatus === OrderStatusEnum.DELIVERED || orderStatus === OrderStatusEnum.PAID
-            ? { hasDocument: hasOtherDocument, documentDate: firstOtherDocumentDate, href: `${docsBasePath}/other` }
-            : { hasDocument: hasLoadingDocument, documentDate: firstLoadingDocumentDate, href: `${docsBasePath}/loading` }
+    const currentDocumentAction = getDocumentAction(orderStatus, {
+        loading: { hasDocument: hasLoadingDocument, documentDate: firstLoadingDocumentDate, href: `${docsBasePath}/loading` },
+        unloading: { hasDocument: hasUnloadingDocument, documentDate: firstUnloadingDocumentDate, href: `${docsBasePath}/unloading` },
+        other: { hasDocument: hasOtherDocument, documentDate: firstOtherDocumentDate, href: `${docsBasePath}/other` },
+    })
 
     const renderDocumentAction = (
         hasDocument: boolean,
@@ -144,22 +160,16 @@ export function OrderPage() {
         patchOrder({ id: orderId, data: { status: OrderStatusEnum.PAID } })
     }, [hasOtherDocument, order?.status, orderId, patchOrder])
 
-    useEffect(() => {
-        if (typeof window === 'undefined') return
-        if (!orderId) return
-        if (orderStatus !== OrderStatusEnum.DELIVERED && orderStatus !== OrderStatusEnum.PAID) return
-        localStorage.setItem(`orderPaymentAvailable:${orderId}`, 'true')
-    }, [orderId, orderStatus])
-
     const handleDriverStatusSelect = (nextStatus: OrderDriverStatusEnum) => {
         if (!orderId || nextStatus === currentDriverStatus) return
         updateDriverStatus({ id: orderId, data: { driver_status: nextStatus } })
     }
 
-    const renderOrderStatusBadge = () => {
-        if (!orderStatus) return <Badge variant='secondary'>Статус не задан</Badge>
-        return <Badge variant={getOrderStatusVariant(orderStatus)}>{getOrderStatusLabel(orderStatus)}</Badge>
-    }
+    const orderStatusBadge = orderStatus ? (
+        <Badge variant={getOrderStatusVariant(orderStatus)}>{getOrderStatusLabel(orderStatus)}</Badge>
+    ) : (
+        <Badge variant='secondary'>Статус не задан</Badge>
+    )
 
     if (isLoading) return <OrderPageSkeleton />
     if (!order) {
@@ -208,7 +218,7 @@ export function OrderPage() {
     return (
         <div className='space-y-6 rounded-4xl bg-background p-8'>
             <div className='flex flex-wrap items-center gap-3'>
-                {renderOrderStatusBadge()}
+                {orderStatusBadge}
                 <UuidCopy id={order.id} isPlaceholder />
             </div>
 
@@ -334,7 +344,7 @@ export function OrderPage() {
             <div className='flex flex-wrap items-center justify-end gap-3'>
                 {role === RoleEnum.CARRIER &&
                     renderDocumentAction(currentDocumentAction.hasDocument, currentDocumentAction.documentDate, currentDocumentAction.href, 'Загрузить файл', true, true)}
-                {shouldShowInviteDriver && order && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
+                {canInviteDriver && order && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
                 {canRateParticipants && order && <OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />}
             </div>
 
