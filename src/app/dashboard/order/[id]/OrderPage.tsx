@@ -44,7 +44,7 @@ const InviteDriverModal = dynamic(() =>
     import('@/components/ui/modals/InviteDriverModal').then((mod) => mod.InviteDriverModal),
 )
 const OrderRatingModal = dynamic(() =>
-    import('@/app/dashboard/order/[id]/OrderRatingModal').then((mod) => mod.OrderRatingModal),
+    import('@/components/ui/modals/OrderRatingModal').then((mod) => mod.OrderRatingModal),
 )
 
 const withFallback = (value?: string | number | null, id?: number | null) => {
@@ -85,7 +85,6 @@ export function OrderPage() {
     const currentDriverStatus = order?.driver_status ?? statusFromQuery ?? null
     const driverStatusMeta = currentDriverStatus ? DRIVER_STATUS_BADGE_MAP[currentDriverStatus] : null
     const hasDriver = Boolean(order?.carrier_name)
-    const isCompleted = order?.status === OrderStatusEnum.DELIVERED || order?.status === OrderStatusEnum.PAID
     const canRateParticipants = order?.status === OrderStatusEnum.PAID || order?.status === OrderStatusEnum.DELIVERED
     const isCarrier = role === RoleEnum.CARRIER
     const orderId = order ? String(order.id) : ''

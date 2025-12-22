@@ -118,7 +118,7 @@ function RatingCard({ rating }: RatingCardProps) {
 						#{rating.id} - {rating.company_name ?? rating.display_name ?? 'No name'}
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
-						<Star className='size-4 fill-yellow-400 text-yellow-400' aria-hidden />
+						<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />
 						{avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'}
 					</span>
 				</div>

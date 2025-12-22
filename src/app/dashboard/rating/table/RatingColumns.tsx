@@ -48,7 +48,7 @@ export const ratingColumns: ColumnDef<IRatingUserList>[] = [
 		header: ({ column }) => renderSortableHeader(column, 'Рейтинг'),
 		cell: ({ row }) => (
 			<span className='flex items-center gap-2 font-medium'>
-				<Star className='size-4 text-yellow-400 fill-yellow-400' />
+				<Star className='size-4 text-warning-500 fill-warning-500' />
 				{toNumber(row.original.avg_rating) !== null ? toNumber(row.original.avg_rating)?.toFixed(1) : <Minus />}
 			</span>
 		),

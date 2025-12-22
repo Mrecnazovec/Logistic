@@ -126,7 +126,7 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
                             {canInviteById && (
                                 <div className='space-y-2'>
                                     <p className='text-sm font-semibold text-foreground'>Пригласить перевозчика по ID</p>
-                                    <InputGroup className='bg-background'>
+                                    <InputGroup>
                                         <InputGroupInput
                                             type='number'
                                             value={carrierId}
@@ -155,7 +155,7 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
                                 <div className='space-y-2'>
                                     <p className='text-sm font-semibold text-foreground'>Приглашение по ссылке</p>
                                     <p className='text-sm text-muted-foreground'>Сгенерируйте ссылку и отправьте её водителю, чтобы он смог принять приглашение.</p>
-                                    <InputGroup className='bg-background'>
+                                    <InputGroup>
                                         <InputGroupInput readOnly value={shareLink} placeholder='Ссылка появится после генерации' />
                                         <InputGroupAddon align='inline-end'>
                                             <Button

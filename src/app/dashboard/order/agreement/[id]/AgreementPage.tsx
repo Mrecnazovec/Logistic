@@ -169,7 +169,7 @@ export function AgreementPage() {
 						<div className='flex justify-between gap-6'>
 							<span className='text-grayscale'>Рейтинг</span>
 							<span className='flex items-center gap-1 font-medium'>
-								<Star className='size-4 text-warning-500' aria-hidden />
+								<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />
 								{EMPTY_VALUE}
 							</span>
 						</div>
@@ -202,7 +202,7 @@ export function AgreementPage() {
 						<div className='flex justify-between gap-6'>
 							<span className='text-grayscale'>Рейтинг</span>
 							<span className='flex items-center gap-1 font-medium'>
-								<Star className='size-4 text-warning-500' aria-hidden />
+								<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />
 								{EMPTY_VALUE}
 							</span>
 						</div>
@@ -247,7 +247,7 @@ export function AgreementPage() {
 						<div className='flex justify-between gap-6'>
 							<span className='text-grayscale'>Рейтинг</span>
 							<span className='flex items-center gap-1 font-medium'>
-								<Star className='size-4 text-warning-500' aria-hidden />
+								<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />
 								{withFallback(offer?.carrier_rating)}
 							</span>
 						</div>

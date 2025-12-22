@@ -5,7 +5,11 @@ import { useCallback, useMemo } from 'react'
 
 type StatusTab = { value: string; label: string }
 
-export const useTransportationStatusCounts = (tabs: readonly StatusTab[], searchParams: URLSearchParams) => {
+export const useTransportationStatusCounts = (
+	tabs: readonly StatusTab[],
+	searchParams: URLSearchParams,
+	queryOverrides?: Partial<OrdersListQuery>,
+) => {
 	const filtersWithoutStatus = useMemo(() => {
 		const params: Record<string, string> = {}
 		searchParams.forEach((value, key) => {
@@ -13,8 +17,8 @@ export const useTransportationStatusCounts = (tabs: readonly StatusTab[], search
 				params[key] = value
 			}
 		})
-		return params
-	}, [searchParams])
+		return { ...params, ...(queryOverrides ?? {}) }
+	}, [queryOverrides, searchParams])
 
 	const buildTabQuery = useCallback(
 		(tabValue: string): OrdersListQuery =>

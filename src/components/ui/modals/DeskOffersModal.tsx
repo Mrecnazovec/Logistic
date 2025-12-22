@@ -26,6 +26,7 @@ interface DeskOffersModalProps {
     cargoUuid?: string
     open?: boolean
     onOpenChange?: (open: boolean) => void
+    initialPrice?: string
 }
 
 type OfferFormState = {
@@ -36,7 +37,7 @@ type OfferFormState = {
 
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
-export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersModalProps) {
+export function DeskOffersModal({ cargoUuid, open, onOpenChange, initialPrice }: DeskOffersModalProps) {
     const [activeTab, setActiveTab] = useState<'incoming' | 'accepted'>('incoming')
     const [formState, setFormState] = useState<Record<number, OfferFormState>>({})
 
@@ -59,7 +60,8 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
             destinationDate: formatDateValue(offers[0].delivery_date, 'dd MMM, EEE', '-'),
             transport: TransportSelect.find((type) => type.type === offers[0].transport_type)?.name ?? offers[0].transport_type,
             weight: offers[0].weight_t ? formatWeightValue(offers[0].weight_t) : '-',
-            route_km: offers[0].route_km
+            route_km: offers[0].route_km,
+            initialPrice: initialPrice
         }
         : null
 
@@ -246,6 +248,10 @@ export function DeskOffersModal({ cargoUuid, open, onOpenChange }: DeskOffersMod
                                     <p>
                                         <span className='font-semibold text-foreground'>Вес: </span>
                                         {cargoInfo.weight}
+                                    </p>
+                                    <p>
+                                        <span className='font-semibold text-foreground'>Начальная цена: </span>
+                                        {cargoInfo.initialPrice}
                                     </p>
                                 </div>
                             </div>

@@ -50,7 +50,7 @@ export function OfferModal({
     open,
     onOpenChange,
     isAction = false,
-    title = 'Создать предложение',
+    title = 'Предложить',
 }: OfferModalProps) {
     const { createOffer, isLoadingCreate } = useCreateOffer()
     const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({})
@@ -65,7 +65,7 @@ export function OfferModal({
         : ''
     const paymentMethod = selectedRow
         ? paymentDrafts[selectedRow.uuid] ??
-          (((selectedRow as { payment_method?: PaymentMethodEnum }).payment_method as PaymentMethodEnum | undefined) ?? '')
+        (((selectedRow as { payment_method?: PaymentMethodEnum }).payment_method as PaymentMethodEnum | undefined) ?? '')
         : ''
 
     const cargoId = selectedRow?.id
@@ -88,7 +88,7 @@ export function OfferModal({
             {!isAction && (
                 <DialogTrigger asChild>
                     <Button className={cn('bg-brand text-white', className)} disabled={!selectedRow}>
-                        Создать предложение
+                        {title}
                     </Button>
                 </DialogTrigger>
             )}
@@ -155,7 +155,7 @@ export function OfferModal({
                                     selectedRow?.uuid && setCurrencyDrafts((prev) => ({ ...prev, [selectedRow.uuid]: value as CurrencyCode }))
                                 }
                             >
-                                <SelectTrigger className='w-full rounded-full border-none bg-grayscale-50 shadow-none'>
+                                <SelectTrigger className='w-full rounded-full border-none bg-grayscale-50 shadow-none *:data-[slot=select-value]:text-black'>
                                     <SelectValue placeholder='Выберите валюту' />
                                 </SelectTrigger>
                                 <SelectContent>

@@ -8,6 +8,7 @@ import { useMemo } from 'react'
 
 export const useGetOrders = (
 	defaultStatus: OrderStatusEnum = 'no_driver',
+	queryOverrides?: Partial<OrdersListQuery>,
 ): { data: IPaginatedOrderListList | undefined; isLoading: boolean } => {
 	const searchParams = useSearchParams()
 
@@ -17,6 +18,8 @@ export const useGetOrders = (
 			obj[key] = value
 		})
 
+		const merged = { ...obj, ...(queryOverrides ?? {}) } as Record<string, string>
+
 		const allowedStatuses = new Set<OrderStatusEnum>([
 			OrderStatusEnum.NODRIVER,
 			OrderStatusEnum.PENDING,
@@ -25,12 +28,12 @@ export const useGetOrders = (
 			OrderStatusEnum.PAID,
 		])
 
-		if (!obj.status || !allowedStatuses.has(obj.status as OrderStatusEnum)) {
-			obj.status = defaultStatus ?? OrderStatusEnum.NODRIVER
+		if (!merged.status || !allowedStatuses.has(merged.status as OrderStatusEnum)) {
+			merged.status = defaultStatus ?? OrderStatusEnum.NODRIVER
 		}
 
-		return obj as OrdersListQuery
-	}, [defaultStatus, searchParams])
+		return merged as OrdersListQuery
+	}, [defaultStatus, queryOverrides, searchParams])
 
 	const { data, isLoading } = useQuery<IPaginatedOrderListList>({
 		queryKey: ['get orders', paramsObject],

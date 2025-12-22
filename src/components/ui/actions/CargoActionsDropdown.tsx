@@ -8,7 +8,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
-import { DeskOfferModal } from '@/components/ui/modals/DeskOfferModal'
+import { DeskInviteModal } from '@/components/ui/modals/DeskInviteModal'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
@@ -98,7 +98,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 			</DropdownMenu>
 
 			{!isOffer ? (
-				<DeskOfferModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
+				<DeskInviteModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
 			) : (
 				<OfferModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} isAction />
 			)}

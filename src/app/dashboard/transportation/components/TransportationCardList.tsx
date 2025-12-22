@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
@@ -44,9 +44,9 @@ type TransportationCardProps = {
 function TransportationCard({ cargo }: TransportationCardProps) {
 	const sections: CardSection[] = [
 		{
-			title: 'Заказчик / Посредник',
+			title: 'Перевозчик / Посредник',
 			items: [
-				{ icon: Building2, primary: cargo.customer_name || '—', secondary: 'Заказчик' },
+				{ icon: Building2, primary: cargo.carrier_name || '—', secondary: 'Перевозчик' },
 				{ icon: Building2, primary: cargo.logistic_name || '—', secondary: 'Посредник' },
 			],
 		},
@@ -72,16 +72,10 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 			],
 		},
 		{
-			title: 'Валюта / Цена',
-			items: [
-				{ icon: Wallet, primary: cargo.currency_display || cargo.currency || '—', secondary: 'Валюта' },
-				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: 'Стоимость' },
-			],
-		},
-		{
-			title: 'Цена / км',
+			title: 'Цена',
 			items: [
 				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: 'Цена за км' },
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: 'Стоимость' },
 			],
 		},
 	]

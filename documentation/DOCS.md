@@ -230,9 +230,8 @@ DeskMyActions — quick actions for my dashboard items.
 DeskOfferQuickActions — quick offer actions (accept/reject/contacts).
 OrdersActionsDropdown — order actions menu.
 UuidCopy — copy UUID to clipboard with tooltip.
-AddDriver — modal to add driver to order.
 CounterOfferModal — modal to send counter offer.
-DeskOfferModal — modal with offer details and actions.
+DeskInviteModal — modal with offer details and actions.
 DeskOffersModal — modal with offers list for cargo/order.
 OfferDecisionModal — modal to accept/reject offer invitation.
 OfferModal – modal to create offer for cargo.

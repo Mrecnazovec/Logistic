@@ -7,6 +7,7 @@ import {
   ChevronRightIcon,
 } from "lucide-react"
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+import { ru } from "date-fns/locale"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/Button"
@@ -17,6 +18,8 @@ function Calendar({
   showOutsideDays = true,
   captionLayout = "label",
   buttonVariant = "ghost",
+  locale = ru,
+  weekStartsOn = 1,
   formatters,
   components,
   ...props
@@ -34,6 +37,8 @@ function Calendar({
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
       )}
+      locale={locale}
+      weekStartsOn={weekStartsOn}
       captionLayout={captionLayout}
       formatters={{
         formatMonthDropdown: (date) =>

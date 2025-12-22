@@ -142,6 +142,17 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			},
 		],
 	},
+
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
+		roles: [RoleEnum.CARRIER],
+		items: [
+			{
+				label: 'Везу',
+				href: DASHBOARD_URL.transportation('my'),
+			},
+		],
+	},
 	// Carrier end
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/announcements'),
@@ -167,6 +178,23 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		backLink: {
 			label: 'Назад моим грузам',
 			href: DASHBOARD_URL.transportation(),
+		},
+	},
+	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/order/invite/'),
+		items: [
+			{
+				label: '',
+				href: DASHBOARD_URL.transportation(),
+			},
+			// {
+			// 	label: 'Везу',
+			// 	href: DASHBOARD_URL.transportation('my'),
+			// },
+		],
+		backLink: {
+			label: 'На главную',
+			href: DASHBOARD_URL.announcements(),
 		},
 	},
 
@@ -238,12 +266,13 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 				label: 'Заказы',
 				href: DASHBOARD_URL.transportation(),
 			},
-			// {
-			// 	label: 'Везу',
-			// 	href: DASHBOARD_URL.transportation('my'),
-			// },
+			{
+				label: 'Везу',
+				href: DASHBOARD_URL.transportation('my'),
+			},
 		],
 	},
+
 	// {
 	// 	matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
 	// 	items: [

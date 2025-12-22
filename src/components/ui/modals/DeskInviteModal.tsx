@@ -18,8 +18,8 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { useGenerateLoadInvite } from '@/hooks/queries/loads/useGenerateLoadInvite'
 import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
-import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
+import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -31,7 +31,7 @@ interface OfferModalProps {
 	onOpenChange?: (open: boolean) => void
 }
 
-export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalProps) {
+export function DeskInviteModal({ selectedRow, open, onOpenChange }: OfferModalProps) {
 	const [shareCopyStatus, setShareCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 	const [carrierId, setCarrierId] = useState('')
 	const { generateLoadInvite, invite, isLoadingGenerate, resetInvite } = useGenerateLoadInvite()
@@ -165,7 +165,7 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 
 									<div className='space-y-2'>
 										<p className='text-sm font-semibold text-foreground'>Пригласить перевозчика по ID</p>
-										<InputGroup className='bg-background'>
+										<InputGroup>
 											<InputGroupInput
 												type='number'
 												value={carrierId}
@@ -193,11 +193,12 @@ export function DeskOfferModal({ selectedRow, open, onOpenChange }: OfferModalPr
 										Ссылка ведёт на страницу оффера, где перевозчик сможет откликнуться на предложение.
 										Сгенерируйте ссылку и отправьте её партнёру или скопируйте для быстрого доступа.
 									</p>
-									<InputGroup className='bg-background'>
+									<InputGroup>
 										<InputGroupInput
 											readOnly
 											value={shareLink}
 											placeholder='Ссылка появится после генерации'
+											className='pl-3'
 										/>
 										<InputGroupAddon align='inline-end'>
 											<Button

@@ -15,15 +15,12 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
         cell: ({ row }) => <UuidCopy id={row.original.id} />,
     },
     {
-        accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_name' : 'customer_name',
-        header: role === RoleEnum.CUSTOMER ? 'Перевозчик' : 'Заказчик',
-        cell: ({ row }) => (role === RoleEnum.CUSTOMER ? row.original.roles.carrier?.name : row.original.roles.customer.name),
-
+        accessorKey: 'carrier_name',
+        header: 'Перевозчик',
     },
     {
-        accessorKey: role === RoleEnum.LOGISTIC ? 'carrier_name' : 'logistic_name',
-        header: role === RoleEnum.LOGISTIC ? 'Перевозчик' : 'Посредник',
-        cell: ({ row }) => (role === RoleEnum.LOGISTIC ? row.original.roles.carrier?.name : row.original.roles.logistic?.name),
+        accessorKey: 'logistic_name',
+        header: 'Посредник',
     },
     {
         id: 'origin',

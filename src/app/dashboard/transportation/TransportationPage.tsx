@@ -12,6 +12,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAgreements } from '@/hooks/queries/agreements/useGetAgreements'
 import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IAgreement } from '@/shared/types/Agreement.interface'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
@@ -37,7 +38,6 @@ const STATUS_TABS = [
 
 export function TransportationPage() {
     const { data: agreementsData, isLoading: isLoadingAgreements } = useGetAgreements()
-    const { data, isLoading } = useGetOrders()
     const { form, onSubmit } = useSearchForm()
     const isDesktop = useMediaQuery('(min-width: 768px)')
     const router = useRouter()
@@ -47,10 +47,16 @@ export function TransportationPage() {
     const tableType = useTableTypeStore((state) => state.tableType)
     const role = useRoleStore((state) => state.role)
     const tableColumns = createTransportationColumns(role)
+    const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
+    const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { role: ordersRoleParam } : undefined)
 
     const agreements = agreementsData?.results ?? []
     const orders = data?.results ?? []
-    const { statusCounts } = useTransportationStatusCounts(STATUS_TABS, searchParams)
+    const { statusCounts } = useTransportationStatusCounts(
+        STATUS_TABS,
+        searchParams,
+        ordersRoleParam ? { role: ordersRoleParam } : undefined,
+    )
     const agreementsCount = agreementsData?.count
 
     const serverPaginationMeta = orders.length

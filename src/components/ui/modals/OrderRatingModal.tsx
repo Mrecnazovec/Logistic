@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Star } from 'lucide-react'
@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/Dialog'
-import { Input } from '@/components/ui/form-control/Input'
 import { Textarea } from '@/components/ui/form-control/Textarea'
 import { useCreateRating } from '@/hooks/queries/ratings/useCreateRating'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
@@ -89,6 +88,10 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 		})
 	}
 
+	const handleScoreSelect = (id: number, score: number) => {
+		handleChange(id, 'score', String(score))
+	}
+
 	const handleSubmit = (participant: Participant) => {
 		const entry = formState[participant.id]
 		if (!entry?.score || entry.score < 1 || entry.score > 5) {
@@ -143,19 +146,31 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 											<p className='font-semibold text-foreground'>{participant.name}</p>
 											<p className='text-xs text-muted-foreground'>Роль: {RoleSelect.find((type) => type.type === participant.role)?.name}</p>
 										</div>
-										<Star className='size-5 text-warning-500' aria-hidden />
+										<Star className='size-5 text-warning-500 fill-warning-500' aria-hidden />
 									</div>
-									<Input
-										type='number'
-										inputMode='numeric'
-										min={1}
-										max={5}
-										step={1}
-										placeholder='Оценка 1-5'
-										value={scoreValue}
-										onChange={(event) => handleChange(participant.id, 'score', event.target.value)}
-										className='rounded-full border-none bg-white'
-									/>
+									<div className='flex items-center gap-1'>
+										{Array.from({ length: 5 }, (_, index) => {
+											const ratingValue = index + 1
+											const isActive = Number(scoreValue) >= ratingValue
+											return (
+												<button
+													key={ratingValue}
+													type='button'
+													aria-label={`Оценка ${ratingValue}`}
+													onClick={() => handleScoreSelect(participant.id, ratingValue)}
+													className='rounded-full p-1 transition-colors'
+												>
+													<Star
+														className={
+															isActive
+																? 'size-6 text-warning-500 fill-warning-500'
+																: 'size-6 text-muted-foreground fill-transparent'
+														}
+													/>
+												</button>
+											)
+										})}
+									</div>
 									<Textarea
 										placeholder='Комментарий (необязательно)'
 										value={entry.comment}

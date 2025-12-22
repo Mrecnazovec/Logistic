@@ -106,7 +106,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 			<CardHeader className='gap-4 border-b [.border-b]:pb-0'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<span className='flex items-center text-sm text-muted-foreground'>
-						<Star className='text-star' /> {cargo.company_rating ? cargo.company_rating.toFixed(1) : <Minus />}
+						<Star className='text-warning-500 fill-warning-500' /> {cargo.company_rating ? cargo.company_rating.toFixed(1) : <Minus />}
 					</span>
 					<CardTitle className='text-lg font-semibold leading-tight text-grayscale'>
 						{cargo.company_name || '—'}

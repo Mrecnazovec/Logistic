@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
+import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, CircleCheck, Eye, EyeOff, Handshake, Mail, MapPin, Minus, Pen, Phone, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
@@ -18,7 +18,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
 
-const DeskOfferModal = dynamic(() => import('@/components/ui/modals/DeskOfferModal').then((mod) => mod.DeskOfferModal))
+const DeskInviteModal = dynamic(() => import('@/components/ui/modals/DeskInviteModal').then((mod) => mod.DeskInviteModal))
 const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal').then((mod) => mod.DeskOffersModal))
 
 const hasOffersValue = (cargo: ICargoList) => {
@@ -92,13 +92,10 @@ function DeskCard({ cargo }: DeskCardProps) {
 			],
 		},
 		{
-			title: 'Телефон',
-			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-' }],
+			title: 'Контакты',
+			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-', secondary: 'Телефон' }, { icon: Mail, primary: canShowEmail ? cargo.email : '-', secondary: 'Email' }],
 		},
-		{
-			title: 'Почта',
-			items: [{ icon: Mail, primary: canShowEmail ? cargo.email : '-' }],
-		},
+
 	]
 
 	return (
@@ -156,7 +153,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 				</Button>
 			</CardFooter>
 
-			<DeskOfferModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
+			<DeskInviteModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
 		</Card>
 	)
 }

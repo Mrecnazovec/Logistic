@@ -21,6 +21,7 @@ export interface NavGroup {
 
 export const getNavItems = (role?: RoleEnum): NavGroup[] => {
 	const deskHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk()
+	const transportationHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.transportation('my') : DASHBOARD_URL.transportation()
 
 	return [
 		{
@@ -36,7 +37,7 @@ export const getNavItems = (role?: RoleEnum): NavGroup[] => {
 					label: 'Торговля',
 				},
 				{
-					href: DASHBOARD_URL.transportation(),
+					href: transportationHref,
 					icon: Layers3,
 					label: 'Мои грузы',
 				},

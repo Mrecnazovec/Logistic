@@ -23,7 +23,6 @@ const hasOffersValue = (cargo: ICargoList) => {
 export const getDeskRowClassName = (cargo: ICargoList) => {
 	const classes: string[] = []
 	const moderation = (cargo.moderation_status || '').toLowerCase()
-	const status = (cargo.status || '').toUpperCase()
 	if (moderation === 'pending') classes.push('bg-purple-50')
 	if (moderation === 'rejected') classes.push('bg-red-50')
 	if (cargo.is_hidden) classes.push('opacity-60')
@@ -35,6 +34,10 @@ export const deskColumns: ColumnDef<ICargoList>[] = [
 		accessorKey: 'uuid',
 		header: 'ID',
 		cell: ({ row }) => <UuidCopy uuid={row.original.uuid} />,
+	},
+	{
+		accessorKey: 'product',
+		header: 'Товар',
 	},
 	{
 		accessorKey: 'created_at',
@@ -133,7 +136,7 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				{hasOffers ? <CircleCheck className='size-5 text-success-400' /> : <Minus className='size-5 text-neutral-400' />}
 			</Button>
 
-			<DeskOffersModal cargoUuid={cargo.uuid} open={open} onOpenChange={setOpen} />
+			<DeskOffersModal cargoUuid={cargo.uuid} open={open} onOpenChange={setOpen} initialPrice={formatCurrencyValue(cargo.price_value, cargo.price_currency)} />
 		</>
 	)
 }

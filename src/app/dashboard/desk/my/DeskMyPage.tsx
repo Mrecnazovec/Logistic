@@ -1,7 +1,7 @@
 ﻿"use client"
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -10,20 +10,19 @@ import { TableTypeSelector } from '@/components/ui/selectors/TableTypeSelector'
 import { DataTable } from '@/components/ui/table/DataTable'
 import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import dynamic from 'next/dynamic'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { DeskMyCardList } from './components/DeskIncomeCardList'
 import { deskIncomeColumns } from './table/DeskIncomeColumns'
 import { deskMyColumns } from './table/DeskMyColumns'
-import { RoleEnum } from '@/shared/enums/Role.enum'
-import dynamic from 'next/dynamic'
 
 const OfferDecisionModal = dynamic(() => import('@/components/ui/modals/OfferDecisionModal').then((mod) => mod.OfferDecisionModal))
 
@@ -86,8 +85,8 @@ export function DeskMyPage() {
 				{ value: 'desk', label: 'Предложили мне' },
 			]
 			: [
-				{ value: 'desk', label: 'Я предложил' },
 				{ value: 'drivers', label: 'Предложили мне' },
+				{ value: 'desk', label: 'Я предложил' },
 			]
 
 	const deskResults = data?.results ?? []
@@ -148,7 +147,7 @@ export function DeskMyPage() {
 			</div>
 
 			<Tabs
-				defaultValue='desk'
+				defaultValue='drivers'
 				className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'}
 				onValueChange={handleTabChange}
 			>

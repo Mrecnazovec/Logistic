@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { UserRound } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -81,11 +81,32 @@ export function PaymentPage() {
 						}
 					: null
 
+	const confirmationByRole = {
+		customer: Boolean(payment?.confirmed_by_customer),
+		carrier: Boolean(payment?.confirmed_by_carrier),
+		logistic: Boolean(payment?.confirmed_by_logistic),
+	}
+
 	const sections = [
-		{ key: 'customer', title: 'Информация о грузовладельце', role: order.roles?.customer ?? null },
-		{ key: 'carrier', title: 'Информация о перевозчике', role: order.roles?.carrier ?? null },
-		{ key: 'logistic', title: 'Информация о экспедиторе', role: order.roles?.logistic ?? null },
-	]
+		{
+			key: 'customer',
+			title: 'Информация о грузовладельце',
+			role: order.roles?.customer ?? null,
+			confirmation: confirmationByRole.customer,
+		},
+		{
+			key: 'carrier',
+			title: 'Информация о перевозчике',
+			role: order.roles?.carrier ?? null,
+			confirmation: confirmationByRole.carrier,
+		},
+		{
+			key: 'logistic',
+			title: 'Информация о экспедиторе',
+			role: order.roles?.logistic ?? null,
+			confirmation: confirmationByRole.logistic,
+		},
+	].filter((section) => (section.key === 'logistic' ? Boolean(order.roles?.logistic?.id) : true))
 
 	const withFallback = (value?: string | number | null) =>
 		value === null || value === undefined || value === '' ? DEFAULT_PLACEHOLDER : String(value)
@@ -142,12 +163,24 @@ export function PaymentPage() {
 								<span className='text-grayscale'>Выполнено заказов</span>
 								<span className='text-end font-medium text-foreground'>{DEFAULT_PLACEHOLDER}</span>
 							</div>
+							<div className='flex items-center justify-between gap-6'>
+								<span className='text-grayscale'>Подтверждение</span>
+								<span
+									className={
+										section.confirmation ? 'text-end font-medium text-success-500' : 'text-end font-medium text-foreground'
+									}
+								>
+									{section.confirmation ? 'Да' : '—'}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
 			))}
 
-			{confirmAction && !confirmAction.isConfirmed ? (
+			{!paymentId ? (
+				<p className='text-muted-foreground'>Подтверждение оплаты будет доступно после доставки груза</p>
+			) : confirmAction && !confirmAction.isConfirmed ? (
 				<div className='flex flex-wrap items-center justify-end gap-3 pt-2'>
 					<Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
 						<DialogTrigger asChild>

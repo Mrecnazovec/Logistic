@@ -4,13 +4,14 @@ import DOMPurify from "dompurify"
 import { Star } from "lucide-react"
 import type { ReactNode } from "react"
 
+import { formatDateValue, formatPlace, formatPriceValue } from "@/lib/formatters"
+import { getTransportName } from "@/shared/enums/TransportType.enum"
+import type { ICargoList } from "@/shared/types/CargoList.interface"
 import { ProfileLink } from "../actions/ProfileLink"
 import { UuidCopy } from "../actions/UuidCopy"
 import { Button } from "../Button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../Dialog"
-import { formatDateValue, formatPlace, formatPriceValue } from "@/lib/formatters"
-import { getTransportName } from "@/shared/enums/TransportType.enum"
-import type { ICargoList } from "@/shared/types/CargoList.interface"
+import { OfferModal } from "./OfferModal"
 
 type Props = { cargo: ICargoList }
 
@@ -102,6 +103,7 @@ export function AnnouncementDetailModal({ cargo }: Props) {
                         <DetailSection title='Куда'>
                             <DetailRow label='Город / страна' value={formatPlace(cargo.destination_city, cargo.destination_country, EMPTY_VALUE)} />
                             <DetailRow label='Дата разгрузки' value={formatDateValue(cargo.delivery_date, "dd.MM.yyyy", EMPTY_VALUE)} />
+                            <DetailRow label='Дистанция' value={`${cargo.route_km} км`} />
                         </DetailSection>
 
                         <DetailSection title='Оплата'>
@@ -123,6 +125,7 @@ export function AnnouncementDetailModal({ cargo }: Props) {
                         <p className='text-sm text-foreground'>Описание отсутствует</p>
                     )}
                 </DetailSection>
+                <OfferModal className='w-fit ml-auto  max-sm:w-full' title='Предложить' selectedRow={cargo} />
             </DialogContent>
         </Dialog>
     )
