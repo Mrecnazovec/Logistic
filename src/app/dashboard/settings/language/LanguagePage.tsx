@@ -53,7 +53,7 @@ export function LanguagePage() {
 				<div className="flex justify-end">
 					<Button
 						type="button"
-						className="h-11 rounded-full bg-[#8A9099] px-6 text-sm font-medium text-white hover:bg-[#7a808a]"
+						className="h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400"
 					>
 						Сохранить изменения
 					</Button>

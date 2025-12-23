@@ -13,7 +13,18 @@ import {
 import { removeFromStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
 import { ILogoutResponse } from '@/shared/types/Logout.interface'
-import { IRegisterResponse, IResendVerifyResponse, IVerifyEmail, IVerifyEmailResponse, RegisterDto, RegisterRequestPayload } from '@/shared/types/Registration.interface'
+import {
+	IRegisterResponse,
+	IResendVerifyResponse,
+	ISendPhoneOtp,
+	ISendPhoneOtpResponse,
+	IVerifyEmail,
+	IVerifyEmailResponse,
+	IVerifyPhoneOtp,
+	IVerifyPhoneOtpResponse,
+	RegisterDto,
+	RegisterRequestPayload,
+} from '@/shared/types/Registration.interface'
 
 class AuthService {
 	/* POST */
@@ -92,6 +103,26 @@ class AuthService {
 			url: API_URL.auth('resend-verify'),
 			method: 'POST',
 			data: { email },
+		})
+
+		return result
+	}
+
+	async sendPhoneOtp(data: ISendPhoneOtp) {
+		const { data: result } = await axiosClassic<ISendPhoneOtpResponse>({
+			url: API_URL.auth('send-otp/phone'),
+			method: 'POST',
+			data,
+		})
+
+		return result
+	}
+
+	async verifyPhoneOtp(data: IVerifyPhoneOtp) {
+		const { data: result } = await axiosClassic<IVerifyPhoneOtpResponse>({
+			url: API_URL.auth('verify-otp/phone'),
+			method: 'POST',
+			data,
 		})
 
 		return result

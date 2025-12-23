@@ -2,7 +2,6 @@
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
-import { DeskOffersModal } from '@/components/ui/modals/DeskOffersModal'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
@@ -11,7 +10,10 @@ import { TransportSelect } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { CircleCheck, Minus } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
+
+const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
 
 export const deskDriverColumns: ColumnDef<IOfferShort>[] = [
 	{

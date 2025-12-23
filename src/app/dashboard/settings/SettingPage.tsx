@@ -150,7 +150,7 @@ export function SettingPage() {
                     <Button
                         type='submit'
                         disabled={isLoadingUpdate}
-                        className='h-11 rounded-full bg-[#8A9099] px-6 text-sm font-medium text-white hover:bg-[#7a808a] disabled:opacity-80'
+                        className='h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400 disabled:opacity-80'
                     >
                         Сохранить изменения
                     </Button>

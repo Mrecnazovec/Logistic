@@ -11,6 +11,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { CalendarDays, CircleCheck, Eye, EyeOff, Handshake, Mail, MapPin, Minus, Pen, Phone, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
@@ -19,7 +20,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const DeskInviteModal = dynamic(() => import('@/components/ui/modals/DeskInviteModal').then((mod) => mod.DeskInviteModal))
-const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal').then((mod) => mod.DeskOffersModal))
+const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
 
 const hasOffersValue = (cargo: ICargoList) => {
 	if (cargo.offers_count && cargo.offers_count > 0) return true
@@ -99,7 +100,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 	]
 
 	return (
-		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
+		<Card className={cn('h-full rounded-3xl border-0 xs:bg-neutral-500', cargo.moderation_status === 'pending' && 'xs:bg-purple-50 bg-purple-50', cargo.moderation_status === 'rejected' && 'xs:bg-purple-50 bg-red-50', cargo.is_hidden && 'opacity-60')}>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>

@@ -9,9 +9,13 @@ import {
 	IOfferRejectResponse,
 	OfferCreateDto,
 } from '@/shared/types/Offer.interface'
-import { IPaginatedOfferShortList } from '@/shared/types/PaginatedList.interface'
+import {
+	IPaginatedOfferShortList,
+	IPaginatedOfferStatusLogList,
+} from '@/shared/types/PaginatedList.interface'
 
 type OffersListQuery = operations['offers_list']['parameters']['query']
+type OffersLogsQuery = operations['offers_logs_list']['parameters']['query']
 
 class OffersService {
 	/* GET */
@@ -30,6 +34,16 @@ class OffersService {
 		const { data } = await axiosWithAuth<IOfferDetail>({
 			url: API_URL.offers(`${id}`),
 			method: 'GET',
+		})
+
+		return data
+	}
+
+	async getOfferLogs(id: string, params?: OffersLogsQuery) {
+		const { data } = await axiosWithAuth<IPaginatedOfferStatusLogList>({
+			url: API_URL.offers(`${id}/logs/`),
+			method: 'GET',
+			params,
 		})
 
 		return data

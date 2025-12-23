@@ -676,6 +676,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/offers/{id}/logs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["offers_logs_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/offers/{id}/reject/": {
         parameters: {
             query?: never;
@@ -1761,6 +1777,17 @@ export interface components {
             readonly created_at: string;
             readonly invite_token: string;
         };
+        OfferStatusLog: {
+            readonly id: number;
+            action: string;
+            readonly user_id: number;
+            readonly user_name: string;
+            readonly user_role: string;
+            old_state: unknown;
+            new_state: unknown;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         OpenInviteResponse: {
             cargo_id: number;
             carrier_id: number;
@@ -2053,6 +2080,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["OfferShort"][];
+        };
+        PaginatedOfferStatusLogList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["OfferStatusLog"][];
         };
         PaginatedOrderListList: {
             /** @example 123 */
@@ -3597,6 +3639,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OfferDetail"];
+                };
+            };
+        };
+    };
+    offers_logs_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOfferStatusLogList"];
                 };
             };
         };

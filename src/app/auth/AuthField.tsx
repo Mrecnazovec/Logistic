@@ -3,7 +3,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/fo
 import { Checkbox } from '@/components/ui/Сheckbox'
 import { PUBLIC_URL } from '@/config/url.config'
 import { ILogin } from '@/shared/types/Login.interface'
-import { LockKeyhole, Mail } from 'lucide-react'
+import { LockKeyhole, User } from 'lucide-react'
 import Link from 'next/link'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -19,16 +19,16 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 				control={form.control}
 				name='login'
 				rules={{
-					required: 'Почта обязательна',
+					required: 'Логин обязателен',
 				}}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите почту</FormLabel>
+						<FormLabel className='text-grayscale'>Введите логин</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} autoComplete='email' />
 								<InputGroupAddon className='pr-2'>
-									<Mail className='text-grayscale size-5' />
+									<User className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>

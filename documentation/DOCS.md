@@ -53,6 +53,7 @@ useDeleteOffer — deletes offer by uuid via offersService.deleteOffer.
 useGetIncomingOffers — loads incoming offers with pagination via offersService.getIncomingOffers.
 useGetMyOffers — loads my offers with pagination via offersService.getMyOffers.
 useGetOfferById — loads offer details by uuid via offersService.getOfferById.
+useGetOfferLogs - loads offer status logs by offer id via offersService.getOfferLogs.
 useGetOffers — loads offers list with filters via offersService.getOffers.
 
 - ## Agreements
@@ -119,6 +120,7 @@ parseDateToTimestamp — parses date to timestamp for sorting.
 formatDurationFromMinutes – formats total minutes to “X ч Y мин”.
 formatAgeFromMinutes – human-readable age from minutes (“мин/ч/дн назад”).
 handleNumericInput – normalizes numeric input (comma to dot) and applies regex.
+InputOTP - OTP code input built on input-otp.
 transliterate – transliterates between Cyrillic and Latin characters.
 cn – merges className strings via clsx and tailwind-merge.
 buildSearchDefaultValues – builds ISearch object from URLSearchParams with type coercion.
@@ -132,7 +134,7 @@ auth-token.service — token storage in cookies (read/save/remove).
 loadsService - load CRUD, invites, visibility management via /loads API.
 meService - fetch/update profile and analytics.
 notificationsService - load notifications and mark as read.
-offersService - offer CRUD and actions (accept/reject/invite/counter).
+offersService - offer CRUD, actions (accept/reject/invite/counter), and status logs.
 ordersService - order CRUD, invites, status updates, document upload.
 paymentsService - fetches payment by id and confirms payments for customer/carrier/logistic endpoints.
 ratingsService - user ratings CRUD.
@@ -169,9 +171,9 @@ Logout.interface.ts — ILogoutRequest and ILogoutResponse for logout.
 Me.interface.ts — profile/update/role change types.
 Notification.interface.ts — INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
-Offer.interface.ts - offer types for create/detail/invite/counter/reject responses; IOfferShort includes invite_token and invite_offer.
+Offer.interface.ts - offer types for create/detail/invite/counter/reject responses and status logs; IOfferShort includes invite_token and invite_offer.
 Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
-PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, orders, ratings.
+PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, offer status logs, orders, ratings.
 Payment.interface.ts - payment schemas (payment and patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.
 RatingTableRow.interface.ts - alias for rating table row type.
