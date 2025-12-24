@@ -27,7 +27,9 @@ import { useGetOrderDocuments } from '@/hooks/queries/orders/useGet/useGetOrderD
 import { useUploadOrderDocument } from '@/hooks/queries/orders/useUploadOrderDocument'
 import { formatFileSize as formatFileSizeHelper } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { IOrderDocument } from '@/shared/types/Order.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error'
 
@@ -97,6 +99,10 @@ export function FolderPage() {
 	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
 	const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
 	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Документы'
+	const role = useRoleStore((state) => state.role)
+	const isUploadBlocked =
+		(role === RoleEnum.CUSTOMER || role === RoleEnum.LOGISTIC) &&
+		(normalizedFolder === 'loading' || normalizedFolder === 'unloading')
 
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const uploadTimersRef = useRef<Record<string, number>>({})
@@ -301,64 +307,72 @@ export function FolderPage() {
 					</Badge>
 				</header>
 
-				<div
-					role='button'
-					tabIndex={0}
-					aria-label='Загрузить документы'
-					aria-busy={uploadQueue.some((item) => item.status === 'uploading')}
-					onClick={() => fileInputRef.current?.click()}
-					onKeyDown={handleKeyDown}
-					onDragOver={(event) => {
-						event.preventDefault()
-						setIsDragActive(true)
-					}}
-					onDragLeave={(event) => {
-						event.preventDefault()
-						setIsDragActive(false)
-					}}
-					onDrop={handleDrop}
-					className={cn(
-						'border-2 border-dashed border-border rounded-3xl px-6 py-10 text-center flex flex-col items-center gap-3 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50 bg-card/60',
-						isDragActive && 'border-brand bg-brand/5 shadow-[0_0_0_1px] shadow-brand/30'
-					)}
-				>
-					<UploadCloud className='size-12 text-muted-foreground' aria-hidden />
-					<p className='text-lg font-medium text-primary'>
-						<span className='text-brand'>Перетащите файлы сюда</span> или нажмите, чтобы выбрать и загрузить
-					</p>
-					<p className='text-sm text-muted-foreground'>DOC, PNG, PDF или GIF (до 15 МБ)</p>
-					<Button type='button' variant='outline' size='sm' className='mt-2'>
-						Выбрать файлы
-					</Button>
-					<input
-						ref={fileInputRef}
-						id='order-documents-input'
-						type='file'
-						multiple
-						accept={FILE_INPUT_ACCEPT}
-						className='sr-only'
-						onChange={handleInputChange}
-					/>
-				</div>
+				{isUploadBlocked ? (
+					<div className='rounded-3xl border border-dashed px-6 py-10 text-center text-muted-foreground'>
+						Загрузка документов для этого раздела доступна только перевозчику.
+					</div>
+				) : (
+					<div
+						role='button'
+						tabIndex={0}
+						aria-label='Загрузить документы'
+						aria-busy={uploadQueue.some((item) => item.status === 'uploading')}
+						onClick={() => fileInputRef.current?.click()}
+						onKeyDown={handleKeyDown}
+						onDragOver={(event) => {
+							event.preventDefault()
+							setIsDragActive(true)
+						}}
+						onDragLeave={(event) => {
+							event.preventDefault()
+							setIsDragActive(false)
+						}}
+						onDrop={handleDrop}
+						className={cn(
+							'border-2 border-dashed border-border rounded-3xl px-6 py-10 text-center flex flex-col items-center gap-3 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50 bg-card/60',
+							isDragActive && 'border-brand bg-brand/5 shadow-[0_0_0_1px] shadow-brand/30'
+						)}
+					>
+						<UploadCloud className='size-12 text-muted-foreground' aria-hidden />
+						<p className='text-lg font-medium text-primary'>
+							<span className='text-brand'>Перетащите файлы сюда</span> или нажмите, чтобы выбрать и загрузить
+						</p>
+						<p className='text-sm text-muted-foreground'>DOC, PNG, PDF или GIF (до 15 МБ)</p>
+						<Button type='button' variant='outline' size='sm' className='mt-2'>
+							Выбрать файлы
+						</Button>
+						<input
+							ref={fileInputRef}
+							id='order-documents-input'
+							type='file'
+							multiple
+							accept={FILE_INPUT_ACCEPT}
+							className='sr-only'
+							onChange={handleInputChange}
+						/>
+					</div>
+				)}
 			</section>
 
 			<section className='space-y-4'>
 				<div className='flex items-center justify-between'>
-					{uploadQueue.length ? (
+					{!isUploadBlocked && uploadQueue.length ? (
 						<span className='text-sm text-muted-foreground'>В очереди загрузки: {uploadQueue.length}</span>
 					) : null}
 				</div>
 
-				<div className='space-y-3' aria-live='polite'>
-					{uploadQueue.map((item) => (
-						<UploadingFileRow
-							key={item.id}
-							item={item}
-							onRemove={handleRemoveFromQueue}
-							formatFileSize={formatFileSize}
-						/>
-					))}
-				</div>
+				{!isUploadBlocked ? (
+					<div className='space-y-3' aria-live='polite'>
+						{uploadQueue.map((item) => (
+							<UploadingFileRow
+								key={item.id}
+								item={item}
+								onRemove={handleRemoveFromQueue}
+								formatFileSize={formatFileSize}
+							/>
+						))}
+					</div>
+				) : null}
 
 				{isLoading ? (
 					<DocumentListSkeleton />

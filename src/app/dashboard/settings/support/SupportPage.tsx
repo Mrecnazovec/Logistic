@@ -1,13 +1,10 @@
 "use client"
 
 import { Button } from "@/components/ui/Button"
-import dynamic from "next/dynamic"
+import { useCreateSupportTicket } from "@/hooks/queries/support/useCreateSupportTicket"
 import { useState } from "react"
 import { Mail, MessageCircle, PhoneCall, Send } from "lucide-react"
-
-const RichTextEditor = dynamic(() =>
-	import("@/components/ui/form-control/RichEditor/RichTextEditor").then((m) => m.RichTextEditor),
-)
+import { Textarea } from "@/components/ui/form-control/Textarea"
 
 const contacts = [
 	{ id: "phone", label: "998 91 123 45 67", icon: PhoneCall, accent: "bg-gray-100 text-slate-600" },
@@ -18,6 +15,21 @@ const contacts = [
 
 export function SupportPage() {
 	const [message, setMessage] = useState<string>("")
+	const { createSupportTicket, isLoadingCreate } = useCreateSupportTicket()
+	const canSubmit = message.trim().length > 0 && !isLoadingCreate
+
+	const handleSubmit = () => {
+		const trimmedMessage = message.trim()
+
+		if (!trimmedMessage) return
+
+		createSupportTicket(
+			{ message: trimmedMessage },
+			{
+				onSuccess: () => setMessage(""),
+			},
+		)
+	}
 
 	return (
 		<div className="rounded-[32px] bg-white p-6 shadow-sm md:p-8">
@@ -28,11 +40,19 @@ export function SupportPage() {
 
 			<div className="mt-6 space-y-6">
 				<div className="rounded-3xl bg-grayscale-50 p-4 shadow-inner">
-					<RichTextEditor value={message} onChange={setMessage} placeholder="Начните писать..." />
+					<Textarea
+						value={message}
+						onChange={(event) => setMessage(event.target.value)}
+						placeholder="Начните писать..."
+						disabled={isLoadingCreate}
+						className="min-h-[156px] rounded-4xl border-none bg-grayscale-50 px-6 py-4"
+					/>
 					<div className="mt-4 flex justify-end">
 						<Button
 							type="button"
-							className="h-11 rounded-full bg-[#8A9099] px-6 text-sm font-medium text-white hover:bg-[#7a808a]"
+							onClick={handleSubmit}
+							disabled={!canSubmit}
+							className="h-11 rounded-full disabled:bg-[#8A9099] px-6 text-sm font-medium text-white bg-success-500 hover:bg-success-400"
 						>
 							Отправить
 						</Button>

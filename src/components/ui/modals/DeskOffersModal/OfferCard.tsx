@@ -73,11 +73,11 @@ export function OfferCard({
       <div className="flex flex-wrap items-start justify-between gap-3 text-sm">
         <div className="space-y-1">
           <p className="font-semibold text-foreground">
-            <ProfileLink name={offer.carrier_full_name} id={offer.carrier_id} />
+            {offer.carrier_id ? <ProfileLink name={offer.carrier_full_name} id={offer.carrier_id} /> : <ProfileLink name={offer.logistic_full_name} id={offer.logistic_id} />}
           </p>
           <p className="text-muted-foreground">
             <span className="font-semibold text-foreground">Компания: </span>
-            {offer.carrier_company || "-"}
+            {offer.carrier_id ? offer.carrier_company : offer.logistic_company}
           </p>
           <span className="text-error-500 font-bold">{offer.response_status}</span>
         </div>

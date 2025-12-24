@@ -1,6 +1,6 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
-import { AgreementsListQuery, IAgreement, IPaginatedAgreementList } from '@/shared/types/Agreement.interface'
+import { AgreementsListQuery, IAgreementDetail, IPaginatedAgreementList } from '@/shared/types/Agreement.interface'
 
 class AgreementsService {
 	/* GET */
@@ -16,7 +16,7 @@ class AgreementsService {
 	}
 
 	async getAgreement(id: string | number) {
-		const { data } = await axiosWithAuth<IAgreement>({
+		const { data } = await axiosWithAuth<IAgreementDetail>({
 			url: API_URL.agreements(`agreements/${id}/`),
 			method: 'GET',
 		})

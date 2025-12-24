@@ -22,9 +22,6 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		queryKey: ['get profile'],
 		queryFn: () => meService.getMe(),
 		enabled: options?.enabled ?? true,
-		staleTime: 300000,
-		gcTime: 1800000,
-		refetchOnWindowFocus: false,
 	})
 	const setRole = useRoleStore((state) => state.setRole)
 	const router = useRouter()

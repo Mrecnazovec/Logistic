@@ -4,24 +4,24 @@ export type IUserRating = components['schemas']['UserRating']
 export type UserRatingRequestDto = components['schemas']['UserRatingRequest']
 export type PatchedUserRatingRequestDto = components['schemas']['PatchedUserRatingRequest']
 
-export type RatingUserOrdersStats = {
-	total: number
-	completed: number
-	in_progress: number
-	queued: number
-	excellent: number
+export type RatingUserPieChart = {
+	in_search: number
+	in_process: number
+	successful: number
+	cancelled: number
+	total?: number
 }
 
 type BaseRatingUserList = components['schemas']['RatingUserList']
 
 export type IRatingUserList = Omit<
 	BaseRatingUserList,
-	'avg_rating' | 'total_distance' | 'orders_stats' | 'completed_orders' | 'city' | 'country' | 'registered_at'
+	'avg_rating' | 'total_distance' | 'pie_chart' | 'completed_orders' | 'city' | 'country' | 'registered_at'
 > & {
 	avg_rating?: number | null
 	rating_count?: number | null
 	total_distance?: number | string | null
-	orders_stats?: RatingUserOrdersStats | null
+	pie_chart?: RatingUserPieChart | string | null
 	completed_orders?: number | null
 	city?: string | null
 	country?: string | null

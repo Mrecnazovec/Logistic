@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/form-control/Label'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetRatingUser } from '@/hooks/queries/ratings/useGet/useGetRatingUser'
+import type { RatingUserPieChart } from '@/shared/types/Rating.interface'
 import { ArrowUpRight, CalendarDays, ChartBar, Star, Truck } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
@@ -40,6 +41,31 @@ const getDaysSince = (dateValue?: string | null) => {
 	return Math.max(Math.floor(diffMs / 86400000), 0)
 }
 
+type PieChartRaw = RatingUserPieChart | string | Record<string, number> | null | undefined
+
+const parsePieChart = (value?: PieChartRaw) => {
+	if (!value) return null
+	const toMapped = (input: Record<string, number>) => ({
+		in_search: input['1'] ?? 0,
+		in_process: input['2'] ?? 0,
+		successful: input['3'] ?? 0,
+		cancelled: input['4'] ?? 0,
+		total: input['5'],
+	})
+	if (typeof value === 'string') {
+		try {
+			const parsed = JSON.parse(value) as Record<string, number>
+			return toMapped(parsed)
+		} catch {
+			return null
+		}
+	}
+	if ('in_search' in value || 'in_process' in value || 'successful' in value || 'cancelled' in value) {
+		return value as RatingUserPieChart
+	}
+	return toMapped(value as Record<string, number>)
+}
+
 export function IdProfile() {
 	const params = useParams<{ id: string }>()
 	const { ratingUser, isLoading } = useGetRatingUser(params?.id)
@@ -52,21 +78,20 @@ export function IdProfile() {
 	const ratingValue = ratingUser?.avg_rating ? ratingUser.avg_rating.toFixed(1) : '-'
 	const distanceValue = totalDistance !== null ? `${integerFormatter.format(Math.round(totalDistance))} км` : '-'
 
-	const statsSummary = ratingUser?.orders_stats
-	const total = statsSummary?.total ?? 0
-	const queued = statsSummary?.queued ?? 0
-	const inProgress = statsSummary?.in_progress ?? 0
-	const completed = statsSummary?.completed ?? 0
-	const inferredCancelled = Math.max(total - queued - inProgress - completed, 0)
+	const pieChart = parsePieChart(ratingUser?.pie_chart)
+	const queued = pieChart?.in_search ?? 0
+	const inProgress = pieChart?.in_process ?? 0
+	const completed = pieChart?.successful ?? 0
+	const cancelled = pieChart?.cancelled ?? 0
 
 	const transportChartData = [
 		{ status: 'search', label: 'В поиске', value: queued, fill: 'var(--color-search)' },
 		{ status: 'progress', label: 'В процессе', value: inProgress, fill: 'var(--color-progress)' },
 		{ status: 'success', label: 'Успешные', value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: 'Отмененные', value: inferredCancelled, fill: 'var(--color-cancelled)' },
+		{ status: 'cancelled', label: 'Отмененные', value: cancelled, fill: 'var(--color-cancelled)' },
 	]
 
-	const totalTransports = transportChartData.reduce((sum, item) => sum + item.value, 0)
+	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
 
 	const stats = [
 		{

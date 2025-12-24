@@ -1,6 +1,7 @@
 import type { components, paths } from './api'
 
 export type IAgreement = components['schemas']['AgreementList']
+export type IAgreementDetail = components['schemas']['AgreementDetail']
 export type IPaginatedAgreementList = components['schemas']['PaginatedAgreementListList']
 
 export type AgreementsListQuery = paths['/api/agreements/agreements/']['get'] extends {

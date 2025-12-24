@@ -58,10 +58,14 @@ useGetOffers — loads offers list with filters via offersService.getOffers.
 
 - ## Agreements
 
-useGetAgreements — loads agreements list with optional pagination via agreementsService.getAgreements.
-useGetAgreement — loads agreement detail by id via agreementsService.getAgreement.
-useAcceptAgreement — accepts agreement by id via agreementsService.acceptAgreement.
-useRejectAgreement — rejects agreement by id via agreementsService.rejectAgreement.
+useGetAgreements - loads agreements list with optional pagination via agreementsService.getAgreements.
+useGetAgreement - loads agreement detail by id via agreementsService.getAgreement.
+useAcceptAgreement - accepts agreement by id via agreementsService.acceptAgreement.
+useRejectAgreement - rejects agreement by id via agreementsService.rejectAgreement.
+
+- ## Support
+
+useCreateSupportTicket - sends support message via supportService.createSupportTicket.
 
 - ## Orders
 
@@ -140,6 +144,7 @@ paymentsService - fetches payment by id and confirms payments for customer/carri
 ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.
 nominatimService - OpenStreetMap Nominatim lookup for city coordinates.
+supportService - submits support tickets via /support endpoint.
 
 ## Shared enums
 
@@ -149,7 +154,7 @@ InitiatorEnum — initiator of event (CUSTOMER or CARRIER).
 ModerationStatusEnum — moderation statuses pending/approved/rejected.
 OrderStatusEnum - order statuses pending/in_process/delivered/no_driver/paid.
 OrderDriverStatusEnum - driver statuses (stopped/en_route/problem) and selector.
-PaymentMethodEnum - payment methods (cash/cashless) and PaymentMethodSelector.
+PaymentMethodEnum - payment methods (cash/cashless/both) and PaymentMethodSelector.
 OfferResponseStatusEnum - offer response statuses (waiting/action_required/rejected).
 PriceCurrencyEnum - currencies (UZS/KZT/RUB/USD/EUR) and PriceSelector.
 RoleEnum - roles (LOGISTIC/CUSTOMER/CARRIER) and RoleSelect.
@@ -180,6 +185,7 @@ RatingTableRow.interface.ts - alias for rating table row type.
 Registration.interface.ts - registration/verification DTOs and refresh response.
 Search.interface.ts - ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
 Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
+Support.interface.ts - support ticket create request DTO.
 
 ## Shared regex
 

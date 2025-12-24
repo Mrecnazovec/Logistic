@@ -1092,10 +1092,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["support_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AgreementDetail: {
+            readonly id: number;
+            readonly offer_id: number;
+            readonly cargo_id: number;
+            /**
+             * @description * `pending` - Ожидает подтверждения
+             *     * `accepted` - Принято
+             *     * `expired` - Истекло
+             *     * `cancelled` - Отменено
+             * @enum {string}
+             */
+            readonly status: "pending" | "accepted" | "expired" | "cancelled";
+            /** Format: date-time */
+            readonly expires_at: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly accepted_by_customer: boolean;
+            readonly accepted_by_carrier: boolean;
+            readonly accepted_by_logistic: boolean;
+            readonly customer_id: number | null;
+            readonly customer_full_name: string;
+            /** Format: email */
+            readonly customer_email: string;
+            readonly customer_phone: string;
+            /** Format: date-time */
+            readonly customer_registered_at: string | null;
+            readonly carrier_id: number | null;
+            readonly carrier_full_name: string;
+            /** Format: email */
+            readonly carrier_email: string;
+            readonly carrier_phone: string;
+            /** Format: date-time */
+            readonly carrier_registered_at: string | null;
+            readonly logistic_id: number | null;
+            readonly logistic_full_name: string;
+            /** Format: email */
+            readonly logistic_email: string;
+            readonly logistic_phone: string;
+            /** Format: date-time */
+            readonly logistic_registered_at: string | null;
+            readonly loading_city: string;
+            readonly loading_address: string;
+            /** Format: date */
+            readonly loading_date: string;
+            readonly unloading_city: string;
+            readonly unloading_address: string;
+            /** Format: date */
+            readonly unloading_date: string;
+            /** Format: double */
+            readonly total_distance_km: number | null;
+            readonly travel_time: string;
+        };
         AgreementList: {
             readonly id: number;
             readonly offer_id: number;
@@ -1128,6 +1196,12 @@ export interface components {
             /** Format: double */
             distance_km: number;
             deals_count: number;
+            bar_chart: {
+                [key: string]: unknown;
+            };
+            pie_chart: {
+                [key: string]: unknown;
+            };
         };
         CargoList: {
             readonly id: number;
@@ -1234,9 +1308,10 @@ export interface components {
              * Способ оплаты
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + безналичный расчёт
              * @enum {string}
              */
-            readonly payment_method: "cash" | "cashless";
+            readonly payment_method: "cash" | "cashless" | "both";
             /** Format: double */
             readonly price_per_km: number;
             /** Format: double */
@@ -1318,10 +1393,11 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + безналичный расчёт
              * @default cash
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
         };
@@ -1392,10 +1468,11 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + безналичный расчёт
              * @default cash
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
         };
@@ -1536,9 +1613,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            payment_method?: "cash" | "cashless";
+            payment_method?: "cash" | "cashless" | "both";
             message?: string;
         };
         /** @description Создание оффера ПЕРЕВОЗЧИКОМ на чужую заявку. */
@@ -1559,10 +1637,11 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @default cash
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             message?: string;
         };
         /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
@@ -1602,6 +1681,9 @@ export interface components {
             readonly carrier_id: number;
             /** Format: double */
             readonly carrier_rating: number;
+            readonly logistic_id: number;
+            readonly logistic_company: string;
+            readonly logistic_full_name: string;
             /** @description Телефон перевозчика (вместо contact_value). */
             readonly phone: string;
             /** @description Email перевозчика (вместо contact_value). */
@@ -1622,9 +1704,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             readonly payment_method_display: string;
             /**
              * Format: double
@@ -1659,9 +1742,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
         };
         /** @description Инвайт от ЗАКАЗЧИКА конкретному перевозчику. */
         OfferInviteRequest: {
@@ -1682,10 +1766,11 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @default cash
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             message?: string;
         };
         OfferRejectResponse: {
@@ -1728,6 +1813,9 @@ export interface components {
             readonly carrier_id: number;
             /** Format: double */
             readonly carrier_rating: number;
+            readonly logistic_id: number;
+            readonly logistic_company: string;
+            readonly logistic_full_name: string;
             /** @description Телефон перевозчика (вместо contact_value). */
             readonly phone: string;
             /** @description Email перевозчика (вместо contact_value). */
@@ -1748,9 +1836,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             readonly payment_method_display: string;
             /**
              * Format: double
@@ -2208,10 +2297,11 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + безналичный расчёт
              * @default cash
              * @enum {string}
              */
-            payment_method: "cash" | "cashless";
+            payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
         };
@@ -2221,9 +2311,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `cashless` - Безналичный расчёт
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            payment_method?: "cash" | "cashless";
+            payment_method?: "cash" | "cashless" | "both";
         };
         PatchedOrderDetailRequest: {
             cargo?: number;
@@ -2271,9 +2362,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `bank_transfer` - Перечисление
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            method?: "cash" | "bank_transfer";
+            method?: "cash" | "bank_transfer" | "both";
             order?: number;
         };
         PatchedUpdateMeRequest: {
@@ -2308,9 +2400,10 @@ export interface components {
             /**
              * @description * `cash` - Наличные
              *     * `bank_transfer` - Перечисление
+             *     * `both` - Наличные + перечисление
              * @enum {string}
              */
-            method?: "cash" | "bank_transfer";
+            method?: "cash" | "bank_transfer" | "both";
             /**
              * @description * `PENDING` - Создано
              *     * `CONFIRMED_BY_CUSTOMER` - Оплачено заказчиком
@@ -2369,7 +2462,7 @@ export interface components {
             readonly total_distance: string;
             /** Format: date-time */
             readonly registered_at: string;
-            readonly orders_stats: string;
+            readonly pie_chart: string;
         };
         RefreshResponse: {
             detail: string;
@@ -2449,6 +2542,9 @@ export interface components {
         SendPhoneOTPResponse: {
             detail: string;
             seconds_left: number;
+        };
+        SupportTicketCreateRequest: {
+            message: string;
         };
         TokenRefreshRequestRequest: {
             refresh: string;
@@ -2564,7 +2660,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AgreementList"];
+                    "application/json": components["schemas"]["AgreementDetail"];
                 };
             };
         };
@@ -4501,6 +4597,30 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PaginatedCargoListList"];
                 };
+            };
+        };
+    };
+    support_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportTicketCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SupportTicketCreateRequest"];
+                "multipart/form-data": components["schemas"]["SupportTicketCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

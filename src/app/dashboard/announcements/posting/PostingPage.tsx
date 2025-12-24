@@ -237,7 +237,25 @@ export function PostingPage() {
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='Оси (3-10)' {...field} value={field.value ?? ''} onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} className='pl-4' disabled={isLoadingCreate} />
+												<InputGroupInput
+													placeholder='Оси (3-10)'
+													{...field}
+													value={field.value ?? ''}
+													onChange={(event) =>
+														handleNumericInput(event, NUMERIC_REGEX, (value) => {
+															const numericValue = Number(value)
+															if (value !== '' && Number.isFinite(numericValue) && numericValue > 10) {
+																field.onChange('10')
+																return
+															}
+															field.onChange(value)
+														})
+													}
+													inputMode='decimal'
+													max={10}
+													className='pl-4'
+													disabled={isLoadingCreate}
+												/>
 											</InputGroup>
 										</FormControl>
 										<FormMessage />

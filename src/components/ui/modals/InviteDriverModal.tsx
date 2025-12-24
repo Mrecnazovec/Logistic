@@ -156,7 +156,7 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
                                     <p className='text-sm font-semibold text-foreground'>Приглашение по ссылке</p>
                                     <p className='text-sm text-muted-foreground'>Сгенерируйте ссылку и отправьте её водителю, чтобы он смог принять приглашение.</p>
                                     <InputGroup>
-                                        <InputGroupInput readOnly value={shareLink} placeholder='Ссылка появится после генерации' />
+                                        <InputGroupInput readOnly value={shareLink} className='pl-3' placeholder='Ссылка появится после генерации' />
                                         <InputGroupAddon align='inline-end'>
                                             <Button
                                                 size='sm'

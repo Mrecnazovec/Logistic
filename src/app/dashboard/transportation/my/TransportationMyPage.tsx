@@ -18,10 +18,10 @@ import { IOrderList } from '@/shared/types/Order.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { AgreementsCardList } from '../components/AgreementsCardList'
-import { TransportationMyCardList } from './components/TransportationMyCardList'
 import { useTransportationStatusCounts } from '../hooks/useTransportationStatusCounts'
 import { useSearchForm } from '../Searching/useSearchForm'
 import { createAgreementColumns } from '../table/AgreementColumns'
+import { TransportationMyCardList } from './components/TransportationMyCardList'
 import { createTransportationColumns } from './table/TransportationColumns'
 
 const AGREEMENT_COLUMNS = createAgreementColumns()

@@ -12,13 +12,11 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAnalytics } from '@/hooks/queries/me/useGetAnalytics'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
-import { useGetRatingUser } from '@/hooks/queries/ratings/useGet/useGetRatingUser'
 import { useLogout } from '@/hooks/useLogout'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowUpRight, BarChart3, ChevronDown, DoorOpen, LogOut, Pencil, Star, Truck } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis } from 'recharts'
 
@@ -49,17 +47,24 @@ const transportChartConfig = {
 const incomeChartConfig = {
 	given: { label: 'Отдал', color: '#FCA5A5' },
 	received: { label: 'Получил', color: '#93C5FD' },
-	profit: { label: 'Заработок', color: '#86EFAC' },
+	earned: { label: 'Заработок', color: '#86EFAC' },
 } satisfies ChartConfig
 
-const incomeChartData = [
-	{ month: 'Янв', given: 5600, received: 8500, profit: 4300 },
-	{ month: 'Фев', given: 8800, received: 6800, profit: 200 },
-	{ month: 'Мар', given: 2100, received: 3900, profit: 1400 },
-	{ month: 'Апр', given: 5600, received: 10000, profit: 5600 },
-	{ month: 'Май', given: 3200, received: 6200, profit: 2100 },
-	{ month: 'Июн', given: 900, received: 1600, profit: 500 },
+const fallbackIncomeChartData = [
+	{ month: 'Янв', given: 5600, received: 8500, earned: 4300 },
+	{ month: 'Фев', given: 8800, received: 6800, earned: 200 },
+	{ month: 'Мар', given: 2100, received: 3900, earned: 1400 },
+	{ month: 'Апр', given: 5600, received: 10000, earned: 5600 },
+	{ month: 'Май', given: 3200, received: 6200, earned: 2100 },
+	{ month: 'Июн', given: 900, received: 1600, earned: 500 },
 ]
+
+type AnalyticsBarChart = {
+	labels?: string[]
+	given?: number[]
+	received?: number[]
+	earned?: number[]
+}
 
 const formatTrend = (value?: number | null) => {
 	if (typeof value !== 'number') return undefined
@@ -71,12 +76,9 @@ const formatTrend = (value?: number | null) => {
 }
 
 export function Cabinet() {
-	const params = useParams<{ id?: string }>()
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
 	const { analytics, isLoading: isLoadingAnalytics } = useGetAnalytics()
-	const userId = params?.id ?? (me?.id ? String(me.id) : undefined)
-	const { ratingUser } = useGetRatingUser(userId)
 	const [isRevenueOpen, setIsRevenueOpen] = useState(false)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
 
@@ -87,22 +89,40 @@ export function Cabinet() {
 	const dealsCount = analytics?.deals_count ?? 0
 	const averagePriceValue = fallbackValue
 	const ratingTrend = formatTrend(analytics?.successful_deliveries_change)
+	const analyticsBarChart = analytics?.bar_chart as AnalyticsBarChart | undefined
+	const barChartLabels = Array.isArray(analyticsBarChart?.labels) ? analyticsBarChart.labels : []
+	const hasBarChartLabels = barChartLabels.length > 0
+	const incomeChartData = hasBarChartLabels
+		? barChartLabels.map((label, index) => ({
+				month: label,
+				given: analyticsBarChart?.given?.[index] ?? 0,
+				received: analyticsBarChart?.received?.[index] ?? 0,
+				earned: analyticsBarChart?.earned?.[index] ?? 0,
+			}))
+		: fallbackIncomeChartData
 
-	const ordersStats = ratingUser?.orders_stats
-	const total = ordersStats?.total ?? 0
-	const queued = ordersStats?.queued ?? 0
-	const inProgress = ordersStats?.in_progress ?? 0
-	const completed = ordersStats?.completed ?? 0
-	const inferredCancelled = Math.max(total - queued - inProgress - completed, 0)
+	const pieChart = analytics?.pie_chart as
+		| {
+				in_search?: number
+				in_process?: number
+				successful?: number
+				cancelled?: number
+				total?: number
+		  }
+		| undefined
+	const queued = pieChart?.in_search ?? 0
+	const inProgress = pieChart?.in_process ?? 0
+	const completed = pieChart?.successful ?? 0
+	const cancelled = pieChart?.cancelled ?? 0
 
 	const transportChartData = [
 		{ status: 'search', label: 'В поиске', value: queued, fill: 'var(--color-search)' },
 		{ status: 'progress', label: 'В процессе', value: inProgress, fill: 'var(--color-progress)' },
 		{ status: 'success', label: 'Успешные', value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: 'Отмененные', value: inferredCancelled, fill: 'var(--color-cancelled)' },
+		{ status: 'cancelled', label: 'Отмененные', value: cancelled, fill: 'var(--color-cancelled)' },
 	]
 
-	const totalTransports = transportChartData.reduce((sum, item) => sum + item.value, 0)
+	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
 
 	const detailCards: AnalyticsCard[] = [
 		{
@@ -319,7 +339,7 @@ export function Cabinet() {
 												<ChartTooltip content={<ChartTooltipContent hideLabel />} />
 												<Bar dataKey='given' fill='var(--color-given)' radius={[8, 8, 0, 0]} barSize={10} />
 												<Bar dataKey='received' fill='var(--color-received)' radius={[8, 8, 0, 0]} barSize={10} />
-												<Bar dataKey='profit' fill='var(--color-profit)' radius={[8, 8, 0, 0]} barSize={10} />
+												<Bar dataKey='earned' fill='var(--color-earned)' radius={[8, 8, 0, 0]} barSize={10} />
 											</BarChart>
 										</ChartContainer>
 									</Card>
