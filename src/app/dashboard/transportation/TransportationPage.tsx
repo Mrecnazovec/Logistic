@@ -47,7 +47,7 @@ export function TransportationPage() {
     const tableType = useTableTypeStore((state) => state.tableType)
     const role = useRoleStore((state) => state.role)
     const tableColumns = createTransportationColumns(role)
-    const ordersRoleParam = role === RoleEnum.LOGISTIC ? undefined : undefined
+    const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
     const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { role: ordersRoleParam } : undefined)
 
     const agreements = agreementsData?.results ?? []
