@@ -5,12 +5,41 @@ import { useCreateSupportTicket } from "@/hooks/queries/support/useCreateSupport
 import { useState } from "react"
 import { Mail, MessageCircle, PhoneCall, Send } from "lucide-react"
 import { Textarea } from "@/components/ui/form-control/Textarea"
+import Link from "next/link"
 
 const contacts = [
-	{ id: "phone", label: "998 91 123 45 67", icon: PhoneCall, accent: "bg-gray-100 text-slate-600" },
-	{ id: "mail", label: "dispatch@gmail.com", icon: Mail, accent: "bg-gray-100 text-slate-600" },
-	{ id: "whatsapp", label: "WhatsApp", icon: MessageCircle, accent: "bg-green-100 text-emerald-600" },
-	{ id: "telegram", label: "Telegram", icon: Send, accent: "bg-sky-100 text-sky-600" },
+	{
+		id: "phone",
+		label: "998 70 122 43 21",
+		href: "tel:+998701224321",
+		icon: PhoneCall,
+		accent: "bg-gray-100 text-slate-600",
+	},
+	{
+		id: "mail",
+		label: "kad.noreply1@gmail.com",
+		href: "mailto:kad.noreply1@gmail.com",
+		icon: Mail,
+		accent: "bg-gray-100 text-slate-600",
+	},
+	{
+		id: "whatsapp",
+		label: "WhatsApp",
+		href: "https://wa.me/998701224321",
+		icon: MessageCircle,
+		accent: "bg-green-100 text-emerald-600",
+		target: "_blank",
+		rel: "noreferrer",
+	},
+	{
+		id: "telegram",
+		label: "@KAD_support",
+		href: "https://t.me/KAD_support",
+		icon: Send,
+		accent: "bg-sky-100 text-sky-600",
+		target: "_blank",
+		rel: "noreferrer",
+	},
 ]
 
 export function SupportPage() {
@@ -72,7 +101,14 @@ export function SupportPage() {
 									<span className={`flex size-9 items-center justify-center rounded-full ${contact.accent}`} aria-hidden="true">
 										<Icon className="size-5" />
 									</span>
-									<span>{contact.label}</span>
+									<Link
+										href={contact.href}
+										target={contact.target}
+										rel={contact.rel}
+										className="hover:underline underline-offset-4"
+									>
+										{contact.label}
+									</Link>
 								</div>
 							)
 						})}
