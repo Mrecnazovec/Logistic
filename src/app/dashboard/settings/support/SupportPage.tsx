@@ -94,22 +94,24 @@ export function SupportPage() {
 						{contacts.map((contact) => {
 							const Icon = contact.icon
 							return (
-								<div
+								<Link
 									key={contact.id}
-									className="flex items-center gap-3 rounded-[18px] bg-grayscale-50 px-5 py-4 text-[15px] font-medium text-foreground shadow-[0_8px_30px_rgba(15,23,42,0.04)]"
+									href={contact.href}
+									target={contact.target}
+									rel={contact.rel}
+									className="hover:underline underline-offset-4"
 								>
-									<span className={`flex size-9 items-center justify-center rounded-full ${contact.accent}`} aria-hidden="true">
-										<Icon className="size-5" />
-									</span>
-									<Link
-										href={contact.href}
-										target={contact.target}
-										rel={contact.rel}
-										className="hover:underline underline-offset-4"
+									<div
+										className="flex items-center gap-3 rounded-[18px] bg-grayscale-50 px-5 py-4 text-[15px] font-medium text-foreground shadow-[0_8px_30px_rgba(15,23,42,0.04)]"
 									>
+										<span className={`flex size-9 items-center justify-center rounded-full ${contact.accent}`} aria-hidden="true">
+											<Icon className="size-5" />
+										</span>
+
 										{contact.label}
-									</Link>
-								</div>
+									</div>
+								</Link>
+
 							)
 						})}
 					</div>
