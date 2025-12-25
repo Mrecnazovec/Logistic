@@ -1,7 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { RegisterDto } from '@/shared/types/Registration.interface'
-import { LockKeyhole, Mail } from 'lucide-react'
+import { LockKeyhole, Mail, User } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
 interface RegisterAuthFieldsProps {
@@ -15,16 +15,16 @@ export function RegisterAuthFields({ form, isPending }: RegisterAuthFieldsProps)
 			{/* Email */}
 			<FormField
 				control={form.control}
-				name='email'
+				name='username'
 				rules={{ required: 'Почта обязательна' }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите почту</FormLabel>
+						<FormLabel className='text-grayscale'>Введите логин</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput placeholder='Введите логин' disabled={isPending} {...field} value={field.value ?? ''} />
 								<InputGroupAddon className='pr-2'>
-									<Mail className='text-grayscale size-5' />
+									<User className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>

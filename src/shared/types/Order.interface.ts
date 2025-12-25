@@ -38,7 +38,10 @@ export type IOrderDriverStatusUpdate = components['schemas']['OrderDriverStatusU
 export type IOrderStatusHistory = components['schemas']['OrderStatusHistory']
 export type PatchedOrderDriverStatusUpdateDto = components['schemas']['PatchedOrderDriverStatusUpdateRequest']
 
-export type OrdersListQuery = paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>
+export type OrdersListQuery = (paths['/api/orders/']['get'] extends { parameters: { query?: infer Q } } ? Q : Record<string, never>) & {
+	as_role?: string
+}
+export type OrderDetailQuery = { as_role?: 'customer' }
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
 

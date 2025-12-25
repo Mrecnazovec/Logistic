@@ -7,6 +7,7 @@ import {
 	IOrderStatusHistory,
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
+	OrderDetailQuery,
 	OrdersListQuery,
 	OrderInvitePayload,
 	PatchedOrderDetailDto,
@@ -29,10 +30,11 @@ class OrdersService {
 		return data
 	}
 
-	async getOrder(id: string | number) {
+	async getOrder(id: string | number, params?: OrderDetailQuery) {
 		const { data } = await axiosWithAuth<IOrderDetail>({
 			url: API_URL.orders(`${id}`),
 			method: 'GET',
+			params,
 		})
 
 		return data

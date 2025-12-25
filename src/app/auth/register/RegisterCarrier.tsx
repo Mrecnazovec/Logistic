@@ -4,7 +4,7 @@ import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { Country } from '@/shared/types/Geo.interface'
 import { RegisterDto } from '@/shared/types/Registration.interface'
-import { Phone, User } from 'lucide-react'
+import { Mail, Phone, User } from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -41,6 +41,25 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 								<InputGroupInput placeholder='Введите Ф.И.О.' disabled={isPending} {...field} value={field.value ?? ''} />
 								<InputGroupAddon className='pr-2'>
 									<User className='text-grayscale size-5' />
+								</InputGroupAddon>
+							</InputGroup>
+						</FormControl>
+					</FormItem>
+				)}
+			/>
+
+			{/* Ф.И.О. */}
+			<FormField
+				control={form.control}
+				name='email'
+				render={({ field }) => (
+					<FormItem className='mb-6'>
+						<FormLabel className='text-grayscale'>Введите email</FormLabel>
+						<FormControl>
+							<InputGroup>
+								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupAddon className='pr-2'>
+									<Mail className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>

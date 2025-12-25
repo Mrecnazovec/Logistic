@@ -48,14 +48,14 @@ export function TransportationMyPage() {
 	const role = useRoleStore((state) => state.role)
 	const tableColumns = createTransportationColumns(role)
 	const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'logistic' : undefined
-	const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { role: ordersRoleParam } : undefined)
+	const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { as_role: ordersRoleParam } : undefined)
 
 	const agreements = agreementsData?.results ?? []
 	const orders = data?.results ?? []
 	const { statusCounts } = useTransportationStatusCounts(
 		STATUS_TABS,
 		searchParams,
-		ordersRoleParam ? { role: ordersRoleParam } : undefined,
+		ordersRoleParam ? { as_role: ordersRoleParam } : undefined,
 	)
 	const agreementsCount = agreementsData?.count
 
