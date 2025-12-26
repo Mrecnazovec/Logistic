@@ -6,12 +6,10 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/form-control/Input'
 import { Label } from '@/components/ui/form-control/Label'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
-import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useUpdateMe } from '@/hooks/queries/me/useUpdateMe'
 import { useI18n } from '@/i18n/I18nProvider'
 import { type UpdateMeDto } from '@/shared/types/Me.interface'
-import { type Country } from '@/shared/types/Geo.interface'
 
 const toPayload = (values: UpdateMeDto): UpdateMeDto => ({
     first_name: values.first_name?.trim() || undefined,
@@ -42,9 +40,6 @@ export function SettingPage() {
     const watchedCountryCode = useWatch({ control, name: 'profile.country_code' })
     const watchedCity = useWatch({ control, name: 'profile.city' }) || ''
     const watchedCountryName = useWatch({ control, name: 'profile.country' }) || ''
-
-    const selectedCountry: Country | null =
-        watchedCountryName && watchedCountryCode ? { name: watchedCountryName, code: watchedCountryCode } : null
 
     useEffect(() => {
         if (!me) return
@@ -106,20 +101,6 @@ export function SettingPage() {
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='country' className='text-sm font-medium text-foreground'>{t('settings.profile.country.label')}</Label>
-                        <CountrySelector
-                            value={selectedCountry}
-                            onChange={(country) => {
-                                setValue('profile.country', country.name)
-                                setValue('profile.country_code', country.code)
-                                setValue('profile.city', '')
-                            }}
-                            disabled={isLoading || isLoadingUpdateMe}
-                            placeholder={t('settings.profile.country.placeholder')}
-                        />
-                    </div>
-
-                    <div className='space-y-2'>
                         <Label htmlFor='phone' className='text-sm font-medium text-foreground'>{t('settings.profile.phone.label')}</Label>
                         <Input
                             id='phone'
@@ -141,6 +122,7 @@ export function SettingPage() {
                                     setValue('profile.country_code', city.country_code)
                                 }
                             }}
+                            countryName={watchedCountryName}
                             countryCode={watchedCountryCode || undefined}
                             disabled={isLoading || isLoadingUpdateMe}
                             placeholder={t('settings.profile.city.placeholder')}

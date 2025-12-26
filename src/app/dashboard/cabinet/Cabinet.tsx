@@ -300,9 +300,6 @@ export function Cabinet() {
 
 					<div className='grid gap-4 sm:grid-cols-2'>
 						{detailCards.map((card) => renderDetailCard(card))}
-					</div>
-
-					<div className='mt-auto flex flex-wrap gap-3'>
 						<Dialog open={isTransportOpen} onOpenChange={setIsTransportOpen}>
 							<DialogTrigger asChild>
 								<Button variant='outline' className='h-10 border-brand/40 px-5 text-sm text-brand hover:border-brand/60 hover:bg-brand/5'>
@@ -405,6 +402,8 @@ export function Cabinet() {
 							</DialogContent>
 						</Dialog>
 					</div>
+
+
 				</Card>
 			</div>
 		</div>

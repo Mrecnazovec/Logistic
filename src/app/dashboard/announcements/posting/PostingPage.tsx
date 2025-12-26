@@ -26,6 +26,8 @@ const RichTextEditor = dynamic(() =>
 export function PostingPage() {
 	const { t } = useI18n()
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
+	const originCountryValue = form.watch('origin_country')
+	const destinationCountryValue = form.watch('destination_country')
 
 	return (
 		<Form {...form}>
@@ -42,6 +44,7 @@ export function PostingPage() {
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
+											countryName={originCountryValue}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('origin_country', city?.country ?? '')
@@ -109,6 +112,7 @@ export function PostingPage() {
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
+											countryName={destinationCountryValue}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('destination_country', city?.country ?? '')

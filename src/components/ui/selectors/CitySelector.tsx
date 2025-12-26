@@ -22,6 +22,7 @@ import type { CityCoordinates } from '@/shared/types/Nominatim.interface'
 interface CitySelectorProps {
 	value?: string
 	displayValue?: string
+	countryName?: string
 	onChange: (value: string, city?: City | null) => void
 	onCoordinates?: (coordinates: CityCoordinates | null, city: City) => void
 	countryCode?: string
@@ -33,6 +34,7 @@ interface CitySelectorProps {
 export function CitySelector({
 	value = '',
 	displayValue,
+	countryName,
 	onChange,
 	onCoordinates,
 	countryCode,
@@ -46,7 +48,12 @@ export function CitySelector({
 	const [selectedCity, setSelectedCity] = useState<City | null>(null)
 	const searchQuery = value ?? ''
 	const displayText =
-		displayValue ?? (selectedCity?.name === value && selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : value ?? '')
+		displayValue ??
+		(selectedCity?.name === value && selectedCity
+			? `${selectedCity.name}, ${selectedCity.country}`
+			: value && countryName
+				? `${value}, ${countryName}`
+				: value ?? '')
 	const resolvedPlaceholder = placeholder ?? t('components.select.city.placeholder')
 
 	const { data, isLoading } = useCitySuggest(searchQuery, countryCode)
@@ -67,11 +74,6 @@ export function CitySelector({
 		if (onCoordinates) {
 			onCoordinates(coordinates, city)
 		}
-
-		console.log('Nominatim coordinates', {
-			city: `${city.name}, ${city.country}`,
-			coordinates,
-		})
 	}
 
 	return (

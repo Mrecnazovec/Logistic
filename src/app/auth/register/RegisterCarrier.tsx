@@ -1,12 +1,9 @@
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
-import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { useI18n } from '@/i18n/I18nProvider'
-import { Country } from '@/shared/types/Geo.interface'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { Mail, Phone, User } from 'lucide-react'
-import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 interface RegisterFieldsProps {
@@ -26,7 +23,6 @@ interface RegisterTransportFieldProps extends RegisterFieldsProps {
 
 export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) {
 	const { t } = useI18n()
-	const [country, setCountry] = useState<Country | null>(null)
 
 	return (
 		<>
@@ -101,29 +97,7 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 				)}
 			/>
 
-			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
-				<FormField
-					control={form.control}
-					name='country'
-					render={() => (
-						<FormItem>
-							<FormLabel>{t('register.company.countryLabel')}</FormLabel>
-							<FormControl>
-								<CountrySelector
-									value={country}
-									onChange={(selected: Country) => {
-										setCountry(selected)
-										form.setValue('country', selected.name)
-										form.setValue('country_code', selected.code)
-										form.setValue('city', '')
-									}}
-									disabled={isPending}
-								/>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
-
+			<div className='mb-6'>
 				<FormField
 					control={form.control}
 					name='city'
@@ -133,12 +107,17 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 							<FormControl>
 								<CitySelector
 									value={form.watch('city')}
-									onChange={(cityName) => {
+									onChange={(cityName, city) => {
 										form.setValue('city', cityName)
+										if (city?.country_code) {
+											form.setValue('country', city.country)
+											form.setValue('country_code', city.country_code)
+										}
 									}}
+									countryName={form.watch('country')}
 									countryCode={form.watch('country_code')}
 									placeholder={t('register.company.cityPlaceholder')}
-									disabled={!form.watch('country') || isPending}
+									disabled={isPending}
 								/>
 							</FormControl>
 						</FormItem>

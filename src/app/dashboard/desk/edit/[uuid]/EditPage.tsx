@@ -111,6 +111,7 @@ export function EditPage() {
 										<CitySelector
 											value={field.value || ''}
 											displayValue={originCityLabel}
+											countryName={originCountryValue}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('origin_country', city?.country ?? '')
@@ -179,6 +180,7 @@ export function EditPage() {
 										<CitySelector
 											value={field.value || ''}
 											displayValue={destinationCityLabel}
+											countryName={destinationCountryValue}
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('destination_country', city?.country ?? '')

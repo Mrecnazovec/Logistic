@@ -36,6 +36,8 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const priceCurrency = form.watch('price_currency')
+	const originCountryValue = form.watch('origin_country')
+	const destinationCountryValue = form.watch('destination_country')
 	const isPriceEnabled = Boolean(priceCurrency)
 	const hasQuery = searchParams.toString().length > 0
 	const isTablet = useMediaQuery('(min-width: 768px)')
@@ -270,9 +272,14 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						<FormItem className='w-full'>
 							<FormControl>
 								<CitySelector
-									{...field}
+									value={field.value ?? ''}
+									countryName={originCountryValue}
 									countryCode={undefined}
 									placeholder={t('components.search.origin')}
+									onChange={(value, city) => {
+										field.onChange(value)
+										form.setValue('origin_country', city?.country ?? '')
+									}}
 									onCoordinates={handleOriginCoordinates}
 								/>
 							</FormControl>
@@ -308,9 +315,14 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						<FormItem className='w-full'>
 							<FormControl>
 								<CitySelector
-									{...field}
+									value={field.value ?? ''}
+									countryName={destinationCountryValue}
 									countryCode=' '
 									placeholder={t('components.search.destination')}
+									onChange={(value, city) => {
+										field.onChange(value)
+										form.setValue('destination_country', city?.country ?? '')
+									}}
 									onCoordinates={handleDestinationCoordinates}
 								/>
 							</FormControl>
