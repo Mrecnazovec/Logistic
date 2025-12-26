@@ -19,7 +19,7 @@ export function usePostForm() {
 		createLoad({
 			...data,
 			weight_kg,
-			payment_method: data.payment_method ?? 'transfer',
+			payment_method: data.payment_method ?? 'both',
 			is_hidden: data.is_hidden ?? false,
 		})
 	}

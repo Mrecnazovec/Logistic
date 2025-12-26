@@ -5,11 +5,18 @@ import { useMemo } from 'react'
 
 export const useGetIncomingOffers = () => {
 	const searchParams = useSearchParams()
-	const page = searchParams.get('page') || undefined
+
+	const paramsObject = useMemo(() => {
+		const obj: Record<string, string> = {}
+		searchParams.forEach((value, key) => {
+			obj[key] = value
+		})
+		return obj
+	}, [searchParams])
 
 	const { data, isLoading } = useQuery({
-		queryKey: ['get offers', 'incoming', page],
-		queryFn: () => offerService.getIncomingOffers(page),
+		queryKey: ['get offers', 'incoming', paramsObject],
+		queryFn: () => offerService.getIncomingOffers(paramsObject),
 	})
 
 	return useMemo(() => ({ data, isLoading }), [data, isLoading])

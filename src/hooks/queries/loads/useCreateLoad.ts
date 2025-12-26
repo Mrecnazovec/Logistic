@@ -19,7 +19,7 @@ export const useCreateLoad = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
-			toast.success('Объявление отправлено на модерацию')
+			toast.success('Объявление создано')
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {

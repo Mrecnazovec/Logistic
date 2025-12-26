@@ -4,12 +4,15 @@ import { IErrorResponse } from '@/shared/types/Error.interface'
 import { ILogin } from '@/shared/types/Login.interface'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 export function useAuthForm() {
 	const router = useRouter()
+	const searchParams = useSearchParams()
+	const nextParam = searchParams.get('next')
+	const safeNext = nextParam && nextParam.startsWith('/') ? nextParam : null
 
 	const form = useForm<ILogin>({
 		mode: 'onChange',
@@ -29,7 +32,7 @@ export function useAuthForm() {
 
 			toast.success('Успешная авторизация')
 			setTimeout(() => router.refresh(), 3000)
-			router.push(DASHBOARD_URL.announcements())
+			router.push(safeNext ?? DASHBOARD_URL.announcements())
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>

@@ -49,21 +49,21 @@ class OffersService {
 		return data
 	}
 
-	async getIncomingOffers(page?: string) {
+	async getIncomingOffers(params?: Record<string, string>) {
 		const { data } = await axiosWithAuth<IPaginatedOfferShortList>({
 			url: API_URL.offers('incoming'),
 			method: 'GET',
-			params: { page },
+			params,
 		})
 
 		return data
 	}
 
-	async getMyOffers(page?: string) {
+	async getMyOffers(params?: Record<string, string>) {
 		const { data } = await axiosWithAuth<IPaginatedOfferShortList>({
 			url: API_URL.offers('my'),
 			method: 'GET',
-			params: { page },
+			params,
 		})
 
 		return data

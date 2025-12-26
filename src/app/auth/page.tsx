@@ -1,10 +1,11 @@
 import { Metadata } from 'next'
 import { AuthPage } from './AuthPage'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
 	title: 'Авторизация',
 }
 
 export default function page() {
-	return <AuthPage />
+	return <Suspense><AuthPage /></Suspense>
 }

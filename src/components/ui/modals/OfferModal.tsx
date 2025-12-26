@@ -75,12 +75,18 @@ export function OfferModal({
     const handleCounterOffer = () => {
         if (isCounterDisabled || !cargoId || !selectedRow?.uuid) return
 
-        createOffer({
-            cargo: cargoId,
-            price_value: priceValue,
-            price_currency: currency as NonNullable<ICargoList['price_currency']>,
-            payment_method: paymentMethod as PaymentMethodEnum,
-        })
+        createOffer(
+            {
+                cargo: cargoId,
+                price_value: priceValue,
+                price_currency: currency as NonNullable<ICargoList['price_currency']>,
+                payment_method: paymentMethod as PaymentMethodEnum,
+            },
+            {
+                onSuccess: () => onOpenChange?.(false),
+            },
+        )
+
     }
 
     return (

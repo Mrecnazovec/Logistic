@@ -2,15 +2,15 @@
 
 import { CheckCircle2, ShieldX } from 'lucide-react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { useState, useSyncExternalStore } from 'react'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/form-control/Input'
 import { Loader } from '@/components/ui/Loader'
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useAcceptOrderInvite } from '@/hooks/queries/orders/useAcceptOrderInvite'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 
@@ -34,11 +34,24 @@ export function InvitePage() {
 function InvitePageContent() {
 	const params = useParams<{ token: string }>()
 	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 	const accessToken = getAccessToken()
 	const initialToken = params?.token ?? ''
 	const [token, setToken] = useState(initialToken)
 	const [acceptedOrderId, setAcceptedOrderId] = useState<number | null>(null)
 	const { acceptOrderInvite, isLoadingAcceptInvite } = useAcceptOrderInvite()
+	const returnPath = useMemo(() => {
+		const query = searchParams.toString()
+		return query ? `${pathname}?${query}` : pathname
+	}, [pathname, searchParams])
+	const authHref = useMemo(() => `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`, [returnPath])
+
+	useEffect(() => {
+		if (!accessToken) {
+			router.replace(authHref)
+		}
+	}, [accessToken, authHref, router])
 
 	const handleAccept = () => {
 		const trimmed = token.trim()
@@ -65,7 +78,7 @@ function InvitePageContent() {
 					description="Войдите в аккаунт, чтобы принять приглашение."
 					icon={<ShieldX className="size-10 text-brand" />}
 					actions={
-						<Link href="/auth">
+						<Link href={authHref}>
 							<Button>Войти</Button>
 						</Link>
 					}

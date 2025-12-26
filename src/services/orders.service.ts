@@ -40,19 +40,21 @@ class OrdersService {
 		return data
 	}
 
-	async getOrderDocuments(id: string | number) {
+	async getOrderDocuments(id: string | number, params?: OrderDetailQuery) {
 		const { data } = await axiosWithAuth<IOrderDocument[] | IOrderDetail>({
 			url: API_URL.orders(`${id}/documents`),
 			method: 'GET',
+			params,
 		})
 
 		return data
 	}
 
-	async getOrderStatusHistory(id: string | number) {
+	async getOrderStatusHistory(id: string | number, params?: OrderDetailQuery) {
 		const { data } = await axiosWithAuth<IOrderStatusHistory[]>({
 			url: API_URL.orders(`${id}/status-history`),
 			method: 'GET',
+			params,
 		})
 
 		return data

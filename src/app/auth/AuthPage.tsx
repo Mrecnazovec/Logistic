@@ -8,11 +8,15 @@ import { IMG_URL, PUBLIC_URL } from '@/config/url.config'
 import { SelectValue } from '@radix-ui/react-select'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { AuthFields } from './AuthField'
 import { useAuthForm } from './useAuthForm'
 
 export function AuthPage() {
 	const { form, isPending, onSubmit } = useAuthForm()
+	const searchParams = useSearchParams()
+	const nextParam = searchParams.get('next')
+	const registerHref = nextParam ? `${PUBLIC_URL.auth('register')}?next=${encodeURIComponent(nextParam)}` : PUBLIC_URL.auth('register')
 
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
@@ -27,7 +31,7 @@ export function AuthPage() {
 			<div className='flex flex-col h-full sm:px-12 px-4 py-8'>
 				<div className='flex sm:flex-row flex-col gap-4 items-center lg:justify-end justify-center'>
 					<div className='flex items-center justify-center gap-2 flex-wrap'>
-						<Link href={PUBLIC_URL.auth('register')}>
+						<Link href={registerHref}>
 							<Button variant={'outline'} className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 px-4 py-3 font-medium'>
 								Зарегистрироваться
 							</Button>
@@ -41,12 +45,12 @@ export function AuthPage() {
 								<SelectValue placeholder='Выберите язык' />
 							</SelectTrigger>
 							<SelectContent className='rounded-2xl'>
-								<SelectItem value='UZB' className='rounded-2xl'>
+								{/* <SelectItem value='UZB' className='rounded-2xl'>
 									<div className='flex items-center gap-2.5 font-medium'>
 										<Image className='rounded-full' src={IMG_URL.svg('uzb')} width={24} height={24} alt='' /> Узбекский
 									</div>
 								</SelectItem>
-								<SelectSeparator />
+								<SelectSeparator /> */}
 								<SelectItem value='RUS' className='rounded-2xl'>
 									<div className='flex items-center gap-2.5 font-medium'>
 										<Image className='rounded-full' src={IMG_URL.svg('rus')} width={24} height={24} alt='' /> Русский

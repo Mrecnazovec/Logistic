@@ -5,8 +5,8 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { AlertCircle, ArrowRight, ShieldX, Timer } from 'lucide-react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { Suspense, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/Button'
@@ -20,7 +20,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/Select'
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useLoadInvite } from '@/hooks/queries/loads/useLoadInvite'
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
@@ -60,7 +60,14 @@ function InvitePageContent() {
 	const params = useParams<{ token: string }>()
 	const token = params?.token
 	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 	const accessToken = getAccessToken()
+	const returnPath = useMemo(() => {
+		const query = searchParams.toString()
+		return query ? `${pathname}?${query}` : pathname
+	}, [pathname, searchParams])
+	const authHref = useMemo(() => `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`, [returnPath])
 	const {
 		invite,
 		isLoadingInvite,
@@ -109,6 +116,12 @@ function InvitePageContent() {
 
 	const isProcessing = isLoadingInvite || isLoadingAccept || isLoadingCounter || isLoadingReject
 
+	useEffect(() => {
+		if (!accessToken) {
+			router.replace(authHref)
+		}
+	}, [accessToken, authHref, router])
+
 	if (!accessToken) {
 		return (
 			<InviteLayout>
@@ -117,7 +130,7 @@ function InvitePageContent() {
 					description='Войдите в аккаунт, чтобы увидеть приглашение.'
 					icon={<ShieldX className='size-10 text-brand' />}
 					actions={
-						<Link href='/auth'>
+						<Link href={authHref}>
 							<Button>Войти</Button>
 						</Link>
 					}

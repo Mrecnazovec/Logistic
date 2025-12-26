@@ -43,9 +43,14 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
 	const [showAdvanced, setShowAdvanced] = useState(false)
 
-	const handleCoordinates = (coordinates: CityCoordinates | null) => {
-		form.setValue('lat', coordinates?.lat)
-		form.setValue('lng', coordinates?.lon)
+	const handleOriginCoordinates = (coordinates: CityCoordinates | null) => {
+		form.setValue('origin_lat', coordinates?.lat)
+		form.setValue('origin_lng', coordinates?.lon)
+	}
+
+	const handleDestinationCoordinates = (coordinates: CityCoordinates | null) => {
+		form.setValue('dest_lat', coordinates?.lat)
+		form.setValue('dest_lng', coordinates?.lon)
 	}
 
 	const handleDeleteFilter = () => {
@@ -253,7 +258,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 									{...field}
 									countryCode={undefined}
 									placeholder='Откуда'
-									onCoordinates={handleCoordinates}
+									onCoordinates={handleOriginCoordinates}
 								/>
 							</FormControl>
 						</FormItem>
@@ -285,7 +290,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 									{...field}
 									countryCode={' '}
 									placeholder='Куда'
-									onCoordinates={handleCoordinates}
+									onCoordinates={handleDestinationCoordinates}
 								/>
 							</FormControl>
 						</FormItem>
@@ -373,3 +378,4 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 		</div>
 	)
 }
+

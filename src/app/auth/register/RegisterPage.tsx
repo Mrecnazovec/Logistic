@@ -8,6 +8,7 @@ import { IMG_URL, PUBLIC_URL } from '@/config/url.config'
 import { SITE_NAME } from '@/constants/seo.constants'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { RegisterAuthFields } from './RegisterField'
 import { useRegisterForm } from './useRegisterForm'
 
@@ -59,6 +60,9 @@ const VEHICLE_FIELDS = ['car_number', 'trailer_number', 'driver_license'] as con
 
 export function RegisterPage() {
 	const { form, isPending, onSubmit } = useRegisterForm()
+	const searchParams = useSearchParams()
+	const nextParam = searchParams.get('next')
+	const authHref = nextParam ? `${PUBLIC_URL.auth()}?next=${encodeURIComponent(nextParam)}` : PUBLIC_URL.auth()
 
 	const [role, setRole] = useState<RoleEnum>()
 	const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1)
@@ -267,7 +271,7 @@ export function RegisterPage() {
 			<div className='flex flex-col h-full sm:px-12 px-4 py-8'>
 				<div className='flex sm:flex-row flex-col gap-4 items-center lg:justify-end justify-center'>
 					<div className='flex items-center justify-center gap-2 flex-wrap'>
-						<Link href={PUBLIC_URL.auth()}>
+						<Link href={authHref}>
 							<Button variant={'outline'} className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 px-4 py-3 font-medium'>
 								Авторизоваться
 							</Button>
@@ -281,12 +285,12 @@ export function RegisterPage() {
 								<SelectValue className='bg-transparent text-foreground' placeholder='Выберите язык' />
 							</SelectTrigger>
 							<SelectContent className='rounded-2xl'>
-								<SelectItem value='UZB' className='rounded-2xl'>
+								{/* <SelectItem value='UZB' className='rounded-2xl'>
 									<div className='flex items-center gap-2.5 font-medium'>
 										<Image className='rounded-full' src={IMG_URL.svg('uzb')} width={24} height={24} alt='' /> Узбекский
 									</div>
 								</SelectItem>
-								<SelectSeparator />
+								<SelectSeparator /> */}
 								<SelectItem value='RUS' className='rounded-2xl'>
 									<div className='flex items-center gap-2.5 font-medium'>
 										<Image className='rounded-full' src={IMG_URL.svg('rus')} width={24} height={24} alt='' /> Русский
