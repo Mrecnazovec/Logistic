@@ -1,8 +1,9 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
+import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
@@ -15,11 +16,12 @@ import { getNavItems, type NavItem } from './NavItems'
 export function MobileNav() {
 	const pathname = usePathname()
 	const filteredPathname = `${pathname}/`
+	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
 	const [isMoreOpen, setIsMoreOpen] = useState(false)
 	const { notifications } = useNotifications(true)
-	const navItems = useMemo(() => getNavItems(role), [role])
-	const deskHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk()
+	const navItems = useMemo(() => getNavItems(role, locale), [role, locale])
+	const deskHref = withLocale(role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk(), locale)
 
 	const unreadCount = useMemo(
 		() => notifications.filter((item) => !item.is_read).length,
@@ -27,16 +29,6 @@ export function MobileNav() {
 	)
 
 	const normalizeHref = (href: string) => (href.endsWith('/') ? href : `${href}/`)
-
-	const labelOverrides: Record<string, string> = useMemo(
-		() => ({
-			[DASHBOARD_URL.announcements()]: 'Доска объявлений',
-			[deskHref]: 'Торговля',
-			[DASHBOARD_URL.transportation()]: 'Мои грузы',
-			[DASHBOARD_URL.notifications()]: 'Уведомления',
-		}),
-		[deskHref],
-	)
 
 	const isAllowed = useMemo(
 		() => (roles?: NavItem['roles']) => {
@@ -65,9 +57,9 @@ export function MobileNav() {
 	)
 
 	const prioritizedHrefs = [
-		DASHBOARD_URL.announcements(),
+		withLocale(DASHBOARD_URL.announcements(), locale),
 		deskHref,
-		DASHBOARD_URL.transportation(),
+		withLocale(DASHBOARD_URL.transportation(), locale),
 	]
 
 	const prioritizedItems = prioritizedHrefs
@@ -83,7 +75,9 @@ export function MobileNav() {
 	const usedHrefs = new Set(mainNavItems.map((item) => item.href))
 	const additionalItems = allItems.filter((item) => !usedHrefs.has(item.href))
 	const isMoreActive = additionalItems.some((item) => filteredPathname.startsWith(normalizeHref(item.href)))
-	const isNotificationsActive = filteredPathname.startsWith(normalizeHref(DASHBOARD_URL.notifications()))
+	const isNotificationsActive = filteredPathname.startsWith(
+		normalizeHref(withLocale(DASHBOARD_URL.notifications(), locale)),
+	)
 
 	const renderNavButton = (item: (typeof mainNavItems)[number]) => {
 		const Icon = item.icon
@@ -108,9 +102,6 @@ export function MobileNav() {
 				>
 					<Icon className='size-5' />
 				</span>
-				{/* <span className='max-w-[80px] text-center leading-tight line-clamp-1'>
-					{labelOverrides[item.href] ?? item.label}
-				</span> */}
 				<span
 					aria-hidden='true'
 					className={cn(
@@ -124,14 +115,14 @@ export function MobileNav() {
 
 	return (
 		<nav
-			aria-label='Navigation'
+			aria-label={t('components.dashboard.mobileNav.closeMenu')}
 			className='md:hidden fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80'
 		>
 			<div className='grid grid-cols-5 items-end gap-1 px-2 py-2'>
 				{mainNavItems.map((item) => renderNavButton(item))}
 
 				<Link
-					href={DASHBOARD_URL.notifications()}
+					href={withLocale(DASHBOARD_URL.notifications(), locale)}
 					className={cn(
 						'flex flex-col items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors',
 						isNotificationsActive && 'text-brand',
@@ -151,9 +142,6 @@ export function MobileNav() {
 							</span>
 						)}
 					</span>
-					{/* <span className='text-center leading-tight'>
-						{labelOverrides[DASHBOARD_URL.notifications()]}
-					</span> */}
 					<span
 						aria-hidden='true'
 						className={cn(
@@ -180,7 +168,6 @@ export function MobileNav() {
 					>
 						<MoreHorizontal className='size-5' />
 					</span>
-					{/* <span className='text-center leading-tight'>Ещё</span> */}
 					<span
 						aria-hidden='true'
 						className={cn(
@@ -201,13 +188,13 @@ export function MobileNav() {
 						onClick={(event) => event.stopPropagation()}
 					>
 						<div className='flex items-center justify-between px-5 py-4 border-b border-border'>
-							<p className='text-lg font-semibold'>Дополнительно</p>
+							<p className='text-lg font-semibold'>{t('components.dashboard.mobileNav.more')}</p>
 							<Button
 								size='icon'
 								variant='ghost'
 								onClick={() => setIsMoreOpen(false)}
 								className='rounded-full'
-								aria-label='Закрыть меню'
+								aria-label={t('components.dashboard.mobileNav.closeMenu')}
 							>
 								<X className='size-5' />
 							</Button>
@@ -215,7 +202,9 @@ export function MobileNav() {
 
 						<div className='max-h-[60vh] overflow-y-auto py-2'>
 							{additionalItems.length === 0 ? (
-								<p className='px-5 py-3 text-sm text-muted-foreground'>Другие разделы недоступны.</p>
+								<p className='px-5 py-3 text-sm text-muted-foreground'>
+									{t('components.dashboard.mobileNav.empty')}
+								</p>
 							) : (
 								additionalItems.map((item) => {
 									const Icon = item.icon
@@ -237,7 +226,7 @@ export function MobileNav() {
 												<span className='flex size-10 items-center justify-center rounded-2xl bg-muted/60 text-foreground/70'>
 													<Icon className='size-5' />
 												</span>
-												{item.label}
+												{t(item.labelKey)}
 											</span>
 											<ChevronRight className='size-4 text-muted-foreground' />
 										</Link>
@@ -251,7 +240,3 @@ export function MobileNav() {
 		</nav>
 	)
 }
-
-
-
-

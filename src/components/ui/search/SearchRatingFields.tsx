@@ -1,18 +1,18 @@
 'use client'
 
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { Search, Settings2 } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import { UseFormReturn } from 'react-hook-form'
-
+import { Search, Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/Drawer'
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { ISearch } from '@/shared/types/Search.interface'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
-import { usePathname, useRouter } from 'next/navigation'
 
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
@@ -20,6 +20,7 @@ interface SearchFieldsProps {
 }
 
 export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
+	const { t } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
 	const isDesktop = useMediaQuery('(min-width: 1024px)')
@@ -27,7 +28,6 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 
 	const handleDeleteFilter = () => {
 		form.reset()
-
 		router.push(pathname)
 	}
 
@@ -45,7 +45,7 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 			}
 		>
 			<Search className='size-5' />
-			Поиск
+			{t('components.searchRating.search')}
 		</Button>
 	)
 
@@ -59,7 +59,7 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 						<FormItem className='w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput placeholder='Поиск по id' {...field} value={field.value ?? ''} />
+									<InputGroupInput placeholder={t('components.searchRating.byId')} {...field} value={field.value ?? ''} />
 									<InputGroupAddon className='pr-2'>
 										<Search className={cn('text-grayscale size-5', field.value && 'text-black')} />
 									</InputGroupAddon>
@@ -70,16 +70,16 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 				/>
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant={'outline'} className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand'>
+						<Button variant='outline' className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand'>
 							<Settings2 className='size-5' />
-							Фильтры
+							{t('components.searchRating.filters')}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align='end' className='space-y-3'>
 						<div className='flex items-center justify-between pb-3 border-b'>
-							<p className='text-sm font-medium'>Фильтры</p>
-							<Button onClick={() => handleDeleteFilter()} type='button' variant={'link'} className='text-brand underline p-0 h-fit text-[10px]'>
-								Сбросить фильтры
+							<p className='text-sm font-medium'>{t('components.searchRating.filters')}</p>
+							<Button onClick={() => handleDeleteFilter()} type='button' variant='link' className='text-brand underline p-0 h-fit text-[10px]'>
+								{t('components.searchRating.reset')}
 							</Button>
 						</div>
 
@@ -89,10 +89,10 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 								name='rating_min'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className='text-grayscale'>Рейтинг</FormLabel>
+										<FormLabel className='text-grayscale'>{t('components.searchRating.rating')}</FormLabel>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder={t('components.searchRating.from')} {...field} value={field.value ?? ''} className='pl-4' />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -105,7 +105,7 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 									<FormItem>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' />
+												<InputGroupInput placeholder={t('components.searchRating.to')} {...field} value={field.value ?? ''} className='pl-4' />
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -129,7 +129,7 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 		<Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
 			<DrawerContent className='max-h-[90vh] overflow-y-auto pb-6'>
 				<DrawerHeader>
-					<DrawerTitle>Поиск</DrawerTitle>
+					<DrawerTitle>{t('components.searchRating.search')}</DrawerTitle>
 				</DrawerHeader>
 				<div className='space-y-6 px-4'>
 					{content}

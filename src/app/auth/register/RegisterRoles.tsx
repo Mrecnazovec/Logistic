@@ -4,6 +4,7 @@ import { memo, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import { useI18n } from '@/i18n/I18nProvider'
 
 export interface IRole {
 	key: RoleEnum
@@ -20,6 +21,7 @@ interface RegisterRolesProps {
 }
 
 const RoleDialog = memo(({ role, onSelect }: { role: IRole; onSelect: (r: RoleEnum) => void }) => {
+	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
 	const Icon = role.icon
 
@@ -33,12 +35,12 @@ const RoleDialog = memo(({ role, onSelect }: { role: IRole; onSelect: (r: RoleEn
 			<DialogTrigger asChild>
 				<Button className='w-full h-14 mb-8'>
 					<Icon />
-					<p className='sm:flex hidden'>Зарегистрироваться как </p>
+					<p className='sm:flex hidden'>{t('register.role.cta')}</p>
 					{role.buttonText}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className='gap-0'>
-				<DialogTitle className='text-center mb-8 text-2xl font-bold'>Что такое роли?</DialogTitle>
+				<DialogTitle className='text-center mb-8 text-2xl font-bold'>{t('register.role.dialogTitle')}</DialogTitle>
 				<div className='flex items-center gap-4 mb-8'>
 					<div className='rounded-full p-2.5 bg-brand/40'>
 						<Icon color={role.color} />
@@ -49,7 +51,7 @@ const RoleDialog = memo(({ role, onSelect }: { role: IRole; onSelect: (r: RoleEn
 				</div>
 				<Button onClick={handleSelect} className='w-full h-14'>
 					<Icon />
-					<p className='sm:flex hidden'>Зарегистрироваться как </p>
+					<p className='sm:flex hidden'>{t('register.role.cta')}</p>
 					{role.buttonText}
 				</Button>
 			</DialogContent>

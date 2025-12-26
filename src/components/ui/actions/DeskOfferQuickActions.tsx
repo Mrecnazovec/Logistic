@@ -16,8 +16,8 @@ interface DeskOfferQuickActionsProps {
 
 export function DeskOfferQuickActions({ offer, enableCounter = false }: DeskOfferQuickActionsProps) {
 	const [openCounter, setOpenCounter] = useState(false)
-	const { acceptOffer, isLoadingAccept } = useAcceptOffer()
-	const { rejectOffer, isLoadingReject } = useRejectOffer()
+	const { acceptOffer, isLoadingAcceptOffer } = useAcceptOffer()
+	const { rejectOffer, isLoadingRejectOffer } = useRejectOffer()
 
 	const handleAccept = () => acceptOffer(String(offer.id))
 	const handleReject = () => rejectOffer(String(offer.id))
@@ -29,7 +29,7 @@ export function DeskOfferQuickActions({ offer, enableCounter = false }: DeskOffe
 					variant='outline'
 					size='icon'
 					onClick={handleAccept}
-					disabled={isLoadingAccept}
+					disabled={isLoadingAcceptOffer}
 					className='rounded-full border-none bg-green-50 text-green-600 hover:bg-green-100 disabled:opacity-60'
 				>
 					<Check className='size-4' />
@@ -50,7 +50,7 @@ export function DeskOfferQuickActions({ offer, enableCounter = false }: DeskOffe
 					variant='outline'
 					size='icon'
 					onClick={handleReject}
-					disabled={isLoadingReject}
+					disabled={isLoadingRejectOffer}
 					className='rounded-full border-none bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-60'
 				>
 					<X className='size-4' />

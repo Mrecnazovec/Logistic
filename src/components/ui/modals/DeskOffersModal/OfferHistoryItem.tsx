@@ -6,6 +6,7 @@ import { useMemo } from "react"
 import { NoPhoto } from "@/components/ui/NoPhoto"
 import { ProfileLink } from "@/components/ui/actions/ProfileLink"
 import { useGetOfferLogs } from "@/hooks/queries/offers/useGet/useGetOfferLogs"
+import { useI18n } from "@/i18n/I18nProvider"
 import type { PriceCurrencyCode } from "@/lib/currency"
 import { formatCurrencyValue } from "@/lib/currency"
 import { cn } from "@/lib/utils"
@@ -20,9 +21,13 @@ type OfferHistoryItemProps = {
 }
 
 export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryItemProps) {
+  const { t, locale } = useI18n()
   const priceCurrency = offer.price_currency as PriceCurrencyCode
   const { data, isLoading } = useGetOfferLogs(isExpanded ? String(offer.id) : undefined)
-  const sections = useMemo(() => buildOfferLogSections(data?.results ?? []), [data?.results])
+  const sections = useMemo(
+    () => buildOfferLogSections(data?.results ?? [], t, locale),
+    [data?.results, locale, t],
+  )
 
   return (
     <div className="rounded-2xl border bg-background p-4 sm:p-5">
@@ -37,7 +42,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
             <ProfileLink name={offer.carrier_full_name} id={offer.carrier_id} />
           </p>
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Компания: </span>
+            <span className="font-semibold text-foreground">{t("components.offerHistory.company")}: </span>
             {offer.carrier_company || "-"}
           </p>
           <span className="text-error-500 text-sm font-semibold">
@@ -46,7 +51,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
         </div>
         <div className="flex items-center gap-4">
           <p className="font-semibold text-foreground">
-            Цена: {formatCurrencyValue(offer.price_value, priceCurrency)}
+            {t("components.offerHistory.price")}: {formatCurrencyValue(offer.price_value, priceCurrency)}
           </p>
           <ChevronDown
             className={cn(
@@ -60,7 +65,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
       {isExpanded ? (
         <div className="mt-4 rounded-2xl bg-muted/20">
           {isLoading ? (
-            <p className="text-sm text-muted-foreground">Загружаем историю...</p>
+            <p className="text-sm text-muted-foreground">{t("components.offerHistory.loading")}</p>
           ) : sections.length ? (
             <div className="space-y-8">
               {sections.map((section) => (
@@ -122,7 +127,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
                                           </span>
                                           <span>{change.from}</span>
                                           <span aria-hidden className="text-muted-foreground">
-                                            →
+                                            -&gt;
                                           </span>
                                           <span className="font-semibold text-foreground">
                                             {change.to}
@@ -131,7 +136,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
                                       ))}
                                     </div>
                                   ) : (
-                                    <p>Нет измененных полей.</p>
+                                    <p>{t("components.offerHistory.noChanges")}</p>
                                   )}
                                 </div>
                               </div>
@@ -145,7 +150,7 @@ export function OfferHistoryItem({ offer, isExpanded, onToggle }: OfferHistoryIt
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">История пока пустая.</p>
+            <p className="text-sm text-muted-foreground">{t("components.offerHistory.empty")}</p>
           )}
         </div>
       ) : null}

@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatPlace, formatPriceValue, formatWeightValue } from '@/lib/formatters'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { MapPin, Mail, Phone, Scale, Truck, Wallet } from 'lucide-react'
@@ -43,12 +44,13 @@ type DeskMyCardProps = {
 }
 
 function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
-	const transportName = TransportSelect.find((type) => type.type === cargo.transport_type)?.symb ?? cargo.transport_type
-	const { variant, label, highlight } = getOfferStatusMeta(cargo, role)
+	const { t } = useI18n()
+	const transportName = getTransportSymbol(t, cargo.transport_type as TransportTypeEnum) || cargo.transport_type
+	const { variant, label, highlight } = getOfferStatusMeta(cargo, role, t)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
-	const contactPhone = cargo.phone || '—'
-	const contactEmail = cargo.email || '—'
+	const contactPhone = cargo.phone || '-'
+	const contactEmail = cargo.email || '-'
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -56,7 +58,7 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<Badge variant={variant} className={highlight ? 'animate-pulse' : undefined}>{label}</Badge>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.customer_full_name || '—'}
+						{cargo.customer_full_name || '-'}
 					</CardTitle>
 					<UuidCopy uuid={cargo.cargo_uuid || String(cargo.id)} />
 				</div>
@@ -64,30 +66,30 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
-				<InfoSection title='Откуда'>
-					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '—')} secondary={formattedLoadDate || '—'} />
+				<InfoSection title={t('deskMy.card.from')}>
+					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '-')} secondary={formattedLoadDate || '-'} />
 				</InfoSection>
 
-				<InfoSection title='Куда'>
+				<InfoSection title={t('deskMy.card.to')}>
 					<InfoChip
 						icon={MapPin}
-						primary={formatPlace(cargo.destination_city, cargo.destination_country, '—')}
-						secondary={formattedDeliveryDate || '—'}
+						primary={formatPlace(cargo.destination_city, cargo.destination_country, '-')}
+						secondary={formattedDeliveryDate || '-'}
 					/>
 				</InfoSection>
 
-				<InfoSection title='Транспорт / вес'>
-					<InfoChip icon={Truck} primary={transportName || '—'} secondary='Тип транспорта' />
-					<InfoChip icon={Scale} primary={formatWeightValue(cargo.weight_t)} secondary='Вес' />
+				<InfoSection title={t('deskMy.card.transportWeight')}>
+					<InfoChip icon={Truck} primary={transportName || '-'} secondary={t('deskMy.card.transportType')} />
+					<InfoChip icon={Scale} primary={formatWeightValue(cargo.weight_t)} secondary={t('deskMy.card.weight')} />
 				</InfoSection>
 
-				<InfoSection title='Цена'>
-					<InfoChip icon={Wallet} primary={formatPriceValue(cargo.price_value, cargo.price_currency)} secondary={cargo.price_currency || '—'} />
+				<InfoSection title={t('deskMy.card.price')}>
+					<InfoChip icon={Wallet} primary={formatPriceValue(cargo.price_value, cargo.price_currency)} secondary={cargo.price_currency || '-'} />
 				</InfoSection>
 
-				<InfoSection title='Контакты'>
-					<InfoChip icon={Phone} primary={contactPhone} secondary='Телефон' className='flex-1' />
-					<InfoChip icon={Mail} primary={contactEmail} secondary='Email' className='flex-1' />
+				<InfoSection title={t('deskMy.card.contacts')}>
+					<InfoChip icon={Phone} primary={contactPhone} secondary={t('deskMy.card.phone')} className='flex-1' />
+					<InfoChip icon={Mail} primary={contactEmail} secondary={t('deskMy.card.email')} className='flex-1' />
 				</InfoSection>
 			</CardContent>
 
@@ -97,7 +99,7 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 					onClick={() => onOpenDecision?.(cargo)}
 					className='w-full rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
 				>
-					Открыть предложение
+					{t('deskMy.card.openOffer')}
 				</Button>
 			</CardFooter>
 		</Card>

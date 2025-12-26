@@ -10,6 +10,7 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
@@ -52,7 +53,8 @@ type DeskCardProps = {
 }
 
 function DeskCard({ cargo }: DeskCardProps) {
-	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type || '-'
+	const { t } = useI18n()
+	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const { refreshLoad } = useRefreshLoad()
 	const [offerOpen, setOfferOpen] = useState(false)
@@ -60,41 +62,44 @@ function DeskCard({ cargo }: DeskCardProps) {
 	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
 
 	const isHidden = Boolean(cargo.is_hidden)
-	const visibilityActionLabel = isHidden ? 'Показать' : 'Скрыть'
+	const visibilityActionLabel = isHidden ? t('desk.card.show') : t('desk.card.hide')
 	const VisibilityIcon = isHidden ? Eye : EyeOff
 
 	const sections = [
 		{
-			title: 'Откуда',
+			title: t('desk.card.from'),
 			items: [
-				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
+				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: t('desk.card.place') },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: t('desk.card.load') },
 			],
 		},
 		{
-			title: 'Куда',
+			title: t('desk.card.to'),
 			items: [
-				{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: 'Город / страна' },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
+				{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: t('desk.card.place') },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: t('desk.card.unload') },
 			],
 		},
 		{
-			title: 'Тип транспорта / Вес',
+			title: t('desk.card.transportWeight'),
 			items: [
-				{ icon: Truck, primary: transportName, secondary: 'Тип транспорта' },
-				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
+				{ icon: Truck, primary: transportName, secondary: t('desk.card.transportType') },
+				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: t('desk.card.weight') },
 			],
 		},
 		{
-			title: 'Стоимость',
+			title: t('desk.card.price'),
 			items: [
-				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Фиксированная' },
-				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: 'Цена за км' },
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: t('desk.card.priceFixed') },
+				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: t('desk.card.pricePerKm') },
 			],
 		},
 		{
-			title: 'Контакты',
-			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-', secondary: 'Телефон' }, { icon: Mail, primary: canShowEmail ? cargo.email : '-', secondary: 'Email' }],
+			title: t('desk.card.contacts'),
+			items: [
+				{ icon: Phone, primary: canShowPhone ? cargo.phone : '-', secondary: t('desk.card.phone') },
+				{ icon: Mail, primary: canShowEmail ? cargo.email : '-', secondary: t('desk.card.email') },
+			],
 		},
 
 	]
@@ -104,20 +109,22 @@ function DeskCard({ cargo }: DeskCardProps) {
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.company_name || cargo.product || 'Без названия'}
+						{cargo.company_name || cargo.product || t('desk.card.noTitle')}
 					</CardTitle>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<span className='font-semibold text-foreground'>ID:</span>
 						<UuidCopy uuid={cargo.uuid} />
 					</div>
 				</div>
-				<p className='text-sm text-muted-foreground'>Товар: {cargo.product}</p>
+				<p className='text-sm text-muted-foreground'>
+					{t('desk.card.productLabel', { product: cargo.product ?? '-' })}
+				</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
 				<CardSections sections={sections} />
 				<section className='flex flex-col gap-2'>
-					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Предложения</span>
+					<span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>{t('desk.card.offers')}</span>
 					<HasOffersField cargo={cargo} />
 				</section>
 			</CardContent>
@@ -126,13 +133,13 @@ function DeskCard({ cargo }: DeskCardProps) {
 				<Button
 					variant='outline'
 					className='min-w-[140px] flex-1 bg-[#111827] text-white'
-					onClick={() => refreshLoad({ uuid: cargo.uuid, detail: 'Обновление объявления' })}
+					onClick={() => refreshLoad({ uuid: cargo.uuid, detail: t('desk.card.refreshDetail') })}
 				>
-					<RefreshCcw /> Обновить
+					<RefreshCcw /> {t('desk.card.refresh')}
 				</Button>
 				<Link className='min-w-[140px] flex-1' href={DASHBOARD_URL.edit(cargo.uuid)}>
 					<Button variant='outline' className='w-full bg-warning-400 text-white'>
-						<Pen /> Изменить
+						<Pen /> {t('desk.card.edit')}
 					</Button>
 				</Link>
 				<Button
@@ -150,7 +157,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 					className='min-w-[240px] flex flex-1 items-center gap-2 bg-brand text-white'
 				>
 					<Handshake className='size-4' />
-					Сделать предложение
+					{t('desk.card.offer')}
 				</Button>
 			</CardFooter>
 
@@ -160,6 +167,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 }
 
 function HasOffersField({ cargo }: { cargo: ICargoList }) {
+	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
 	const hasOffers = hasOffersValue(cargo)
 
@@ -175,12 +183,12 @@ function HasOffersField({ cargo }: { cargo: ICargoList }) {
 				{hasOffers ? (
 					<>
 						<CircleCheck className='size-4 text-success-500' aria-hidden />
-						<span>Есть предложения</span>
+						<span>{t('desk.card.hasOffers')}</span>
 					</>
 				) : (
 					<>
 						<Minus className='size-4 text-muted-foreground' aria-hidden />
-						<span>Нет предложений</span>
+						<span>{t('desk.card.noOffers')}</span>
 					</>
 				)}
 			</Button>

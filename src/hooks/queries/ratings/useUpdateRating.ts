@@ -1,9 +1,10 @@
-import { ratingsService } from '@/services/ratings.service'
 import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
+import { ratingsService } from '@/services/ratings.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type UpdateRatingPayload = {
 	id: string
@@ -11,6 +12,7 @@ type UpdateRatingPayload = {
 }
 
 export const useUpdateRating = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
 
 	const { mutate: updateRating, isPending: isLoadingUpdate } = useMutation({
@@ -19,10 +21,10 @@ export const useUpdateRating = () => {
 		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get ratings'] })
 			queryClient.invalidateQueries({ queryKey: ['get rating', id] })
-			toast.success('Rating updated')
+			toast.success(t('hooks.ratings.update.success'))
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Unable to update rating'
+			const message = getErrorMessage(error) ?? t('hooks.ratings.update.error')
 			toast.error(message)
 		},
 	})

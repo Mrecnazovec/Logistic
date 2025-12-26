@@ -1,17 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
-import { CitySelector } from '@/components/ui/selectors/CitySelector'
-import { ArrowRight, Search, Settings2, Trash2 } from 'lucide-react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { UseFormReturn } from 'react-hook-form'
+import { ArrowRight, Search, Settings2, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/Drawer'
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
+import { DatePicker } from '@/components/ui/selectors/DateSelector'
+import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
@@ -19,10 +23,6 @@ import { NUMERIC_REGEX } from '@/shared/regex/regex'
 import { ISearch } from '@/shared/types/Search.interface'
 import type { CityCoordinates } from '@/shared/types/Nominatim.interface'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { CurrencySelector } from '../selectors/CurrencySelector'
-import { DatePicker } from '../selectors/DateSelector'
-import { TransportSelector } from '../selectors/TransportSelector'
 
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
@@ -31,6 +31,7 @@ interface SearchFieldsProps {
 }
 
 export function SearchFields({ form, showOffersFilter = true, onSubmit }: SearchFieldsProps) {
+	const { t } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
@@ -66,17 +67,15 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 
 	const searchButton = (
 		<Button
-			type={'submit'}
+			type='submit'
 			className='max-xl:w-full'
-			onClick={
-				() => {
-					onSubmit()
-					closeDrawer()
-				}
-			}
+			onClick={() => {
+				onSubmit()
+				closeDrawer()
+			}}
 		>
 			<Search className='size-5' />
-			Поиск
+			{t('components.search.search')}
 		</Button>
 	)
 
@@ -90,7 +89,11 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						<FormItem className='w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput placeholder='Поиск по номеру id' {...field} value={field.value ?? ''} />
+									<InputGroupInput
+										placeholder={t('components.search.byId')}
+										{...field}
+										value={field.value ?? ''}
+									/>
 									<InputGroupAddon className='pr-2'>
 										<Search className={cn('text-grayscale size-5', field.value && 'text-black')} />
 									</InputGroupAddon>
@@ -101,14 +104,14 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 				/>
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant={'outline'} className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand max-xs:w-full'>
+						<Button variant='outline' className='bg-transparent border border-brand text-brand hover:bg-transparent hover:text-brand max-xs:w-full'>
 							<Settings2 className='size-5' />
-							Фильтры
+							{t('components.search.filters')}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align='end' className='space-y-3'>
 						<div className='flex items-center justify-between pb-3 border-b'>
-							<p className='text-sm font-medium'>Фильтры</p>
+							<p className='text-sm font-medium'>{t('components.search.filters')}</p>
 						</div>
 						<FormField
 							control={form.control}
@@ -116,7 +119,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel className='text-grayscale flex items-center gap-2'>
-										Валюта
+										{t('components.search.currency')}
 										{renderCurrencyBadge()}
 									</FormLabel>
 									<FormControl>
@@ -131,11 +134,11 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 								name='min_price'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className='text-grayscale'>Цена</FormLabel>
+										<FormLabel className='text-grayscale'>{t('components.search.price')}</FormLabel>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
-													placeholder='От'
+													placeholder={t('components.search.from')}
 													{...field}
 													disabled={!isPriceEnabled}
 													value={field.value ?? ''}
@@ -155,7 +158,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
-													placeholder='До'
+													placeholder={t('components.search.to')}
 													{...field}
 													disabled={!isPriceEnabled}
 													value={field.value ?? ''}
@@ -178,7 +181,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 
 									return (
 										<FormItem>
-											<FormLabel className='text-grayscale'>Наличие предложений</FormLabel>
+											<FormLabel className='text-grayscale'>{t('components.search.hasOffers')}</FormLabel>
 											<FormControl>
 												<RadioGroup
 													className=''
@@ -187,11 +190,11 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 												>
 													<label className='flex items-center gap-2 rounded-4xl px-3 py-2 text-sm cursor-pointer bg-grayscale-50 h-13'>
 														<RadioGroupItem value='true' />
-														Есть предложения
+														{t('components.search.hasOffers.yes')}
 													</label>
 													<label className='flex items-center gap-2 rounded-4xl px-3 py-2 text-sm cursor-pointer bg-grayscale-50 h-13'>
 														<RadioGroupItem value='false' />
-														Нет предложений
+														{t('components.search.hasOffers.no')}
 													</label>
 												</RadioGroup>
 											</FormControl>
@@ -206,10 +209,16 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 								name='min_weight'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className='text-grayscale'>Масса</FormLabel>
+										<FormLabel className='text-grayscale'>{t('components.search.weight')}</FormLabel>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='От' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+												<InputGroupInput
+													placeholder={t('components.search.from')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												/>
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -222,7 +231,13 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 									<FormItem>
 										<FormControl>
 											<InputGroup>
-												<InputGroupInput placeholder='До' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+												<InputGroupInput
+													placeholder={t('components.search.to')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												/>
 											</InputGroup>
 										</FormControl>
 									</FormItem>
@@ -236,7 +251,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						variant='destructive'
 						type='button'
 						onClick={handleDeleteFilter}
-						title='Сбросить фильтры'
+						title={t('components.search.resetTitle')}
 					>
 						<Trash2 className='size-4' />
 					</Button>
@@ -257,7 +272,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 								<CitySelector
 									{...field}
 									countryCode={undefined}
-									placeholder='Откуда'
+									placeholder={t('components.search.origin')}
 									onCoordinates={handleOriginCoordinates}
 								/>
 							</FormControl>
@@ -271,7 +286,13 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						<FormItem className='max-xs:w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput placeholder='Радиус, км' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+									<InputGroupInput
+										placeholder={t('components.search.radius')}
+										{...field}
+										value={field.value ?? ''}
+										className='pl-4'
+										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+									/>
 								</InputGroup>
 							</FormControl>
 						</FormItem>
@@ -288,8 +309,8 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 							<FormControl>
 								<CitySelector
 									{...field}
-									countryCode={' '}
-									placeholder='Куда'
+									countryCode=' '
+									placeholder={t('components.search.destination')}
 									onCoordinates={handleDestinationCoordinates}
 								/>
 							</FormControl>
@@ -303,7 +324,13 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						<FormItem className='max-xs:w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput placeholder='Радиус, км' {...field} value={field.value ?? ''} className='pl-4' onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)} />
+									<InputGroupInput
+										placeholder={t('components.search.radius')}
+										{...field}
+										value={field.value ?? ''}
+										className='pl-4'
+										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+									/>
 								</InputGroup>
 							</FormControl>
 						</FormItem>
@@ -330,7 +357,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 							<DatePicker
 								value={field.value}
 								onChange={field.onChange}
-								placeholder='Выберите дату загрузки'
+								placeholder={t('components.search.loadDate')}
 							/>
 						</FormControl>
 					</FormItem>
@@ -345,7 +372,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 			<Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
 				<DrawerContent className='max-h-[90vh] overflow-y-auto pb-6'>
 					<DrawerHeader>
-						<DrawerTitle>Поиск</DrawerTitle>
+						<DrawerTitle>{t('components.search.search')}</DrawerTitle>
 					</DrawerHeader>
 					<div className='space-y-6 px-4 max-md:overflow-y-scroll'>
 						{primaryRow}
@@ -366,7 +393,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 					<Button
 						type='button'
 						variant='outline'
-						size={'icon'}
+						size='icon'
 						onClick={() => setShowAdvanced((prev) => !prev)}
 						className='max-md:w-full'
 					>
@@ -378,4 +405,3 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 		</div>
 	)
 }
-

@@ -1,4 +1,5 @@
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
+import { useI18n } from '@/i18n/I18nProvider'
 import { authService } from '@/services/auth/auth.service'
 import { IErrorResponse } from '@/shared/types/Error.interface'
 import { ILogin } from '@/shared/types/Login.interface'
@@ -9,6 +10,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 export function useAuthForm() {
+	const { t } = useI18n()
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const nextParam = searchParams.get('next')
@@ -30,7 +32,7 @@ export function useAuthForm() {
 				return
 			}
 
-			toast.success('Успешная авторизация')
+			toast.success(t('auth.toast.success'))
 			setTimeout(() => router.refresh(), 3000)
 			router.push(safeNext ?? DASHBOARD_URL.announcements())
 		},
@@ -40,7 +42,7 @@ export function useAuthForm() {
 			if (err.response) {
 				toast.error(err.response.data.detail)
 			} else {
-				toast.error('Ошибка при авторизации')
+				toast.error(t('auth.toast.error'))
 			}
 		},
 	})

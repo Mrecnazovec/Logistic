@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { PaymentMethodEnum } from "@/shared/enums/PaymentMethod.enum"
 import type { IOfferShort } from "@/shared/types/Offer.interface"
 import { ProfileLink } from "@/components/ui/actions/ProfileLink"
+import { useI18n } from "@/i18n/I18nProvider"
 
 import { currencyOptions } from "./constants"
 import type { OfferFormState } from "./types"
@@ -47,6 +48,7 @@ export function OfferCard({
   onCounter,
   onFormChange,
 }: OfferCardProps) {
+  const { t } = useI18n()
   const priceCurrency = offer.price_currency as PriceCurrencyCode
   const defaultForm: OfferFormState = {
     paymentMethod: (offer.payment_method as PaymentMethodEnum) || "",
@@ -76,7 +78,7 @@ export function OfferCard({
             {offer.carrier_id ? <ProfileLink name={offer.carrier_full_name} id={offer.carrier_id} /> : <ProfileLink name={offer.logistic_full_name} id={offer.logistic_id} />}
           </p>
           <p className="text-muted-foreground">
-            <span className="font-semibold text-foreground">Компания: </span>
+            <span className="font-semibold text-foreground">{t("components.offerCard.company")}: </span>
             {offer.carrier_id ? offer.carrier_company : offer.logistic_company}
           </p>
           <span className="text-error-500 font-bold">{offer.response_status}</span>
@@ -84,12 +86,12 @@ export function OfferCard({
         <div className="space-y-1 text-right text-sm text-muted-foreground">
           {offer.carrier_rating !== null && offer.carrier_rating !== undefined ? (
             <p>
-              <span className="font-semibold text-foreground">Рейтинг: </span>
+              <span className="font-semibold text-foreground">{t("components.offerCard.rating")}: </span>
               {offer.carrier_rating}
             </p>
           ) : null}
           <p className="font-semibold text-foreground text-start">
-            Цена: {formatCurrencyValue(offer.price_value, priceCurrency)}
+            {t("components.offerCard.price")}: {formatCurrencyValue(offer.price_value, priceCurrency)}
             {offer.price_per_km ? (
               <span className="text-muted-foreground">
                 {" "}
@@ -108,7 +110,7 @@ export function OfferCard({
           step="0.01"
           value={form.price ?? ""}
           onChange={(event) => updateForm({ price: event.target.value })}
-          placeholder="Введите цену"
+          placeholder={t("components.offerCard.pricePlaceholder")}
           className="w-full rounded-full border-none bg-muted/40 placeholder:text-muted-foreground"
         />
 
@@ -122,7 +124,7 @@ export function OfferCard({
               "*:data-[slot=select-value]:text-black",
             )}
           >
-            <SelectValue placeholder="Выберите валюту" />
+            <SelectValue placeholder={t("components.offerCard.currencyPlaceholder")} />
           </SelectTrigger>
           <SelectContent align="start">
             {currencyOptions.map((currency) => (
@@ -136,7 +138,7 @@ export function OfferCard({
         <PaymentSelector
           value={form.paymentMethod}
           onChange={(value) => updateForm({ paymentMethod: value })}
-          placeholder="Способ оплаты"
+          placeholder={t("components.offerCard.paymentPlaceholder")}
           className="bg-muted/40 shadow-none [&>button]:border-none [&>button]:bg-transparent"
         />
       </div>
@@ -149,14 +151,14 @@ export function OfferCard({
               onClick={handleCounterOffer}
               disabled={isCounterDisabled}
             >
-              Контрпредложение
+              {t("components.offerCard.counter")}
             </Button>
             <Button
               className="rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60"
               onClick={onReject}
               disabled={isLoadingReject}
             >
-              Отказать
+              {t("components.offerCard.reject")}
             </Button>
           </>
         ) : (
@@ -166,21 +168,21 @@ export function OfferCard({
               onClick={onAccept}
               disabled={isLoadingAccept}
             >
-              Принять
+              {t("components.offerCard.accept")}
             </Button>
             <Button
               className="rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60"
               onClick={handleCounterOffer}
               disabled={isCounterDisabled}
             >
-              Торговаться
+              {t("components.offerCard.negotiate")}
             </Button>
             <Button
               className="rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60"
               onClick={onReject}
               disabled={isLoadingReject}
             >
-              Отказать
+              {t("components.offerCard.reject")}
             </Button>
           </>
         )}

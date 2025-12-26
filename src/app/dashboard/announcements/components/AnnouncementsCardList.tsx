@@ -5,6 +5,7 @@ import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { useI18n } from '@/i18n/I18nProvider'
 import {
 	formatDateValue,
 	formatPlace,
@@ -50,53 +51,62 @@ type AnnouncementCardProps = {
 }
 
 function AnnouncementCard({ cargo }: AnnouncementCardProps) {
-	const transportName = getTransportName(cargo.transport_type) || cargo.transport_type || '-'
+	const { t } = useI18n()
+	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
 	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
 
 	const sections: CardSection[] = [
 		{
-			title: 'Откуда',
+			title: t('announcements.card.from'),
 			items: [
-				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: 'Город / страна' },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Загрузка' },
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.origin_city, cargo.origin_country),
+					secondary: t('announcements.card.place'),
+				},
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: t('announcements.card.load') },
 			],
 		},
 		{
-			title: 'Куда',
+			title: t('announcements.card.to'),
 			items: [
 				{
 					icon: MapPin,
 					primary: formatPlace(cargo.destination_city, cargo.destination_country),
-					secondary: 'Город / страна',
+					secondary: t('announcements.card.place'),
 				},
-				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Разгрузка' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: t('announcements.card.unload') },
 			],
 		},
 		{
-			title: 'Транспорт / вес',
+			title: t('announcements.card.transportWeight'),
 			items: [
-				{ icon: Truck, primary: transportName || '—', secondary: 'Тип транспорта' },
-				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: 'Вес' },
+				{ icon: Truck, primary: transportName || '-', secondary: t('announcements.card.transportType') },
+				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: t('announcements.card.weight') },
 			],
 		},
 		{
-			title: 'Цена / км',
+			title: t('announcements.card.priceKm'),
 			items: [
-				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: 'Стоимость перевозки' },
+				{
+					icon: Wallet,
+					primary: formatPriceValue(cargo.price_value, cargo.price_currency),
+					secondary: t('announcements.card.price'),
+				},
 				{
 					icon: Wallet,
 					primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency),
-					secondary: 'Цена за км',
+					secondary: t('announcements.card.pricePerKm'),
 				},
 			],
 		},
 		{
-			title: 'Телефон',
+			title: t('announcements.card.phone'),
 			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-' }],
 		},
 		{
-			title: 'Почта',
+			title: t('announcements.card.email'),
 			items: [{ icon: Mail, primary: canShowEmail ? cargo.email : '-' }],
 		},
 	]
@@ -123,7 +133,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 
 			<CardFooter className='flex max-sm:flex-col gap-3 border-t pt-4'>
 				<AnnouncementDetailModal cargo={cargo} />
-				<OfferModal className='min-w-[140px] flex-1 max-sm:w-full' title='Предложить' selectedRow={cargo} />
+				<OfferModal className='min-w-[140px] flex-1 max-sm:w-full' title={t('announcements.card.offer')} selectedRow={cargo} />
 			</CardFooter>
 		</Card>
 	)

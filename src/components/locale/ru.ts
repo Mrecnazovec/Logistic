@@ -1,0 +1,366 @@
+const messages: Record<string, string> = {
+	// layouts/main-layout/Header.tsx
+	'components.main.header.login': 'Войти',
+
+	// layouts/dashboard-layout/NavItems.ts
+	'components.dashboard.nav.announcements': 'Доска объявлений',
+	'components.dashboard.nav.desk': 'Торговля',
+	'components.dashboard.nav.transportation': 'Мои грузы',
+	'components.dashboard.nav.rating': 'Рейтинг',
+	'components.dashboard.nav.history': 'История',
+	'components.dashboard.nav.settings': 'Настройки',
+
+	// layouts/dashboard-layout/MobileNav.tsx
+	'components.dashboard.mobileNav.closeMenu': 'Закрыть меню',
+	'components.dashboard.mobileNav.more': 'Еще',
+	'components.dashboard.mobileNav.empty': 'Нет дополнительных пунктов.',
+
+	// layouts/dashboard-layout/HeaderNavConfig.ts
+	'components.dashboard.headerNav.order.details': 'Детали',
+	'components.dashboard.headerNav.order.docs': 'Документы',
+	'components.dashboard.headerNav.order.statuses': 'Статусы',
+	'components.dashboard.headerNav.order.payment': 'Оплата',
+	'components.dashboard.headerNav.announcements': 'Доска заявок',
+	'components.dashboard.headerNav.posting': 'Публикация заявки',
+	'components.dashboard.headerNav.transportation.search': 'Поиск грузоперевозок',
+	'components.dashboard.headerNav.transportation.carrying': 'Везу',
+	'components.dashboard.headerNav.desk.myOffers': 'Мои предложения',
+	'components.dashboard.headerNav.back.toMyCargo': 'Назад к моим грузам',
+	'components.dashboard.headerNav.back.toAnnouncements': 'Назад к списку объявлений',
+	'components.dashboard.headerNav.back.toDocs': 'Назад к документам',
+	'components.dashboard.headerNav.profile': 'Профиль',
+	'components.dashboard.headerNav.language': 'Язык',
+	'components.dashboard.headerNav.support': 'Поддержка',
+	'components.dashboard.headerNav.password': 'Пароль',
+
+	// layouts/dashboard-layout/Header.tsx
+	'components.dashboard.header.notifications.title': 'Уведомления',
+	'components.dashboard.header.notifications.loading': 'Загрузка...',
+	'components.dashboard.header.notifications.latest': 'Последние: {count}',
+	'components.dashboard.header.notifications.allRead': 'Все прочитано',
+	'components.dashboard.header.notifications.empty': 'Нет уведомлений',
+	'components.dashboard.header.profile.noName': 'Без имени',
+	'components.dashboard.header.profile.unknownRole': 'Неизвестно',
+	'components.dashboard.header.profile.rating': 'рейтинг',
+
+	// ui/table/TableStates.tsx
+	'components.table.empty.title': 'Ничего не найдено',
+	'components.table.empty.subtitle': 'Мы не нашли подходящих результатов, попробуйте изменить фильтры.',
+
+	// ui/table/DataTable.tsx
+	'components.table.search.placeholder': 'Поиск',
+	'components.table.empty.data': 'Нет данных.',
+	'components.table.pagination.shown': 'Показано: {count} элементов',
+	'components.table.pagination.prev': 'Предыдущая страница',
+	'components.table.pagination.next': 'Следующая страница',
+	'components.table.pagination.page': 'Страница {page} из {total}',
+
+	// pagination/CardPagination.tsx
+	'components.cardPagination.ariaLabel': 'Навигация по страницам',
+	'components.cardPagination.page': 'Страница {page} из {total}',
+	'components.cardPagination.prev': 'Перейти на предыдущую страницу',
+	'components.cardPagination.next': 'Перейти на следующую страницу',
+
+	// ui/search/SearchRatingFields.tsx
+	'components.searchRating.search': 'Поиск',
+	'components.searchRating.byId': 'Поиск по id',
+	'components.searchRating.filters': 'Фильтры',
+	'components.searchRating.reset': 'Сбросить фильтры',
+	'components.searchRating.rating': 'Рейтинг',
+	'components.searchRating.from': 'От',
+	'components.searchRating.to': 'До',
+
+	// ui/search/SearchFields.tsx
+	'components.search.search': 'Поиск',
+	'components.search.byId': 'Поиск по номеру id',
+	'components.search.filters': 'Фильтры',
+	'components.search.currency': 'Валюта',
+	'components.search.price': 'Цена',
+	'components.search.from': 'От',
+	'components.search.to': 'До',
+	'components.search.hasOffers': 'Наличие предложений',
+	'components.search.hasOffers.yes': 'Есть предложения',
+	'components.search.hasOffers.no': 'Нет предложений',
+	'components.search.weight': 'Масса',
+	'components.search.resetTitle': 'Сбросить фильтры',
+	'components.search.origin': 'Откуда',
+	'components.search.radius': 'Радиус, км',
+	'components.search.destination': 'Куда',
+	'components.search.loadDate': 'Выберите дату загрузки',
+
+	// ui/selectors/TransportSelector.tsx
+	'components.select.transport.placeholder': 'Тип транспорта',
+
+	// ui/selectors/PaymentSelector.tsx
+	'components.select.payment.placeholder': 'Способ оплаты',
+
+	// ui/selectors/CurrencySelector.tsx
+	'components.select.currency.placeholder': 'Выберите валюту',
+
+	// ui/selectors/DateSelector.tsx
+	'components.select.date.placeholder': 'Выберите дату',
+
+	// ui/selectors/CitySelector.tsx
+	'components.select.city.placeholder': 'Выберите город',
+	'components.select.city.searchPlaceholder': 'Город',
+	'components.select.city.loading': 'Загрузка...',
+	'components.select.city.empty': 'Ничего не найдено',
+
+	// ui/selectors/CountrySelector.tsx
+	'components.select.country.placeholder': 'Страна',
+	'components.select.country.searchPlaceholder': 'Страна',
+	'components.select.country.loading': 'Загрузка...',
+	'components.select.country.empty': 'Ничего не найдено',
+
+	// ui/selectors/ContactSelector.tsx
+	'components.select.contact.placeholder': 'Способ связи',
+
+	// ui/selectors/BadgeSelector.tsx
+	'components.badge.counterparty': 'заказчика',
+	'components.badge.token.cancelled': 'отменено',
+	'components.badge.token.inviteMessage': 'Приглашение через заказ',
+	'components.badge.token.waiting': 'ожидает',
+	'components.badge.token.received': 'получен',
+	'components.badge.token.cancelPrefix': 'отм',
+	'components.badge.offer.invite.label': 'Требуется водитель',
+	'components.badge.offer.invite.note': 'Приглашение доступно для принятия',
+	'components.badge.offer.expired.label': 'Предложение истекло',
+	'components.badge.offer.expired.note': 'Время предложения истекло или вы приняли приглашение',
+	'components.badge.offer.agreed.label': 'Согласовано',
+	'components.badge.offer.agreed.note': 'Заказ создан, перейдите во вкладку мои грузы',
+	'components.badge.offer.declined.label': 'Отказано',
+	'components.badge.offer.declined.note': 'Предложение было отклонено',
+	'components.badge.offer.awaiting.label': 'Требуется ответ',
+	'components.badge.offer.awaiting.note': 'Предложение ожидает вашего решения',
+	'components.badge.offer.waiting.label': 'В ожидании ответа',
+	'components.badge.offer.waiting.note': 'Ожидайте ответа {counterparty}',
+	'components.badge.status.posted': 'Опубликована',
+	'components.badge.status.inProgress': 'В работе',
+	'components.badge.status.delivered': 'Доставлено',
+	'components.badge.status.completed': 'Ответ получен',
+	'components.badge.status.waiting': 'Ожидает ответа',
+
+	// ui/modals/OrderRatingModal.tsx
+	'components.orderRating.trigger': 'Оценить участников',
+	'components.orderRating.title': 'Оценка участников перевозки',
+	'components.orderRating.empty': 'Нет участников для оценки.',
+	'components.orderRating.role': 'Роль',
+	'components.orderRating.scoreLabel': 'Оценка {rating}',
+	'components.orderRating.comment': 'Комментарий (необязательно)',
+	'components.orderRating.submit': 'Отправить оценку',
+
+	// ui/modals/CounterOfferModal.tsx
+	'components.counterOffer.title': 'Контрпредложение',
+	'components.counterOffer.companyLabel': 'Компания',
+	'components.counterOffer.currentPriceLabel': 'Текущая ставка',
+	'components.counterOffer.pricePlaceholder': 'Укажите сумму',
+	'components.counterOffer.currencyPlaceholder': 'Выберите валюту',
+	'components.counterOffer.paymentPlaceholder': 'Способ оплаты',
+	'components.counterOffer.commentPlaceholder': 'Комментарий (по желанию)',
+	'components.counterOffer.submit': 'Отправить',
+	'components.counterOffer.cancel': 'Отмена',
+
+	// ui/modals/OfferModal.tsx
+	'components.offerModal.title': 'Предложить',
+	'components.offerModal.empty': 'Выберите запись, чтобы отправить предложение.',
+	'components.offerModal.transportLabel': 'Тип транспорта',
+	'components.offerModal.weightLabel': 'Вес',
+	'components.offerModal.priceLabel': 'Цена',
+	'components.offerModal.pricePlaceholder': 'Укажите сумму',
+	'components.offerModal.currencyPlaceholder': 'Выберите валюту',
+	'components.offerModal.submit': 'Отправить',
+	'components.offerModal.close': 'Закрыть',
+
+	// ui/modals/OfferDecisionModal.tsx
+	'components.offerDecision.title': 'Предложение',
+	'components.offerDecision.empty': 'Данные предложения недоступны.',
+	'components.offerDecision.unavailable': 'Действия с предложением недоступны в текущем статусе.',
+	'components.offerDecision.transportLabel': 'Тип транспорта',
+	'components.offerDecision.weightLabel': 'Вес',
+	'components.offerDecision.priceLabel': 'Цена',
+	'components.offerDecision.companyLabel': 'Компания',
+	'components.offerDecision.currentPrice': 'Текущая ставка',
+	'components.offerDecision.pricePlaceholder': 'Укажите сумму',
+	'components.offerDecision.currencyPlaceholder': 'Выберите валюту',
+	'components.offerDecision.paymentPlaceholder': 'Способ оплаты',
+	'components.offerDecision.accept': 'Принять',
+	'components.offerDecision.counter': 'Торговаться',
+	'components.offerDecision.reject': 'Отказать',
+	'components.offerDecision.acceptInvite': 'Принять приглашение',
+	'components.offerDecision.ton': 'т',
+
+	// ui/modals/DeskOffersModal/DeskOffersModal.tsx
+	'components.deskOffers.title': 'Предложения',
+	'components.deskOffers.selectCargo': 'Выберите груз, чтобы увидеть предложения.',
+	'components.deskOffers.loading': 'Загружаем предложения...',
+	'components.deskOffers.empty': 'Предложений пока нет.',
+	'components.deskOffers.tabs.incoming': 'Входящие',
+	'components.deskOffers.tabs.accepted': 'Принятые',
+	'components.deskOffers.tabs.history': 'История',
+	'components.deskOffers.emptyIncoming': 'Нет входящих предложений.',
+	'components.deskOffers.emptyAccepted': 'Нет принятых предложений.',
+	'components.deskOffers.emptyHistory': 'История пока пустая.',
+
+	// ui/modals/DeskOffersModal/OfferHistoryItem.tsx
+	'components.offerHistory.company': 'Компания',
+	'components.offerHistory.price': 'Цена',
+	'components.offerHistory.loading': 'Загружаем историю...',
+	'components.offerHistory.noChanges': 'Нет измененных полей.',
+	'components.offerHistory.empty': 'История пока пустая.',
+
+	// ui/modals/DeskOffersModal/OfferCard.tsx
+	'components.offerCard.company': 'Компания',
+	'components.offerCard.rating': 'Рейтинг',
+	'components.offerCard.price': 'Цена',
+	'components.offerCard.pricePlaceholder': 'Введите цену',
+	'components.offerCard.currencyPlaceholder': 'Выберите валюту',
+	'components.offerCard.paymentPlaceholder': 'Способ оплаты',
+	'components.offerCard.counter': 'Контрпредложение',
+	'components.offerCard.reject': 'Отказать',
+	'components.offerCard.accept': 'Принять',
+	'components.offerCard.negotiate': 'Торговаться',
+
+	// ui/modals/DeskOffersModal/CargoInfo.tsx
+	'components.cargoInfo.transport': 'Тип транспорта',
+	'components.cargoInfo.weight': 'Вес',
+	'components.cargoInfo.initialPrice': 'Начальная цена',
+
+	// ui/modals/DeskOffersModal/offerLog.ts
+	'components.offerLog.empty': '-',
+	'components.offerLog.yes': 'Да',
+	'components.offerLog.no': 'Нет',
+	'components.offerLog.payment.cash': 'Наличные',
+	'components.offerLog.payment.cashless': 'Безнал',
+	'components.offerLog.initiator.logistic': 'Логист',
+	'components.offerLog.initiator.customer': 'Заказчик',
+	'components.offerLog.initiator.carrier': 'Перевозчик',
+	'components.offerLog.change.price': 'Цена',
+	'components.offerLog.change.payment': 'Способ оплаты',
+	'components.offerLog.change.responseStatus': 'Статус ответа',
+	'components.offerLog.change.counterOffer': 'Контрпредложение',
+	'components.offerLog.change.active': 'Активен',
+	'components.offerLog.change.acceptedByCustomer': 'Принят клиентом',
+	'components.offerLog.change.acceptedByLogistic': 'Принят логистом',
+	'components.offerLog.change.acceptedByCarrier': 'Принят перевозчиком',
+	'components.offerLog.change.initiator': 'Инициатор',
+	'components.offerLog.change.message': 'Сообщение',
+	'components.offerLog.system': 'Система',
+	'components.offerLog.unknownDate': 'Неизвестная дата',
+
+	// ui/modals/InviteDriverModal.tsx
+	'components.inviteDriver.trigger': 'Пригласить водителя',
+	'components.inviteDriver.title': 'Приглашение водителя',
+	'components.inviteDriver.invalidId': 'Введите корректный ID перевозчика.',
+	'components.inviteDriver.generateFirst': 'Сначала сгенерируйте ссылку.',
+	'components.inviteDriver.copySuccess': 'Ссылка скопирована.',
+	'components.inviteDriver.copyError': 'Не удалось скопировать ссылку.',
+	'components.inviteDriver.price': 'Стоимость',
+	'components.inviteDriver.byId.title': 'Пригласить перевозчика по ID',
+	'components.inviteDriver.byId.placeholder': 'Введите ID перевозчика',
+	'components.inviteDriver.byId.loading': 'Отправка...',
+	'components.inviteDriver.byId.submit': 'Пригласить',
+	'components.inviteDriver.byLink.title': 'Приглашение по ссылке',
+	'components.inviteDriver.byLink.description': 'Сгенерируйте ссылку и отправьте её водителю, чтобы он смог принять приглашение.',
+	'components.inviteDriver.byLink.placeholder': 'Ссылка появится после генерации',
+	'components.inviteDriver.byLink.copy': 'Скопировать ссылку',
+	'components.inviteDriver.byLink.loading': 'Создаём...',
+	'components.inviteDriver.byLink.generate': 'Сгенерировать ссылку',
+	'components.inviteDriver.cancel': 'Отменить',
+
+	// ui/modals/DeskInviteModal.tsx
+	'components.deskInvite.title': 'Приглашение перевозчика',
+	'components.deskInvite.empty': 'Ничего не выбрано. Выберите объявление в таблице, чтобы отправить приглашение.',
+	'components.deskInvite.km': 'км',
+	'components.deskInvite.transport': 'Тип транспорта',
+	'components.deskInvite.weight': 'Вес',
+	'components.deskInvite.ton': 'т',
+	'components.deskInvite.price': 'Стоимость',
+	'components.deskInvite.company': 'Компания',
+	'components.deskInvite.offer': 'Предложение',
+	'components.deskInvite.byId.title': 'Пригласить перевозчика по ID',
+	'components.deskInvite.byId.placeholder': 'Введите ID перевозчика',
+	'components.deskInvite.byId.loading': 'Отправка...',
+	'components.deskInvite.byId.submit': 'Пригласить',
+	'components.deskInvite.byLink.title': 'Приглашение по ссылке',
+	'components.deskInvite.byLink.description': 'Ссылка ведёт на страницу оффера, где перевозчик сможет откликнуться на предложение. Сгенерируйте ссылку и отправьте её партнёру или скопируйте для быстрого доступа.',
+	'components.deskInvite.byLink.placeholder': 'Ссылка появится после генерации',
+	'components.deskInvite.byLink.copy': 'Скопировать ссылку',
+	'components.deskInvite.byLink.loading': 'Создаём...',
+	'components.deskInvite.byLink.generate': 'Сгенерировать ссылку',
+	'components.deskInvite.copySuccess': 'Ссылка скопирована в буфер обмена.',
+	'components.deskInvite.copyError': 'Не удалось скопировать ссылку.',
+	'components.deskInvite.cancel': 'Отменить',
+	'components.deskInvite.errors.noCargo': 'Не найден груз для приглашения перевозчика.',
+	'components.deskInvite.errors.invalidId': 'Введите корректный ID перевозчика.',
+	'components.deskInvite.errors.noData': 'Не удалось получить данные объявления.',
+	'components.deskInvite.errors.generateFirst': 'Сгенерируйте ссылку, чтобы её скопировать.',
+
+	// ui/modals/AnnouncementDetailModal.tsx
+	'components.announcement.more': 'Подробнее',
+	'components.announcement.title': 'Детали объявления',
+	'components.announcement.section.company': 'Компания и представитель',
+	'components.announcement.section.transport': 'Транспорт и габариты',
+	'components.announcement.section.from': 'Откуда',
+	'components.announcement.section.to': 'Куда',
+	'components.announcement.section.payment': 'Оплата',
+	'components.announcement.section.description': 'Описание',
+	'components.announcement.label.company': 'Компания',
+	'components.announcement.label.contact': 'Контактное лицо',
+	'components.announcement.label.rating': 'Рейтинг',
+	'components.announcement.label.phone': 'Телефон',
+	'components.announcement.label.email': 'Email',
+	'components.announcement.label.cargoName': 'Наименование груза',
+	'components.announcement.label.transport': 'Тип транспорта',
+	'components.announcement.label.axles': 'Оси',
+	'components.announcement.label.volume': 'Объем (м3)',
+	'components.announcement.label.cityCountry': 'Город / страна',
+	'components.announcement.label.loadDate': 'Дата погрузки',
+	'components.announcement.label.deliveryDate': 'Дата разгрузки',
+	'components.announcement.label.distance': 'Дистанция',
+	'components.announcement.label.paymentMethod': 'Способ оплаты',
+	'components.announcement.label.price': 'Цена',
+	'components.announcement.km': 'км',
+	'components.announcement.descriptionEmpty': 'Описание отсутствует',
+	'components.announcement.makeOffer': 'Предложить',
+	'components.announcement.payment.transfer': 'Безналичный расчет',
+	'components.announcement.payment.cash': 'Наличные',
+	'components.announcement.payment.both': 'Наличные / Безналичный расчет',
+
+	// ui/form-control/RichEditor/RichTextEditor.tsx
+	'components.richEditor.placeholder': 'Введите описание объявления...',
+
+	// ui/form-control/RichEditor/MenuBar.tsx
+	'components.richEditor.link.title': 'Добавить / изменить ссылку',
+	'components.richEditor.link.apply': 'Применить',
+	'components.richEditor.video.title': 'Вставить YouTube-видео',
+	'components.richEditor.video.insert': 'Вставить видео',
+
+	// ui/actions/UuidCopy.tsx
+	'components.uuidCopy.clipboardUnsupported': 'Буфер обмена не поддерживается',
+	'components.uuidCopy.success': 'ID скопировано в буфер обмена',
+	'components.uuidCopy.error': 'Ошибка при копировании ID',
+	'components.uuidCopy.copiedLabel': 'ID скопировано',
+	'components.uuidCopy.copyLabel': 'Скопировать ID',
+
+	// ui/actions/OrdersActionsDropdown.tsx
+	'components.ordersActions.open': 'Открыть действия',
+	'components.ordersActions.view': 'Посмотреть',
+	'components.ordersActions.delete': 'Удалить',
+
+	// ui/actions/CargoActionsDropdown.tsx
+	'components.cargoActions.openMenu': 'Открыть меню действий',
+	'components.cargoActions.refresh': 'Обновить',
+	'components.cargoActions.refreshDetail': 'Обновление объявления',
+	'components.cargoActions.edit': 'Изменить',
+	'components.cargoActions.show': 'Показать',
+	'components.cargoActions.hide': 'Скрыть',
+	'components.cargoActions.sendOffer': 'Отправить предложение',
+
+	// ui/actions/DeskMyActions.tsx
+	'components.deskMyActions.open': 'Открыть действия',
+	'components.deskMyActions.edit': 'Изменить',
+	'components.deskMyActions.delete': 'Удалить',
+	'components.deskMyActions.hideLog': 'Скрыть',
+}
+
+export default messages

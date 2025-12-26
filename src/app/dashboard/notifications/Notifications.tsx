@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { Loader } from '@/components/ui/Loader'
 import { ScrollArea, ScrollBar } from '@/components/ui/ScrollArea'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
+import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { formatDateTimeValue } from '@/lib/formatters'
 import { Bell, CheckCheck, RefreshCcw, Tag } from 'lucide-react'
@@ -25,6 +26,7 @@ export function Notifications() {
 		isNotificationsEnabled,
 	} = useNotifications(true)
 
+	const { t } = useI18n()
 	const searchParams = useSearchParams()
 	const pathname = usePathname()
 	const router = useRouter()
@@ -80,9 +82,11 @@ export function Notifications() {
 			<div className='flex flex-wrap items-center justify-between gap-3'>
 				<div className='flex flex-wrap items-center gap-2'>
 					<Bell className='size-5 text-brand' />
-					<h1 className='text-2xl font-semibold'>Уведомления</h1>
+					<h1 className='text-2xl font-semibold'>{t('notifications.title')}</h1>
 					{unreadCount > 0 && (
-						<span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700'>Непрочитано: {unreadCount}</span>
+						<span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700'>
+							{t('notifications.unread', { count: unreadCount })}
+						</span>
 					)}
 				</div>
 				<div className='flex items-center gap-2'>
@@ -94,7 +98,7 @@ export function Notifications() {
 						onClick={() => refetchNotifications()}
 					>
 						<RefreshCcw className='size-4' />
-						Обновить
+						{t('notifications.actions.refresh')}
 					</Button>
 					<Button
 						variant='ghost'
@@ -104,7 +108,7 @@ export function Notifications() {
 						onClick={() => markAllRead()}
 					>
 						<CheckCheck className='size-4' />
-						Отметить всё прочитанным
+						{t('notifications.actions.markAllRead')}
 					</Button>
 				</div>
 			</div>
@@ -112,9 +116,11 @@ export function Notifications() {
 			<Card className='grid h-full grid-cols-1 gap-4 rounded-4xl p-4 lg:grid-cols-[340px_1fr]'>
 				<div className='overflow-hidden rounded-2xl border bg-white shadow-sm'>
 					<div className='flex items-center justify-between border-b px-4 py-3'>
-						<p className='text-sm font-semibold'>Список</p>
+						<p className='text-sm font-semibold'>{t('notifications.list.title')}</p>
 						<p className='text-xs text-muted-foreground'>
-							{isLoadingNotifications ? 'Загрузка...' : `Всего: ${notifications.length}`}
+							{isLoadingNotifications
+								? t('notifications.list.loading')
+								: t('notifications.list.total', { count: notifications.length })}
 						</p>
 					</div>
 					<ScrollArea className='h-[580px]'>
@@ -137,9 +143,13 @@ export function Notifications() {
 								</button>
 							))}
 							<div ref={sentinelRef} className='h-1' />
-							{isFetchingNextPage && <div className='py-3 text-center text-xs text-muted-foreground'>Загрузка...</div>}
+							{isFetchingNextPage && (
+								<div className='py-3 text-center text-xs text-muted-foreground'>
+									{t('notifications.list.loading')}
+								</div>
+							)}
 							{notifications.length === 0 && !isLoadingNotifications && (
-								<div className='py-6 text-center text-sm text-muted-foreground'>Уведомлений нет</div>
+								<div className='py-6 text-center text-sm text-muted-foreground'>{t('notifications.list.empty')}</div>
 							)}
 						</div>
 						<ScrollBar />
@@ -157,17 +167,19 @@ export function Notifications() {
 								<p className='text-xs text-muted-foreground'>{formatDateTimeValue(selectedNotification.created_at)}</p>
 							</div>
 							{selectedNotification.message && <p className='text-sm leading-relaxed text-gray-800'>{selectedNotification.message}</p>}
-							<div className='text-xs text-muted-foreground'>Тип: <span className='font-semibold text-gray-900'>{selectedNotification.type}</span></div>
+							<div className='text-xs text-muted-foreground'>
+								{t('notifications.details.type')}: <span className='font-semibold text-gray-900'>{selectedNotification.type}</span>
+							</div>
 							{selectedNotification.payload && (
 								<div className='rounded-xl border bg-gray-50 p-3 text-xs text-gray-700'>
-									<p className='mb-2 text-sm font-semibold'>Детали</p>
+									<p className='mb-2 text-sm font-semibold'>{t('notifications.details.payloadTitle')}</p>
 									<pre className='whitespace-pre-wrap break-all text-xs'>{JSON.stringify(selectedNotification.payload, null, 2)}</pre>
 								</div>
 							)}
 						</div>
 					) : (
 						<div className='flex h-full items-center justify-center text-sm text-muted-foreground'>
-							{isLoadingNotifications ? <Loader /> : 'Выберите уведомление'}
+							{isLoadingNotifications ? <Loader /> : t('notifications.details.empty')}
 						</div>
 					)}
 				</div>

@@ -1,7 +1,8 @@
 ﻿import type { LucideIcon } from 'lucide-react'
 import { CircleStar, Clock, Layers3, Package, Search, Settings } from 'lucide-react'
 
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, withLocale } from '@/config/url.config'
+import type { Locale } from '@/i18n/config'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 
 type RoleGuard = RoleEnum[] | ((role?: RoleEnum) => boolean)
@@ -9,7 +10,7 @@ type RoleGuard = RoleEnum[] | ((role?: RoleEnum) => boolean)
 export interface NavItem {
 	href: string
 	icon: LucideIcon
-	label: string
+	labelKey: string
 	roles?: RoleGuard
 }
 
@@ -19,47 +20,49 @@ export interface NavGroup {
 	roles?: RoleGuard
 }
 
-export const getNavItems = (role?: RoleEnum): NavGroup[] => {
-	const deskHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk()
-	const transportationHref = role === RoleEnum.CARRIER ? DASHBOARD_URL.transportation('my') : DASHBOARD_URL.transportation()
+export const getNavItems = (role?: RoleEnum, locale?: Locale): NavGroup[] => {
+	const deskHref = withLocale(role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk(), locale)
+	const transportationHref = withLocale(
+		role === RoleEnum.CARRIER ? DASHBOARD_URL.transportation('my') : DASHBOARD_URL.transportation(),
+		locale,
+	)
 
 	return [
 		{
 			items: [
 				{
-					href: DASHBOARD_URL.announcements(),
+					href: withLocale(DASHBOARD_URL.announcements(), locale),
 					icon: Search,
-					label: 'Доска объявлений',
+					labelKey: 'components.dashboard.nav.announcements',
 				},
 				{
 					href: deskHref,
 					icon: Package,
-					label: 'Торговля',
+					labelKey: 'components.dashboard.nav.desk',
 				},
 				{
 					href: transportationHref,
 					icon: Layers3,
-					label: 'Мои грузы',
+					labelKey: 'components.dashboard.nav.transportation',
 				},
 				{
-					href: DASHBOARD_URL.rating(),
+					href: withLocale(DASHBOARD_URL.rating(), locale),
 					icon: CircleStar,
-					label: 'Рейтинг',
+					labelKey: 'components.dashboard.nav.rating',
 				},
 				{
-					href: DASHBOARD_URL.history(),
+					href: withLocale(DASHBOARD_URL.history(), locale),
 					icon: Clock,
-					label: 'История',
+					labelKey: 'components.dashboard.nav.history',
 				},
 				{
-					href: DASHBOARD_URL.home('settings'),
+					href: withLocale(DASHBOARD_URL.home('settings'), locale),
 					icon: Settings,
-					label: 'Настройки',
+					labelKey: 'components.dashboard.nav.settings',
 				},
 			],
 		},
 		{
-			// group: 'Настройки',
 			items: [],
 		},
 	]

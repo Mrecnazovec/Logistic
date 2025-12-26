@@ -1,13 +1,14 @@
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, withLocale } from '@/config/url.config'
+import { getLocaleFromPath, stripLocaleFromPath } from '@/i18n/paths'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 
 export interface HeaderNavItem {
-	label: string
+	labelKey: string
 	href: string
 }
 
 export interface HeaderNavBackLink {
-	label: string
+	labelKey: string
 	href: string
 }
 
@@ -56,24 +57,24 @@ const getOrderDocsFolderInfo = (pathname: string) => {
 	return { orderId, folder }
 }
 
-const getOrderNavItems = (orderId: string, pathname?: string): HeaderNavItem[] => {
+const getOrderNavItems = (orderId: string): HeaderNavItem[] => {
 	const basePath = orderId
 
 	return [
 		{
-			label: 'Детали',
+			labelKey: 'components.dashboard.headerNav.order.details',
 			href: DASHBOARD_URL.order(basePath),
 		},
 		{
-			label: 'Документы',
+			labelKey: 'components.dashboard.headerNav.order.docs',
 			href: DASHBOARD_URL.order(`${basePath}/docs`),
 		},
 		{
-			label: 'Статусы',
+			labelKey: 'components.dashboard.headerNav.order.statuses',
 			href: DASHBOARD_URL.order(`${basePath}/status`),
 		},
 		{
-			label: 'Оплата',
+			labelKey: 'components.dashboard.headerNav.order.payment',
 			href: DASHBOARD_URL.order(`${basePath}/payment`),
 		},
 	]
@@ -86,11 +87,11 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CUSTOMER],
 		items: [
 			{
-				label: 'Доска заявок',
+				labelKey: 'components.dashboard.headerNav.announcements',
 				href: DASHBOARD_URL.desk(),
 			},
 			{
-				label: 'Публикация заявки',
+				labelKey: 'components.dashboard.headerNav.posting',
 				href: DASHBOARD_URL.posting(),
 			},
 		],
@@ -100,11 +101,11 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CUSTOMER],
 		items: [
 			{
-				label: 'Доска заявок',
+				labelKey: 'components.dashboard.headerNav.announcements',
 				href: DASHBOARD_URL.desk(),
 			},
 			{
-				label: 'Публикация заявки',
+				labelKey: 'components.dashboard.headerNav.posting',
 				href: DASHBOARD_URL.posting(),
 			},
 		],
@@ -114,7 +115,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CUSTOMER],
 		items: [
 			{
-				label: 'Заказы',
+				labelKey: 'components.dashboard.headerNav.transportation.search',
 				href: DASHBOARD_URL.transportation(),
 			},
 		],
@@ -127,7 +128,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CARRIER],
 		items: [
 			{
-				label: 'Поиск грузоперевозок',
+				labelKey: 'components.dashboard.headerNav.announcements',
 				href: DASHBOARD_URL.announcements(),
 			},
 		],
@@ -137,18 +138,17 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CARRIER],
 		items: [
 			{
-				label: 'Мои предложения',
+				labelKey: 'components.dashboard.headerNav.desk.myOffers',
 				href: DASHBOARD_URL.desk('my'),
 			},
 		],
 	},
-
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
 		roles: [RoleEnum.CARRIER],
 		items: [
 			{
-				label: 'Везу',
+				labelKey: 'components.dashboard.headerNav.transportation.carrying',
 				href: DASHBOARD_URL.transportation('my'),
 			},
 		],
@@ -158,11 +158,11 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/announcements'),
 		items: [
 			{
-				label: 'Поиск грузоперевозок',
+				labelKey: 'components.dashboard.headerNav.announcements',
 				href: DASHBOARD_URL.announcements(),
 			},
 			{
-				label: 'Публикация заявки',
+				labelKey: 'components.dashboard.headerNav.posting',
 				href: DASHBOARD_URL.posting(),
 			},
 		],
@@ -171,12 +171,12 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/order/agreement'),
 		items: [
 			{
-				label: '',
+				labelKey: '',
 				href: DASHBOARD_URL.profile(),
 			},
 		],
 		backLink: {
-			label: 'Назад моим грузам',
+			labelKey: 'components.dashboard.headerNav.back.toMyCargo',
 			href: DASHBOARD_URL.transportation(),
 		},
 	},
@@ -184,43 +184,37 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/order/invite/'),
 		items: [
 			{
-				label: '',
+				labelKey: '',
 				href: DASHBOARD_URL.transportation(),
 			},
-			// {
-			// 	label: 'Везу',
-			// 	href: DASHBOARD_URL.transportation('my'),
-			// },
 		],
 		backLink: {
-			label: 'На главную',
+			labelKey: 'components.dashboard.headerNav.back.toAnnouncements',
 			href: DASHBOARD_URL.announcements(),
 		},
 	},
-
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/profile'),
 		items: [
 			{
-				label: '',
+				labelKey: '',
 				href: DASHBOARD_URL.profile(),
 			},
 		],
 		backLink: {
-			label: 'Назад к списку объявлений',
+			labelKey: 'components.dashboard.headerNav.back.toAnnouncements',
 			href: DASHBOARD_URL.announcements(),
 		},
 	},
-
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
 		items: [
 			{
-				label: 'Доска заявок',
+				labelKey: 'components.dashboard.headerNav.announcements',
 				href: DASHBOARD_URL.desk(),
 			},
 			{
-				label: 'Мои предложения',
+				labelKey: 'components.dashboard.headerNav.desk.myOffers',
 				href: DASHBOARD_URL.desk('my'),
 			},
 		],
@@ -232,7 +226,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			if (!orderId) return []
 
-			return getOrderNavItems(orderId, pathname)
+			return getOrderNavItems(orderId)
 		},
 		backLink: (pathname) => {
 			const info = getOrderDocsFolderInfo(pathname)
@@ -240,7 +234,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			if (!info) return null
 
 			return {
-				label: 'Назад к документам',
+				labelKey: 'components.dashboard.headerNav.back.toDocs',
 				href: DASHBOARD_URL.order(`${info.orderId}/docs`),
 			}
 		},
@@ -252,10 +246,10 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			if (!orderId) return []
 
-			return getOrderNavItems(orderId, pathname)
+			return getOrderNavItems(orderId)
 		},
 		backLink: {
-			label: 'Назад к моим грузам',
+			labelKey: 'components.dashboard.headerNav.back.toMyCargo',
 			href: DASHBOARD_URL.transportation(),
 		},
 	},
@@ -263,65 +257,45 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
 		items: [
 			{
-				label: 'Заказы',
+				labelKey: 'components.dashboard.headerNav.transportation.search',
 				href: DASHBOARD_URL.transportation(),
 			},
 			{
-				label: 'Везу',
+				labelKey: 'components.dashboard.headerNav.transportation.carrying',
 				href: DASHBOARD_URL.transportation('my'),
 			},
 		],
 	},
-
-	// {
-	// 	matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
-	// 	items: [
-	// 		{
-	// 			label: 'Грузовладельцы',
-	// 			href: DASHBOARD_URL.rating('customers'),
-	// 		},
-	// 		{
-	// 			label: 'Логисты',
-	// 			href: DASHBOARD_URL.rating('logistics'),
-	// 		},
-	// 		{
-	// 			label: 'Перевозчики',
-	// 			href: DASHBOARD_URL.rating('carriers'),
-	// 		},
-	// 	],
-	// },
-
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/cabinet'),
 		items: [
 			{
-				label: 'Профиль',
+				labelKey: 'components.dashboard.headerNav.profile',
 				href: DASHBOARD_URL.cabinet(),
 			},
 		],
 		backLink: {
-			label: 'Назад к списку объявлений',
+			labelKey: 'components.dashboard.headerNav.back.toAnnouncements',
 			href: DASHBOARD_URL.announcements(),
 		},
 	},
-
 	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/settings'),
 		items: [
 			{
-				label: 'Профиль',
+				labelKey: 'components.dashboard.headerNav.profile',
 				href: DASHBOARD_URL.settings(),
 			},
 			{
-				label: 'Язык',
+				labelKey: 'components.dashboard.headerNav.language',
 				href: DASHBOARD_URL.settings('language'),
 			},
 			{
-				label: 'Поддержка',
+				labelKey: 'components.dashboard.headerNav.support',
 				href: DASHBOARD_URL.settings('support'),
 			},
 			{
-				label: 'Пароль',
+				labelKey: 'components.dashboard.headerNav.password',
 				href: DASHBOARD_URL.settings('password'),
 			},
 		],
@@ -329,7 +303,8 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 ]
 
 export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): ResolvedHeaderNavItems => {
-	const normalizedPath = normalizePath(pathname)
+	const locale = getLocaleFromPath(pathname) ?? undefined
+	const normalizedPath = normalizePath(stripLocaleFromPath(pathname))
 	const matchedDefinition = headerNavDefinitions.find((config) => {
 		if (config.roles) {
 			const allowed = Array.isArray(config.roles) ? (role ? config.roles.includes(role) : false) : config.roles(role)
@@ -350,22 +325,32 @@ export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): Resolv
 	}
 
 	const resolvedItems = Array.isArray(matchedDefinition.items) ? matchedDefinition.items : matchedDefinition.items(normalizedPath)
+	const localizedItems = resolvedItems.map((item) => ({
+		...item,
+		href: withLocale(item.href, locale),
+	}))
 
 	const resolvedBackLink = matchedDefinition.backLink
 		? typeof matchedDefinition.backLink === 'function'
 			? matchedDefinition.backLink(normalizedPath)
 			: matchedDefinition.backLink
 		: null
+	const localizedBackLink = resolvedBackLink
+		? {
+				...resolvedBackLink,
+				href: withLocale(resolvedBackLink.href, locale),
+			}
+		: null
 
-	if (!resolvedItems.length) {
+	if (!localizedItems.length) {
 		return {
 			items: [],
-			backLink: resolvedBackLink,
+			backLink: localizedBackLink,
 		}
 	}
 
-	const itemsWithMatch = resolvedItems.map((item) => {
-		const normalizedHref = normalizePath(item.href)
+	const itemsWithMatch = localizedItems.map((item) => {
+		const normalizedHref = normalizePath(stripLocaleFromPath(item.href))
 		const matches = normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`)
 
 		return {
@@ -381,6 +366,6 @@ export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): Resolv
 			...item,
 			active: matchLength >= 0 && matchLength === maxMatchLength,
 		})),
-		backLink: resolvedBackLink,
+		backLink: localizedBackLink,
 	}
 }

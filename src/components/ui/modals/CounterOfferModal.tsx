@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/form-control/Textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
+import { useI18n } from '@/i18n/I18nProvider'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue } from '@/lib/formatters'
@@ -25,7 +26,8 @@ interface CounterOfferModalProps {
 }
 
 export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferModalProps) {
-	const { counterOffer, isLoadingCounter } = useCounterOffer()
+	const { t } = useI18n()
+	const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
 	const [price, setPrice] = useState(() => (offer.price_value ? String(offer.price_value) : ''))
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(() => offer.price_currency ?? '')
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(() => (offer.payment_method as PaymentMethodEnum) ?? '')
@@ -33,7 +35,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 
 	const formattedPrice = formatCurrencyValue(offer.price_value, offer.price_currency as PriceCurrencyCode)
 	const formattedPricePerKm = formatCurrencyPerKmValue(offer.price_per_km, offer.price_currency as PriceCurrencyCode)
-	const isDisabled = !price || !currency || !paymentMethod || isLoadingCounter
+	const isDisabled = !price || !currency || !paymentMethod || isLoadingCounterOffer
 
 	const handleSubmit = () => {
 		if (isDisabled) return
@@ -58,7 +60,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className='w-[720px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>Контрпредложение</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>{t('components.counterOffer.title')}</DialogTitle>
 				</DialogHeader>
 
 				<div className='space-y-6'>
@@ -85,11 +87,11 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 
 					<div className='space-y-2 rounded-2xl border border-border p-5 text-sm text-muted-foreground'>
 						<p>
-							<span className='font-semibold text-foreground'>Компания: </span>
+							<span className='font-semibold text-foreground'>{t('components.counterOffer.companyLabel')}: </span>
 							{offer.carrier_company || offer.carrier_full_name || '-'}
 						</p>
 						<p>
-							<span className='font-semibold text-foreground'>Текущая ставка: </span>
+							<span className='font-semibold text-foreground'>{t('components.counterOffer.currentPriceLabel')}: </span>
 							{formattedPrice}
 							{formattedPricePerKm ? ` (${formattedPricePerKm})` : null}
 						</p>
@@ -97,7 +99,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 
 					<div className='grid gap-3 md:grid-cols-3'>
 						<Input
-							placeholder='Укажите сумму'
+							placeholder={t('components.counterOffer.pricePlaceholder')}
 							value={price}
 							onChange={(event) => setPrice(event.target.value)}
 							type='number'
@@ -107,7 +109,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 						/>
 						<Select value={currency || undefined} onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}>
 							<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none'>
-								<SelectValue placeholder='Выберите валюту' />
+								<SelectValue placeholder={t('components.counterOffer.currencyPlaceholder')} />
 							</SelectTrigger>
 							<SelectContent>
 								{currencyOptions.map((option) => (
@@ -120,13 +122,13 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 						<PaymentSelector
 							value={paymentMethod}
 							onChange={(value) => setPaymentMethod(value)}
-							placeholder='Способ оплаты'
+							placeholder={t('components.counterOffer.paymentPlaceholder')}
 							className='bg-muted/40 shadow-none'
 						/>
 					</div>
 
 					<Textarea
-						placeholder='Комментарий (по желанию)'
+						placeholder={t('components.counterOffer.commentPlaceholder')}
 						value={message}
 						onChange={(event) => setMessage(event.target.value)}
 						className='rounded-2xl'
@@ -139,10 +141,10 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 							disabled={isDisabled}
 							className='h-11 rounded-full bg-warning-400 px-6 text-white hover:bg-warning-500 disabled:opacity-60'
 						>
-							Отправить
+							{t('components.counterOffer.submit')}
 						</Button>
 						<DialogClose asChild>
-							<Button className='h-11 rounded-full bg-muted px-6 text-foreground hover:bg-muted/80'>Отмена</Button>
+							<Button className='h-11 rounded-full bg-muted px-6 text-foreground hover:bg-muted/80'>{t('components.counterOffer.cancel')}</Button>
 						</DialogClose>
 					</div>
 				</div>

@@ -8,13 +8,14 @@ import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useI18n } from '@/i18n/I18nProvider'
 import type { IOrderList } from '@/shared/types/Order.interface'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { HistoryCardList } from './components/HistoryCardList'
 import { useSearchForm } from './Searching/useSearchForm'
-import { historyColumns } from './table/HistoryColumns'
+import { getHistoryColumns } from './table/HistoryColumns'
 
 export function HistoryPage() {
 	const { data, isLoading } = useGetOrders('paid')
@@ -22,6 +23,8 @@ export function HistoryPage() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const { t } = useI18n()
+	const columns = useMemo(() => getHistoryColumns(t), [t])
 
 	const handleRowClick = useCallback(
 		(order: IOrderList) => {
@@ -57,7 +60,7 @@ export function HistoryPage() {
 
 		return (
 			<DataTable
-				columns={historyColumns}
+				columns={columns}
 				data={results}
 				isButton
 				onRowClick={handleRowClick}

@@ -1,5 +1,8 @@
-﻿'use client'
+'use client'
 
+import { useState } from 'react'
+import Link from 'next/link'
+import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import {
 	DropdownMenu,
@@ -13,10 +16,8 @@ import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
+import { useI18n } from '@/i18n/I18nProvider'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
 
 interface CargoActionsDropdownProps {
 	cargo: ICargoList
@@ -24,12 +25,15 @@ interface CargoActionsDropdownProps {
 }
 
 export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDropdownProps) {
+	const { t } = useI18n()
 	const { refreshLoad } = useRefreshLoad()
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
 	const isHidden = Boolean(cargo.is_hidden)
-	const visibilityActionLabel = isHidden ? 'Показать' : 'Скрыть'
+	const visibilityActionLabel = isHidden
+		? t('components.cargoActions.show')
+		: t('components.cargoActions.hide')
 	const VisibilityIcon = isHidden ? Eye : EyeOff
 
 	const handleToggleVisibility = () => {
@@ -42,7 +46,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 			<DropdownMenu open={open} onOpenChange={setOpen}>
 				<DropdownMenuTrigger asChild>
 					<Button variant='ghost' className='h-8 w-8 p-0 rotate-90'>
-						<span className='sr-only'>Открыть меню действий</span>
+						<span className='sr-only'>{t('components.cargoActions.openMenu')}</span>
 						<MoreHorizontal className='size-4' />
 					</Button>
 				</DropdownMenuTrigger>
@@ -50,13 +54,13 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 				<DropdownMenuContent align='end'>
 					<DropdownMenuItem
 						onClick={() => {
-							refreshLoad({ uuid: cargo.uuid, detail: 'Обновление объявления' })
+							refreshLoad({ uuid: cargo.uuid, detail: t('components.cargoActions.refreshDetail') })
 							setOpen(false)
 						}}
 						className='flex items-center gap-2 cursor-pointer'
 					>
 						<RefreshCcw className='size-4 text-muted-foreground' />
-						Обновить
+						{t('components.cargoActions.refresh')}
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
@@ -67,7 +71,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 					>
 						<Pencil className='size-4 text-muted-foreground' />
 						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>
-							Изменить
+							{t('components.cargoActions.edit')}
 						</Link>
 					</DropdownMenuItem>
 
@@ -92,7 +96,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						className='flex items-center gap-2 cursor-pointer'
 					>
 						<Handshake className='size-4 text-muted-foreground' />
-						Отправить предложение
+						{t('components.cargoActions.sendOffer')}
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
@@ -11,28 +11,30 @@ import {
 	formatWeightValue,
 	parseDateToTimestamp,
 } from '@/lib/formatters'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
-import { ICargoList } from '@/shared/types/CargoList.interface'
-import { ColumnDef } from '@tanstack/react-table'
+import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
+import type { ICargoList } from '@/shared/types/CargoList.interface'
+import type { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 
-export const cargoColumns: ColumnDef<ICargoList>[] = [
+type Translator = (key: string) => string
+
+export const getCargoColumns = (t: Translator): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Опубликован
+				{t('announcements.table.published')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatRelativeDate(row.original.created_at, '—'),
+		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-'),
 		sortingFn: (a, b) => parseDateToTimestamp(a.original.created_at) - parseDateToTimestamp(b.original.created_at),
 	},
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Цена
+				{t('announcements.table.price')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -45,13 +47,13 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'price_currency',
-		header: 'Валюта',
+		header: t('announcements.table.currency'),
 	},
 	{
 		accessorKey: 'route_km',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Дистанция (км)
+				{t('announcements.table.distance')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -60,50 +62,50 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'weight_t',
-		header: 'Вес (т)',
+		header: t('announcements.table.weight'),
 		cell: ({ row }) => formatWeightValue(row.original.weight_t),
 	},
 	{
 		accessorKey: 'origin_city',
-		header: 'Отправление',
+		header: t('announcements.table.origin'),
 		cell: ({ row }) => `${row.original.origin_city}, ${row.original.origin_country}`,
 	},
 	{
 		accessorKey: 'origin_radius_km',
-		header: 'Радиус',
+		header: t('announcements.table.originRadius'),
 	},
 	{
 		accessorKey: 'destination_city',
-		header: 'Назначение',
+		header: t('announcements.table.destination'),
 		cell: ({ row }) => `${row.original.destination_city}, ${row.original.destination_country}`,
 	},
 	{
 		accessorKey: 'dest_radius_km',
-		header: 'Радиус',
+		header: t('announcements.table.destinationRadius'),
 	},
 	{
 		accessorKey: 'load_date',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Дата загрузки
+				{t('announcements.table.loadDate')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatDateValue(row.original.load_date, 'dd/MM/yyyy', '—'),
+		cell: ({ row }) => formatDateValue(row.original.load_date, 'dd/MM/yyyy', '-'),
 		sortingFn: (a, b) => parseDateToTimestamp(a.original.load_date) - parseDateToTimestamp(b.original.load_date),
 	},
 	{
 		accessorKey: 'transport_type',
-		header: 'Транспорт',
-		cell: ({ row }) => TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—',
+		header: t('announcements.table.transport'),
+		cell: ({ row }) => getTransportSymbol(t, row.original.transport_type as TransportTypeEnum) || '-',
 	},
 	{
 		accessorKey: 'company_name',
-		header: 'Компания',
+		header: t('announcements.table.company'),
 	},
 	{
 		accessorKey: 'phone',
-		header: 'Телефон',
+		header: t('announcements.table.phone'),
 		cell: ({ row }) => {
 			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.phone
 			return <Minus className='size-5' />
@@ -111,7 +113,7 @@ export const cargoColumns: ColumnDef<ICargoList>[] = [
 	},
 	{
 		accessorKey: 'email',
-		header: 'Email',
+		header: t('announcements.table.email'),
 		cell: ({ row }) => {
 			if (row.original.contact_pref === 'email' || row.original.contact_pref === 'both') return row.original.email
 			return <Minus className='size-5' />

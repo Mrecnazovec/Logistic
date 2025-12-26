@@ -104,6 +104,8 @@ useUpdateRating — rating update via ratingsService.updateRating.
 
 useDebounce — returns a debounced value with a delay timer.
 useMediaQuery — subscribes to matchMedia for a media query string, returns boolean.
+useI18n - provides access to locale and t() from I18nProvider.
+useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
 
 ## Lib helpers
 
@@ -127,6 +129,10 @@ handleNumericInput – normalizes numeric input (comma to dot) and applies regex
 InputOTP - OTP code input built on input-otp.
 transliterate – transliterates between Cyrillic and Latin characters.
 cn – merges className strings via clsx and tailwind-merge.
+getLocale - resolves locale from path/cookie on the server.
+getLocaleFromPath - extracts locale from a path if present.
+addLocaleToPath - prefixes a path with locale when needed.
+stripLocaleFromPath - removes locale prefix from a path.
 buildSearchDefaultValues – builds ISearch object from URLSearchParams with type coercion.
 buildPaginationItems – creates pagination page list with ellipsis handling for long ranges.
 getPageNumberFromUrl – extracts a valid positive page number from a URL search param.
@@ -195,10 +201,23 @@ PRODUCT_MAX_LENGTH — max length for product string (120).
 ## Components
 
 Badge — badge component built on shadcn/ui.
+getLocale - resolves locale from path/cookie on the server.
+getLocaleFromPath - extracts locale from a path if present.
+addLocaleToPath - prefixes a path with locale when needed.
+stripLocaleFromPath - removes locale prefix from a path.
 Button — shadcn button with variants.
+getLocale - resolves locale from path/cookie on the server.
+getLocaleFromPath - extracts locale from a path if present.
+addLocaleToPath - prefixes a path with locale when needed.
+stripLocaleFromPath - removes locale prefix from a path.
 Calendar — date picker using react-day-picker.
+I18nProvider - provides locale/messages context for translations.
 Card — card container components (Card/CardHeader/CardContent/CardFooter/CardTitle).
 Command — command palette component on shadcn/ui.
+getLocale - resolves locale from path/cookie on the server.
+getLocaleFromPath - extracts locale from a path if present.
+addLocaleToPath - prefixes a path with locale when needed.
+stripLocaleFromPath - removes locale prefix from a path.
 Container — layout wrapper with max width.
 Dialog — modal dialog built on Radix Dialog.
 DropdownMenu — Radix dropdown menu.
@@ -224,6 +243,7 @@ Drawer — Vaul-based drawer component with trigger/overlay/content/title helper
 PaymentSelector — payment method selector.
 TableTypeSelector — toggle between card/table view.
 TransportSelector — transport type selector from TransportSelect.
+LanguageSelect - locale switcher select component.
 SearchFields — cargo search filters form.
 SearchRatingFields — rating filters form.
 Form — React Hook Form wrapper with validation.
@@ -267,3 +287,4 @@ InviteDriverModal – modal to invite driver to order by id or link and allow ac
 useRoleStore — Zustand store for user role with setRole.
 useTableTypeStore — Zustand store for current view mode (card/table) with setTableType.
 useSearchDrawerStore — Zustand store for opening/closing the shared search drawer.
+

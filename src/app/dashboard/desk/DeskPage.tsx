@@ -12,13 +12,12 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { useI18n } from '@/i18n/I18nProvider'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { DeskCardList } from './components/DeskCardList'
 import { useSearchForm } from './Searching/useSearchForm'
-import { deskColumns, getDeskRowClassName } from './table/DeskColumns'
-
-const tabs = [{ value: 'desk', label: 'Заявки' }]
+import { getDeskColumns, getDeskRowClassName } from './table/DeskColumns'
 
 export function DeskPage() {
 	const { data, isLoading } = useGetLoadsBoard()
@@ -26,9 +25,12 @@ export function DeskPage() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const { t } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const tabs = useMemo(() => [{ value: 'desk', label: t('desk.tabs.requests') }], [t])
+	const columns = useMemo(() => getDeskColumns(t), [t])
 
 	useEffect(() => {
 		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
@@ -58,7 +60,7 @@ export function DeskPage() {
 		<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
 	) : (
 		<DataTable
-			columns={deskColumns}
+			columns={columns}
 			data={cargos}
 			rowClassName={getDeskRowClassName}
 			serverPagination={tablePagination}

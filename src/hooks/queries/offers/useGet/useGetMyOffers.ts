@@ -1,4 +1,4 @@
-import { offerService } from '@/services/offers.service'
+import { offersService } from '@/services/offers.service'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
@@ -16,7 +16,7 @@ export const useGetMyOffers = () => {
 
 	const { data, isLoading } = useQuery({
 		queryKey: ['get offers', 'my', paramsObject],
-		queryFn: () => offerService.getMyOffers(paramsObject),
+		queryFn: () => offersService.getMyOffers(paramsObject),
 	})
 
 	return useMemo(() => ({ data, isLoading }), [data, isLoading])

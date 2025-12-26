@@ -1,7 +1,7 @@
-﻿'use client'
+'use client'
 
 import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { enUS, ru } from 'date-fns/locale'
 import {
 	CheckCircle2,
 	Clock,
@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetOrderDocuments } from '@/hooks/queries/orders/useGet/useGetOrderDocuments'
 import { useUploadOrderDocument } from '@/hooks/queries/orders/useUploadOrderDocument'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatFileSize as formatFileSizeHelper } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import { RoleEnum } from '@/shared/enums/Role.enum'
@@ -57,21 +58,6 @@ const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']
 
-const STATUS_LABELS: Record<UploadStatus, string> = {
-	pending: 'В очереди',
-	uploading: 'Загружается',
-	success: 'Загружено',
-	error: 'Ошибка',
-}
-
-const FOLDER_LABELS: Record<string, string> = {
-	licenses: 'Лицензии',
-	contracts: 'Договоры',
-	loading: 'Погрузка',
-	unloading: 'Выгрузка',
-	other: 'Прочее',
-}
-
 const BADGE_VARIANT_BY_EXTENSION: Record<
 	string,
 	'info' | 'success' | 'warning' | 'danger' | 'secondary'
@@ -94,15 +80,25 @@ const FILE_THUMBNAIL_BY_EXTENSION: Record<string, { icon: LucideIcon; className:
 }
 
 export function FolderPage() {
+	const { t, locale } = useI18n()
 	const params = useParams<{ id: string; folder: string }>()
 	const orderId = params.id
 	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
 	const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
-	const folderLabel = FOLDER_LABELS[normalizedFolder] ?? params.folder ?? 'Документы'
+	const folderKey = normalizedFolder === 'others' ? 'other' : normalizedFolder
+	const folderLabel = t(`order.docs.folder.${folderKey}` as string, {})
+	const resolvedFolderLabel = folderLabel.includes('order.docs.folder.') ? t('order.docs.section.documents') : folderLabel
 	const role = useRoleStore((state) => state.role)
 	const isUploadBlocked =
 		(role === RoleEnum.CUSTOMER || role === RoleEnum.LOGISTIC) &&
 		(normalizedFolder === 'loading' || normalizedFolder === 'unloading')
+
+	const statusLabels: Record<UploadStatus, string> = {
+		pending: t('order.docs.upload.status.pending'),
+		uploading: t('order.docs.upload.status.uploading'),
+		success: t('order.docs.upload.status.success'),
+		error: t('order.docs.upload.status.error'),
+	}
 
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const uploadTimersRef = useRef<Record<string, number>>({})
@@ -143,7 +139,7 @@ export function FolderPage() {
 	const beginUpload = useCallback(
 		(item: UploadQueueItem) => {
 			if (!orderId) {
-				toast.error('Не удалось загрузить документ: не найден заказ')
+				toast.error(t('order.docs.upload.errors.orderMissing'))
 				return
 			}
 
@@ -199,14 +195,14 @@ export function FolderPage() {
 								? {
 									...queueItem,
 									status: 'error',
-									error: 'Не удалось загрузить файл. Попробуйте ещё раз чуть позже.',
+									error: t('order.docs.upload.errors.uploadFailed'),
 								}
 								: queueItem
 						)
 					)
 				})
 		},
-		[clearUploadTimer, normalizedCategory, normalizedFolder, orderId, uploadOrderDocumentAsync]
+		[clearUploadTimer, normalizedCategory, normalizedFolder, orderId, t, uploadOrderDocumentAsync]
 	)
 
 	useEffect(() => {
@@ -227,7 +223,7 @@ export function FolderPage() {
 			const newQueueItems: UploadQueueItem[] = []
 
 			parsedFiles.forEach((file) => {
-				const validationError = validateFile(file)
+				const validationError = validateFile(file, t)
 				if (validationError) {
 					toast.error(`${file.name}: ${validationError}`)
 					return
@@ -251,7 +247,7 @@ export function FolderPage() {
 			setUploadQueue((current) => [...current, ...newQueueItems])
 			newQueueItems.forEach(beginUpload)
 		},
-		[beginUpload]
+		[beginUpload, t]
 	)
 
 	const handleInputChange = useCallback(
@@ -293,29 +289,44 @@ export function FolderPage() {
 	)
 
 	const hasNoContent = !isLoading && !uploadQueue.length && !documentsForFolder.length
+	const dateLocale = locale === 'en' ? enUS : ru
+
+	const documentsCountLabel = useMemo(() => {
+		const count = documentsForFolder.length
+		if (locale === 'ru') {
+			const normalizedCount = Math.abs(count)
+			const lastTwoDigits = normalizedCount % 100
+			if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return `${count} ${t('order.docs.files.many')}`
+			const lastDigit = normalizedCount % 10
+			if (lastDigit === 1) return `${count} ${t('order.docs.files.one')}`
+			if (lastDigit >= 2 && lastDigit <= 4) return `${count} ${t('order.docs.files.few')}`
+			return `${count} ${t('order.docs.files.many')}`
+		}
+		return `${count} ${count === 1 ? t('order.docs.files.one') : t('order.docs.files.many')}`
+	}, [documentsForFolder.length, locale, t])
 
 	return (
 		<>
 			<section className='rounded-4xl bg-background p-8 space-y-8 mb-4'>
 				<header className='flex flex-wrap items-center justify-between gap-4'>
 					<div>
-						<p className='text-xs uppercase tracking-[0.2em] text-muted-foreground'>Документы</p>
-						<h1 className='text-2xl font-semibold tracking-tight'>{folderLabel}</h1>
+						<p className='text-xs uppercase tracking-[0.2em] text-muted-foreground'>{t('order.docs.section.documents')}</p>
+						<h1 className='text-2xl font-semibold tracking-tight'>{resolvedFolderLabel}</h1>
 					</div>
 					<Badge variant='secondary' className='text-sm font-medium px-3 py-1 rounded-full'>
-						{documentsForFolder.length} документов
+						{documentsCountLabel}
 					</Badge>
 				</header>
 
 				{isUploadBlocked ? (
 					<div className='rounded-3xl border border-dashed px-6 py-10 text-center text-muted-foreground'>
-						Загрузка документов для этого раздела доступна только перевозчику.
+						{t('order.docs.upload.onlyCarrier')}
 					</div>
 				) : (
 					<div
 						role='button'
 						tabIndex={0}
-						aria-label='Загрузить документы'
+						aria-label={t('order.docs.upload.aria')}
 						aria-busy={uploadQueue.some((item) => item.status === 'uploading')}
 						onClick={() => fileInputRef.current?.click()}
 						onKeyDown={handleKeyDown}
@@ -335,11 +346,11 @@ export function FolderPage() {
 					>
 						<UploadCloud className='size-12 text-muted-foreground' aria-hidden />
 						<p className='text-lg font-medium text-primary'>
-							<span className='text-brand'>Перетащите файлы сюда</span> или нажмите, чтобы выбрать и загрузить
+							<span className='text-brand'>{t('order.docs.upload.drag')}</span> {t('order.docs.upload.orClick')}
 						</p>
-						<p className='text-sm text-muted-foreground'>DOC, PNG, PDF или GIF (до 15 МБ)</p>
+						<p className='text-sm text-muted-foreground'>{t('order.docs.upload.formats')}</p>
 						<Button type='button' variant='outline' size='sm' className='mt-2'>
-							Выбрать файлы
+							{t('order.docs.upload.select')}
 						</Button>
 						<input
 							ref={fileInputRef}
@@ -357,7 +368,7 @@ export function FolderPage() {
 			<section className='space-y-4'>
 				<div className='flex items-center justify-between'>
 					{!isUploadBlocked && uploadQueue.length ? (
-						<span className='text-sm text-muted-foreground'>В очереди загрузки: {uploadQueue.length}</span>
+						<span className='text-sm text-muted-foreground'>{t('order.docs.upload.queue', { count: uploadQueue.length })}</span>
 					) : null}
 				</div>
 
@@ -369,6 +380,9 @@ export function FolderPage() {
 								item={item}
 								onRemove={handleRemoveFromQueue}
 								formatFileSize={formatFileSize}
+								statusLabels={statusLabels}
+								fileLabel={t('order.docs.fileLabel')}
+								removeLabel={t('order.docs.removeFile')}
 							/>
 						))}
 					</div>
@@ -379,12 +393,20 @@ export function FolderPage() {
 				) : (
 					<div className='space-y-3'>
 						{documentsForFolder.map((document) => (
-							<DocumentListItem key={document.id} document={document} formatFileSize={formatFileSize} />
+							<DocumentListItem
+								key={document.id}
+								document={document}
+								formatFileSize={formatFileSize}
+								dateLocale={dateLocale}
+								downloadLabel={t('order.docs.download')}
+								uploadedByLabel={t('order.docs.uploadedBy')}
+								fileLabel={t('order.docs.fileLabel')}
+							/>
 						))}
 					</div>
 				)}
 
-				{hasNoContent ? <EmptyState /> : null}
+				{hasNoContent ? <EmptyState title={t('order.docs.empty.title')} description={t('order.docs.empty.description')} /> : null}
 			</section>
 		</>
 	)
@@ -394,27 +416,30 @@ type UploadingFileRowProps = {
 	item: UploadQueueItem
 	onRemove: (id: string) => void
 	formatFileSize: (bytes?: number | null) => string
+	statusLabels: Record<UploadStatus, string>
+	fileLabel: string
+	removeLabel: string
 }
 
-function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowProps) {
+function UploadingFileRow({ item, onRemove, formatFileSize, statusLabels, fileLabel, removeLabel }: UploadingFileRowProps) {
 	const extension = getExtension(item.file.name)
 	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
 
 	return (
 		<div className='rounded-2xl px-5 py-4 bg-background space-y-3'>
 			<div className='flex flex-wrap items-start gap-4'>
-				<FileThumbnail fileName={item.file.name} />
+				<FileThumbnail fileName={item.file.name} fileLabel={fileLabel} />
 				<div className='flex-1 min-w-[220px] space-y-1'>
 					<div className='flex flex-wrap items-center gap-2'>
 						<p className='font-medium text-base'>{item.file.name}</p>
 						<Badge variant={variant} className='uppercase tracking-wide'>
-							{extension || 'FILE'}
+							{extension || fileLabel}
 						</Badge>
 					</div>
 					<p className='text-sm text-muted-foreground'>{formatFileSize(item.file.size)}</p>
 				</div>
 				<div className='flex items-center gap-3'>
-					<StatusPill status={item.status} />
+					<StatusPill status={item.status} statusLabels={statusLabels} />
 					<Button
 						type='button'
 						size='icon'
@@ -423,7 +448,7 @@ function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowPr
 						onClick={() => onRemove(item.id)}
 					>
 						<Trash2 className='size-4' />
-						<span className='sr-only'>Удалить файл {item.file.name}</span>
+						<span className='sr-only'>{removeLabel} {item.file.name}</span>
 					</Button>
 				</div>
 			</div>
@@ -439,7 +464,7 @@ function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowPr
 			</div>
 
 			<p className={cn('text-sm', item.status === 'error' ? 'text-destructive' : 'text-muted-foreground')}>
-				{item.error ?? STATUS_LABELS[item.status]}
+				{item.error ?? statusLabels[item.status]}
 			</p>
 		</div>
 	)
@@ -448,36 +473,42 @@ function UploadingFileRow({ item, onRemove, formatFileSize }: UploadingFileRowPr
 type DocumentListItemProps = {
 	document: IOrderDocument
 	formatFileSize: (bytes?: number | null) => string
+	dateLocale: Locale
+	downloadLabel: string
+	uploadedByLabel: string
+	fileLabel: string
 }
 
-function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
+type Locale = typeof ru | typeof enUS
+
+function DocumentListItem({ document, formatFileSize, dateLocale, downloadLabel, uploadedByLabel, fileLabel }: DocumentListItemProps) {
 	const extension = getExtension(document.file_name ?? document.title ?? '')
 	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
-	const displayName = document.file_name ?? document.title ?? 'Без названия'
+	const displayName = document.file_name ?? document.title ?? fileLabel
 
 	return (
 		<div className='rounded-2xl border px-5 py-4 bg-card/40 flex flex-col gap-3 md:flex-row md:items-center'>
 			<div className='flex flex-1 items-start gap-4'>
-				<FileThumbnail fileName={displayName} />
+				<FileThumbnail fileName={displayName} fileLabel={fileLabel} />
 				<div className='space-y-1'>
 					<div className='flex flex-wrap items-center gap-2'>
 						<p className='font-semibold text-base'>{displayName}</p>
 						<Badge variant={variant} className='uppercase tracking-wide'>
-							{extension || 'FILE'}
+							{extension || fileLabel}
 						</Badge>
 					</div>
 					<p className='text-sm text-muted-foreground'>
-						{formatFileSize(document.file_size)} / Загрузил(а) {document.uploaded_by}
+						{formatFileSize(document.file_size)} / {uploadedByLabel} {document.uploaded_by}
 					</p>
 				</div>
 			</div>
 
 			<div className='flex items-center gap-3 md:ml-auto'>
-				<p className='text-sm text-muted-foreground'>{document.created_at ? formatDate(document.created_at) : '-'}</p>
+				<p className='text-sm text-muted-foreground'>{document.created_at ? formatDate(document.created_at, dateLocale) : '-'}</p>
 				<Button asChild variant='ghost' size='sm' className='gap-2'>
 					<a href={document.file} download target='_blank' rel='noreferrer'>
 						<Download className='size-4' />
-						Скачать
+						{downloadLabel}
 					</a>
 				</Button>
 			</div>
@@ -485,7 +516,7 @@ function DocumentListItem({ document, formatFileSize }: DocumentListItemProps) {
 	)
 }
 
-function FileThumbnail({ fileName }: { fileName: string }) {
+function FileThumbnail({ fileName, fileLabel }: { fileName: string; fileLabel: string }) {
 	const extension = getExtension(fileName)
 	const mappedIcon = FILE_THUMBNAIL_BY_EXTENSION[extension]
 	const IconComponent = mappedIcon?.icon ? mappedIcon.icon : IMAGE_EXTENSIONS.includes(extension) ? ImageIcon : FileText
@@ -494,15 +525,16 @@ function FileThumbnail({ fileName }: { fileName: string }) {
 	return (
 		<div className={cn('size-12 rounded-2xl flex items-center justify-center', colorClasses)}>
 			<IconComponent className='size-6' aria-hidden />
+			<span className='sr-only'>{fileLabel}</span>
 		</div>
 	)
 }
 
-function StatusPill({ status }: { status: UploadStatus }) {
+function StatusPill({ status, statusLabels }: { status: UploadStatus; statusLabels: Record<UploadStatus, string> }) {
 	if (status === 'success') {
 		return (
 			<span className='inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600'>
-				<CheckCircle2 className='size-4' /> {STATUS_LABELS[status]}
+				<CheckCircle2 className='size-4' /> {statusLabels[status]}
 			</span>
 		)
 	}
@@ -510,7 +542,7 @@ function StatusPill({ status }: { status: UploadStatus }) {
 	if (status === 'error') {
 		return (
 			<span className='inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1 text-sm font-medium text-destructive'>
-				<FileWarning className='size-4' /> {STATUS_LABELS[status]}
+				<FileWarning className='size-4' /> {statusLabels[status]}
 			</span>
 		)
 	}
@@ -518,14 +550,14 @@ function StatusPill({ status }: { status: UploadStatus }) {
 	if (status === 'uploading') {
 		return (
 			<span className='inline-flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-sm font-medium text-brand'>
-				<Loader2 className='size-4 animate-spin' /> {STATUS_LABELS[status]}
+				<Loader2 className='size-4 animate-spin' /> {statusLabels[status]}
 			</span>
 		)
 	}
 
 	return (
 		<span className='inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground'>
-			<Clock className='size-4' /> {STATUS_LABELS[status]}
+			<Clock className='size-4' /> {statusLabels[status]}
 		</span>
 	)
 }
@@ -549,18 +581,18 @@ function DocumentListSkeleton() {
 	)
 }
 
-function EmptyState() {
+function EmptyState({ title, description }: { title: string; description: string }) {
 	return (
 		<div className='rounded-3xl border border-dashed px-6 py-14 text-center text-muted-foreground space-y-2'>
-			<p className='text-base font-medium'>В этой категории пока нет загруженных документов</p>
-			<p className='text-sm'>Добавьте файлы через кнопку выше или перетащите их в область загрузки.</p>
+			<p className='text-base font-medium'>{title}</p>
+			<p className='text-sm'>{description}</p>
 		</div>
 	)
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, dateLocale: Locale) {
 	try {
-		return format(new Date(value), 'dd MMM yyyy, HH:mm', { locale: ru })
+		return format(new Date(value), 'dd MMM yyyy, HH:mm', { locale: dateLocale })
 	} catch {
 		return value
 	}
@@ -571,17 +603,17 @@ function getExtension(fileName?: string) {
 	return fileName.split('.').pop()?.toLowerCase() ?? ''
 }
 
-function validateFile(file: File) {
+function validateFile(file: File, t: (key: string) => string) {
 	const extension = getExtension(file.name)
 	const isMimeAllowed = ACCEPTED_MIME_TYPES.includes(file.type as (typeof ACCEPTED_MIME_TYPES)[number])
 	const isExtensionAllowed = ACCEPTED_EXTENSIONS.includes(`.${extension}` as (typeof ACCEPTED_EXTENSIONS)[number])
 
 	if (!isMimeAllowed && !isExtensionAllowed) {
-		return 'Недопустимый тип файла. Загрузите DOC, PDF, PNG или GIF.'
+		return t('order.docs.upload.errors.invalidType')
 	}
 
 	if (file.size > MAX_FILE_SIZE_BYTES) {
-		return 'Размер файла превышает 15 МБ'
+		return t('order.docs.upload.errors.sizeTooLarge')
 	}
 
 	return null

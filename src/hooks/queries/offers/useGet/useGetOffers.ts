@@ -1,4 +1,4 @@
-import { offerService } from '@/services/offers.service'
+import { offersService } from '@/services/offers.service'
 import type { operations } from '@/shared/types/api'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
@@ -32,7 +32,7 @@ export const useGetOffers = (params?: OffersListQuery, options?: UseGetOffersOpt
 
 	const { data, isLoading } = useQuery({
 		queryKey: ['get offers', mergedQuery],
-		queryFn: () => offerService.getOffers(mergedQuery),
+		queryFn: () => offersService.getOffers(mergedQuery),
 		enabled: options?.enabled ?? true,
 	})
 

@@ -1,13 +1,15 @@
-// components/ui/form-element/RichTextEditor.tsx
 'use client'
+
+// components/ui/form-element/RichTextEditor.tsx
 
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
-import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
+import TextAlign from '@tiptap/extension-text-align'
+import Youtube from '@tiptap/extension-youtube'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Youtube from '@tiptap/extension-youtube'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useEffect } from 'react'
 import MenuBar from './MenuBar'
 
@@ -19,7 +21,8 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ value, onChange, disabled, placeholder }: RichTextEditorProps) {
-	const placeholderText = placeholder ?? 'Введите описание объявления...'
+	const { t } = useI18n()
+	const placeholderText = placeholder ?? t('components.richEditor.placeholder')
 
 	const editor = useEditor({
 		extensions: [

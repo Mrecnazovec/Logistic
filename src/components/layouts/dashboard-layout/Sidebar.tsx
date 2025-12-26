@@ -8,12 +8,14 @@ import { useRoleStore } from '@/store/useRoleStore'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getNavItems, type NavItem } from './NavItems'
+import { useI18n } from '@/i18n/I18nProvider'
 
 export function Sidebar() {
 	const pathname = usePathname()
 	const filteredPathname = `${pathname}/`
+	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
-	const navItems = getNavItems(role)
+	const navItems = getNavItems(role, locale)
 
 	const isAllowed = (roles?: NavItem['roles']) => {
 		if (!roles) return true
@@ -58,7 +60,7 @@ export function Sidebar() {
 										</Link>
 									</TooltipTrigger>
 									<TooltipContent side='bottom' sideOffset={8} alignOffset={8}>
-										{item.label}
+										{t(item.labelKey)}
 									</TooltipContent>
 								</Tooltip>
 							)

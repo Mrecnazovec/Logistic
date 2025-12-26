@@ -8,16 +8,20 @@ import { EmptyTableState, LoaderTable } from '@/components/ui/table/TableStates'
 import { useGetLoadsPublic } from '@/hooks/queries/loads/useGet/useGetLoadsPublic'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { useI18n } from '@/i18n/I18nProvider'
 import { AnnouncementsCardList } from './components/AnnouncementsCardList'
 import { useSearchForm } from './Searching/useSearchForm'
-import { cargoColumns } from './table/CargoColumns'
+import { getCargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
+import { useMemo } from 'react'
 
 export function AnnouncementsPage() {
+	const { t } = useI18n()
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const columns = useMemo(() => getCargoColumns(t), [t])
 
 	const results = data?.results ?? []
 	const hasResults = results.length > 0
@@ -48,7 +52,7 @@ export function AnnouncementsPage() {
 		<AnnouncementsCardList cargos={results} serverPagination={serverPaginationMeta} />
 	) : (
 		<DataTable
-			columns={cargoColumns}
+			columns={columns}
 			data={results}
 			isButton
 			serverPagination={tablePagination}

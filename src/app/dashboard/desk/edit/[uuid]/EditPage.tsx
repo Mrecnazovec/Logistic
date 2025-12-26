@@ -22,6 +22,7 @@ import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
 import { City } from '@/shared/types/Geo.interface'
+import { useI18n } from '@/i18n/I18nProvider'
 import { Banknote, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -47,7 +48,8 @@ const createCityFromValues = (name?: string | null, country?: string | null): Ci
 
 export function EditPage() {
 	const { form, isLoadingPatch, onSubmit } = useEditForm()
-	const { load, isLoading } = useGetLoad()
+	const { load } = useGetLoad()
+	const { t } = useI18n()
 
 	const router = useRouter()
 
@@ -98,11 +100,11 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='origin_city'
-							rules={{ required: 'Город погрузки обязателен' }}
+							rules={{ required: t('desk.edit.origin.cityRequired') }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormLabel className='flex flex-wrap items-center justify-between mb-6'>
-										<p className='text-brand font-bold text-xl'>Откуда</p>
+										<p className='text-brand font-bold text-xl'>{t('desk.edit.origin.title')}</p>
 										<UuidCopy uuid={load?.uuid} isPlaceholder />
 									</FormLabel>
 									<FormControl>
@@ -114,7 +116,7 @@ export function EditPage() {
 												form.setValue('origin_country', city?.country ?? '')
 											}}
 											countryCode={undefined}
-											placeholder='Город, страна'
+											placeholder={t('desk.edit.origin.cityPlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
@@ -126,12 +128,17 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='origin_address'
-							rules={{ required: 'Адрес погрузки обязателен' }}
+							rules={{ required: t('desk.edit.origin.addressRequired') }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
+											<InputGroupInput
+												placeholder={t('desk.edit.origin.addressPlaceholder')}
+												{...field}
+												value={field.value ?? ''}
+												disabled={isLoadingPatch}
+											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
@@ -144,14 +151,14 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='load_date'
-							rules={{ required: 'Дата погрузки обязательна' }}
+							rules={{ required: t('desk.edit.origin.dateRequired') }}
 							render={({ field }) => (
 								<FormItem className='flex flex-col'>
 									<FormControl>
 										<DatePicker
 											value={field.value}
 											onChange={field.onChange}
-											placeholder='Дата погрузки'
+											placeholder={t('desk.edit.origin.datePlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
@@ -164,10 +171,10 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='destination_city'
-							rules={{ required: 'Город разгрузки обязателен' }}
+							rules={{ required: t('desk.edit.destination.cityRequired') }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
-									<FormLabel className='text-brand mb-6 font-bold text-xl'>Куда</FormLabel>
+									<FormLabel className='text-brand mb-6 font-bold text-xl'>{t('desk.edit.destination.title')}</FormLabel>
 									<FormControl>
 										<CitySelector
 											value={field.value || ''}
@@ -177,7 +184,7 @@ export function EditPage() {
 												form.setValue('destination_country', city?.country ?? '')
 											}}
 											countryCode={undefined}
-											placeholder='Город, страна'
+											placeholder={t('desk.edit.destination.cityPlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
@@ -190,12 +197,17 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='destination_address'
-							rules={{ required: 'Адрес разгрузки обязателен' }}
+							rules={{ required: t('desk.edit.destination.addressRequired') }}
 							render={({ field }) => (
 								<FormItem className='w-full'>
 									<FormControl>
 										<InputGroup>
-											<InputGroupInput placeholder='Улица, № Дома' {...field} value={field.value ?? ''} disabled={isLoadingPatch} />
+											<InputGroupInput
+												placeholder={t('desk.edit.destination.addressPlaceholder')}
+												{...field}
+												value={field.value ?? ''}
+												disabled={isLoadingPatch}
+											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
 											</InputGroupAddon>
@@ -208,14 +220,14 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='delivery_date'
-							rules={{ required: 'Дата разгрузки обязательна' }}
+							rules={{ required: t('desk.edit.destination.dateRequired') }}
 							render={({ field }) => (
 								<FormItem className='flex flex-col'>
 									<FormControl>
 										<DatePicker
 											value={field.value ?? undefined}
 											onChange={field.onChange}
-											placeholder='Дата разгрузки'
+											placeholder={t('desk.edit.destination.datePlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
@@ -225,15 +237,15 @@ export function EditPage() {
 						/>
 					</div>
 					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4 h-full'>
-						<p className='text-xl font-bold text-brand'>Детали перевозки</p>
+						<p className='text-xl font-bold text-brand'>{t('desk.edit.shipping.title')}</p>
 						<div className='flex items-end gap-6'>
 							<FormField
 								control={form.control}
 								name='price_currency'
-								rules={{ required: 'Валюта обязателен' }}
+								rules={{ required: t('desk.edit.shipping.currencyRequired') }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
-										<FormLabel className='text-brand'>Валюта/Цена</FormLabel>
+										<FormLabel className='text-brand'>{t('desk.edit.shipping.currencyLabel')}</FormLabel>
 										<FormControl>
 											<CurrencySelector onChange={field.onChange} disabled={isLoadingPatch} value={field.value} />
 										</FormControl>
@@ -244,13 +256,13 @@ export function EditPage() {
 							<FormField
 								control={form.control}
 								name='price_value'
-								rules={{ required: 'Цена обязательна' }}
+								rules={{ required: t('desk.edit.shipping.priceRequired') }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
-													placeholder='Цена'
+													placeholder={t('desk.edit.shipping.pricePlaceholder')}
 													{...field}
 													value={field.value ?? ''}
 													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
@@ -271,14 +283,14 @@ export function EditPage() {
 							<FormField
 								control={form.control}
 								name='volume_m3'
-								rules={{ required: 'Габариты обязательны' }}
+								rules={{ required: t('desk.edit.shipping.dimensionsRequired') }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
-										<FormLabel className='text-brand'>Габариты</FormLabel>
+										<FormLabel className='text-brand'>{t('desk.edit.shipping.dimensionsLabel')}</FormLabel>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
-													placeholder='Объем(Куб. М)'
+													placeholder={t('desk.edit.shipping.dimensionsPlaceholder')}
 													{...field}
 													value={field.value ?? ''}
 													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
@@ -295,13 +307,12 @@ export function EditPage() {
 							<FormField
 								control={form.control}
 								name='axles'
-								// rules={{ required: 'Оси обязательны' }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
 											<InputGroup>
 												<InputGroupInput
-													placeholder='Оси (3-10)'
+													placeholder={t('desk.edit.shipping.axlesPlaceholder')}
 													{...field}
 													value={field.value ?? ''}
 													onChange={(event) =>
@@ -329,7 +340,7 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='contact_pref'
-							rules={{ required: 'Предпочтение обязательно' }}
+							rules={{ required: t('desk.edit.shipping.contactRequired') }}
 							render={({ field }) => (
 								<FormItem className='mb-6'>
 									<FormControl>
@@ -342,10 +353,10 @@ export function EditPage() {
 						<FormField
 							control={form.control}
 							name='payment_method'
-							rules={{ required: 'Метод оплаты обязателен' }}
+							rules={{ required: t('desk.edit.shipping.paymentRequired') }}
 							render={({ field }) => (
 								<FormItem className='mb-6'>
-									<FormLabel className='text-brand'>Выберите способ оплаты</FormLabel>
+									<FormLabel className='text-brand'>{t('desk.edit.shipping.paymentLabel')}</FormLabel>
 									<FormControl>
 										<PaymentSelector onChange={field.onChange} value={field.value} />
 									</FormControl>
@@ -358,7 +369,7 @@ export function EditPage() {
 							name='is_hidden'
 							render={({ field }) => (
 								<FormItem className='mb-6'>
-									<FormLabel className='text-brand mb-3'>Видимость объявления</FormLabel>
+									<FormLabel className='text-brand mb-3'>{t('desk.edit.shipping.visibilityLabel')}</FormLabel>
 									<FormControl>
 										<RadioGroup
 											onValueChange={(value) => field.onChange(value === 'true')}
@@ -369,13 +380,13 @@ export function EditPage() {
 												<FormControl>
 													<RadioGroupItem value='false' disabled={isLoadingPatch} />
 												</FormControl>
-												<FormLabel className='m-0 font-semibold'>Видна</FormLabel>
+												<FormLabel className='m-0 font-semibold'>{t('desk.edit.shipping.visible')}</FormLabel>
 											</FormItem>
 											<FormItem className='flex items-center gap-3'>
 												<FormControl>
 													<RadioGroupItem value='true' disabled={isLoadingPatch} />
 												</FormControl>
-												<FormLabel className='m-0 font-semibold'>Скрыта</FormLabel>
+												<FormLabel className='m-0 font-semibold'>{t('desk.edit.shipping.hidden')}</FormLabel>
 											</FormItem>
 										</RadioGroup>
 									</FormControl>
@@ -385,15 +396,15 @@ export function EditPage() {
 						/>
 					</div>
 					<div className='bg-background rounded-4xl sm:p-12 p-4 space-y-4'>
-						<p className='text-xl font-bold text-brand'>Детали оборудования</p>
+						<p className='text-xl font-bold text-brand'>{t('desk.edit.equipment.title')}</p>
 						<FormField
 							control={form.control}
 							name='product'
 							rules={{
-								required: 'Наименование груза обязательно',
+								required: t('desk.edit.equipment.productRequired'),
 								maxLength: {
 									value: PRODUCT_MAX_LENGTH,
-									message: 'Название продукта максимум 120 символов',
+									message: t('desk.edit.equipment.productMax'),
 								},
 							}}
 							render={({ field }) => (
@@ -401,7 +412,7 @@ export function EditPage() {
 									<FormControl>
 										<InputGroup>
 											<InputGroupInput
-												placeholder='Наименование груза'
+												placeholder={t('desk.edit.equipment.productPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
 												maxLength={PRODUCT_MAX_LENGTH}
@@ -415,23 +426,10 @@ export function EditPage() {
 								</FormItem>
 							)}
 						/>
-						{/* <FormField
-							control={form.control}
-							name='product'
-							render={({ field }) => (
-								<FormItem className='w-full'>
-									<FormControl>
-										<InputGroup>
-											<InputGroupInput placeholder='Товар' {...field} value={field.value ?? ''} className='pl-4' disabled={isLoadingPatch} />
-										</InputGroup>
-									</FormControl>
-								</FormItem>
-							)}
-						/> */}
 						<FormField
 							control={form.control}
 							name='transport_type'
-							rules={{ required: 'Тип транспорта обязателен' }}
+							rules={{ required: t('desk.edit.equipment.transportRequired') }}
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
@@ -446,10 +444,10 @@ export function EditPage() {
 							control={form.control}
 							name='weight_tons'
 							rules={{
-								required: 'Вес обязателен',
+								required: t('desk.edit.equipment.weightRequired'),
 								pattern: {
 									value: NUMERIC_REGEX,
-									message: 'Вес должен быть числом',
+									message: t('desk.edit.equipment.weightNumber'),
 								},
 							}}
 							render={({ field }) => (
@@ -457,7 +455,7 @@ export function EditPage() {
 									<FormControl>
 										<InputGroup>
 											<InputGroupInput
-												placeholder='Вес(т)'
+												placeholder={t('desk.edit.equipment.weightPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
 												onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
@@ -489,22 +487,22 @@ export function EditPage() {
 				<div className='mt-4 flex items-center sm:justify-end justify-center gap-4'>
 					<Dialog>
 						<DialogTrigger asChild>
-							<Button variant={'outline'}>Отменить</Button>
+							<Button variant={'outline'}>{t('desk.edit.actions.cancel')}</Button>
 						</DialogTrigger>
 						<DialogContent>
-							<DialogTitle>Вы уверены что хотите отменить изменение?</DialogTitle>
-							<DialogDescription>Несохранённые данные будут удалены</DialogDescription>
+							<DialogTitle>{t('desk.edit.cancel.title')}</DialogTitle>
+							<DialogDescription>{t('desk.edit.cancel.description')}</DialogDescription>
 							<DialogFooter>
 								<DialogClose asChild>
-									<Button variant='outline'>Закрыть</Button>
+									<Button variant='outline'>{t('desk.edit.cancel.close')}</Button>
 								</DialogClose>
 								<DialogClose asChild>
-									<Button onClick={() => router.back()}>Отмена</Button>
+									<Button onClick={() => router.back()}>{t('desk.edit.cancel.back')}</Button>
 								</DialogClose>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
-					<Button type='submit'>Изменить</Button>
+					<Button type='submit'>{t('desk.edit.actions.submit')}</Button>
 				</div>
 			</form>
 		</Form>

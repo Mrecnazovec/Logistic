@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowRight } from "lucide-react"
+import { useI18n } from "@/i18n/I18nProvider"
 
 import type { CargoInfo as CargoInfoType } from "./types"
 
@@ -9,6 +10,8 @@ type CargoInfoProps = {
 }
 
 export function CargoInfo({ cargoInfo }: CargoInfoProps) {
+  const { t } = useI18n()
+
   return (
     <div className="flex flex-wrap items-start justify-between gap-6 border-b pb-6">
       <div>
@@ -25,15 +28,15 @@ export function CargoInfo({ cargoInfo }: CargoInfoProps) {
       </div>
       <div className="space-y-1 text-sm text-muted-foreground">
         <p>
-          <span className="font-semibold text-foreground">Тип транспорта: </span>
+          <span className="font-semibold text-foreground">{t("components.cargoInfo.transport")}: </span>
           {cargoInfo.transport}
         </p>
         <p>
-          <span className="font-semibold text-foreground">Вес: </span>
+          <span className="font-semibold text-foreground">{t("components.cargoInfo.weight")}: </span>
           {cargoInfo.weight}
         </p>
         <p>
-          <span className="font-semibold text-foreground">Начальная цена: </span>
+          <span className="font-semibold text-foreground">{t("components.cargoInfo.initialPrice")}: </span>
           {cargoInfo.initialPrice}
         </p>
       </div>

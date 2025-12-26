@@ -1,12 +1,13 @@
 'use client'
 
+import { useMemo } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { useI18n } from '@/i18n/I18nProvider'
 import { buildPaginationItems, getPageNumberFromUrl, PaginationItem } from '@/lib/pagination'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useMemo } from 'react'
 
 export type CardPaginationState = {
 	enabled: boolean
@@ -97,6 +98,8 @@ type CardPaginationControlsProps = {
 }
 
 export function CardPaginationControls({ pagination, className }: CardPaginationControlsProps) {
+	const { t } = useI18n()
+
 	if (!pagination.enabled) {
 		return null
 	}
@@ -114,15 +117,17 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 
 	return (
 		<nav
-			aria-label='Pagination navigation'
+			aria-label={t('components.cardPagination.ariaLabel')}
 			className={cn(
 				'flex flex-wrap items-center xs:justify-between justify-center gap-4 rounded-4xl bg-background px-6 py-4 shadow-sm',
 				className,
 			)}
 		>
 			<p className='text-sm text-muted-foreground'>
-				Страница {currentPage}
-				{Number.isFinite(effectiveTotalPages) ? ` из ${effectiveTotalPages}` : ''}
+				{t('components.cardPagination.page', {
+					page: currentPage,
+					total: effectiveTotalPages,
+				})}
 			</p>
 
 			<div className='flex items-center gap-2'>
@@ -132,7 +137,7 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 					className='h-9 w-9 rounded-full p-0'
 					onClick={goPrevious}
 					disabled={!canGoPrevious}
-					aria-label='Go to previous page'
+					aria-label={t('components.cardPagination.prev')}
 				>
 					<ChevronLeft className='size-4' aria-hidden />
 				</Button>
@@ -170,7 +175,7 @@ export function CardPaginationControls({ pagination, className }: CardPagination
 					className='h-9 w-9 rounded-full p-0'
 					onClick={goNext}
 					disabled={!canGoNext}
-					aria-label='Go to next page'
+					aria-label={t('components.cardPagination.next')}
 				>
 					<ChevronRight className='size-4' aria-hidden />
 				</Button>

@@ -1,13 +1,14 @@
 'use client'
 
+import { useState } from 'react'
+import { format } from 'date-fns'
+import { enUS, ru } from 'date-fns/locale'
+import { CalendarIcon } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Calendar } from '@/components/ui/Calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
-import { CalendarIcon } from 'lucide-react'
-import { useState } from 'react'
 
 interface DatePickerProps {
 	value?: string | Date
@@ -16,8 +17,11 @@ interface DatePickerProps {
 	disabled?: boolean
 }
 
-export function DatePicker({ value, onChange, placeholder = 'Выберите дату', disabled }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder, disabled }: DatePickerProps) {
+	const { t, locale } = useI18n()
 	const [open, setOpen] = useState(false)
+	const dateLocale = locale === 'en' ? enUS : ru
+	const resolvedPlaceholder = placeholder ?? t('components.select.date.placeholder')
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -32,8 +36,8 @@ export function DatePicker({ value, onChange, placeholder = 'Выберите д
 				>
 					<CalendarIcon className='size-5 mr-2' />
 					{value
-						? format(new Date(value), 'dd MMMM yyyy', { locale: ru })
-						: placeholder}
+						? format(new Date(value), 'dd MMMM yyyy', { locale: dateLocale })
+						: resolvedPlaceholder}
 				</Button>
 			</PopoverTrigger>
 

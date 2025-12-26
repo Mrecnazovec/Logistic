@@ -1,7 +1,6 @@
-﻿"use client"
+"use client"
 
 import { UserRound } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -16,6 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/Dialog'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
@@ -23,12 +23,13 @@ import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { useConfirmPaymentCarrier } from '@/hooks/queries/payments/useConfirmPaymentCarrier'
 import { useConfirmPaymentCustomer } from '@/hooks/queries/payments/useConfirmPaymentCustomer'
 import { useConfirmPaymentLogistic } from '@/hooks/queries/payments/useConfirmPaymentLogistic'
+import { useI18n } from '@/i18n/I18nProvider'
 import { DEFAULT_PLACEHOLDER } from '@/lib/formatters'
 import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import Link from 'next/link'
-import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 
 export function PaymentPage() {
+	const { t } = useI18n()
 	const { order, isLoading } = useGetOrder()
 	const { me } = useGetMe()
 	const payment = order?.payment ?? null
@@ -38,14 +39,13 @@ export function PaymentPage() {
 	const { confirmPaymentCustomer, isLoadingConfirmPaymentCustomer } = useConfirmPaymentCustomer()
 	const { confirmPaymentCarrier, isLoadingConfirmPaymentCarrier } = useConfirmPaymentCarrier()
 	const { confirmPaymentLogistic, isLoadingConfirmPaymentLogistic } = useConfirmPaymentLogistic()
-	const router = useRouter()
 
 	if (isLoading) return <PaymentPageSkeleton />
 
 	if (!order) {
 		return (
 			<div className='flex h-full w-full items-center justify-center rounded-4xl bg-background p-8 text-center text-muted-foreground'>
-				Заказ не найден
+				{t('order.payment.notFound')}
 			</div>
 		)
 	}
@@ -59,21 +59,21 @@ export function PaymentPage() {
 		? null
 		: isCustomer
 			? {
-					label: 'Подтвердить оплату (заказчик)',
+					label: t('order.payment.confirm.customer'),
 					isConfirmed: Boolean(payment.confirmed_by_customer),
 					isLoading: isLoadingConfirmPaymentCustomer,
 					onConfirm: () => confirmPaymentCustomer({ id: paymentId, orderId: order.id, data: { order: order.id } }),
 				}
 			: isCarrier
 				? {
-						label: 'Подтвердить оплату (перевозчик)',
+						label: t('order.payment.confirm.carrier'),
 						isConfirmed: Boolean(payment.confirmed_by_carrier),
 						isLoading: isLoadingConfirmPaymentCarrier,
 						onConfirm: () => confirmPaymentCarrier({ id: paymentId, orderId: order.id, data: { order: order.id } }),
 					}
 				: isLogistic
 					? {
-							label: 'Подтвердить оплату (логист)',
+							label: t('order.payment.confirm.logistic'),
 							isConfirmed: Boolean(payment.confirmed_by_logistic),
 							isLoading: isLoadingConfirmPaymentLogistic,
 							onConfirm: () =>
@@ -90,19 +90,19 @@ export function PaymentPage() {
 	const sections = [
 		{
 			key: 'customer',
-			title: 'Информация о грузовладельце',
+			title: t('order.payment.section.customer'),
 			role: order.roles?.customer ?? null,
 			confirmation: confirmationByRole.customer,
 		},
 		{
 			key: 'carrier',
-			title: 'Информация о перевозчике',
+			title: t('order.payment.section.carrier'),
 			role: order.roles?.carrier ?? null,
 			confirmation: confirmationByRole.carrier,
 		},
 		{
 			key: 'logistic',
-			title: 'Информация о экспедиторе',
+			title: t('order.payment.section.logistic'),
 			role: order.roles?.logistic ?? null,
 			confirmation: confirmationByRole.logistic,
 		},
@@ -114,7 +114,7 @@ export function PaymentPage() {
 	return (
 		<div className='space-y-8 rounded-4xl bg-background p-8'>
 			<div className='flex items-center gap-3'>
-				<h1>Платёж №</h1>
+				<h1>{t('order.payment.title')}</h1>
 				<UuidCopy id={payment?.id} isPlaceholder />
 			</div>
 			{sections.map((section) => (
@@ -126,25 +126,25 @@ export function PaymentPage() {
 					<div className='grid gap-8 lg:grid-cols-2'>
 						<div className='space-y-4'>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Ф.И.О.</span>
+								<span className='text-grayscale'>{t('order.payment.field.fullName')}</span>
 								<span className='text-end font-medium text-foreground'>
 									{section.role ? <ProfileLink name={section.role?.name} id={section.role?.id} /> : DEFAULT_PLACEHOLDER}
 								</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Номер телефона</span>
+								<span className='text-grayscale'>{t('order.payment.field.phone')}</span>
 								<span className='text-end font-medium text-foreground'>
 									{withFallback(section.role?.phone)}
 								</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Название компании</span>
+								<span className='text-grayscale'>{t('order.payment.field.company')}</span>
 								<span className='text-end font-medium text-foreground'>
 									{withFallback(section.role?.company)}
 								</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Email</span>
+								<span className='text-grayscale'>{t('order.payment.field.email')}</span>
 								<span className='text-end font-medium text-foreground'>
 									{withFallback(section.role?.login)}
 								</span>
@@ -152,25 +152,25 @@ export function PaymentPage() {
 						</div>
 						<div className='space-y-4'>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Страна</span>
+								<span className='text-grayscale'>{t('order.payment.field.country')}</span>
 								<span className='text-end font-medium text-foreground'>{DEFAULT_PLACEHOLDER}</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Город</span>
+								<span className='text-grayscale'>{t('order.payment.field.city')}</span>
 								<span className='text-end font-medium text-foreground'>{DEFAULT_PLACEHOLDER}</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Выполнено заказов</span>
+								<span className='text-grayscale'>{t('order.payment.field.ordersCount')}</span>
 								<span className='text-end font-medium text-foreground'>{DEFAULT_PLACEHOLDER}</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>
-								<span className='text-grayscale'>Подтверждение</span>
+								<span className='text-grayscale'>{t('order.payment.field.confirmation')}</span>
 								<span
 									className={
 										section.confirmation ? 'text-end font-medium text-success-500' : 'text-end font-medium text-foreground'
 									}
 								>
-									{section.confirmation ? 'Да' : '—'}
+									{section.confirmation ? t('order.payment.confirmation.yes') : t('order.payment.confirmation.no')}
 								</span>
 							</div>
 						</div>
@@ -179,7 +179,7 @@ export function PaymentPage() {
 			))}
 
 			{!paymentId ? (
-				<p className='text-muted-foreground'>Подтверждение оплаты будет доступно после доставки груза</p>
+				<p className='text-muted-foreground'>{t('order.payment.confirmation.unavailable')}</p>
 			) : confirmAction && !confirmAction.isConfirmed ? (
 				<div className='flex flex-wrap items-center justify-end gap-3 pt-2'>
 					<Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
@@ -188,22 +188,22 @@ export function PaymentPage() {
 								className='min-w-[140px] bg-success-500 text-white hover:bg-success-600'
 								disabled={!isPaymentAvailable || confirmAction.isLoading || confirmAction.isConfirmed}
 							>
-								Завершить
+								{t('order.payment.actions.finish')}
 							</Button>
 						</DialogTrigger>
 						<DialogContent className='w-[520px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 							<DialogHeader className='items-center text-center'>
 								<DialogTitle className='text-xl font-semibold'>
-									Вы уверены, что хотите завершить сделку?
+									{t('order.payment.confirm.title')}
 								</DialogTitle>
 								<DialogDescription className='text-sm text-muted-foreground'>
-									Подтверждая, вы закрываете сделку, не имея никаких претензий к ней ни одной из сторон.
+									{t('order.payment.confirm.description')}
 								</DialogDescription>
 							</DialogHeader>
 							<DialogFooter className='flex w-full flex-row justify-center gap-3 sm:justify-center'>
 								<DialogClose asChild>
 									<Button variant='secondary' className='min-w-[160px]'>
-										Отменить
+										{t('order.payment.confirm.cancel')}
 									</Button>
 								</DialogClose>
 								<Button
@@ -214,46 +214,47 @@ export function PaymentPage() {
 										setIsConfirmOpen(false)
 									}}
 								>
-									Подтвердить
+									{t('order.payment.confirm.action')}
 								</Button>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
 					<Link href={DASHBOARD_URL.order(String(order.id))}>
-						<Button
-							className='min-w-[110px] bg-warning-400 text-white hover:bg-warning-500'
-						>
-							Позже
-						</Button></Link>
+						<Button className='min-w-[110px] bg-warning-400 text-white hover:bg-warning-500'>
+							{t('order.payment.actions.later')}
+						</Button>
+					</Link>
 					<Dialog open={isDisputeOpen} onOpenChange={setIsDisputeOpen}>
 						<DialogTrigger asChild>
-							<Button className='min-w-[120px] bg-error-500 text-white hover:bg-error-600'>Оспорить</Button>
+							<Button className='min-w-[120px] bg-error-500 text-white hover:bg-error-600'>
+								{t('order.payment.actions.dispute')}
+							</Button>
 						</DialogTrigger>
 						<DialogContent className='w-[520px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 							<DialogHeader className='items-center text-center'>
-								<DialogTitle className='text-xl font-semibold'>Возникли проблемы? Свяжитесь с нами!</DialogTitle>
+								<DialogTitle className='text-xl font-semibold'>{t('order.payment.dispute.title')}</DialogTitle>
 								<DialogDescription className='text-sm text-muted-foreground'>
-									Если нужна помощь, перейдите в раздел поддержки.
+									{t('order.payment.dispute.description')}
 								</DialogDescription>
 							</DialogHeader>
 							<DialogFooter className='flex w-full flex-row justify-center gap-3 sm:justify-center'>
 								<DialogClose asChild>
 									<Button variant='secondary' className='min-w-[160px]'>
-										Закрыть
+										{t('order.payment.dispute.close')}
 									</Button>
 								</DialogClose>
 								<Link href={DASHBOARD_URL.settings('support')}>
-									<Button
-										className='min-w-[160px]'
-
-									>
-										Помощь
-									</Button></Link>
+									<Button className='min-w-[160px]'>
+										{t('order.payment.dispute.support')}
+									</Button>
+								</Link>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
 				</div>
-			) : <p className='text-success-500'>Вы подтвердили оплату</p>}
+			) : (
+				<p className='text-success-500'>{t('order.payment.confirmed')}</p>
+			)}
 		</div>
 	)
 }

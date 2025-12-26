@@ -1,19 +1,21 @@
+import { authService } from '@/services/auth/auth.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import type { IForgotPassword } from '@/shared/types/Login.interface'
-import { authService } from '@/services/auth/auth.service'
-import { getErrorMessage } from '@/utils/getErrorMessage'
+import { IForgotPassword } from '@/shared/types/Login.interface'
 
 export const useForgotPassword = () => {
+	const { t } = useI18n()
 	const { mutate: forgotPassword, isPending: isLoading } = useMutation({
 		mutationKey: ['auth', 'forgot-password'],
 		mutationFn: (data: IForgotPassword) => authService.forgotPassword(data),
 		onSuccess() {
-			toast.success('Письмо для сброса отправлено')
+			toast.success(t('hooks.auth.forgotPassword.success'))
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Не удалось отправить письмо для сброса'
+			const message = getErrorMessage(error) ?? t('hooks.auth.forgotPassword.error')
 			toast.error(message)
 		},
 	})

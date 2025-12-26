@@ -1,22 +1,17 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Star } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Textarea } from '@/components/ui/form-control/Textarea'
 import { useCreateRating } from '@/hooks/queries/ratings/useCreateRating'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Participant = {
 	id: number
@@ -60,6 +55,7 @@ const getParticipants = (order: IOrderDetail, meId?: number) => {
 }
 
 export function OrderRatingModal({ order, currentRole: _currentRole, disabled }: OrderRatingModalProps) {
+	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
 	const [formState, setFormState] = useState<Record<number, { score: number | ''; comment: string }>>({})
 	const { createRating, isLoadingCreate } = useCreateRating()
@@ -123,16 +119,16 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 					disabled={!hasParticipants || disabled}
 					className='bg-brand text-white hover:bg-brand/90 rounded-full'
 				>
-					Оценить участников
+					{t('components.orderRating.trigger')}
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle className='text-center text-2xl font-bold'>Оценка участников перевозки</DialogTitle>
+					<DialogTitle className='text-center text-2xl font-bold'>{t('components.orderRating.title')}</DialogTitle>
 				</DialogHeader>
 
 				{!hasParticipants ? (
-					<p className='text-center text-muted-foreground py-6'>Нет участников для оценки.</p>
+					<p className='text-center text-muted-foreground py-6'>{t('components.orderRating.empty')}</p>
 				) : (
 					<div className='grid gap-4 md:grid-cols-2'>
 						{participants.map((participant) => {
@@ -144,7 +140,9 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 									<div className='flex items-center justify-between gap-2'>
 										<div className='flex flex-col'>
 											<p className='font-semibold text-foreground'>{participant.name}</p>
-											<p className='text-xs text-muted-foreground'>Роль: {RoleSelect.find((type) => type.type === participant.role)?.name}</p>
+											<p className='text-xs text-muted-foreground'>
+												{t('components.orderRating.role')}: {t(RoleSelect.find((type) => type.type === participant.role)?.nameKey ?? '')}
+											</p>
 										</div>
 										<Star className='size-5 text-warning-500 fill-warning-500' aria-hidden />
 									</div>
@@ -156,7 +154,7 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 												<button
 													key={ratingValue}
 													type='button'
-													aria-label={`Оценка ${ratingValue}`}
+													aria-label={t('components.orderRating.scoreLabel', { rating: ratingValue })}
 													onClick={() => handleScoreSelect(participant.id, ratingValue)}
 													className='rounded-full p-1 transition-colors'
 												>
@@ -172,7 +170,7 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 										})}
 									</div>
 									<Textarea
-										placeholder='Комментарий (необязательно)'
+										placeholder={t('components.orderRating.comment')}
 										value={entry.comment}
 										onChange={(event) => handleChange(participant.id, 'comment', event.target.value)}
 										className='min-h-[96px] resize-none'
@@ -182,7 +180,7 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 										disabled={isSubmitDisabled}
 										className='w-full rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
 									>
-										Отправить оценку
+										{t('components.orderRating.submit')}
 									</Button>
 								</div>
 							)

@@ -1,34 +1,44 @@
 "use client"
 
 import { Button } from "@/components/ui/Button"
+import { languageOptions } from "@/i18n/languages"
+import { useI18n } from "@/i18n/I18nProvider"
+import { useLocaleSwitcher } from "@/i18n/useLocaleSwitcher"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { useState } from "react"
-
-const languages = [
-	{ code: "ru", label: "Русский", flag: "/svg/rus.svg" },
-	{ code: "en", label: "English", flag: "/svg/eng.svg" },
-]
+import { useEffect, useState } from "react"
 
 export function LanguagePage() {
-	const [selected, setSelected] = useState<string>("ru")
+	const { locale, t } = useI18n()
+	const { switchLocale } = useLocaleSwitcher()
+	const [pendingLocale, setPendingLocale] = useState(locale)
+
+	useEffect(() => {
+		setPendingLocale(locale)
+	}, [locale])
+
+	const handleSave = () => {
+		if (pendingLocale !== locale) {
+			switchLocale(pendingLocale)
+		}
+	}
 
 	return (
 		<div className="rounded-[32px] bg-white p-6 shadow-sm md:p-8">
 			<div className="space-y-1">
-				<h1 className="text-xl font-semibold text-foreground md:text-2xl">Язык</h1>
-				<p className="text-sm text-muted-foreground">Измените настройки языка</p>
+				<h1 className="text-xl font-semibold text-foreground md:text-2xl">{t("settings.language.title")}</h1>
+				<p className="text-sm text-muted-foreground">{t("settings.language.description")}</p>
 			</div>
 
 			<div className="mt-8 space-y-4">
 				<div className="space-y-3 rounded-3xl border border-transparent bg-white px-2 py-1 shadow-[0_1px_6px_rgba(15,23,42,0.04)]">
-					{languages.map((language) => {
-						const isActive = selected === language.code
+					{languageOptions.map((language) => {
+						const isActive = pendingLocale === language.code
 						return (
 							<button
 								key={language.code}
 								type="button"
-								onClick={() => setSelected(language.code)}
+								onClick={() => setPendingLocale(language.code)}
 								className={cn(
 									"flex w-full items-center justify-between rounded-full px-4 py-3 text-left transition",
 									isActive ? "bg-grayscale-50 shadow-xs" : "hover:bg-grayscale-50/70"
@@ -54,8 +64,10 @@ export function LanguagePage() {
 					<Button
 						type="button"
 						className="h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400"
+						disabled={pendingLocale === locale}
+						onClick={handleSave}
 					>
-						Сохранить изменения
+						{t("settings.language.save")}
 					</Button>
 				</div>
 			</div>

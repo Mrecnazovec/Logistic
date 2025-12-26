@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/Table'
 import { buildPaginationItems, getPageNumberFromUrl, PaginationItem } from '@/lib/pagination'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/i18n/I18nProvider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '../Button'
 import { Input } from '../form-control/Input'
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
 	prefetchOnRowHover = false,
 	rowClassName,
 }: DataTableProps<TData, TValue>) {
+	const { t } = useI18n()
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [rowSelection, setRowSelection] = useState({})
@@ -175,7 +177,7 @@ export function DataTable<TData, TValue>({
 			{filterKey && (
 				<div className='flex items-center py-4 max-w-96'>
 					<Input
-						placeholder='Search'
+						placeholder={t('components.table.search.placeholder')}
 						value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ''}
 						onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)}
 					/>
@@ -240,7 +242,7 @@ export function DataTable<TData, TValue>({
 						) : (
 							<TableRow>
 								<TableCell colSpan={columns.length} className='h-24 text-center'>
-									No data available.
+									{t('components.table.empty.data')}
 								</TableCell>
 							</TableRow>
 						)}
@@ -250,7 +252,9 @@ export function DataTable<TData, TValue>({
 
 			<div className='flex items-center justify-between px-6 py-4 border-t border-border'>
 				<p className='text-sm text-muted-foreground'>
-					Показано: {table.getPaginationRowModel().rows.length} элементов
+					{t('components.table.pagination.shown', {
+						count: table.getPaginationRowModel().rows.length,
+					})}
 				</p>
 
 				<div className='flex items-center gap-2'>
@@ -260,7 +264,7 @@ export function DataTable<TData, TValue>({
 						className='h-8 w-8 p-0 rounded-full'
 						onClick={() => handlePageChange('previous')}
 						disabled={!canGoPrevious}
-						aria-label='Previous page'
+						aria-label={t('components.table.pagination.prev')}
 					>
 						<ChevronLeft />
 					</Button>
@@ -298,13 +302,16 @@ export function DataTable<TData, TValue>({
 						className='h-8 w-8 p-0 rounded-full'
 						onClick={() => handlePageChange('next')}
 						disabled={!canGoNext}
-						aria-label='Next page'
+						aria-label={t('components.table.pagination.next')}
 					>
 						<ChevronRight />
 					</Button>
 				</div>
 				<p className='text-sm text-muted-foreground'>
-					Страница {displayPageIndex} из {effectiveTotalPages}
+					{t('components.table.pagination.page', {
+						page: displayPageIndex,
+						total: effectiveTotalPages,
+					})}
 				</p>
 				{footerActions}
 			</div>

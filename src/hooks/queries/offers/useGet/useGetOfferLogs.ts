@@ -1,4 +1,4 @@
-import { offerService } from '@/services/offers.service'
+import { offersService } from '@/services/offers.service'
 import { useQuery } from '@tanstack/react-query'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
@@ -19,7 +19,7 @@ export const useGetOfferLogs = (offerId?: string) => {
 
 	const { data, isLoading } = useQuery({
 		queryKey: ['get offer logs', resolvedId, query],
-		queryFn: () => offerService.getOfferLogs(resolvedId as string, query),
+		queryFn: () => offersService.getOfferLogs(resolvedId as string, query),
 		enabled: Boolean(resolvedId),
 	})
 

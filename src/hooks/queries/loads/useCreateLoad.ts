@@ -1,15 +1,17 @@
 import { DASHBOARD_URL } from '@/config/url.config'
 import { loadsService } from '@/services/loads.service'
-import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
-import { FieldError, IErrorResponse } from '@/shared/types/Error.interface'
+import type { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
+import type { FieldError, IErrorResponse } from '@/shared/types/Error.interface'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useCreateLoad = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
 	const router = useRouter()
 
@@ -19,7 +21,7 @@ export const useCreateLoad = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
-			toast.success('Объявление создано')
+			toast.success(t('hooks.loads.create.success'))
 			router.push(DASHBOARD_URL.announcements())
 		},
 		onError(error) {
@@ -38,9 +40,9 @@ export const useCreateLoad = () => {
 					formatError(detail as FieldError) ??
 					getErrorMessage(error)
 
-				toast.error(message ?? 'Не удалось создать объявление')
+				toast.error(message ?? t('hooks.loads.create.error'))
 			} else {
-				const message = getErrorMessage(error) ?? 'Не удалось создать объявление'
+				const message = getErrorMessage(error) ?? t('hooks.loads.create.error')
 				toast.error(message)
 			}
 		},

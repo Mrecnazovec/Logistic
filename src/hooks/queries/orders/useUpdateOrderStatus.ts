@@ -1,26 +1,28 @@
-import { ordersService } from '@/services/orders.service'
 import type { PatchedOrderDriverStatusUpdateDto } from '@/shared/types/Order.interface'
+import { ordersService } from '@/services/orders.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useUpdateOrderStatus = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
-
-	const { mutate: updateDriverStatus, isPending: isLoadingUpdateStatus } = useMutation({
-		mutationKey: ['order', 'driver-status'],
+	const { mutate: updateOrderStatus, isPending: isLoadingUpdateStatus } = useMutation({
+		mutationKey: ['order', 'update-status'],
 		mutationFn: ({ id, data }: { id: string; data: PatchedOrderDriverStatusUpdateDto }) => ordersService.updateDriverStatus(id, data),
-		onSuccess(_, variables) {
-			queryClient.invalidateQueries({ queryKey: ['get order', variables.id] })
-			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			toast.success('Статус водителя обновлён')
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ['get order'] })
+			queryClient.invalidateQueries({ queryKey: ['get orders', 'by-user'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
+			toast.success(t('hooks.orders.updateStatus.success'))
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Ошибка при обновлении статуса водителя'
+			const message = getErrorMessage(error) ?? t('hooks.orders.updateStatus.error')
 			toast.error(message)
 		},
 	})
 
-	return useMemo(() => ({ updateDriverStatus, isLoadingUpdateStatus }), [updateDriverStatus, isLoadingUpdateStatus])
+	return useMemo(() => ({ updateOrderStatus, isLoadingUpdateStatus }), [updateOrderStatus, isLoadingUpdateStatus])
 }

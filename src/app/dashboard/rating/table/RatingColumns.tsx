@@ -7,8 +7,10 @@ import { cycleColumnSort } from '@/components/ui/table/utils'
 import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { enUS, ru } from 'date-fns/locale'
 import { Minus, Star } from 'lucide-react'
+
+type Translator = (key: string, params?: Record<string, string | number>) => string
 
 const renderSortableHeader = (column: any, label: string) => (
 	<Button
@@ -27,62 +29,67 @@ const toNumber = (value: number | string | null | undefined) => {
 	return Number.isFinite(num) ? num : null
 }
 
-export const ratingColumns: ColumnDef<IRatingUserList>[] = [
-	{
-		accessorKey: 'id',
-		header: 'ID',
-		cell: ({ row }) => <UuidCopy uuid={String(row.original.id)} />,
-	},
-	{
-		accessorKey: 'company_name',
-		header: ({ column }) => renderSortableHeader(column, 'Компания'),
-		cell: ({ row }) => row.original.company_name ?? '-',
-	},
-	{
-		accessorKey: 'display_name',
-		header: ({ column }) => renderSortableHeader(column, 'Имя'),
-		cell: ({ row }) => row.original.display_name ?? '-',
-	},
-	{
-		accessorKey: 'avg_rating',
-		header: ({ column }) => renderSortableHeader(column, 'Рейтинг'),
-		cell: ({ row }) => (
-			<span className='flex items-center gap-2 font-medium'>
-				<Star className='size-4 text-warning-500 fill-warning-500' />
-				{toNumber(row.original.avg_rating) !== null ? toNumber(row.original.avg_rating)?.toFixed(1) : <Minus />}
-			</span>
-		),
-		sortingFn: (a, b) => (toNumber(a.original.avg_rating) ?? 0) - (toNumber(b.original.avg_rating) ?? 0),
-	},
-	{
-		accessorKey: 'rating_count',
-		header: ({ column }) => renderSortableHeader(column, 'Отзывов'),
-		cell: ({ row }) => {
-			const value = toNumber(row.original.rating_count)
-			return value !== null ? value.toLocaleString('ru-RU') : '-'
+export const getRatingColumns = (t: Translator, locale: string): ColumnDef<IRatingUserList>[] => {
+	const numberLocale = locale === 'en' ? 'en-US' : 'ru-RU'
+	const dateLocale = locale === 'en' ? enUS : ru
+
+	return [
+		{
+			accessorKey: 'id',
+			header: 'ID',
+			cell: ({ row }) => <UuidCopy uuid={String(row.original.id)} />,
 		},
-		sortingFn: (a, b) => (toNumber(a.original.rating_count) ?? 0) - (toNumber(b.original.rating_count) ?? 0),
-	},
-	{
-		accessorKey: 'completed_orders',
-		header: ({ column }) => renderSortableHeader(column, 'Выполненных заказов'),
-		cell: ({ row }) => {
-			const value = toNumber(row.original.completed_orders)
-			return value !== null ? value.toLocaleString('ru-RU') : '-'
+		{
+			accessorKey: 'company_name',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.company')),
+			cell: ({ row }) => row.original.company_name ?? '-',
 		},
-		sortingFn: (a, b) => (toNumber(a.original.completed_orders) ?? 0) - (toNumber(b.original.completed_orders) ?? 0),
-	},
-	{
-		accessorKey: 'registered_at',
-		header: ({ column }) => renderSortableHeader(column, 'Зарегистрирован с'),
-		cell: ({ row }) => {
-			const date = new Date(row.original.registered_at ?? '')
-			return Number.isNaN(date.getTime()) ? '-' : format(date, 'dd.MM.yyyy', { locale: ru })
+		{
+			accessorKey: 'display_name',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.person')),
+			cell: ({ row }) => row.original.display_name ?? '-',
 		},
-		sortingFn: (a, b) => {
-			const dateA = new Date(a.original.registered_at ?? '').getTime()
-			const dateB = new Date(b.original.registered_at ?? '').getTime()
-			return dateA - dateB
+		{
+			accessorKey: 'avg_rating',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.rating')),
+			cell: ({ row }) => (
+				<span className='flex items-center gap-2 font-medium'>
+					<Star className='size-4 text-warning-500 fill-warning-500' />
+					{toNumber(row.original.avg_rating) !== null ? toNumber(row.original.avg_rating)?.toFixed(1) : <Minus />}
+				</span>
+			),
+			sortingFn: (a, b) => (toNumber(a.original.avg_rating) ?? 0) - (toNumber(b.original.avg_rating) ?? 0),
 		},
-	},
-]
+		{
+			accessorKey: 'rating_count',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.reviews')),
+			cell: ({ row }) => {
+				const value = toNumber(row.original.rating_count)
+				return value !== null ? value.toLocaleString(numberLocale) : '-'
+			},
+			sortingFn: (a, b) => (toNumber(a.original.rating_count) ?? 0) - (toNumber(b.original.rating_count) ?? 0),
+		},
+		{
+			accessorKey: 'completed_orders',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.completed')),
+			cell: ({ row }) => {
+				const value = toNumber(row.original.completed_orders)
+				return value !== null ? value.toLocaleString(numberLocale) : '-'
+			},
+			sortingFn: (a, b) => (toNumber(a.original.completed_orders) ?? 0) - (toNumber(b.original.completed_orders) ?? 0),
+		},
+		{
+			accessorKey: 'registered_at',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.registeredAt')),
+			cell: ({ row }) => {
+				const date = new Date(row.original.registered_at ?? '')
+				return Number.isNaN(date.getTime()) ? '-' : format(date, 'dd.MM.yyyy', { locale: dateLocale })
+			},
+			sortingFn: (a, b) => {
+				const dateA = new Date(a.original.registered_at ?? '').getTime()
+				const dateB = new Date(b.original.registered_at ?? '').getTime()
+				return dateA - dateB
+			},
+		},
+	]
+}

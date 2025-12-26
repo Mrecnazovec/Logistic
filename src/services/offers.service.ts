@@ -125,4 +125,4 @@ class OffersService {
 		})
 	}
 }
-export const offerService = new OffersService()
+export const offersService = new OffersService()

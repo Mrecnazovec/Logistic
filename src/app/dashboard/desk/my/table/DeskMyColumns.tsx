@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { DeskMyActions } from '@/components/ui/actions/DeskMyActions'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -9,13 +9,15 @@ import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatPlace, parseDateToTimestamp } from '@/lib/formatters'
-import { TransportSelect } from '@/shared/enums/TransportType.enum'
+import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 import { useRoleStore } from '@/store/useRoleStore'
 
-export const deskMyColumns: ColumnDef<IOfferShort>[] = [
+type Translator = (key: string, params?: Record<string, string | number>) => string
+
+export const getDeskMyColumns = (t: Translator): ColumnDef<IOfferShort>[] => [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -23,14 +25,14 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	},
 	{
 		accessorKey: 'customer_company',
-		header: 'Компания',
+		header: t('deskMy.table.company'),
 	},
 	{
 		accessorKey: 'status_display',
-		header: 'Статус',
+		header: t('deskMy.table.status'),
 		cell: ({ row }) => {
 			const role = useRoleStore.getState().role
-			const { variant, label, highlight } = getOfferStatusMeta(row.original, role)
+			const { variant, label, highlight } = getOfferStatusMeta(row.original, role, t)
 			return <Badge variant={variant} className={highlight ? 'animate-pulse' : undefined}>{label}</Badge>
 		},
 	},
@@ -38,7 +40,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 		id: 'origin',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Отправление / дата
+				{t('deskMy.table.origin')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -46,8 +48,8 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 			const { origin_city, origin_country, load_date } = row.original
 			return (
 				<div className='flex flex-col'>
-					<span>{formatPlace(origin_city, origin_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>{formatDateValue(load_date, 'dd.MM.yyyy', '—')}</span>
+					<span>{formatPlace(origin_city, origin_country, '-')}</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(load_date, 'dd.MM.yyyy', '-')}</span>
 				</div>
 			)
 		},
@@ -57,7 +59,7 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 		id: 'destination',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Назначение / дата
+				{t('deskMy.table.destination')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -65,8 +67,8 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 			const { destination_city, destination_country, delivery_date } = row.original
 			return (
 				<div className='flex flex-col'>
-					<span>{formatPlace(destination_city, destination_country, '—')}</span>
-					<span className='text-sm text-muted-foreground'>{formatDateValue(delivery_date, 'dd.MM.yyyy', '—')}</span>
+					<span>{formatPlace(destination_city, destination_country, '-')}</span>
+					<span className='text-sm text-muted-foreground'>{formatDateValue(delivery_date, 'dd.MM.yyyy', '-')}</span>
 				</div>
 			)
 		},
@@ -74,23 +76,23 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	},
 	{
 		accessorKey: 'transport_type',
-		header: 'Транспорт',
-		cell: ({ row }) => TransportSelect.find((t) => t.type === row.original.transport_type)?.symb ?? '—',
+		header: t('deskMy.table.transport'),
+		cell: ({ row }) => getTransportSymbol(t, row.original.transport_type as TransportTypeEnum) || '-',
 	},
 	{
 		accessorKey: 'weight_t',
-		header: 'Вес (т)',
-		cell: ({ row }) => `${row.original.weight_t} т`,
+		header: t('deskMy.table.weight'),
+		cell: ({ row }) => row.original.weight_t ? `${row.original.weight_t} ${t('deskMy.unit.ton')}` : '-',
 	},
 	{
 		accessorKey: 'price_currency',
-		header: 'Валюта',
+		header: t('deskMy.table.currency'),
 	},
 	{
 		accessorKey: 'price_value',
 		header: ({ column }) => (
 			<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-				Цена
+				{t('deskMy.table.price')}
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
@@ -99,12 +101,12 @@ export const deskMyColumns: ColumnDef<IOfferShort>[] = [
 	},
 	{
 		accessorKey: 'phone',
-		header: 'Телефон',
+		header: t('deskMy.table.phone'),
 		cell: ({ row }) => row.original.phone ?? <Minus className='size-5' />,
 	},
 	{
 		accessorKey: 'email',
-		header: 'Email',
+		header: t('deskMy.table.email'),
 		cell: ({ row }) => row.original.email ?? <Minus className='size-5' />,
 	},
 	{

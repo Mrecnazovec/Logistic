@@ -1,12 +1,12 @@
-﻿'use client'
+'use client'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/form-control/Form'
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { IMG_URL, PUBLIC_URL } from '@/config/url.config'
+import { LanguageSelect } from '@/components/ui/LanguageSelect'
+import { PUBLIC_URL } from '@/config/url.config'
 import { SITE_NAME } from '@/constants/seo.constants'
-import Image from 'next/image'
+import { useI18n } from '@/i18n/I18nProvider'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { RegisterAuthFields } from './RegisterField'
@@ -26,39 +26,12 @@ import toast from 'react-hot-toast'
 import { RegisterCompanyFields, RegisterTransportField, RegisterVehicleFields } from './RegisterCarrier'
 import { RegisterRoles } from './RegisterRoles'
 
-const ROLES = [
-	{
-		key: RoleEnum.CUSTOMER,
-		title: 'Грузовладелец',
-		icon: AsCargoSaver,
-		color: '#1E3A8A',
-		description: 'Компания или человек, которому нужно что-то перевезти, хранить или обработать.',
-		buttonText: 'грузовладелец',
-	},
-	{
-		key: RoleEnum.CARRIER,
-		title: 'Перевозчик',
-		icon: TruckIcon,
-		color: '#1E3A8A',
-		description: 'Исполнитель в логистике. Его задача — взять груз у заказчика и доставить его из точки А в точку Б в сохранности и в срок.',
-		buttonText: 'перевозчик',
-	},
-	{
-		key: RoleEnum.LOGISTIC,
-		title: 'Экспедитор',
-		icon: LogistIcon,
-		color: '#1E3A8A',
-		description:
-			'Специалист, который организует и управляет процессом перемещения и хранения товаров, чтобы груз дошёл вовремя и с минимальными затратами.',
-		buttonText: 'экспедитор',
-	},
-]
-
 const AUTH_FIELDS = ['email', 'password', 'password2'] as const
 const COMPANY_FIELDS = ['first_name', 'phone', 'country', 'country_code', 'city', 'company_name'] as const
 const VEHICLE_FIELDS = ['car_number', 'trailer_number', 'driver_license'] as const
 
 export function RegisterPage() {
+	const { t } = useI18n()
 	const { form, isPending, onSubmit } = useRegisterForm()
 	const searchParams = useSearchParams()
 	const nextParam = searchParams.get('next')
@@ -70,6 +43,36 @@ export function RegisterPage() {
 	const [otpSecondsLeft, setOtpSecondsLeft] = useState<number | null>(null)
 	const transportName = form.watch('transport_name') ?? ''
 	const hasTransportName = transportName.trim().length > 0
+
+	const roles = useMemo(
+		() => [
+			{
+				key: RoleEnum.CUSTOMER,
+				title: t('register.role.customer.title'),
+				icon: AsCargoSaver,
+				color: '#1E3A8A',
+				description: t('register.role.customer.description'),
+				buttonText: t('register.role.customer.button'),
+			},
+			{
+				key: RoleEnum.CARRIER,
+				title: t('register.role.carrier.title'),
+				icon: TruckIcon,
+				color: '#1E3A8A',
+				description: t('register.role.carrier.description'),
+				buttonText: t('register.role.carrier.button'),
+			},
+			{
+				key: RoleEnum.LOGISTIC,
+				title: t('register.role.logistic.title'),
+				icon: LogistIcon,
+				color: '#1E3A8A',
+				description: t('register.role.logistic.description'),
+				buttonText: t('register.role.logistic.button'),
+			},
+		],
+		[t]
+	)
 
 	const baseSteps = useMemo(() => {
 		if (!role) return 2
@@ -95,7 +98,7 @@ export function RegisterPage() {
 			setOtpCode('')
 		},
 		onError: (error) => {
-			const message = getErrorMessage(error) ?? 'Не удалось отправить код подтверждения'
+			const message = getErrorMessage(error) ?? t('register.errors.sendOtp')
 			toast.error(message)
 		},
 	})
@@ -109,10 +112,10 @@ export function RegisterPage() {
 				setStep(5)
 				return
 			}
-			toast.error('Код подтверждения неверный')
+			toast.error(t('register.errors.invalidOtp'))
 		},
 		onError: (error) => {
-			const message = getErrorMessage(error) ?? 'Не удалось подтвердить код'
+			const message = getErrorMessage(error) ?? t('register.errors.verifyOtp')
 			toast.error(message)
 		},
 	})
@@ -188,7 +191,7 @@ export function RegisterPage() {
 
 		const phone = form.getValues('phone')
 		if (!phone) {
-			form.setError('phone', { message: 'Введите номер телефона' })
+			form.setError('phone', { message: t('register.errors.phoneRequired') })
 			scrollToFirstError()
 			return
 		}
@@ -202,12 +205,12 @@ export function RegisterPage() {
 
 	const handleVerifyOtp = async () => {
 		if (!phoneValue) {
-			toast.error('Введите номер телефона')
+			toast.error(t('register.errors.phoneRequired'))
 			return
 		}
 
 		if (otpCode.trim().length < 6) {
-			toast.error('Введите код подтверждения')
+			toast.error(t('register.errors.otpRequired'))
 			return
 		}
 
@@ -231,7 +234,7 @@ export function RegisterPage() {
 
 	const handleResendOtp = async () => {
 		if (!phoneValue) {
-			toast.error('Введите номер телефона')
+			toast.error(t('register.errors.phoneRequired'))
 			return
 		}
 
@@ -260,12 +263,10 @@ export function RegisterPage() {
 
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
-			<h1 className='sr-only'>Регистрация</h1>
+			<h1 className='sr-only'>{t('register.title')}</h1>
 			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover bg-bottom px-12 py-16 min-h-[200px]'>
 				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
-					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>
-						Высококачественное программное решение для управления вашим бизнес-процессом
-					</h2>
+					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>{t('auth.hero')}</h2>
 				</div>
 			</div>
 			<div className='flex flex-col h-full sm:px-12 px-4 py-8'>
@@ -273,37 +274,10 @@ export function RegisterPage() {
 					<div className='flex items-center justify-center gap-2 flex-wrap'>
 						<Link href={authHref}>
 							<Button variant={'outline'} className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 px-4 py-3 font-medium'>
-								Авторизоваться
+								{t('auth.signIn')}
 							</Button>
 						</Link>
-						<Select>
-							<SelectTrigger
-								className='bg-accent border-none rounded-full text-[16px] hover:bg-accent/80 data-[placeholder]:text-primary text-primary font-medium data-[placeholder]:font-medium px-4 py-3 data-[state=open]:bg-brand-900 data-[state=open]:text-white transition-all 
-'
-								aria-label='Выберите язык'
-							>
-								<SelectValue className='bg-transparent text-foreground' placeholder='Выберите язык' />
-							</SelectTrigger>
-							<SelectContent className='rounded-2xl'>
-								{/* <SelectItem value='UZB' className='rounded-2xl'>
-									<div className='flex items-center gap-2.5 font-medium'>
-										<Image className='rounded-full' src={IMG_URL.svg('uzb')} width={24} height={24} alt='' /> Узбекский
-									</div>
-								</SelectItem>
-								<SelectSeparator /> */}
-								<SelectItem value='RUS' className='rounded-2xl'>
-									<div className='flex items-center gap-2.5 font-medium'>
-										<Image className='rounded-full' src={IMG_URL.svg('rus')} width={24} height={24} alt='' /> Русский
-									</div>
-								</SelectItem>
-								<SelectSeparator />
-								<SelectItem value='ENG' className='rounded-2xl'>
-									<div className='flex items-center gap-2.5 font-medium'>
-										<Image className='rounded-full' src={IMG_URL.svg('eng')} width={24} height={24} alt='' /> Английский
-									</div>
-								</SelectItem>
-							</SelectContent>
-						</Select>
+						<LanguageSelect />
 					</div>
 				</div>
 
@@ -311,27 +285,18 @@ export function RegisterPage() {
 					<Card className='w-full max-w-xl border-none bg-transparent shadow-none'>
 						<CardHeader className='mb-6'>
 							<h1 className='sm:text-5xl text-4xl font-bold text-center'>
-								{!role
-									? 'Регистрация'
-									: step === 1
-										? 'Регистрация'
-										: step === 2 || step === 3
-											? 'Информация о компании'
-											: 'Подтверждение'}
+								{!role ? t('register.title') : step === 1 ? t('register.title') : step === 2 || step === 3 ? t('register.companyInfo') : t('register.confirmation')}
 							</h1>
 							{!role && (
 								<p className='text-center text-lg font-bold mt-6'>
-									Добро пожаловать в {SITE_NAME}! <br /> Пожалуйста, выберите вашу роль для регистрации
+									{t('register.welcomeTitle', { siteName: SITE_NAME })} <br /> {t('register.welcomeSubtitle')}
 								</p>
 							)}
 						</CardHeader>
 
 						{!role ? (
 							<CardContent>
-								<RegisterRoles roles={ROLES} onSelect={setRole} />
-								{/* <Button className='mx-auto block' variant={'link'}>
-									Что такое роли?
-								</Button> */}
+								<RegisterRoles roles={roles} onSelect={setRole} />
 							</CardContent>
 						) : (
 							<Form {...form}>
@@ -347,10 +312,10 @@ export function RegisterPage() {
 												<RegisterAuthFields form={form} isPending={isPending} />
 												<div className='flex items-center gap-4'>
 													<Button type='button' variant={'outline'} disabled={isPending} onClick={handleBackToRole}>
-														Назад
+														{t('common.back')}
 													</Button>
 													<Button type='button' className='flex-1' disabled={isPending} onClick={handleNext}>
-														Продолжить
+														{t('common.continue')}
 													</Button>
 												</div>
 											</>
@@ -363,7 +328,7 @@ export function RegisterPage() {
 												)}
 												<div className='flex items-center gap-4'>
 													<Button type='button' variant={'outline'} disabled={isPending || isSendingOtp} onClick={handleBack}>
-														Назад
+														{t('common.back')}
 													</Button>
 													<Button
 														type='button'
@@ -371,7 +336,7 @@ export function RegisterPage() {
 														disabled={isPending || isSendingOtp}
 														onClick={handleNext}
 													>
-														Продолжить
+														{t('common.continue')}
 													</Button>
 												</div>
 											</>
@@ -381,7 +346,7 @@ export function RegisterPage() {
 												<RegisterVehicleFields form={form} isPending={isPending} showTransportName={false} />
 												<div className='flex items-center gap-4'>
 													<Button type='button' variant={'outline'} disabled={isPending || isSendingOtp} onClick={handleBack}>
-														Назад
+														{t('common.back')}
 													</Button>
 													<Button
 														type='button'
@@ -389,7 +354,7 @@ export function RegisterPage() {
 														disabled={isPending || isSendingOtp}
 														onClick={handleNext}
 													>
-														Продолжить
+														{t('common.continue')}
 													</Button>
 												</div>
 											</>
@@ -397,8 +362,7 @@ export function RegisterPage() {
 										{step === 4 && (
 											<div className='space-y-8'>
 												<p className='text-center text-muted-foreground'>
-													Мы только что отправили проверочный код на{' '}
-													<span className='text-brand font-semibold'>{phoneValue || 'ваш телефон'}</span>
+													{t('register.otpSent', { phone: phoneValue || t('register.yourPhone') })}
 												</p>
 												<div className='flex justify-center'>
 													<InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
@@ -411,7 +375,7 @@ export function RegisterPage() {
 												</div>
 												<div className='text-center text-sm text-muted-foreground'>
 													{otpSecondsLeft && otpSecondsLeft > 0 ? (
-														<p>Через {formatCountdown(otpSecondsLeft)} можно отправить код еще раз</p>
+														<p>{t('register.resendIn', { time: formatCountdown(otpSecondsLeft) })}</p>
 													) : (
 														<button
 															type='button'
@@ -419,7 +383,7 @@ export function RegisterPage() {
 															disabled={isSendingOtp}
 															onClick={handleResendOtp}
 														>
-															Отправить код еще раз
+															{t('register.resendCode')}
 														</button>
 													)}
 												</div>
@@ -430,7 +394,7 @@ export function RegisterPage() {
 														disabled={isVerifyingOtp || isSendingOtp}
 														onClick={handleBack}
 													>
-														Назад
+														{t('common.back')}
 													</Button>
 													<Button
 														type='button'
@@ -438,22 +402,19 @@ export function RegisterPage() {
 														disabled={isVerifyingOtp || isSendingOtp || otpCode.length < 6}
 														onClick={handleVerifyOtp}
 													>
-														Подтвердить
+														{t('common.confirm')}
 													</Button>
 												</div>
-
 											</div>
 										)}
 										{step === 5 && (
 											<div className='space-y-6 text-center'>
-												<p className='text-muted-foreground'>
-													Номер телефона подтверждён, вы можете завершить регистрацию.
-												</p>
+												<p className='text-muted-foreground'>{t('register.phoneVerified')}</p>
 												<Button type='button' className='w-full' disabled={isPending} onClick={handleRegister}>
-													Зарегистрироваться
+													{t('register.finish')}
 												</Button>
 												<Button type='button' variant={'outline'} disabled={isPending} onClick={handleBack}>
-													Назад
+													{t('common.back')}
 												</Button>
 											</div>
 										)}

@@ -1,3 +1,6 @@
+import type { Locale } from '@/i18n/config'
+import { addLocaleToPath } from '@/i18n/paths'
+
 export const APP_URL = process.env.APP_URL as string
 
 export const PUBLIC_URL = {
@@ -32,4 +35,8 @@ export const IMG_URL = {
 	svg: (url = '') => `/svg/${url ? url : ''}.svg`,
 	png: (url = '') => `/png/${url ? url : ''}.png`,
 	jpg: (url = '') => `/jpg/${url ? url : ''}.jpg`,
+}
+
+export const withLocale = (href: string, locale?: Locale) => {
+	return locale ? addLocaleToPath(href, locale) : href
 }

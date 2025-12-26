@@ -1,30 +1,28 @@
-import { DASHBOARD_URL } from '@/config/url.config'
 import { ordersService } from '@/services/orders.service'
-import { OrderInvitePayload } from '@/shared/types/Order.interface'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import type { OrderInvitePayload } from '@/shared/types/Order.interface'
 
 export const useAcceptOrderInvite = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
-	const router = useRouter()
-
-	const { mutate: acceptOrderInvite, isPending: isLoadingAcceptInvite } = useMutation({
+	const { mutate: acceptOrderInvite, isPending: isLoadingAccept } = useMutation({
 		mutationKey: ['order', 'accept-invite'],
 		mutationFn: (payload: OrderInvitePayload) => ordersService.acceptOrderInvite(payload),
-		onSuccess(data) {
-			queryClient.invalidateQueries({ queryKey: ['get order', String(data.id)] })
-			queryClient.invalidateQueries({ queryKey: ['get orders'] })
-			toast.success('Приглашение принято.')
-			router.push(DASHBOARD_URL.order(String(data.id)))
+		onSuccess(order) {
+			if (order?.id) {
+				queryClient.invalidateQueries({ queryKey: ['get order', String(order.id)] })
+			}
+			toast.success(t('hooks.orders.acceptInvite.success'))
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Не удалось принять приглашение.'
+			const message = getErrorMessage(error) ?? t('hooks.orders.acceptInvite.error')
 			toast.error(message)
 		},
 	})
 
-	return useMemo(() => ({ acceptOrderInvite, isLoadingAcceptInvite }), [acceptOrderInvite, isLoadingAcceptInvite])
+	return useMemo(() => ({ acceptOrderInvite, isLoadingAccept }), [acceptOrderInvite, isLoadingAccept])
 }

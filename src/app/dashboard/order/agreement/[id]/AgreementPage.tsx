@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { CheckCircle2, Truck } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
@@ -13,17 +13,11 @@ import { Checkbox } from '@/components/ui/Сheckbox'
 import { useAcceptAgreement } from '@/hooks/queries/agreements/useAcceptAgreement'
 import { useGetAgreement } from '@/hooks/queries/agreements/useGetAgreement'
 import { useRejectAgreement } from '@/hooks/queries/agreements/useRejectAgreement'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue } from '@/lib/formatters'
 import type { IAgreementDetail } from '@/shared/types/Agreement.interface'
 
 const EMPTY_VALUE = '-'
-
-const statusMeta: Record<IAgreementDetail['status'], { label: string; className: string }> = {
-	pending: { label: 'Ожидает подтверждения', className: 'bg-warning-100 text-warning-700 border border-warning-200' },
-	accepted: { label: 'Принято', className: 'bg-success-100 text-success-700 border border-success-200' },
-	expired: { label: 'Истекло', className: 'bg-muted text-muted-foreground border border-border' },
-	cancelled: { label: 'Отменено', className: 'bg-error-100 text-error-700 border border-error-200' },
-}
 
 const formatCountdown = (ms: number) => {
 	const totalSeconds = Math.max(Math.floor(ms / 1000), 0)
@@ -42,6 +36,7 @@ const withFallback = (value?: string | number | null) =>
 	value === null || value === undefined || value === '' ? EMPTY_VALUE : String(value)
 
 export function AgreementPage() {
+	const { t } = useI18n()
 	const params = useParams<{ id: string }>()
 	const router = useRouter()
 	const agreementId = params?.id
@@ -102,20 +97,30 @@ export function AgreementPage() {
 	if (!agreement) {
 		return (
 			<div className='w-full h-full rounded-4xl bg-background md:p-8 p-4 flex items-center justify-center'>
-				<p className='text-muted-foreground'>Соглашение не найдено.</p>
+				<p className='text-muted-foreground'>{t('order.agreement.notFound')}</p>
 			</div>
 		)
 	}
 
+	const statusMeta: Record<IAgreementDetail['status'], { label: string; className: string }> = {
+		pending: { label: t('order.agreement.status.pending'), className: 'bg-warning-100 text-warning-700 border border-warning-200' },
+		accepted: { label: t('order.agreement.status.accepted'), className: 'bg-success-100 text-success-700 border border-success-200' },
+		expired: { label: t('order.agreement.status.expired'), className: 'bg-muted text-muted-foreground border border-border' },
+		cancelled: { label: t('order.agreement.status.cancelled'), className: 'bg-error-100 text-error-700 border border-error-200' },
+	}
 	const status = statusMeta[agreement.status] ?? statusMeta.pending
-	const totalDistance = agreement.total_distance_km ? `${agreement.total_distance_km} км` : EMPTY_VALUE
+	const totalDistance = agreement.total_distance_km
+		? `${agreement.total_distance_km} ${t('order.unit.km')}`
+		: EMPTY_VALUE
 	const travelTime = withFallback(agreement.travel_time)
 
 	return (
 		<div className='w-full h-full rounded-4xl bg-background md:p-8 p-4 space-y-10'>
 			<div className='flex flex-wrap items-center justify-between gap-6'>
 				<div className='text-sm text-muted-foreground'>
-					<div className='flex items-center gap-4'>Соглашение № <UuidCopy id={agreement.id} isPlaceholder /></div>
+					<div className='flex items-center gap-4'>
+						{t('order.agreement.number')} <UuidCopy id={agreement.id} isPlaceholder />
+					</div>
 					<span className={`rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}>
 						{status.label}
 					</span>
@@ -135,56 +140,58 @@ export function AgreementPage() {
 			</div>
 
 			<div className='grid gap-10 lg:grid-cols-3'>
-				{agreement.customer_id ? (<div className='space-y-4'>
-					<p className='text-brand font-semibold'>Информация о заказчике</p>
-					<div className='space-y-3'>
-						<p className='flex justify-between gap-6'>
-							<span className='text-grayscale'>ID</span>
-							<span className='text-end font-medium'><UuidCopy id={agreement.customer_id} isPlaceholder /></span>
-						</p>
-						<p className='flex justify-between gap-6'>
-							<span className='text-grayscale'>ФИО</span>
-							<span className='text-end font-medium'><ProfileLink name={agreement.customer_full_name} id={agreement.customer_id} /></span>
-						</p>
-						<p className='flex justify-between gap-6'>
-							<span className='text-grayscale'>Телефон</span>
-							<span className='text-end font-medium'>{withFallback(agreement.customer_phone)}</span>
-						</p>
-						<p className='flex justify-between gap-6'>
-							<span className='text-grayscale'>Email</span>
-							<span className='text-end font-medium'>{withFallback(agreement.customer_email)}</span>
-						</p>
-						<p className='flex justify-between gap-6'>
-							<span className='text-grayscale'>Дата регистрации</span>
-							<span className='text-end font-medium'>
-								{formatDateValue(agreement.customer_registered_at, 'dd/MM/yyyy', EMPTY_VALUE)}
-							</span>
-						</p>
+				{agreement.customer_id ? (
+					<div className='space-y-4'>
+						<p className='text-brand font-semibold'>{t('order.agreement.customerInfo')}</p>
+						<div className='space-y-3'>
+							<p className='flex justify-between gap-6'>
+								<span className='text-grayscale'>{t('order.agreement.field.id')}</span>
+								<span className='text-end font-medium'><UuidCopy id={agreement.customer_id} isPlaceholder /></span>
+							</p>
+							<p className='flex justify-between gap-6'>
+								<span className='text-grayscale'>{t('order.agreement.field.fullName')}</span>
+								<span className='text-end font-medium'><ProfileLink name={agreement.customer_full_name} id={agreement.customer_id} /></span>
+							</p>
+							<p className='flex justify-between gap-6'>
+								<span className='text-grayscale'>{t('order.agreement.field.phone')}</span>
+								<span className='text-end font-medium'>{withFallback(agreement.customer_phone)}</span>
+							</p>
+							<p className='flex justify-between gap-6'>
+								<span className='text-grayscale'>{t('order.agreement.field.email')}</span>
+								<span className='text-end font-medium'>{withFallback(agreement.customer_email)}</span>
+							</p>
+							<p className='flex justify-between gap-6'>
+								<span className='text-grayscale'>{t('order.agreement.field.registeredAt')}</span>
+								<span className='text-end font-medium'>
+									{formatDateValue(agreement.customer_registered_at, 'dd/MM/yyyy', EMPTY_VALUE)}
+								</span>
+							</p>
+						</div>
 					</div>
-				</div>) : null}
+				) : null}
 
 				{agreement.logistic_id ? (
 					<div className='space-y-4'>
-						<p className='text-brand font-semibold'>Информация о посреднике</p>
+						<p className='text-brand font-semibold'>{t('order.agreement.logisticInfo')}</p>
 						<div className='space-y-3'>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>ID</span>
+								<span className='text-grayscale'>{t('order.agreement.field.id')}</span>
 								<span className='text-end font-medium'><UuidCopy id={agreement.logistic_id} isPlaceholder /></span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>ФИО</span>
+								<span className='text-grayscale'>{t('order.agreement.field.fullName')}</span>
 								<span className='text-end font-medium'><ProfileLink id={agreement.logistic_id} name={agreement.logistic_full_name} /></span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Телефон</span>
+								<span className='text-grayscale'>{t('order.agreement.field.phone')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.logistic_phone)}</span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Email</span>
+								<span className='text-grayscale'>{t('order.agreement.field.email')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.logistic_email)}</span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Дата регистрации</span>
+								<span className='text-grayscale'>{t('order.agreement.field.registeredAt')}</span>
 								<span className='text-end font-medium'>
 									{formatDateValue(agreement.logistic_registered_at, 'dd/MM/yyyy', EMPTY_VALUE)}
 								</span>
@@ -195,26 +202,26 @@ export function AgreementPage() {
 
 				{agreement.carrier_id ? (
 					<div className='space-y-4'>
-						<p className='text-brand font-semibold'>Информация о водителе</p>
+						<p className='text-brand font-semibold'>{t('order.agreement.driverInfo')}</p>
 						<div className='space-y-3'>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>ID</span>
+								<span className='text-grayscale'>{t('order.agreement.field.id')}</span>
 								<span className='text-end font-medium'><UuidCopy id={agreement.carrier_id} isPlaceholder /></span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>ФИО</span>
+								<span className='text-grayscale'>{t('order.agreement.field.fullName')}</span>
 								<span className='text-end font-medium'><ProfileLink name={agreement.carrier_full_name} id={agreement.carrier_id} /></span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Телефон</span>
+								<span className='text-grayscale'>{t('order.agreement.field.phone')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.carrier_phone)}</span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Email</span>
+								<span className='text-grayscale'>{t('order.agreement.field.email')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.carrier_email)}</span>
 							</p>
 							<p className='flex justify-between gap-6'>
-								<span className='text-grayscale'>Дата регистрации</span>
+								<span className='text-grayscale'>{t('order.agreement.field.registeredAt')}</span>
 								<span className='text-end font-medium'>
 									{formatDateValue(agreement.carrier_registered_at, 'dd/MM/yyyy', EMPTY_VALUE)}
 								</span>
@@ -227,18 +234,18 @@ export function AgreementPage() {
 			<div className='border-t border-b border-border/60 py-6'>
 				<div className='grid gap-8 md:grid-cols-3'>
 					<div className='space-y-4'>
-						<p className='text-brand font-semibold'>Погрузка</p>
+						<p className='text-brand font-semibold'>{t('order.agreement.section.loading')}</p>
 						<div className='space-y-3 text-sm'>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Город</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.city')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.loading_city)}</span>
 							</p>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Улица</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.street')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.loading_address)}</span>
 							</p>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Дата</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.date')}</span>
 								<span className='text-end font-medium'>
 									{formatDateValue(agreement.loading_date, 'dd/MM/yyyy', EMPTY_VALUE)}
 								</span>
@@ -246,18 +253,18 @@ export function AgreementPage() {
 						</div>
 					</div>
 					<div className='space-y-4'>
-						<p className='text-brand font-semibold'>Разгрузка</p>
+						<p className='text-brand font-semibold'>{t('order.agreement.section.unloading')}</p>
 						<div className='space-y-3 text-sm'>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Город</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.city')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.unloading_city)}</span>
 							</p>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Улица</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.street')}</span>
 								<span className='text-end font-medium'>{withFallback(agreement.unloading_address)}</span>
 							</p>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Дата</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.date')}</span>
 								<span className='text-end font-medium'>
 									{formatDateValue(agreement.unloading_date, 'dd/MM/yyyy', EMPTY_VALUE)}
 								</span>
@@ -265,14 +272,14 @@ export function AgreementPage() {
 						</div>
 					</div>
 					<div className='space-y-4'>
-						<p className='text-brand font-semibold'>Детали поездки</p>
+						<p className='text-brand font-semibold'>{t('order.agreement.section.tripDetails')}</p>
 						<div className='space-y-3 text-sm'>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Общий путь</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.totalDistance')}</span>
 								<span className='text-end font-medium'>{totalDistance}</span>
 							</p>
 							<p className='flex items-center justify-between gap-6'>
-								<span className='text-muted-foreground'>Время поездки</span>
+								<span className='text-muted-foreground'>{t('order.agreement.field.travelTime')}</span>
 								<span className='text-end font-medium'>{travelTime}</span>
 							</p>
 						</div>
@@ -288,27 +295,24 @@ export function AgreementPage() {
 					onCheckedChange={(value) => setIsTermsChecked(Boolean(value))}
 				/>
 				<label htmlFor='agreement-terms' className='min-w-0 cursor-pointer leading-snug'>
-					Я ознакомился и согласен с{' '}
+					{t('order.agreement.terms.text')}{' '}
 					<Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
 						<DialogTrigger asChild>
 							<button type='button' className='text-brand underline-offset-4 hover:underline'>
-								условиями пользования
+								{t('order.agreement.terms.link')}
 							</button>
 						</DialogTrigger>
 						<DialogContent className='max-w-3xl'>
 							<DialogHeader>
-								<DialogTitle className='text-center text-2xl font-semibold'>Условия соглашения</DialogTitle>
+								<DialogTitle className='text-center text-2xl font-semibold'>{t('order.agreement.terms.title')}</DialogTitle>
 							</DialogHeader>
 							<div className='space-y-3 text-sm leading-relaxed text-foreground'>
-								<p>
-									Принятие задания означает, что все стороны согласны с условиями сотрудничества. Условия
-									регулируют порядок взаимодействия, оплату и ответственность.
-								</p>
+								<p>{t('order.agreement.terms.paragraph')}</p>
 								<ol className='list-decimal space-y-2 pl-5'>
-									<li>Заказчик предоставляет корректные данные и принимает результаты работ.</li>
-									<li>Посредник организует взаимодействие сторон и соблюдает сроки.</li>
-									<li>Водитель обеспечивает безопасную перевозку и своевременную доставку.</li>
-									<li>Споры решаются путем переговоров и в рамках действующего законодательства.</li>
+									<li>{t('order.agreement.terms.item1')}</li>
+									<li>{t('order.agreement.terms.item2')}</li>
+									<li>{t('order.agreement.terms.item3')}</li>
+									<li>{t('order.agreement.terms.item4')}</li>
 								</ol>
 							</div>
 						</DialogContent>
@@ -321,8 +325,8 @@ export function AgreementPage() {
 					<CheckCircle2 className='size-4' aria-hidden />
 					<span>
 						{agreement.accepted_by_customer
-							? 'Заказчик принял условия пользования'
-							: 'Заказчик еще не принял условия пользования'}
+							? t('order.agreement.accepted.customer.yes')
+							: t('order.agreement.accepted.customer.no')}
 					</span>
 				</div>
 				{agreement.logistic_id ? (
@@ -330,8 +334,8 @@ export function AgreementPage() {
 						<CheckCircle2 className='size-4' aria-hidden />
 						<span>
 							{agreement.accepted_by_logistic
-								? 'Посредник принял условия пользования'
-								: 'Посредник еще не принял условия пользования'}
+								? t('order.agreement.accepted.logistic.yes')
+								: t('order.agreement.accepted.logistic.no')}
 						</span>
 					</div>
 				) : null}
@@ -340,8 +344,8 @@ export function AgreementPage() {
 						<Truck className='size-4' aria-hidden />
 						<span>
 							{agreement.accepted_by_carrier
-								? 'Водитель принял условия пользования'
-								: 'Водитель еще не принял условия пользования'}
+								? t('order.agreement.accepted.carrier.yes')
+								: t('order.agreement.accepted.carrier.no')}
 						</span>
 					</div>
 				) : null}
@@ -354,7 +358,7 @@ export function AgreementPage() {
 					disabled={isProcessing}
 					className='sm:min-w-[160px] max-sm:w-full'
 				>
-					{isLoadingRejectAgreement ? 'Отклонение...' : 'Отклонить'}
+					{isLoadingRejectAgreement ? t('order.agreement.actions.rejectLoading') : t('order.agreement.actions.reject')}
 				</Button>
 				<Button
 					onClick={handleAccept}
@@ -365,7 +369,7 @@ export function AgreementPage() {
 							: 'sm:min-w-[160px] max-sm:w-full bg-[#9CA3AF] text-white hover:bg-[#6B7280]'
 					}
 				>
-					{isLoadingAcceptAgreement ? 'Принятие...' : 'Принять'}
+					{isLoadingAcceptAgreement ? t('order.agreement.actions.acceptLoading') : t('order.agreement.actions.accept')}
 				</Button>
 			</div>
 		</div>

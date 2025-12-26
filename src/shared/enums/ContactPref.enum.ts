@@ -1,3 +1,5 @@
+type Translator = (key: string) => string
+
 export const ContactPrefEnum = {
 	EMAIL: 'email',
 	PHONE: 'phone',
@@ -9,24 +11,25 @@ export type ContactPrefEnum = (typeof ContactPrefEnum)[keyof typeof ContactPrefE
 export const ContactPrefSelector = [
 	{
 		type: ContactPrefEnum.EMAIL,
-		name: 'Email',
+		nameKey: 'shared.contactPref.email',
 	},
 	{
 		type: ContactPrefEnum.PHONE,
-		name: 'Телефон',
+		nameKey: 'shared.contactPref.phone',
 	},
 	{
 		type: ContactPrefEnum.BOTH,
-		name: 'Email и телефон',
+		nameKey: 'shared.contactPref.both',
 	},
-]
+] as const
 
-const contactPrefNameMap = ContactPrefSelector.reduce<Record<ContactPrefEnum, string>>((acc, pref) => {
-	acc[pref.type] = pref.name
+const contactPrefNameKeyMap = ContactPrefSelector.reduce<Record<ContactPrefEnum, string>>((acc, pref) => {
+	acc[pref.type] = pref.nameKey
 	return acc
 }, {} as Record<ContactPrefEnum, string>)
 
-export function getContactPrefName(pref?: ContactPrefEnum | null) {
+export function getContactPrefName(t: Translator, pref?: ContactPrefEnum | null) {
 	if (!pref) return ''
-	return contactPrefNameMap[pref] ?? ''
+	const key = contactPrefNameKeyMap[pref]
+	return key ? t(key) : ''
 }

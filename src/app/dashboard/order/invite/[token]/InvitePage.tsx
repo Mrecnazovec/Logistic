@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/form-control/Input'
 import { Loader } from '@/components/ui/Loader'
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useAcceptOrderInvite } from '@/hooks/queries/orders/useAcceptOrderInvite'
+import { useI18n } from '@/i18n/I18nProvider'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 
 export function InvitePage() {
@@ -32,6 +33,7 @@ export function InvitePage() {
 }
 
 function InvitePageContent() {
+	const { t } = useI18n()
 	const params = useParams<{ token: string }>()
 	const router = useRouter()
 	const pathname = usePathname()
@@ -40,7 +42,7 @@ function InvitePageContent() {
 	const initialToken = params?.token ?? ''
 	const [token, setToken] = useState(initialToken)
 	const [acceptedOrderId, setAcceptedOrderId] = useState<number | null>(null)
-	const { acceptOrderInvite, isLoadingAcceptInvite } = useAcceptOrderInvite()
+	const { acceptOrderInvite, isLoadingAccept } = useAcceptOrderInvite()
 	const returnPath = useMemo(() => {
 		const query = searchParams.toString()
 		return query ? `${pathname}?${query}` : pathname
@@ -56,7 +58,7 @@ function InvitePageContent() {
 	const handleAccept = () => {
 		const trimmed = token.trim()
 		if (!trimmed) {
-			toast.error('Введите токен приглашения.')
+			toast.error(t('order.invite.toast.emptyToken'))
 			return
 		}
 
@@ -74,12 +76,12 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title="Требуется авторизация"
-					description="Войдите в аккаунт, чтобы принять приглашение."
-					icon={<ShieldX className="size-10 text-brand" />}
+					title={t('order.invite.auth.title')}
+					description={t('order.invite.auth.description')}
+					icon={<ShieldX className='size-10 text-brand' />}
 					actions={
 						<Link href={authHref}>
-							<Button>Войти</Button>
+							<Button>{t('order.invite.auth.action')}</Button>
 						</Link>
 					}
 				/>
@@ -91,12 +93,12 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title="Вы добавлены в заказ"
-					description="Приглашение успешно принято."
-					icon={<CheckCircle2 className="size-10 text-success-500" />}
+					title={t('order.invite.accepted.title')}
+					description={t('order.invite.accepted.description')}
+					icon={<CheckCircle2 className='size-10 text-success-500' />}
 					actions={
 						<Link href={DASHBOARD_URL.order(String(acceptedOrderId))}>
-							<Button className="bg-brand text-white">Перейти к заказу</Button>
+							<Button className='bg-brand text-white'>{t('order.invite.accepted.action')}</Button>
 						</Link>
 					}
 				/>
@@ -106,24 +108,24 @@ function InvitePageContent() {
 
 	return (
 		<InviteLayout>
-			<Card className="w-full max-w-xl rounded-3xl border-none shadow-lg">
-				<CardHeader className="pb-4">
-					<CardTitle className="text-2xl font-bold">Принять приглашение в заказ</CardTitle>
-					<p className="text-sm text-muted-foreground">Введите полученный токен и подтвердите участие.</p>
+			<Card className='w-full max-w-xl rounded-3xl border-none shadow-lg'>
+				<CardHeader className='pb-4'>
+					<CardTitle className='text-2xl font-bold'>{t('order.invite.form.title')}</CardTitle>
+					<p className='text-sm text-muted-foreground'>{t('order.invite.form.description')}</p>
 				</CardHeader>
-				<CardContent className="space-y-4">
+				<CardContent className='space-y-4'>
 					<Input
 						value={token}
 						onChange={(event) => setToken(event.target.value)}
-						placeholder="Токен приглашения"
-						disabled={isLoadingAcceptInvite}
+						placeholder={t('order.invite.form.placeholder')}
+						disabled={isLoadingAccept}
 					/>
-					<div className="flex justify-end gap-3">
-						<Button variant="outline" onClick={() => setToken(initialToken)} disabled={isLoadingAcceptInvite}>
-							Сбросить
+					<div className='flex justify-end gap-3'>
+						<Button variant='outline' onClick={() => setToken(initialToken)} disabled={isLoadingAccept}>
+							{t('order.invite.form.reset')}
 						</Button>
-						<Button onClick={handleAccept} disabled={isLoadingAcceptInvite} className="bg-brand text-white">
-							{isLoadingAcceptInvite ? 'Принятие...' : 'Принять приглашение'}
+						<Button onClick={handleAccept} disabled={isLoadingAccept} className='bg-brand text-white'>
+							{isLoadingAccept ? t('order.invite.form.acceptLoading') : t('order.invite.form.accept')}
 						</Button>
 					</div>
 				</CardContent>
@@ -133,11 +135,13 @@ function InvitePageContent() {
 }
 
 function InvitePageFallback() {
+	const { t } = useI18n()
+
 	return (
 		<InviteLayout>
-			<div className="flex flex-col items-center gap-3 text-muted-foreground">
+			<div className='flex flex-col items-center gap-3 text-muted-foreground'>
 				<Loader />
-				<p>Загрузка приглашения...</p>
+				<p>{t('order.invite.loading')}</p>
 			</div>
 		</InviteLayout>
 	)
@@ -145,7 +149,7 @@ function InvitePageFallback() {
 
 function InviteLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="h-full bg-background rounded-4xl flex items-center justify-center">
+		<div className='h-full bg-background rounded-4xl flex items-center justify-center'>
 			{children}
 		</div>
 	)
@@ -163,12 +167,12 @@ function InviteStateCard({
 	actions?: React.ReactNode
 }) {
 	return (
-		<Card className="w-full max-w-xl text-center rounded-3xl shadow-lg border-none">
-			<CardContent className="py-10 flex flex-col items-center gap-4">
+		<Card className='w-full max-w-xl text-center rounded-3xl shadow-lg border-none'>
+			<CardContent className='py-10 flex flex-col items-center gap-4'>
 				{icon}
-				<div className="space-y-1">
-					<p className="text-xl font-semibold text-foreground">{title}</p>
-					<p className="text-sm text-muted-foreground">{description}</p>
+				<div className='space-y-1'>
+					<p className='text-xl font-semibold text-foreground'>{title}</p>
+					<p className='text-sm text-muted-foreground'>{description}</p>
 				</div>
 				{actions}
 			</CardContent>

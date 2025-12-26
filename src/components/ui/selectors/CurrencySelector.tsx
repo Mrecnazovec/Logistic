@@ -1,6 +1,7 @@
 'use client'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 
@@ -12,7 +13,10 @@ interface CurrencySelectProps {
 	className?: string
 }
 
-export function CurrencySelector({ value, onChange, placeholder = 'Выберите валюту', disabled, className }: CurrencySelectProps) {
+export function CurrencySelector({ value, onChange, placeholder, disabled, className }: CurrencySelectProps) {
+	const { t } = useI18n()
+	const resolvedPlaceholder = placeholder ?? t('components.select.currency.placeholder')
+
 	return (
 		<Select onValueChange={onChange} value={value ?? ''} disabled={disabled}>
 			<SelectTrigger
@@ -22,12 +26,12 @@ export function CurrencySelector({ value, onChange, placeholder = 'Выбери�
 					className,
 				)}
 			>
-				<SelectValue placeholder={placeholder} />
+				<SelectValue placeholder={resolvedPlaceholder} />
 			</SelectTrigger>
 			<SelectContent>
 				{PriceSelector.map((item) => (
 					<SelectItem value={item.type} key={item.type}>
-						{item.name}
+						{t(item.nameKey)}
 					</SelectItem>
 				))}
 			</SelectContent>

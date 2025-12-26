@@ -1,18 +1,20 @@
-﻿import { meService } from '@/services/me.service'
-import { useRoleStore } from '@/store/useRoleStore'
+import type { IMe } from '@/shared/types/Me.interface'
+import { meService } from '@/services/me.service'
 import { useLogout } from '@/hooks/useLogout'
+import { useRoleStore } from '@/store/useRoleStore'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-import type { IMe } from '@/shared/types/Me.interface'
 
 interface UseGetMeOptions {
 	enabled?: boolean
 }
 
 export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLoading: boolean; isError: boolean; error: unknown } => {
+	const { t } = useI18n()
 	const {
 		data: me,
 		isLoading,
@@ -37,7 +39,7 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		if (!isError) return
 		if (hasHandledError.current) return
 
-		const message = getErrorMessage(error) ?? 'Не удалось загрузить профиль'
+		const message = getErrorMessage(error) ?? t('hooks.me.get.error')
 		if (message === lastErrorMessage.current) return
 
 		lastErrorMessage.current = message
@@ -45,7 +47,7 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		hasHandledError.current = true
 		logout('')
 		router.push('/auth')
-	}, [error, isError, router, logout])
+	}, [error, isError, router, logout, t])
 
 	return { me, isLoading, isError, error }
 }

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -9,6 +9,7 @@ import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useUpdateMe } from '@/hooks/queries/me/useUpdateMe'
+import { useI18n } from '@/i18n/I18nProvider'
 import { type UpdateMeDto } from '@/shared/types/Me.interface'
 import { type Country } from '@/shared/types/Geo.interface'
 
@@ -25,8 +26,9 @@ const toPayload = (values: UpdateMeDto): UpdateMeDto => ({
 })
 
 export function SettingPage() {
+    const { t } = useI18n()
     const { me, isLoading } = useGetMe()
-    const { updateMe, isLoadingUpdate } = useUpdateMe()
+    const { updateMe, isLoadingUpdateMe } = useUpdateMe()
 
     const { register, handleSubmit, reset, setValue, control } = useForm<UpdateMeDto>({
         defaultValues: {
@@ -64,39 +66,39 @@ export function SettingPage() {
     return (
         <form onSubmit={onSubmit} className='rounded-[32px] bg-white p-6 shadow-sm md:p-8'>
             <div className='space-y-1'>
-                <h1 className='text-xl font-semibold text-foreground md:text-2xl'>Настройки профиля</h1>
-                <p className='text-sm text-muted-foreground'>Обновите контактные данные для корректной работы сервиса.</p>
+                <h1 className='text-xl font-semibold text-foreground md:text-2xl'>{t('settings.profile.title')}</h1>
+                <p className='text-sm text-muted-foreground'>{t('settings.profile.description')}</p>
             </div>
 
             <div className='mt-8 space-y-6'>
                 <div className='grid gap-5 md:grid-cols-2'>
                     <div className='space-y-2'>
-                        <Label htmlFor='fullName' className='text-sm font-medium text-foreground'>Ф.И.О.</Label>
+                        <Label htmlFor='fullName' className='text-sm font-medium text-foreground'>{t('settings.profile.fullName.label')}</Label>
                         <Input
                             id='fullName'
-                            placeholder='Ф.И.О.'
-                            disabled={isLoading || isLoadingUpdate}
+                            placeholder={t('settings.profile.fullName.placeholder')}
+                            disabled={isLoading || isLoadingUpdateMe}
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
                             {...register('first_name')}
                         />
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='companyName' className='text-sm font-medium text-foreground'>Название компании</Label>
+                        <Label htmlFor='companyName' className='text-sm font-medium text-foreground'>{t('settings.profile.companyName.label')}</Label>
                         <Input
                             id='companyName'
-                            placeholder='Название компании'
-                            disabled={isLoading || isLoadingUpdate}
+                            placeholder={t('settings.profile.companyName.placeholder')}
+                            disabled={isLoading || isLoadingUpdateMe}
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
                             {...register('company_name')}
                         />
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='email' className='text-sm font-medium text-foreground'>Email</Label>
+                        <Label htmlFor='email' className='text-sm font-medium text-foreground'>{t('settings.profile.email.label')}</Label>
                         <Input
                             id='email'
-                            placeholder='Email'
+                            placeholder={t('settings.profile.email.placeholder')}
                             value={me?.email ?? ''}
                             disabled
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80 disabled:opacity-100'
@@ -104,7 +106,7 @@ export function SettingPage() {
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='country' className='text-sm font-medium text-foreground'>Страна</Label>
+                        <Label htmlFor='country' className='text-sm font-medium text-foreground'>{t('settings.profile.country.label')}</Label>
                         <CountrySelector
                             value={selectedCountry}
                             onChange={(country) => {
@@ -112,24 +114,24 @@ export function SettingPage() {
                                 setValue('profile.country_code', country.code)
                                 setValue('profile.city', '')
                             }}
-                            disabled={isLoading || isLoadingUpdate}
-                            placeholder='Страна'
+                            disabled={isLoading || isLoadingUpdateMe}
+                            placeholder={t('settings.profile.country.placeholder')}
                         />
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='phone' className='text-sm font-medium text-foreground'>Телефон</Label>
+                        <Label htmlFor='phone' className='text-sm font-medium text-foreground'>{t('settings.profile.phone.label')}</Label>
                         <Input
                             id='phone'
-                            placeholder='Телефон'
-                            disabled={isLoading || isLoadingUpdate}
+                            placeholder={t('settings.profile.phone.placeholder')}
+                            disabled={isLoading || isLoadingUpdateMe}
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
                             {...register('phone')}
                         />
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='city' className='text-sm font-medium text-foreground'>Город</Label>
+                        <Label htmlFor='city' className='text-sm font-medium text-foreground'>{t('settings.profile.city.label')}</Label>
                         <CitySelector
                             value={watchedCity}
                             onChange={(value, city) => {
@@ -140,8 +142,8 @@ export function SettingPage() {
                                 }
                             }}
                             countryCode={watchedCountryCode || undefined}
-                            disabled={isLoading || isLoadingUpdate}
-                            placeholder='Город'
+                            disabled={isLoading || isLoadingUpdateMe}
+                            placeholder={t('settings.profile.city.placeholder')}
                         />
                     </div>
                 </div>
@@ -149,13 +151,14 @@ export function SettingPage() {
                 <div className='flex justify-end'>
                     <Button
                         type='submit'
-                        disabled={isLoadingUpdate}
+                        disabled={isLoadingUpdateMe}
                         className='h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400 disabled:opacity-80'
                     >
-                        Сохранить изменения
+                        {t('settings.profile.save')}
                     </Button>
                 </div>
             </div>
         </form>
     )
 }
+

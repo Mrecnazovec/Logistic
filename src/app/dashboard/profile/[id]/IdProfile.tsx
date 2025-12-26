@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
@@ -10,22 +10,12 @@ import { Label } from '@/components/ui/form-control/Label'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetRatingUser } from '@/hooks/queries/ratings/useGet/useGetRatingUser'
+import { useI18n } from '@/i18n/I18nProvider'
 import type { RatingUserPieChart } from '@/shared/types/Rating.interface'
 import { ArrowUpRight, CalendarDays, ChartBar, Star, Truck } from 'lucide-react'
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Pie, PieChart } from 'recharts'
-
-const integerFormatter = new Intl.NumberFormat('ru-RU')
-const dateFormatter = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-
-const transportChartConfig = {
-	value: { label: 'Перевозки' },
-	search: { label: 'В поиске', color: '#9CA3AF' },
-	progress: { label: 'В процессе', color: '#2563EB' },
-	success: { label: 'Успешные', color: '#22C55E' },
-	cancelled: { label: 'Отмененные', color: '#EF4444' },
-} satisfies ChartConfig
 
 const parseNumber = (value?: number | string | null) => {
 	if (value === null || value === undefined) return null
@@ -66,17 +56,51 @@ const parsePieChart = (value?: PieChartRaw) => {
 	return toMapped(value as Record<string, number>)
 }
 
+const formatPlural = (locale: string, count: number, one: string, few: string, many: string) => {
+	if (locale === 'ru') {
+		const normalized = Math.abs(count)
+		const lastTwoDigits = normalized % 100
+		if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return `${count} ${many}`
+		const lastDigit = normalized % 10
+		if (lastDigit === 1) return `${count} ${one}`
+		if (lastDigit >= 2 && lastDigit <= 4) return `${count} ${few}`
+		return `${count} ${many}`
+	}
+	return `${count} ${count === 1 ? one : many}`
+}
+
 export function IdProfile() {
+	const { t, locale } = useI18n()
 	const params = useParams<{ id: string }>()
 	const { ratingUser, isLoading } = useGetRatingUser(params?.id)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
+
+	const integerFormatter = useMemo(
+		() => new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'ru-RU'),
+		[locale],
+	)
+	const dateFormatter = useMemo(
+		() => new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+		[locale],
+	)
+
+	const transportChartConfig = useMemo<ChartConfig>(
+		() => ({
+			value: { label: t('profile.chart.value') },
+			search: { label: t('profile.chart.search'), color: '#9CA3AF' },
+			progress: { label: t('profile.chart.progress'), color: '#2563EB' },
+			success: { label: t('profile.chart.success'), color: '#22C55E' },
+			cancelled: { label: t('profile.chart.cancelled'), color: '#EF4444' },
+		}),
+		[t],
+	)
 
 	const registeredAt = ratingUser?.registered_at ? dateFormatter.format(new Date(ratingUser.registered_at)) : '-'
 	const registeredDays = getDaysSince(ratingUser?.registered_at)
 	const completedOrders = parseNumber(ratingUser?.completed_orders)
 	const totalDistance = parseNumber(ratingUser?.total_distance)
 	const ratingValue = ratingUser?.avg_rating ? ratingUser.avg_rating.toFixed(1) : '-'
-	const distanceValue = totalDistance !== null ? `${integerFormatter.format(Math.round(totalDistance))} км` : '-'
+	const distanceValue = totalDistance !== null ? `${integerFormatter.format(Math.round(totalDistance))} ${t('profile.unit.km')}` : '-'
 
 	const pieChart = parsePieChart(ratingUser?.pie_chart)
 	const queued = pieChart?.in_search ?? 0
@@ -85,45 +109,67 @@ export function IdProfile() {
 	const cancelled = pieChart?.cancelled ?? 0
 
 	const transportChartData = [
-		{ status: 'search', label: 'В поиске', value: queued, fill: 'var(--color-search)' },
-		{ status: 'progress', label: 'В процессе', value: inProgress, fill: 'var(--color-progress)' },
-		{ status: 'success', label: 'Успешные', value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: 'Отмененные', value: cancelled, fill: 'var(--color-cancelled)' },
+		{ status: 'search', label: t('profile.chart.search'), value: queued, fill: 'var(--color-search)' },
+		{ status: 'progress', label: t('profile.chart.progress'), value: inProgress, fill: 'var(--color-progress)' },
+		{ status: 'success', label: t('profile.chart.success'), value: completed, fill: 'var(--color-success)' },
+		{ status: 'cancelled', label: t('profile.chart.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
 	]
 
 	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
 
+	const ratingSub = ratingUser
+		? formatPlural(
+			locale,
+			ratingUser.rating_count,
+			t('profile.reviews.one'),
+			t('profile.reviews.few'),
+			t('profile.reviews.many'),
+		)
+		: ''
+	const dealsSub = completedOrders !== null
+		? t('profile.deals', { count: integerFormatter.format(completedOrders) })
+		: ''
+	const daysSub = registeredDays !== null
+		? formatPlural(
+			locale,
+			registeredDays,
+			t('profile.days.one'),
+			t('profile.days.few'),
+			t('profile.days.many'),
+		)
+		: ''
+
 	const stats = [
 		{
 			id: 'rating',
-			label: 'Рейтинг',
+			label: t('profile.stats.rating'),
 			value: ratingValue,
-			sub: ratingUser ? `${integerFormatter.format(ratingUser.rating_count)} отзывов` : '',
+			sub: ratingUser ? ratingSub : '',
 			icon: Star,
 			accentClass: 'text-amber-500 bg-amber-50',
 			trend: ratingUser ? '+13%' : '',
 			trendClass: 'text-emerald-600 bg-emerald-50',
-			trendLabel: ratingUser ? 'с прошлого месяца' : '',
+			trendLabel: ratingUser ? t('profile.stats.lastMonth') : '',
 		},
 		{
 			id: 'distance',
-			label: 'Пройдено расстояния',
+			label: t('profile.stats.distance'),
 			value: distanceValue,
-			sub: completedOrders !== null ? `за ${integerFormatter.format(completedOrders)} сделок` : '',
+			sub: dealsSub,
 			icon: Truck,
 			accentClass: 'text-blue-600 bg-blue-100',
 		},
 		{
 			id: 'registered',
-			label: 'Зарегистрирован с',
+			label: t('profile.stats.registered'),
 			value: registeredAt,
-			sub: registeredDays !== null ? `${integerFormatter.format(registeredDays)} дней` : '',
+			sub: daysSub,
 			icon: CalendarDays,
 			accentClass: 'text-sky-600 bg-sky-100',
 		},
 		{
 			id: 'price-per-km',
-			label: 'Средняя цена за км',
+			label: t('profile.stats.pricePerKm'),
 			value: '-',
 			sub: '',
 			icon: ChartBar,
@@ -175,7 +221,7 @@ export function IdProfile() {
 	if (!ratingUser) {
 		return (
 			<Card className='rounded-[28px] border-border/50 px-6 py-8 text-center text-muted-foreground shadow-sm'>
-				Профиль недоступен
+				{t('profile.unavailable')}
 			</Card>
 		)
 	}
@@ -187,7 +233,7 @@ export function IdProfile() {
 				<div className='space-y-1'>
 					<p className='text-xl font-semibold text-foreground'>{ratingUser.company_name || ratingUser.display_name}</p>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
-						<span>ID:</span>
+						<span>{t('profile.idLabel')}</span>
 						<UuidCopy id={ratingUser.id} isPlaceholder />
 					</div>
 				</div>
@@ -197,35 +243,35 @@ export function IdProfile() {
 				<div className='space-y-4'>
 					<div className='space-y-2'>
 						<Label className='text-xs text-muted-foreground' htmlFor='full-name'>
-							Ф.И.О.
+							{t('profile.field.fullName')}
 						</Label>
 						<Input disabled id='full-name' value={ratingUser.display_name || ''} className='rounded-full disabled:opacity-100' />
 					</div>
 					<div className='space-y-2'>
 						<Label className='text-xs text-muted-foreground' htmlFor='country'>
-							Страна
+							{t('profile.field.country')}
 						</Label>
 						<Input disabled id='country' value={ratingUser.country || ''} className='rounded-full disabled:opacity-100' />
 					</div>
 					<div className='space-y-2'>
 						<Label className='text-xs text-muted-foreground' htmlFor='city'>
-							Город
+							{t('profile.field.city')}
 						</Label>
 						<Input disabled id='city' value={ratingUser.city || ''} className='rounded-full disabled:opacity-100' />
 					</div>
 					<Dialog open={isTransportOpen} onOpenChange={setIsTransportOpen}>
 						<DialogTrigger asChild>
 							<Button variant='outline' className='h-11 w-full rounded-full border-brand/40 text-sm text-brand hover:border-brand/60 hover:bg-brand/5'>
-								Аналитика перевозок
+								{t('profile.analytics.button')}
 								<ArrowUpRight className='size-4' />
 							</Button>
 						</DialogTrigger>
 						<DialogContent className='max-w-[520px] p-6 sm:p-8'>
 							<DialogHeader>
-								<DialogTitle className='text-center text-xl font-semibold'>Аналитика</DialogTitle>
+								<DialogTitle className='text-center text-xl font-semibold'>{t('profile.analytics.title')}</DialogTitle>
 							</DialogHeader>
 							<div className='rounded-[24px] border border-border/60 bg-background px-5 py-6 shadow-[0_10px_25px_rgba(15,23,42,0.05)] sm:px-6'>
-								<p className='text-sm font-medium text-muted-foreground'>Статистика перевозок</p>
+								<p className='text-sm font-medium text-muted-foreground'>{t('profile.analytics.subtitle')}</p>
 								<div className='mt-4 space-y-2 text-sm'>
 									{transportChartData.map((item) => (
 										<div key={item.status} className='flex items-center justify-between gap-2 text-muted-foreground'>
@@ -245,7 +291,7 @@ export function IdProfile() {
 										</PieChart>
 									</ChartContainer>
 									<div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center'>
-										<span className='text-xs text-muted-foreground'>Всего перевозок</span>
+										<span className='text-xs text-muted-foreground'>{t('profile.analytics.total')}</span>
 										<span className='text-2xl font-semibold text-foreground'>{integerFormatter.format(totalTransports)}</span>
 									</div>
 								</div>

@@ -9,9 +9,9 @@ export const PriceCurrencyEnum = {
 export type PriceCurrencyEnum = (typeof PriceCurrencyEnum)[keyof typeof PriceCurrencyEnum]
 
 export const PriceSelector = [
-	{ type: PriceCurrencyEnum.UZS, name: 'Сум' },
-	{ type: PriceCurrencyEnum.KZT, name: 'Тенге' },
-	{ type: PriceCurrencyEnum.RUB, name: 'Рубль' },
-	{ type: PriceCurrencyEnum.USD, name: 'Доллар' },
-	{ type: PriceCurrencyEnum.EUR, name: 'Евро' },
-]
+	{ type: PriceCurrencyEnum.UZS, nameKey: 'shared.currency.uzs' },
+	{ type: PriceCurrencyEnum.KZT, nameKey: 'shared.currency.kzt' },
+	{ type: PriceCurrencyEnum.RUB, nameKey: 'shared.currency.rub' },
+	{ type: PriceCurrencyEnum.USD, nameKey: 'shared.currency.usd' },
+	{ type: PriceCurrencyEnum.EUR, nameKey: 'shared.currency.eur' },
+] as const

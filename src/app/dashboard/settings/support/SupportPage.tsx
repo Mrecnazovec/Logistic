@@ -1,11 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/Button"
-import { useCreateSupportTicket } from "@/hooks/queries/support/useCreateSupportTicket"
-import { useState } from "react"
-import { Mail, MessageCircle, PhoneCall, Send } from "lucide-react"
 import { Textarea } from "@/components/ui/form-control/Textarea"
+import { useCreateSupportTicket } from "@/hooks/queries/support/useCreateSupportTicket"
+import { useI18n } from "@/i18n/I18nProvider"
+import { Mail, MessageCircle, PhoneCall, Send } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 const contacts = [
 	{
@@ -43,6 +44,7 @@ const contacts = [
 ]
 
 export function SupportPage() {
+	const { t } = useI18n()
 	const [message, setMessage] = useState<string>("")
 	const { createSupportTicket, isLoadingCreate } = useCreateSupportTicket()
 	const canSubmit = message.trim().length > 0 && !isLoadingCreate
@@ -63,8 +65,8 @@ export function SupportPage() {
 	return (
 		<div className="rounded-[32px] bg-white p-6 shadow-sm md:p-8">
 			<div className="space-y-1">
-				<h1 className="text-xl font-semibold text-foreground md:text-2xl">Поддержка</h1>
-				<p className="text-sm text-muted-foreground">Напишите нам, чтобы мы могли вам помочь</p>
+				<h1 className="text-xl font-semibold text-foreground md:text-2xl">{t("settings.support.title")}</h1>
+				<p className="text-sm text-muted-foreground">{t("settings.support.subtitle")}</p>
 			</div>
 
 			<div className="mt-6 space-y-6">
@@ -72,7 +74,7 @@ export function SupportPage() {
 					<Textarea
 						value={message}
 						onChange={(event) => setMessage(event.target.value)}
-						placeholder="Начните писать..."
+						placeholder={t("settings.support.placeholder")}
 						disabled={isLoadingCreate}
 						className="min-h-[156px] rounded-4xl border-none bg-grayscale-50 px-6 py-4"
 					/>
@@ -83,13 +85,13 @@ export function SupportPage() {
 							disabled={!canSubmit}
 							className="h-11 rounded-full disabled:bg-[#8A9099] px-6 text-sm font-medium text-white bg-success-500 hover:bg-success-400"
 						>
-							Отправить
+							{t("settings.support.send")}
 						</Button>
 					</div>
 				</div>
 
 				<div className="space-y-3">
-					<p className="text-sm text-muted-foreground">Либо свяжитесь через</p>
+					<p className="text-sm text-muted-foreground">{t("settings.support.orContact")}</p>
 					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 						{contacts.map((contact) => {
 							const Icon = contact.icon
@@ -101,9 +103,7 @@ export function SupportPage() {
 									rel={contact.rel}
 									className="hover:underline underline-offset-4"
 								>
-									<div
-										className="flex items-center gap-3 rounded-[18px] bg-grayscale-50 px-5 py-4 text-[15px] font-medium text-foreground shadow-[0_8px_30px_rgba(15,23,42,0.04)]"
-									>
+									<div className="flex items-center gap-3 rounded-[18px] bg-grayscale-50 px-5 py-4 text-[15px] font-medium text-foreground shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
 										<span className={`flex size-9 items-center justify-center rounded-full ${contact.accent}`} aria-hidden="true">
 											<Icon className="size-5" />
 										</span>
@@ -111,7 +111,6 @@ export function SupportPage() {
 										{contact.label}
 									</div>
 								</Link>
-
 							)
 						})}
 					</div>

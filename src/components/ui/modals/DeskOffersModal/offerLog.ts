@@ -22,26 +22,21 @@ export type OfferLogChange = {
   to: string
 }
 
-const offerLogDateFormatter = new Intl.DateTimeFormat("ru-RU", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-})
+type Translator = (key: string, params?: Record<string, string | number>) => string
 
-const offerLogTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
-  hour: "2-digit",
-  minute: "2-digit",
-})
+const getDateFormatters = (locale?: string) => {
+  const resolvedLocale = locale === "en" ? "en-US" : "ru-RU"
 
-const formatLogValue = (value: unknown) => {
-  if (value === null || value === undefined) return "—"
-  if (typeof value === "string" && value.trim()) return value
-  if (typeof value === "number" || typeof value === "boolean") return String(value)
-  try {
-    const serialized = JSON.stringify(value)
-    return serialized === "{}" ? "—" : serialized
-  } catch {
-    return "—"
+  return {
+    date: new Intl.DateTimeFormat(resolvedLocale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    time: new Intl.DateTimeFormat(resolvedLocale, {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   }
 }
 
@@ -58,46 +53,58 @@ const normalizeState = (value: unknown): LogState => {
   return value as LogState
 }
 
-const formatBooleanValue = (value: unknown) => {
-  if (value === undefined) return "—"
-  return value ? "Да" : "Нет"
-}
-
-const formatValue = (value: unknown) => {
-  if (value === null || value === undefined) return "—"
-  if (typeof value === "boolean") return formatBooleanValue(value)
-  if (typeof value === "number") return String(value)
-  if (typeof value === "string") return value.trim() || "—"
+const formatLogValue = (value: unknown, t: Translator) => {
+  if (value === null || value === undefined) return t("components.offerLog.empty")
+  if (typeof value === "string" && value.trim()) return value
+  if (typeof value === "number" || typeof value === "boolean") return String(value)
   try {
     const serialized = JSON.stringify(value)
-    return serialized === "{}" ? "—" : serialized
+    return serialized === "{}" ? t("components.offerLog.empty") : serialized
   } catch {
-    return "—"
+    return t("components.offerLog.empty")
   }
 }
 
-const formatPrice = (state: LogState) => {
+const formatBooleanValue = (value: unknown, t: Translator) => {
+  if (value === undefined) return t("components.offerLog.empty")
+  return value ? t("components.offerLog.yes") : t("components.offerLog.no")
+}
+
+const formatValue = (value: unknown, t: Translator) => {
+  if (value === null || value === undefined) return t("components.offerLog.empty")
+  if (typeof value === "boolean") return formatBooleanValue(value, t)
+  if (typeof value === "number") return String(value)
+  if (typeof value === "string") return value.trim() || t("components.offerLog.empty")
+  try {
+    const serialized = JSON.stringify(value)
+    return serialized === "{}" ? t("components.offerLog.empty") : serialized
+  } catch {
+    return t("components.offerLog.empty")
+  }
+}
+
+const formatPrice = (state: LogState, t: Translator) => {
   const value = state.price_value
   const currency = state.price_currency
-  if (!value && !currency) return "—"
+  if (!value && !currency) return t("components.offerLog.empty")
   if (value && currency) return `${value} ${currency}`
-  return `${value ?? "—"} ${currency ?? ""}`.trim()
+  return `${value ?? t("components.offerLog.empty")} ${currency ?? ""}`.trim()
 }
 
-const formatPaymentMethod = (value: unknown) => {
-  if (value === "cash") return "Наличные"
-  if (value === "cashless") return "Безнал"
-  return formatValue(value)
+const formatPaymentMethod = (value: unknown, t: Translator) => {
+  if (value === "cash") return t("components.offerLog.payment.cash")
+  if (value === "cashless") return t("components.offerLog.payment.cashless")
+  return formatValue(value, t)
 }
 
-const formatInitiator = (value: unknown) => {
-  if (value === "LOGISTIC") return "Логист"
-  if (value === "CUSTOMER") return "Заказчик"
-  if (value === "CARRIER") return "Перевозчик"
-  return formatValue(value)
+const formatInitiator = (value: unknown, t: Translator) => {
+  if (value === "LOGISTIC") return t("components.offerLog.initiator.logistic")
+  if (value === "CUSTOMER") return t("components.offerLog.initiator.customer")
+  if (value === "CARRIER") return t("components.offerLog.initiator.carrier")
+  return formatValue(value, t)
 }
 
-const buildLogChanges = (oldState: LogState, newState: LogState): OfferLogChange[] => {
+const buildLogChanges = (oldState: LogState, newState: LogState, t: Translator): OfferLogChange[] => {
   const changes: OfferLogChange[] = []
 
   const addChange = (label: string, from: string, to: string) => {
@@ -105,45 +112,64 @@ const buildLogChanges = (oldState: LogState, newState: LogState): OfferLogChange
     changes.push({ label, from, to })
   }
 
-  addChange("Цена", formatPrice(oldState), formatPrice(newState))
+  addChange(t("components.offerLog.change.price"), formatPrice(oldState, t), formatPrice(newState, t))
   addChange(
-    "Способ оплаты",
-    formatPaymentMethod(oldState.payment_method),
-    formatPaymentMethod(newState.payment_method),
+    t("components.offerLog.change.payment"),
+    formatPaymentMethod(oldState.payment_method, t),
+    formatPaymentMethod(newState.payment_method, t),
   )
   addChange(
-    "Статус ответа",
-    formatValue(oldState.response_status),
-    formatValue(newState.response_status),
-  )
-  addChange("Контрпредложение", formatBooleanValue(oldState.is_counter), formatBooleanValue(newState.is_counter))
-  addChange("Активен", formatBooleanValue(oldState.is_active), formatBooleanValue(newState.is_active))
-  addChange(
-    "Принят клиентом",
-    formatBooleanValue(oldState.accepted_by_customer),
-    formatBooleanValue(newState.accepted_by_customer),
+    t("components.offerLog.change.responseStatus"),
+    formatValue(oldState.response_status, t),
+    formatValue(newState.response_status, t),
   )
   addChange(
-    "Принят логистом",
-    formatBooleanValue(oldState.accepted_by_logistic),
-    formatBooleanValue(newState.accepted_by_logistic),
+    t("components.offerLog.change.counterOffer"),
+    formatBooleanValue(oldState.is_counter, t),
+    formatBooleanValue(newState.is_counter, t),
   )
   addChange(
-    "Принят перевозчиком",
-    formatBooleanValue(oldState.accepted_by_carrier),
-    formatBooleanValue(newState.accepted_by_carrier),
+    t("components.offerLog.change.active"),
+    formatBooleanValue(oldState.is_active, t),
+    formatBooleanValue(newState.is_active, t),
   )
-  addChange("Инициатор", formatInitiator(oldState.initiator), formatInitiator(newState.initiator))
-  addChange("Сообщение", formatValue(oldState.message), formatValue(newState.message))
+  addChange(
+    t("components.offerLog.change.acceptedByCustomer"),
+    formatBooleanValue(oldState.accepted_by_customer, t),
+    formatBooleanValue(newState.accepted_by_customer, t),
+  )
+  addChange(
+    t("components.offerLog.change.acceptedByLogistic"),
+    formatBooleanValue(oldState.accepted_by_logistic, t),
+    formatBooleanValue(newState.accepted_by_logistic, t),
+  )
+  addChange(
+    t("components.offerLog.change.acceptedByCarrier"),
+    formatBooleanValue(oldState.accepted_by_carrier, t),
+    formatBooleanValue(newState.accepted_by_carrier, t),
+  )
+  addChange(
+    t("components.offerLog.change.initiator"),
+    formatInitiator(oldState.initiator, t),
+    formatInitiator(newState.initiator, t),
+  )
+  addChange(
+    t("components.offerLog.change.message"),
+    formatValue(oldState.message, t),
+    formatValue(newState.message, t),
+  )
 
   return changes
 }
 
 export const buildOfferLogSections = (
-  logs?: IOfferStatusLog[] | null,
+  logs: IOfferStatusLog[] | null | undefined,
+  t: Translator,
+  locale?: string,
 ): OfferLogSection[] => {
   if (!Array.isArray(logs) || logs.length === 0) return []
 
+  const { date, time } = getDateFormatters(locale)
   const sortedLogs = [...logs].sort((first, second) => {
     const firstTimestamp = parseLogDate(first.created_at)?.getTime() ?? 0
     const secondTimestamp = parseLogDate(second.created_at)?.getTime() ?? 0
@@ -160,12 +186,12 @@ export const buildOfferLogSections = (
       : `unknown-${log.id}`
     const event: OfferLogEvent = {
       id: String(log.id),
-      timeLabel: eventDate ? offerLogTimeFormatter.format(eventDate) : "--:--",
-      author: log.user_name?.trim() || "System",
+      timeLabel: eventDate ? time.format(eventDate) : "--:--",
+      author: log.user_name?.trim() || t("components.offerLog.system"),
       action: log.action,
-      statusFrom: formatValue(normalizeState(log.old_state).response_status),
-      statusTo: formatValue(normalizeState(log.new_state).response_status),
-      changes: buildLogChanges(normalizeState(log.old_state), normalizeState(log.new_state)),
+      statusFrom: formatValue(normalizeState(log.old_state).response_status, t),
+      statusTo: formatValue(normalizeState(log.new_state).response_status, t),
+      changes: buildLogChanges(normalizeState(log.old_state), normalizeState(log.new_state), t),
     }
 
     const existingSectionIndex = sectionIndexMap.get(sectionKey)
@@ -174,7 +200,7 @@ export const buildOfferLogSections = (
       sectionIndexMap.set(sectionKey, sections.length)
       sections.push({
         id: sectionKey,
-        title: eventDate ? offerLogDateFormatter.format(eventDate) : "Unknown date",
+        title: eventDate ? date.format(eventDate) : t("components.offerLog.unknownDate"),
         events: [event],
       })
     } else {

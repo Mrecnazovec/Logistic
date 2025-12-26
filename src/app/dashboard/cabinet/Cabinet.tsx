@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
@@ -12,12 +12,13 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAnalytics } from '@/hooks/queries/me/useGetAnalytics'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useLogout } from '@/hooks/useLogout'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowUpRight, BarChart3, ChevronDown, DoorOpen, LogOut, Pencil, Star, Truck } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis } from 'recharts'
 
 type AnalyticsCard = {
@@ -32,33 +33,6 @@ type AnalyticsCard = {
 	description?: string
 }
 
-const integerFormatter = new Intl.NumberFormat('ru-RU')
-const decimalFormatter = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-const fullDateFormatter = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-
-const transportChartConfig = {
-	value: { label: 'Перевозки' },
-	search: { label: 'В поиске', color: '#9CA3AF' },
-	progress: { label: 'В процессе', color: '#2563EB' },
-	success: { label: 'Успешные', color: '#22C55E' },
-	cancelled: { label: 'Отмененные', color: '#EF4444' },
-} satisfies ChartConfig
-
-const incomeChartConfig = {
-	given: { label: 'Отдал', color: '#FCA5A5' },
-	received: { label: 'Получил', color: '#93C5FD' },
-	earned: { label: 'Заработок', color: '#86EFAC' },
-} satisfies ChartConfig
-
-const fallbackIncomeChartData = [
-	{ month: 'Янв', given: 5600, received: 8500, earned: 4300 },
-	{ month: 'Фев', given: 8800, received: 6800, earned: 200 },
-	{ month: 'Мар', given: 2100, received: 3900, earned: 1400 },
-	{ month: 'Апр', given: 5600, received: 10000, earned: 5600 },
-	{ month: 'Май', given: 3200, received: 6200, earned: 2100 },
-	{ month: 'Июн', given: 900, received: 1600, earned: 500 },
-]
-
 type AnalyticsBarChart = {
 	labels?: string[]
 	given?: number[]
@@ -66,26 +40,72 @@ type AnalyticsBarChart = {
 	earned?: number[]
 }
 
-const formatTrend = (value?: number | null) => {
-	if (typeof value !== 'number') return undefined
-	const normalized = Math.abs(value) < 1 && value !== 0 ? value * 100 : value
-	const absoluteValue = Math.abs(normalized)
-	if (absoluteValue === 0) return '0%'
-	const sign = normalized > 0 ? '+' : '-'
-	return `${sign}${decimalFormatter.format(absoluteValue)}%`
-}
-
 export function Cabinet() {
+	const { t, locale } = useI18n()
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
 	const { analytics, isLoading: isLoadingAnalytics } = useGetAnalytics()
 	const [isRevenueOpen, setIsRevenueOpen] = useState(false)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
 
+	const localeTag = locale === 'ru' ? 'ru-RU' : 'en-US'
+	const integerFormatter = useMemo(() => new Intl.NumberFormat(localeTag), [localeTag])
+	const decimalFormatter = useMemo(
+		() => new Intl.NumberFormat(localeTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+		[localeTag],
+	)
+	const fullDateFormatter = useMemo(
+		() => new Intl.DateTimeFormat(localeTag, { day: 'numeric', month: 'long', year: 'numeric' }),
+		[localeTag],
+	)
+
+	const formatTrend = (value?: number | null) => {
+		if (typeof value !== 'number') return undefined
+		const normalized = Math.abs(value) < 1 && value !== 0 ? value * 100 : value
+		const absoluteValue = Math.abs(normalized)
+		if (absoluteValue === 0) return '0%'
+		const sign = normalized > 0 ? '+' : '-'
+		return `${sign}${decimalFormatter.format(absoluteValue)}%`
+	}
+
+	const transportChartConfig = useMemo<ChartConfig>(
+		() => ({
+			value: { label: t('cabinet.transport.label') },
+			search: { label: t('cabinet.transport.search'), color: '#9CA3AF' },
+			progress: { label: t('cabinet.transport.progress'), color: '#2563EB' },
+			success: { label: t('cabinet.transport.success'), color: '#22C55E' },
+			cancelled: { label: t('cabinet.transport.cancelled'), color: '#EF4444' },
+		}),
+		[t],
+	)
+
+	const incomeChartConfig = useMemo<ChartConfig>(
+		() => ({
+			given: { label: t('cabinet.income.given'), color: '#FCA5A5' },
+			received: { label: t('cabinet.income.received'), color: '#93C5FD' },
+			earned: { label: t('cabinet.income.earned'), color: '#86EFAC' },
+		}),
+		[t],
+	)
+
+	const fallbackIncomeChartData = useMemo(
+		() => [
+			{ month: t('cabinet.month.jan'), given: 5600, received: 8500, earned: 4300 },
+			{ month: t('cabinet.month.feb'), given: 8800, received: 6800, earned: 200 },
+			{ month: t('cabinet.month.mar'), given: 2100, received: 3900, earned: 1400 },
+			{ month: t('cabinet.month.apr'), given: 5600, received: 10000, earned: 5600 },
+			{ month: t('cabinet.month.may'), given: 3200, received: 6200, earned: 2100 },
+			{ month: t('cabinet.month.jun'), given: 900, received: 1600, earned: 500 },
+		],
+		[t],
+	)
+
 	const fallbackValue = '-'
 	const registrationValue = analytics ? fullDateFormatter.format(new Date(analytics.registered_since)) : fallbackValue
 	const ratingValue = analytics ? decimalFormatter.format(analytics.rating) : fallbackValue
-	const distanceValue = analytics ? `${integerFormatter.format(Math.round(analytics.distance_km))} км` : fallbackValue
+	const distanceValue = analytics
+		? `${integerFormatter.format(Math.round(analytics.distance_km))} ${t('cabinet.unit.km')}`
+		: fallbackValue
 	const dealsCount = analytics?.deals_count ?? 0
 	const averagePriceValue = fallbackValue
 	const ratingTrend = formatTrend(analytics?.successful_deliveries_change)
@@ -116,10 +136,10 @@ export function Cabinet() {
 	const cancelled = pieChart?.cancelled ?? 0
 
 	const transportChartData = [
-		{ status: 'search', label: 'В поиске', value: queued, fill: 'var(--color-search)' },
-		{ status: 'progress', label: 'В процессе', value: inProgress, fill: 'var(--color-progress)' },
-		{ status: 'success', label: 'Успешные', value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: 'Отмененные', value: cancelled, fill: 'var(--color-cancelled)' },
+		{ status: 'search', label: t('cabinet.transport.search'), value: queued, fill: 'var(--color-search)' },
+		{ status: 'progress', label: t('cabinet.transport.progress'), value: inProgress, fill: 'var(--color-progress)' },
+		{ status: 'success', label: t('cabinet.transport.success'), value: completed, fill: 'var(--color-success)' },
+		{ status: 'cancelled', label: t('cabinet.transport.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
 	]
 
 	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
@@ -127,50 +147,50 @@ export function Cabinet() {
 	const detailCards: AnalyticsCard[] = [
 		{
 			id: 'registration',
-			title: 'Зарегистрирован с',
+			title: t('cabinet.detail.registered'),
 			value: registrationValue,
-			description: analytics ? `${analytics.days_since_registered} дней` : undefined,
+			description: analytics ? t('cabinet.detail.days', { count: analytics.days_since_registered }) : undefined,
 			icon: DoorOpen,
 			accentClass: 'text-indigo-600 bg-indigo-100',
 		},
 		{
 			id: 'price-per-km',
-			title: 'Средняя цена за км',
+			title: t('cabinet.detail.avgPrice'),
 			value: averagePriceValue,
 			trend: ratingTrend,
 			trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
-			trendLabel: analytics ? 'с прошлого месяца' : undefined,
+			trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
 			icon: BarChart3,
 			accentClass: 'text-blue-600 bg-blue-100',
 		},
 		{
 			id: 'rating',
-			title: 'Рейтинг',
+			title: t('cabinet.detail.rating'),
 			value: ratingValue,
 			trend: ratingTrend,
 			trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
-			trendLabel: analytics ? 'с прошлого месяца' : undefined,
-			description: analytics ? `по ${integerFormatter.format(dealsCount)} сделкам` : undefined,
+			trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
+			description: analytics ? t('cabinet.detail.dealsBy', { count: integerFormatter.format(dealsCount) }) : undefined,
 			icon: Star,
 			accentClass: 'text-amber-500 bg-amber-50',
 		},
 		{
 			id: 'distance',
-			title: 'Пройдено расстояния',
+			title: t('cabinet.detail.distance'),
 			value: distanceValue,
-			description: analytics ? `за ${integerFormatter.format(dealsCount)} сделок` : undefined,
+			description: analytics ? t('cabinet.detail.dealsFor', { count: integerFormatter.format(dealsCount) }) : undefined,
 			icon: Truck,
 			accentClass: 'text-sky-600 bg-sky-100',
 		},
 	]
 
 	const profileFields = [
-		{ id: 'full-name', label: 'Ф.И.О.', value: me?.first_name || me?.company_name || me?.email || '' },
-		{ id: 'email', label: 'Email', value: me?.email || '' },
-		{ id: 'phone', label: 'Номер телефона', value: me?.phone || '' },
-		{ id: 'company', label: 'Название компании', value: me?.company_name || '' },
-		{ id: 'country', label: 'Страна', value: me?.profile?.country || '' },
-		{ id: 'city', label: 'Город', value: me?.profile?.city || '' },
+		{ id: 'full-name', label: t('cabinet.profile.fullName'), value: me?.first_name || me?.company_name || me?.email || '' },
+		{ id: 'email', label: t('cabinet.profile.email'), value: me?.email || '' },
+		{ id: 'phone', label: t('cabinet.profile.phone'), value: me?.phone || '' },
+		{ id: 'company', label: t('cabinet.profile.company'), value: me?.company_name || '' },
+		{ id: 'country', label: t('cabinet.profile.country'), value: me?.profile?.country || '' },
+		{ id: 'city', label: t('cabinet.profile.city'), value: me?.profile?.city || '' },
 	]
 
 	const renderDetailCard = (card: AnalyticsCard) => {
@@ -210,7 +230,7 @@ export function Cabinet() {
 
 	return (
 		<div className='flex h-full flex-col gap-4 lg:flex-row lg:gap-6'>
-			<h1 className='sr-only'>Личный кабинет</h1>
+			<h1 className='sr-only'>{t('cabinet.title')}</h1>
 
 			<div className='lg:w-[32%] xl:w-[30%]'>
 				<Card className='h-full items-center rounded-[32px] border-none bg-background px-6 py-8 gap-0'>
@@ -224,7 +244,7 @@ export function Cabinet() {
 						) : (
 							<>
 								{me?.photo ? (
-									<Image src={me.photo} alt='Фото профиля' width={96} height={96} className='size-24 rounded-full object-cover' />
+									<Image src={me.photo} alt={t('cabinet.photoAlt')} width={96} height={96} className='size-24 rounded-full object-cover' />
 								) : (
 									<NoPhoto className='size-24' />
 								)}
@@ -234,7 +254,7 @@ export function Cabinet() {
 									{me?.first_name && me?.email ? me.email : me?.profile?.city || me?.profile?.country || ''}
 								</p>
 								<div className='flex items-center justify-center gap-2 text-xs text-muted-foreground'>
-									<span className='text-xs text-muted-foreground'>ID:</span>
+									<span className='text-xs text-muted-foreground'>{t('cabinet.profile.id')}:</span>
 									<UuidCopy id={me?.id} isPlaceholder />
 								</div>
 								<Button
@@ -253,7 +273,7 @@ export function Cabinet() {
 						<Link className='flex justify-end' href={DASHBOARD_URL.settings()}>
 							<Button variant='link' size='sm' className='h-auto px-0 text-xs text-brand'>
 								<Pencil className='size-3.5' />
-								Изменить
+								{t('cabinet.edit')}
 							</Button>
 						</Link>
 						{profileFields.map((field) => (
@@ -275,7 +295,7 @@ export function Cabinet() {
 			<div className='lg:w-[68%] xl:w-[70%]'>
 				<Card className='flex h-full flex-col gap-6 rounded-[32px] border-border/60 bg-background px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)] sm:px-8'>
 					<div className='flex items-center justify-between gap-3'>
-						<h2 className='text-lg font-semibold text-brand'>Аналитика</h2>
+						<h2 className='text-lg font-semibold text-brand'>{t('cabinet.analytics.title')}</h2>
 					</div>
 
 					<div className='grid gap-4 sm:grid-cols-2'>
@@ -283,17 +303,16 @@ export function Cabinet() {
 					</div>
 
 					<div className='mt-auto flex flex-wrap gap-3'>
-
 						<Dialog open={isTransportOpen} onOpenChange={setIsTransportOpen}>
 							<DialogTrigger asChild>
 								<Button variant='outline' className='h-10 border-brand/40 px-5 text-sm text-brand hover:border-brand/60 hover:bg-brand/5'>
-									Аналитика доходов
+									{t('cabinet.analytics.revenue')}
 									<ArrowUpRight className='size-4' />
 								</Button>
 							</DialogTrigger>
 							<DialogContent className='max-w-[860px] p-6 sm:p-8'>
 								<DialogHeader>
-									<DialogTitle className='text-center text-xl font-semibold'>Аналитика</DialogTitle>
+									<DialogTitle className='text-center text-xl font-semibold'>{t('cabinet.analytics.dialogTitle')}</DialogTitle>
 								</DialogHeader>
 								<div className='space-y-4'>
 									<div className='flex flex-wrap items-center justify-between gap-3'>
@@ -311,7 +330,7 @@ export function Cabinet() {
 												variant='outline'
 												className='h-10 rounded-full border-transparent bg-muted/40 px-4 text-sm text-foreground hover:bg-muted/60'
 											>
-												1-ая половина
+												{t('cabinet.analytics.periodHalf')}
 												<ChevronDown className='size-4 text-muted-foreground' />
 											</Button>
 										</div>
@@ -325,7 +344,7 @@ export function Cabinet() {
 										</div>
 									</div>
 									<Card className='gap-4 rounded-[24px] border-border/60 bg-background px-4 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)] sm:px-6'>
-										<p className='text-sm text-muted-foreground'>Заработано</p>
+										<p className='text-sm text-muted-foreground'>{t('cabinet.analytics.earned')}</p>
 										<ChartContainer config={incomeChartConfig} className='h-[260px] w-full aspect-auto'>
 											<BarChart data={incomeChartData} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
 												<CartesianGrid strokeDasharray='3 3' vertical={false} />
@@ -334,7 +353,7 @@ export function Cabinet() {
 													axisLine={false}
 													tickLine={false}
 													width={32}
-													tickFormatter={(value) => `${Math.round(value / 1000)}к$`}
+													tickFormatter={(value) => t('cabinet.chart.thousand', { value: Math.round(value / 1000) })}
 												/>
 												<ChartTooltip content={<ChartTooltipContent hideLabel />} />
 												<Bar dataKey='given' fill='var(--color-given)' radius={[8, 8, 0, 0]} barSize={10} />
@@ -349,16 +368,16 @@ export function Cabinet() {
 						<Dialog open={isRevenueOpen} onOpenChange={setIsRevenueOpen}>
 							<DialogTrigger asChild>
 								<Button variant='outline' className='h-10 border-brand/40 px-5 text-sm text-brand hover:border-brand/60 hover:bg-brand/5'>
-									Аналитика перевозок
+									{t('cabinet.analytics.transport')}
 									<ArrowUpRight className='size-4' />
 								</Button>
 							</DialogTrigger>
 							<DialogContent className='max-w-[520px] p-6 sm:p-8'>
 								<DialogHeader>
-									<DialogTitle className='text-center text-xl font-semibold'>Аналитика</DialogTitle>
+									<DialogTitle className='text-center text-xl font-semibold'>{t('cabinet.analytics.dialogTitle')}</DialogTitle>
 								</DialogHeader>
 								<div className='rounded-[24px] border border-border/60 bg-background px-5 py-6 shadow-[0_10px_25px_rgba(15,23,42,0.05)] sm:px-6'>
-									<p className='text-sm font-medium text-muted-foreground'>Статистика перевозок</p>
+									<p className='text-sm font-medium text-muted-foreground'>{t('cabinet.analytics.transportStats')}</p>
 									<div className='mt-4 space-y-2 text-sm'>
 										{transportChartData.map((item) => (
 											<div key={item.status} className='flex items-center justify-between gap-2 text-muted-foreground'>
@@ -374,17 +393,11 @@ export function Cabinet() {
 										<ChartContainer config={transportChartConfig} className='mx-auto max-h-[240px]'>
 											<PieChart>
 												<ChartTooltip content={<ChartTooltipContent hideLabel />} />
-												<Pie
-													data={transportChartData}
-													dataKey='value'
-													nameKey='status'
-													innerRadius={70}
-													strokeWidth={6}
-												/>
+												<Pie data={transportChartData} dataKey='value' nameKey='status' innerRadius={70} strokeWidth={6} />
 											</PieChart>
 										</ChartContainer>
 										<div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center'>
-											<span className='text-xs text-muted-foreground'>Всего перевозок</span>
+											<span className='text-xs text-muted-foreground'>{t('cabinet.analytics.totalTransports')}</span>
 											<span className='text-2xl font-semibold text-foreground'>{integerFormatter.format(totalTransports)}</span>
 										</div>
 									</div>

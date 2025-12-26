@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { Editor } from '@tiptap/react'
 import {
 	AlignCenter,
 	AlignLeft,
@@ -11,18 +13,19 @@ import {
 	Link2Off,
 	List,
 	ListOrdered,
-	Strikethrough,
 	PlaySquare,
+	Strikethrough,
 } from 'lucide-react'
-import { Editor } from '@tiptap/react'
-import { Toggle } from '../../Toggle'
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
+import { useI18n } from '@/i18n/I18nProvider'
 import { Button } from '@/components/ui/Button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Input } from '../Input'
+import { Toggle } from '../../Toggle'
+
 // import { useUpload } from '../image-upload/useUpload'
 
 export default function MenuBar({ editor }: { editor: Editor | null }) {
+	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
 	const [url, setUrl] = useState('')
 
@@ -43,22 +46,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 	// 	editor.chain().focus().setImage({ src: url }).run()
 	// })
 
-	const Options = [
-		// {
-		// 	icon: <Heading1 className='size-4' />,
-		// 	onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-		// 	preesed: editor.isActive('heading', { level: 1 }),
-		// },
-		// {
-		// 	icon: <Heading2 className='size-4' />,
-		// 	onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-		// 	preesed: editor.isActive('heading', { level: 2 }),
-		// },
-		// {
-		// 	icon: <Heading3 className='size-4' />,
-		// 	onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-		// 	preesed: editor.isActive('heading', { level: 3 }),
-		// },
+	const options = [
 		{
 			icon: <Bold className='size-4' />,
 			onClick: () => editor.chain().focus().toggleBold().run(),
@@ -108,7 +96,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 
 	return (
 		<div className='rounded-full p-1 mb-1 bg-grayscale-50 space-x-2 z-10 flex flex-wrap items-center'>
-			{Options.map((option, index) => (
+			{options.map((option, index) => (
 				<Toggle key={index} pressed={option.preesed} onPressedChange={option.onClick}>
 					{option.icon}
 				</Toggle>
@@ -122,7 +110,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 				</DialogTrigger>
 				<DialogContent className='sm:max-w-md'>
 					<DialogHeader>
-						<DialogTitle>Добавить / изменить ссылку</DialogTitle>
+						<DialogTitle>{t('components.richEditor.link.title')}</DialogTitle>
 					</DialogHeader>
 					<div className='flex flex-col gap-3'>
 						<Input type='url' placeholder='https://example.com' value={url} onChange={(e) => setUrl(e.target.value)} />
@@ -137,7 +125,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 								setUrl('')
 							}}
 						>
-							Применить
+							{t('components.richEditor.link.apply')}
 						</Button>
 					</div>
 				</DialogContent>
@@ -165,7 +153,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 				</DialogTrigger>
 				<DialogContent className='sm:max-w-md'>
 					<DialogHeader>
-						<DialogTitle>Вставить YouTube-видео</DialogTitle>
+						<DialogTitle>{t('components.richEditor.video.title')}</DialogTitle>
 					</DialogHeader>
 					<div className='flex flex-col gap-3'>
 						<Input
@@ -181,7 +169,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
 								setVideoUrl('')
 							}}
 						>
-							Вставить видео
+							{t('components.richEditor.video.insert')}
 						</Button>
 					</div>
 				</DialogContent>

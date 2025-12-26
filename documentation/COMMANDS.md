@@ -117,3 +117,16 @@ The agent must respond:
    `npm run build`
 
 2. Fix any problems if there are any.
+
+---
+
+## Command: locale
+
+`use command locale <folder>`
+
+### Agent Actions
+
+- You need to create a "locale" folder in this folder with locale files. You need to upload all the text from the files in the specified folder to it in both locales (en, ru), and then insert the locale system (`i18n`) into the files.
+
+Make distinctions between files, for example, by leaving a comment indicating which file the locale applies to.
+

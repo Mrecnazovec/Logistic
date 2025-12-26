@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatDistanceKm, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import type { IOrderList } from '@/shared/types/Order.interface'
 import { Building2, CalendarDays, FileText, MapPin, Route as RouteIcon, Wallet } from 'lucide-react'
@@ -39,45 +40,50 @@ type HistoryCardProps = {
 }
 
 function HistoryCard({ order, onView }: HistoryCardProps) {
-	const statusLabel = getOrderStatusLabel(order.status)
+	const { t } = useI18n()
+	const statusLabel = getOrderStatusLabel(order.status, t)
 	const statusVariant = getOrderStatusVariant(order.status)
 
 	const sections: CardSection[] = [
 		{
-			title: 'Участники',
+			title: t('history.card.section.participants'),
 			items: [
-				{ icon: Building2, primary: order.customer_name || '—', secondary: 'Заказчик' },
-				{ icon: Building2, primary: order.logistic_name || '—', secondary: 'Логист' },
-				{ icon: Building2, primary: order.carrier_name || '—', secondary: 'Перевозчик' },
+				{ icon: Building2, primary: order.customer_name || t('history.placeholder'), secondary: t('history.card.customer') },
+				{ icon: Building2, primary: order.logistic_name || t('history.placeholder'), secondary: t('history.card.logistic') },
+				{ icon: Building2, primary: order.carrier_name || t('history.placeholder'), secondary: t('history.card.carrier') },
 			],
 		},
 		{
-			title: 'Маршрут',
+			title: t('history.card.section.route'),
 			items: [
-				{ icon: MapPin, primary: order.origin_city || '—', secondary: 'Погрузка' },
-				{ icon: MapPin, primary: order.destination_city || '—', secondary: 'Выгрузка' },
-				{ icon: RouteIcon, primary: formatDistanceKm(order.route_distance_km), secondary: 'Дистанция' },
+				{ icon: MapPin, primary: order.origin_city || t('history.placeholder'), secondary: t('history.card.load') },
+				{ icon: MapPin, primary: order.destination_city || t('history.placeholder'), secondary: t('history.card.unload') },
+				{ icon: RouteIcon, primary: formatDistanceKm(order.route_distance_km), secondary: t('history.card.distance') },
 			],
 		},
 		{
-			title: 'Даты',
+			title: t('history.card.section.dates'),
 			items: [
-				{ icon: CalendarDays, primary: formatDateValue(order.load_date), secondary: 'Дата погрузки' },
-				{ icon: CalendarDays, primary: formatDateValue(order.delivery_date), secondary: 'Дата выгрузки' },
-				{ icon: CalendarDays, primary: formatDateValue(order.created_at), secondary: 'Создано' },
+				{ icon: CalendarDays, primary: formatDateValue(order.load_date), secondary: t('history.card.loadDate') },
+				{ icon: CalendarDays, primary: formatDateValue(order.delivery_date), secondary: t('history.card.deliveryDate') },
+				{ icon: CalendarDays, primary: formatDateValue(order.created_at), secondary: t('history.card.createdAt') },
 			],
 		},
 		{
-			title: 'Стоимость',
+			title: t('history.card.section.price'),
 			items: [
-				{ icon: Wallet, primary: formatPriceValue(order.price_total, order.currency), secondary: 'Итого' },
-				{ icon: Wallet, primary: formatPricePerKmValue(order.price_per_km, order.currency), secondary: 'Цена за км' },
-				{ icon: Wallet, primary: order.currency_display || order.currency || '—', secondary: 'Валюта' },
+				{ icon: Wallet, primary: formatPriceValue(order.price_total, order.currency), secondary: t('history.card.total') },
+				{ icon: Wallet, primary: formatPricePerKmValue(order.price_per_km, order.currency), secondary: t('history.card.pricePerKm') },
+				{
+					icon: Wallet,
+					primary: order.currency_display || order.currency || t('history.placeholder'),
+					secondary: t('history.card.currency'),
+				},
 			],
 		},
 		{
-			title: 'Документы',
-			items: [{ icon: FileText, primary: order.documents_count ?? 0, secondary: 'Кол-во документов' }],
+			title: t('history.card.section.documents'),
+			items: [{ icon: FileText, primary: order.documents_count ?? 0, secondary: t('history.card.documentsCount') }],
 		},
 	]
 
@@ -86,14 +92,18 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<div>
-						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>{`Заявка №${order.id}`}</CardTitle>
-						<p className='text-sm text-muted-foreground'>{order.customer_name || 'Не указан заказчик'}</p>
+						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
+							{t('history.card.title', { id: order.id })}
+						</CardTitle>
+						<p className='text-sm text-muted-foreground'>
+							{order.customer_name || t('history.card.customerMissing')}
+						</p>
 					</div>
 					<Badge variant={statusVariant}>{statusLabel}</Badge>
 				</div>
 				<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
 					<UuidCopy id={order.id} />
-					<span>Документы: {order.documents_count ?? 0}</span>
+					<span>{t('history.card.documentsLabel', { count: order.documents_count ?? 0 })}</span>
 				</div>
 			</CardHeader>
 
@@ -103,7 +113,7 @@ function HistoryCard({ order, onView }: HistoryCardProps) {
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Button className='min-w-[140px] flex-1' onClick={() => onView?.(order)}>
-					Открыть
+					{t('history.card.open')}
 				</Button>
 			</CardFooter>
 		</Card>

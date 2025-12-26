@@ -5,8 +5,10 @@ import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
+import { useI18n } from '@/i18n/I18nProvider'
 import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
+import { enUS, ru } from 'date-fns/locale'
 import { BadgeCheck, Briefcase, CalendarDays, Globe2, Star, UserRound } from 'lucide-react'
 import { useMemo } from 'react'
 
@@ -14,8 +16,6 @@ type RatingCardListProps = {
 	items: IRatingUserList[]
 	serverPagination?: ServerPaginationMeta
 }
-
-
 
 export function RatingCardList({ items, serverPagination }: RatingCardListProps) {
 	const pagination = useCardPagination(serverPagination)
@@ -37,8 +37,10 @@ type RatingCardProps = {
 }
 
 function RatingCard({ rating }: RatingCardProps) {
+	const { t, locale } = useI18n()
+	const dateLocale = locale === 'en' ? enUS : ru
 	const registeredAt = rating.registered_at
-		? format(new Date(rating.registered_at), 'dd.MM.yyyy')
+		? format(new Date(rating.registered_at), 'dd.MM.yyyy', { locale: dateLocale })
 		: '-'
 
 	const toNumber = (value: number | string | null | undefined) => {
@@ -50,56 +52,61 @@ function RatingCard({ rating }: RatingCardProps) {
 	const avgRatingValue = toNumber(rating.avg_rating)
 	const ratingCount = toNumber(rating.rating_count)
 	const completedOrders = toNumber(rating.completed_orders)
+	const numberLocale = locale === 'en' ? 'en-US' : 'ru-RU'
 
 	const sections = useMemo(
 		() => [
 			{
-				title: 'Компания и контакт',
+				title: t('rating.card.section.company'),
 				items: [
 					{
 						icon: BadgeCheck,
 						primary: rating.company_name ?? '-',
-						secondary: 'Компания',
+						secondary: t('rating.card.company'),
 					},
 					{
 						icon: UserRound,
 						primary: rating.display_name ?? '-',
-						secondary: 'Контакт',
+						secondary: t('rating.card.person'),
 					},
 				],
 			},
 			{
-				title: 'Достижения',
+				title: t('rating.card.section.rating'),
 				items: [
 					{
 						icon: Star,
 						primary: `${avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'} / 5`,
-						secondary: `${ratingCount !== null ? ratingCount.toLocaleString('ru-RU') : '—'} отзывов`,
+						secondary: t('rating.card.reviews', {
+							count: ratingCount !== null ? ratingCount.toLocaleString(numberLocale) : '-',
+						}),
 					},
 					{
 						icon: Briefcase,
-						primary: completedOrders !== null ? completedOrders.toLocaleString('ru-RU') : '—',
-						secondary: 'Выполненных заказов',
+						primary: completedOrders !== null ? completedOrders.toLocaleString(numberLocale) : '-',
+						secondary: t('rating.card.completedDeals'),
 					},
 				],
 			},
 			{
-				title: 'Extra',
+				title: t('rating.card.section.extra'),
 				items: [
 					{
 						icon: Globe2,
 						primary: rating.country ?? '-',
-						secondary: 'Страна',
+						secondary: t('rating.card.country'),
 					},
 					{
 						icon: CalendarDays,
 						primary: registeredAt,
-						secondary: 'Зарегистрирован',
+						secondary: t('rating.card.registeredAt'),
 					},
 				],
 			},
 		],
 		[
+			t,
+			numberLocale,
 			avgRatingValue,
 			completedOrders,
 			rating.company_name,
@@ -115,7 +122,7 @@ function RatingCard({ rating }: RatingCardProps) {
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						#{rating.id} - {rating.company_name ?? rating.display_name ?? 'No name'}
+						{t('rating.card.title', { id: rating.id, name: rating.company_name ?? rating.display_name ?? t('rating.card.noName') })}
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
 						<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />

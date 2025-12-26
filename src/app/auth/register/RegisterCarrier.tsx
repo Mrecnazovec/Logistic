@@ -2,6 +2,7 @@ import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/for
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
+import { useI18n } from '@/i18n/I18nProvider'
 import { Country } from '@/shared/types/Geo.interface'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { Mail, Phone, User } from 'lucide-react'
@@ -24,21 +25,26 @@ interface RegisterTransportFieldProps extends RegisterFieldsProps {
 }
 
 export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) {
+	const { t } = useI18n()
 	const [country, setCountry] = useState<Country | null>(null)
 
 	return (
 		<>
-			{/* Ф.И.О. */}
 			<FormField
 				control={form.control}
 				name='first_name'
-				rules={{ required: 'Ф.И.О. обязательно' }}
+				rules={{ required: t('register.company.firstNameRequired') }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите Ф.И.О.</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.company.firstNameLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите Ф.И.О.' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput
+									placeholder={t('register.company.firstNamePlaceholder')}
+									disabled={isPending}
+									{...field}
+									value={field.value ?? ''}
+								/>
 								<InputGroupAddon className='pr-2'>
 									<User className='text-grayscale size-5' />
 								</InputGroupAddon>
@@ -48,16 +54,20 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 				)}
 			/>
 
-			{/* Ф.И.О. */}
 			<FormField
 				control={form.control}
 				name='email'
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите email</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.company.emailLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Введите email' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput
+									placeholder={t('register.company.emailPlaceholder')}
+									disabled={isPending}
+									{...field}
+									value={field.value ?? ''}
+								/>
 								<InputGroupAddon className='pr-2'>
 									<Mail className='text-grayscale size-5' />
 								</InputGroupAddon>
@@ -67,17 +77,21 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 				)}
 			/>
 
-			{/* Номер телефона */}
 			<FormField
 				control={form.control}
 				name='phone'
-				rules={{ required: 'Телефон обязателен' }}
+				rules={{ required: t('register.company.phoneRequired') }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите номер</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.company.phoneLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
-								<InputGroupInput placeholder='Номер телефона' disabled={isPending} {...field} value={field.value ?? ''} />
+								<InputGroupInput
+									placeholder={t('register.company.phonePlaceholder')}
+									disabled={isPending}
+									{...field}
+									value={field.value ?? ''}
+								/>
 								<InputGroupAddon className='pr-2'>
 									<Phone className='text-grayscale size-5' />
 								</InputGroupAddon>
@@ -87,14 +101,13 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 				)}
 			/>
 
-			{/* Страна / Город */}
 			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
 				<FormField
 					control={form.control}
 					name='country'
 					render={() => (
 						<FormItem>
-							<FormLabel>Выберите страну</FormLabel>
+							<FormLabel>{t('register.company.countryLabel')}</FormLabel>
 							<FormControl>
 								<CountrySelector
 									value={country}
@@ -116,7 +129,7 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 					name='city'
 					render={() => (
 						<FormItem>
-							<FormLabel className='text-grayscale'>Выберите город</FormLabel>
+							<FormLabel className='text-grayscale'>{t('register.company.cityLabel')}</FormLabel>
 							<FormControl>
 								<CitySelector
 									value={form.watch('city')}
@@ -124,7 +137,7 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 										form.setValue('city', cityName)
 									}}
 									countryCode={form.watch('country_code')}
-									placeholder='Выберите город'
+									placeholder={t('register.company.cityPlaceholder')}
 									disabled={!form.watch('country') || isPending}
 								/>
 							</FormControl>
@@ -133,19 +146,18 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 				/>
 			</div>
 
-			{/* Название компании */}
 			<FormField
 				control={form.control}
 				name='company_name'
-				rules={{ required: 'Название компании обязательно' }}
+				rules={{ required: t('register.company.companyNameRequired') }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите название компании</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.company.companyNameLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput
 									className='pl-3'
-									placeholder='Введите название компании'
+									placeholder={t('register.company.companyNamePlaceholder')}
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}
@@ -162,21 +174,25 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 export function RegisterTransportField({
 	form,
 	isPending,
-	label = 'Транспорт',
-	placeholder = 'Введите название транспорта',
+	label,
+	placeholder,
 	onChange,
 }: RegisterTransportFieldProps) {
+	const { t } = useI18n()
+	const resolvedLabel = label ?? t('register.transport.label')
+	const resolvedPlaceholder = placeholder ?? t('register.transport.placeholder')
+
 	return (
 		<FormField
 			control={form.control}
 			name='transport_name'
 			render={({ field }) => (
 				<FormItem className='mb-6'>
-					<FormLabel className='text-grayscale'>{label}</FormLabel>
+					<FormLabel className='text-grayscale'>{resolvedLabel}</FormLabel>
 					<FormControl>
 						<InputGroup>
 							<InputGroupInput
-								placeholder={placeholder}
+								placeholder={resolvedPlaceholder}
 								className='pl-3'
 								disabled={isPending}
 								{...field}
@@ -195,6 +211,8 @@ export function RegisterTransportField({
 }
 
 export function RegisterVehicleFields({ form, isPending, showTransportName = true }: RegisterVehicleFieldsProps) {
+	const { t } = useI18n()
+
 	return (
 		<>
 			{showTransportName && (
@@ -203,12 +221,12 @@ export function RegisterVehicleFields({ form, isPending, showTransportName = tru
 					name='transport_name'
 					render={({ field }) => (
 						<FormItem className='mb-6'>
-							<FormLabel className='text-grayscale'>Введите название машины перевозчика</FormLabel>
+							<FormLabel className='text-grayscale'>{t('register.vehicle.transportNameLabel')}</FormLabel>
 							<FormControl>
 								<InputGroup>
 									<InputGroupInput
 										className='pl-2'
-										placeholder='Введите название машины перевозчика'
+										placeholder={t('register.vehicle.transportNamePlaceholder')}
 										disabled={isPending}
 										{...field}
 										value={field.value ?? ''}
@@ -225,12 +243,12 @@ export function RegisterVehicleFields({ form, isPending, showTransportName = tru
 				name='car_number'
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите номер машины</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.vehicle.carNumberLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput
 									className='pl-2'
-									placeholder='Введите номер машины'
+									placeholder={t('register.vehicle.carNumberPlaceholder')}
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}
@@ -245,12 +263,12 @@ export function RegisterVehicleFields({ form, isPending, showTransportName = tru
 				name='trailer_number'
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите номер прицепа</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.vehicle.trailerNumberLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput
 									className='pl-2'
-									placeholder='Введите номер прицепа'
+									placeholder={t('register.vehicle.trailerNumberPlaceholder')}
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}
@@ -265,12 +283,12 @@ export function RegisterVehicleFields({ form, isPending, showTransportName = tru
 				name='driver_license'
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>Введите номер/серию водительского удостоверения</FormLabel>
+						<FormLabel className='text-grayscale'>{t('register.vehicle.driverLicenseLabel')}</FormLabel>
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput
 									className='pl-2'
-									placeholder='Введите номер/серию водительского удостоверения'
+									placeholder={t('register.vehicle.driverLicensePlaceholder')}
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}

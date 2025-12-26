@@ -8,13 +8,14 @@ import { useAcceptOffer } from "@/hooks/queries/offers/useAction/useAcceptOffer"
 import { useCounterOffer } from "@/hooks/queries/offers/useAction/useCounterOffer"
 import { useRejectOffer } from "@/hooks/queries/offers/useAction/useRejectOffer"
 import { useGetOffers } from "@/hooks/queries/offers/useGet/useGetOffers"
+import { useI18n } from "@/i18n/I18nProvider"
 import type { PriceCurrencyCode } from "@/lib/currency"
 import { PaymentMethodEnum } from "@/shared/enums/PaymentMethod.enum"
 
 import { CargoInfo } from "./CargoInfo"
 import { OfferCard } from "./OfferCard"
 import { OfferHistoryItem } from "./OfferHistoryItem"
-import { buildCargoInfo } from "./helpers"
+import { buildCargoInfo } from './helpers'
 import type { OfferFormState, OffersTab } from "./types"
 
 interface DeskOffersModalProps {
@@ -30,6 +31,7 @@ export function DeskOffersModal({
   onOpenChange,
   initialPrice,
 }: DeskOffersModalProps) {
+  const { t } = useI18n()
   const [activeTab, setActiveTab] = useState<OffersTab>("incoming")
   const [formState, setFormState] = useState<Record<number, OfferFormState>>({})
   const [expandedOfferId, setExpandedOfferId] = useState<number | null>(null)
@@ -38,9 +40,9 @@ export function DeskOffersModal({
     cargoUuid ? { cargo_uuid: cargoUuid } : undefined,
     { enabled: Boolean(cargoUuid) },
   )
-  const { acceptOffer, isLoadingAccept } = useAcceptOffer()
-  const { rejectOffer, isLoadingReject } = useRejectOffer()
-  const { counterOffer, isLoadingCounter } = useCounterOffer()
+  const { acceptOffer, isLoadingAcceptOffer } = useAcceptOffer()
+  const { rejectOffer, isLoadingRejectOffer } = useRejectOffer()
+  const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
 
   const offers = data?.results ?? []
   const incomingOffers = offers.filter(
@@ -56,7 +58,7 @@ export function DeskOffersModal({
       (offer.accepted_by_carrier && !offer.accepted_by_customer),
   )
 
-  const cargoInfo = buildCargoInfo(offers, initialPrice)
+  const cargoInfo = buildCargoInfo(offers, t, initialPrice)
 
   const handleFormChange = (
     offerId: number,
@@ -84,17 +86,17 @@ export function DeskOffersModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="overflow-x-hidden">
         <DialogHeader className="pb-6 text-center">
-          <DialogTitle className="text-center text-2xl font-bold">Предложения</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-bold">{t("components.deskOffers.title")}</DialogTitle>
         </DialogHeader>
 
         {!cargoUuid ? (
           <p className="py-10 text-center text-muted-foreground">
-            Выберите груз, чтобы увидеть предложения.
+            {t("components.deskOffers.selectCargo")}
           </p>
         ) : isLoading ? (
-          <p className="py-10 text-center text-muted-foreground">Загружаем предложения...</p>
+          <p className="py-10 text-center text-muted-foreground">{t("components.deskOffers.loading")}</p>
         ) : offers.length === 0 ? (
-          <p className="py-10 text-center text-muted-foreground">Предложений пока нет.</p>
+          <p className="py-10 text-center text-muted-foreground">{t("components.deskOffers.empty")}</p>
         ) : (
           <div className="space-y-6">
             {cargoInfo ? <CargoInfo cargoInfo={cargoInfo} /> : null}
@@ -110,19 +112,19 @@ export function DeskOffersModal({
                     value="incoming"
                     className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
                   >
-                    Входящие
+                    {t("components.deskOffers.tabs.incoming")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="accepted"
                     className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
                   >
-                    Принятые
+                    {t("components.deskOffers.tabs.accepted")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="history"
                     className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
                   >
-                    История
+                    {t("components.deskOffers.tabs.history")}
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -135,9 +137,9 @@ export function DeskOffersModal({
                       offer={offer}
                       mode="incoming"
                       formState={formState[offer.id]}
-                      isLoadingAccept={isLoadingAccept}
-                      isLoadingReject={isLoadingReject}
-                      isLoadingCounter={isLoadingCounter}
+                      isLoadingAccept={isLoadingAcceptOffer}
+                      isLoadingReject={isLoadingRejectOffer}
+                      isLoadingCounter={isLoadingCounterOffer}
                       onAccept={() => acceptOffer(String(offer.id))}
                       onReject={() => rejectOffer(String(offer.id))}
                       onCounter={(payload) => handleCounterOffer(offer.id, payload)}
@@ -148,7 +150,7 @@ export function DeskOffersModal({
                   ))
                 ) : (
                   <p className="py-6 text-center text-muted-foreground">
-                    Нет входящих предложений.
+                    {t("components.deskOffers.emptyIncoming")}
                   </p>
                 )}
               </TabsContent>
@@ -161,9 +163,9 @@ export function DeskOffersModal({
                       offer={offer}
                       mode="accepted"
                       formState={formState[offer.id]}
-                      isLoadingAccept={isLoadingAccept}
-                      isLoadingReject={isLoadingReject}
-                      isLoadingCounter={isLoadingCounter}
+                      isLoadingAccept={isLoadingAcceptOffer}
+                      isLoadingReject={isLoadingRejectOffer}
+                      isLoadingCounter={isLoadingCounterOffer}
                       onAccept={() => acceptOffer(String(offer.id))}
                       onReject={() => rejectOffer(String(offer.id))}
                       onCounter={(payload) => handleCounterOffer(offer.id, payload)}
@@ -174,7 +176,7 @@ export function DeskOffersModal({
                   ))
                 ) : (
                   <p className="py-6 text-center text-muted-foreground">
-                    Нет принятых предложений.
+                    {t("components.deskOffers.emptyAccepted")}
                   </p>
                 )}
               </TabsContent>
@@ -194,7 +196,7 @@ export function DeskOffersModal({
                     ))}
                   </div>
                 ) : (
-                  <p className="py-6 text-center text-muted-foreground">История пока пустая.</p>
+                  <p className="py-6 text-center text-muted-foreground">{t("components.deskOffers.emptyHistory")}</p>
                 )}
               </TabsContent>
             </Tabs>

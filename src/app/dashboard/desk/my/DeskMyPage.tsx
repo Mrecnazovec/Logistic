@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useGetIncomingOffers } from '@/hooks/queries/offers/useGet/useGetIncomingOffers'
 import { useGetMyOffers } from '@/hooks/queries/offers/useGet/useGetMyOffers'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { useRoleStore } from '@/store/useRoleStore'
@@ -21,19 +22,19 @@ import dynamic from 'next/dynamic'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useSearchForm } from './Searching/useSearchForm'
 import { DeskMyCardList } from './components/DeskIncomeCardList'
-import { deskIncomeColumns } from './table/DeskIncomeColumns'
-import { deskMyColumns } from './table/DeskMyColumns'
+import { getDeskIncomeColumns } from './table/DeskIncomeColumns'
+import { getDeskMyColumns } from './table/DeskMyColumns'
 
 const OfferDecisionModal = dynamic(() => import('@/components/ui/modals/OfferDecisionModal').then((mod) => mod.OfferDecisionModal))
 
-function useDecisionModal(role?: RoleEnum) {
+function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: Record<string, string | number>) => string) {
 	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()
 	const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false)
 	const [decisionNote, setDecisionNote] = useState<string | undefined>()
 	const [decisionActionable, setDecisionActionable] = useState(false)
 
 	const openDecisionModal = (offer: IOfferShort) => {
-		const meta = getOfferStatusMeta(offer, role)
+		const meta = getOfferStatusMeta(offer, role, t)
 		setSelectedOffer(offer)
 		setDecisionNote(meta.note)
 		setDecisionActionable(Boolean(meta.requireDecision))
@@ -66,6 +67,7 @@ export function DeskMyPage() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)
 	const role = useRoleStore((state) => state.role)
+	const { t } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
@@ -76,18 +78,23 @@ export function DeskMyPage() {
 		decisionActionable,
 		openDecisionModal,
 		closeDecisionModal,
-	} = useDecisionModal(role ?? undefined)
+	} = useDecisionModal(role ?? undefined, t)
 
-	const tabs =
-		role === RoleEnum.LOGISTIC
-			? [
-				{ value: 'drivers', label: 'Я предложил' },
-				{ value: 'desk', label: 'Предложили мне' },
-			]
-			: [
-				{ value: 'drivers', label: 'Предложили мне' },
-				{ value: 'desk', label: 'Я предложил' },
-			]
+	const tabs = useMemo(
+		() =>
+			role === RoleEnum.LOGISTIC
+				? [
+					{ value: 'drivers', label: t('deskMy.tabs.myOffers') },
+					{ value: 'desk', label: t('deskMy.tabs.offersToMe') },
+				]
+				: [
+					{ value: 'drivers', label: t('deskMy.tabs.offersToMe') },
+					{ value: 'desk', label: t('deskMy.tabs.myOffers') },
+				],
+		[role, t],
+	)
+	const deskColumns = useMemo(() => getDeskMyColumns(t), [t])
+	const incomeColumns = useMemo(() => getDeskIncomeColumns(t), [t])
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []
@@ -107,7 +114,7 @@ export function DeskMyPage() {
 		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
 	) : (
 		<DataTable
-			columns={deskMyColumns}
+			columns={deskColumns}
 			data={myResults}
 			serverPagination={{ next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count }}
 			onRowClick={openDecisionModal}
@@ -122,7 +129,7 @@ export function DeskMyPage() {
 		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={openDecisionModal} role={role} />
 	) : (
 		<DataTable
-			columns={deskIncomeColumns}
+			columns={incomeColumns}
 			data={deskResults}
 			serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
 			onRowClick={openDecisionModal}

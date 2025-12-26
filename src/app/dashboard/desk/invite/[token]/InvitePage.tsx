@@ -2,7 +2,7 @@
 
 import { AxiosError } from 'axios'
 import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { enUS, ru } from 'date-fns/locale'
 import { AlertCircle, ArrowRight, ShieldX, Timer } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -13,24 +13,19 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/form-control/Input'
 import { Loader } from '@/components/ui/Loader'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/Select'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useLoadInvite } from '@/hooks/queries/loads/useLoadInvite'
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
+import { useI18n } from '@/i18n/I18nProvider'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import type { InviteResponseActionsProps } from '@/shared/types/Invite.interface'
-import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 
 const EMPTY = '-'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
@@ -57,6 +52,7 @@ export function InvitePage() {
 }
 
 function InvitePageContent() {
+	const { t, locale } = useI18n()
 	const params = useParams<{ token: string }>()
 	const token = params?.token
 	const router = useRouter()
@@ -83,30 +79,31 @@ function InvitePageContent() {
 		return null
 	}, [inviteError])
 
+	const dateLocale = locale === 'en' ? enUS : ru
 	const cargo = invite?.cargo
 	const expiryText = invite?.expires_at
-		? format(new Date(invite.expires_at), 'dd.MM.yyyy HH:mm', { locale: ru })
+		? format(new Date(invite.expires_at), 'dd.MM.yyyy HH:mm', { locale: dateLocale })
 		: null
 
 	const defaultPriceValue = cargo?.price_value ?? ''
 	const defaultCurrencyValue = (cargo?.price_currency as PriceCurrencyCode | '') ?? ''
 
-	const { acceptOffer, isLoadingAccept } = useAcceptOffer()
-	const { counterOffer, isLoadingCounter } = useCounterOffer()
-	const { rejectOffer, isLoadingReject } = useRejectOffer()
+	const { acceptOffer, isLoadingAcceptOffer } = useAcceptOffer()
+	const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
+	const { rejectOffer, isLoadingRejectOffer } = useRejectOffer()
 
 	const inviteWithOfferId = invite as (typeof invite & { offer_id?: number; offer?: { id?: number }; id?: number }) | null
 	const inviteOfferId =
 		inviteWithOfferId?.offer_id ?? inviteWithOfferId?.offer?.id ?? inviteWithOfferId?.id ?? null
 
 	const formattedLoadDate = cargo?.load_date
-		? format(new Date(cargo.load_date), 'dd.MM.yyyy', { locale: ru })
+		? format(new Date(cargo.load_date), 'dd.MM.yyyy', { locale: dateLocale })
 		: EMPTY
 	const formattedDeliveryDate = cargo?.delivery_date
-		? format(new Date(cargo.delivery_date), 'dd.MM.yyyy', { locale: ru })
+		? format(new Date(cargo.delivery_date), 'dd.MM.yyyy', { locale: dateLocale })
 		: EMPTY
 	const transport = cargo
-		? getTransportName(cargo.transport_type) || cargo.transport_type || EMPTY
+		? getTransportName(t, cargo.transport_type) || cargo.transport_type || EMPTY
 		: EMPTY
 	const formattedPrice = formatCurrencyValue(cargo?.price_value, cargo?.price_currency as PriceCurrencyCode | undefined)
 	const formattedPricePerKm = formatCurrencyPerKmValue(
@@ -114,7 +111,7 @@ function InvitePageContent() {
 		cargo?.price_currency as PriceCurrencyCode | undefined,
 	)
 
-	const isProcessing = isLoadingInvite || isLoadingAccept || isLoadingCounter || isLoadingReject
+	const isProcessing = isLoadingInvite || isLoadingAcceptOffer || isLoadingCounterOffer || isLoadingRejectOffer
 
 	useEffect(() => {
 		if (!accessToken) {
@@ -126,12 +123,12 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title='Требуется авторизация'
-					description='Войдите в аккаунт, чтобы увидеть приглашение.'
+					title={t('desk.invite.auth.title')}
+					description={t('desk.invite.auth.description')}
 					icon={<ShieldX className='size-10 text-brand' />}
 					actions={
 						<Link href={authHref}>
-							<Button>Войти</Button>
+							<Button>{t('desk.invite.auth.action')}</Button>
 						</Link>
 					}
 				/>
@@ -147,12 +144,12 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title='Нет доступа'
-					description='Приглашение недоступно или вы не можете его просматривать.'
+					title={t('desk.invite.forbidden.title')}
+					description={t('desk.invite.forbidden.description')}
 					icon={<ShieldX className='size-10 text-destructive' />}
 					actions={
 						<Button variant='outline' onClick={() => refetchInvite()}>
-							Попробовать снова
+							{t('desk.invite.forbidden.action')}
 						</Button>
 					}
 				/>
@@ -164,8 +161,8 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title='Срок истёк'
-					description='Срок действия приглашения закончился.'
+					title={t('desk.invite.expired.title')}
+					description={t('desk.invite.expired.description')}
 					icon={<Timer className='size-10 text-amber-500' />}
 				/>
 			</InviteLayout>
@@ -176,12 +173,12 @@ function InvitePageContent() {
 		return (
 			<InviteLayout>
 				<InviteStateCard
-					title='Приглашение не найдено'
-					description='Не удалось получить детали приглашения.'
+					title={t('desk.invite.notFound.title')}
+					description={t('desk.invite.notFound.description')}
 					icon={<AlertCircle className='size-10 text-destructive' />}
 					actions={
 						<Button variant='outline' onClick={() => refetchInvite()}>
-							Обновить данные
+							{t('desk.invite.notFound.action')}
 						</Button>
 					}
 				/>
@@ -194,10 +191,10 @@ function InvitePageContent() {
 			<div className='w-full max-w-5xl space-y-6'>
 				<Card className='rounded-3xl shadow-lg border-none'>
 					<CardHeader className='pb-4'>
-						<CardTitle className='text-2xl font-bold'>Приглашение на груз</CardTitle>
+						<CardTitle className='text-2xl font-bold'>{t('desk.invite.title')}</CardTitle>
 						{expiryText && (
 							<p className='text-sm text-muted-foreground flex items-center gap-2'>
-								<Timer className='size-4' /> Истекает {expiryText}
+								<Timer className='size-4' /> {t('desk.invite.expires', { date: expiryText })}
 							</p>
 						)}
 					</CardHeader>
@@ -211,7 +208,7 @@ function InvitePageContent() {
 							</div>
 							<div className='flex flex-col items-center justify-center text-sm font-semibold text-muted-foreground'>
 								<ArrowRight className='mb-1 size-5' />
-								<span>{cargo.route_km ? `${cargo.route_km} км` : EMPTY}</span>
+								<span>{cargo.route_km ? `${cargo.route_km} ${t('desk.invite.km')}` : EMPTY}</span>
 							</div>
 							<div>
 								<p className='font-semibold text-foreground'>
@@ -222,30 +219,31 @@ function InvitePageContent() {
 						</div>
 						<div className='grid gap-4 md:grid-cols-3 text-sm text-muted-foreground'>
 							<p>
-								<span className='font-semibold text-foreground'>Тип транспорта: </span>
+								<span className='font-semibold text-foreground'>{t('desk.invite.transportType')}: </span>
 								{transport}
 							</p>
 							<p>
-								<span className='font-semibold text-foreground'>Вес: </span>
-								{cargo.weight_t ? `${cargo.weight_t} т` : EMPTY}
+								<span className='font-semibold text-foreground'>{t('desk.invite.weight')}: </span>
+								{cargo.weight_t ? `${cargo.weight_t} ${t('desk.invite.ton')}` : EMPTY}
 							</p>
 							<p>
-								<span className='font-semibold text-foreground'>Стоимость: </span>
+								<span className='font-semibold text-foreground'>{t('desk.invite.price')}: </span>
 								{formattedPrice}
 								{formattedPricePerKm ? ` (${formattedPricePerKm})` : ''}
 							</p>
 						</div>
 						<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
-							<span className='font-semibold text-foreground'>Компания:</span> {cargo.company_name}
-							<span className='font-semibold text-foreground'>Представитель:</span> {<ProfileLink id={Number(cargo.user_id)} name={cargo.user_name} />}
+							<span className='font-semibold text-foreground'>{t('desk.invite.company')}:</span> {cargo.company_name}
+							<span className='font-semibold text-foreground'>{t('desk.invite.representative')}:</span>{' '}
+							{<ProfileLink id={Number(cargo.user_id)} name={cargo.user_name} />}
 						</div>
 					</CardContent>
 				</Card>
 
 				<Card className='rounded-3xl shadow-lg border-none'>
 					<CardHeader className='pb-4'>
-						<CardTitle className='text-xl font-semibold'>Ответ на приглашение</CardTitle>
-						<p className='text-sm text-muted-foreground'>Примите оффер, сделайте встречное или отклоните его.</p>
+						<CardTitle className='text-xl font-semibold'>{t('desk.invite.response.title')}</CardTitle>
+						<p className='text-sm text-muted-foreground'>{t('desk.invite.response.description')}</p>
 					</CardHeader>
 					<CardContent className='space-y-4'>
 						<InviteResponseActions
@@ -255,7 +253,7 @@ function InvitePageContent() {
 							defaultCurrency={defaultCurrencyValue}
 							onAccept={(offerId) => {
 								if (!offerId) {
-									toast.error('Не удалось определить оффер для принятия.')
+									toast.error(t('desk.invite.offerIdMissing'))
 									return
 								}
 								acceptOffer(String(offerId), {
@@ -264,7 +262,7 @@ function InvitePageContent() {
 							}}
 							onCounter={({ offerId, data }) => {
 								if (!offerId) {
-									toast.error('Не удалось определить оффер для ответа.')
+									toast.error(t('desk.invite.offerIdMissing'))
 									return
 								}
 								counterOffer(
@@ -276,23 +274,23 @@ function InvitePageContent() {
 							}}
 							onReject={(offerId) => {
 								if (!offerId) {
-									toast.error('Не удалось определить оффер для отклонения.')
+									toast.error(t('desk.invite.offerIdMissing'))
 									return
 								}
 								rejectOffer(String(offerId), {
 									onSuccess: () => router.push(DASHBOARD_URL.desk('my')),
 								})
 							}}
-							isLoadingAccept={isLoadingAccept}
-							isLoadingCounter={isLoadingCounter}
-							isLoadingReject={isLoadingReject}
+							isLoadingAccept={isLoadingAcceptOffer}
+							isLoadingCounter={isLoadingCounterOffer}
+							isLoadingReject={isLoadingRejectOffer}
 							isProcessing={isProcessing}
 						/>
 
 						{!inviteOfferId && (
 							<p className='text-sm text-amber-600 flex items-center gap-2'>
 								<AlertCircle className='size-4' />
-								Не удалось получить идентификатор оффера. Обновите страницу или запросите новое приглашение.
+								{t('desk.invite.offerIdMissingHint')}
 							</p>
 						)}
 					</CardContent>
@@ -303,11 +301,13 @@ function InvitePageContent() {
 }
 
 function InvitePageFallback() {
+	const { t } = useI18n()
+
 	return (
 		<InviteLayout>
 			<div className='flex flex-col items-center gap-3 text-muted-foreground'>
 				<Loader />
-				<p>Загрузка приглашения...</p>
+				<p>{t('desk.invite.loading')}</p>
 			</div>
 		</InviteLayout>
 	)
@@ -358,6 +358,7 @@ function InviteResponseActions({
 	isLoadingReject,
 	isProcessing,
 }: InviteResponseActionsProps) {
+	const { t } = useI18n()
 	const [priceValue, setPriceValue] = useState(() => (defaultPrice ? String(defaultPrice) : ''))
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(
 		() => (defaultCurrency ? (defaultCurrency as PriceCurrencyCode) : ''),
@@ -367,7 +368,7 @@ function InviteResponseActions({
 
 	const handleAccept = () => {
 		if (!offerId) {
-			toast.error('Не удалось определить оффер для принятия.')
+			toast.error(t('desk.invite.offerIdMissing'))
 			return
 		}
 		onAccept(offerId)
@@ -375,11 +376,11 @@ function InviteResponseActions({
 
 	const handleCounter = () => {
 		if (!offerId) {
-			toast.error('Не удалось определить оффер для ответа.')
+			toast.error(t('desk.invite.offerIdMissing'))
 			return
 		}
 		if (!priceValue || !currency) {
-			toast.error('Укажите сумму и валюту.')
+			toast.error(t('desk.invite.counterNeedPrice'))
 			return
 		}
 
@@ -394,7 +395,7 @@ function InviteResponseActions({
 
 	const handleReject = () => {
 		if (!offerId) {
-			toast.error('Не удалось определить оффер для отклонения.')
+			toast.error(t('desk.invite.offerIdMissing'))
 			return
 		}
 		onReject(offerId)
@@ -404,7 +405,7 @@ function InviteResponseActions({
 		<>
 			<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
 				<Input
-					placeholder='Предложить сумму'
+					placeholder={t('desk.invite.pricePlaceholder')}
 					value={priceValue}
 					onChange={(event) => setPriceValue(event.target.value)}
 					type='number'
@@ -414,7 +415,7 @@ function InviteResponseActions({
 				/>
 				<Select value={currency || undefined} onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}>
 					<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none'>
-						<SelectValue placeholder='Выберите валюту' />
+						<SelectValue placeholder={t('desk.invite.currencyPlaceholder')} />
 					</SelectTrigger>
 					<SelectContent>
 						{currencyOptions.map((option) => (
@@ -432,14 +433,14 @@ function InviteResponseActions({
 					disabled={isActionDisabled}
 					className='rounded-full bg-success-500 text-white hover:bg-success-600 disabled:opacity-60'
 				>
-					{isLoadingAccept ? 'Принятие...' : 'Принять'}
+					{isLoadingAccept ? t('desk.invite.acceptLoading') : t('desk.invite.accept')}
 				</Button>
 				<Button
 					onClick={handleCounter}
 					disabled={isActionDisabled || !priceValue || !currency}
 					className='rounded-full bg-warning-500 text-white hover:bg-warning-600 disabled:opacity-60'
 				>
-					{isLoadingCounter ? 'Отправка...' : 'Сделать встречное'}
+					{isLoadingCounter ? t('desk.invite.counterLoading') : t('desk.invite.counter')}
 				</Button>
 				<Button
 					onClick={handleReject}
@@ -447,7 +448,7 @@ function InviteResponseActions({
 					variant='destructive'
 					className='rounded-full'
 				>
-					{isLoadingReject ? 'Отклонение...' : 'Отклонить'}
+					{isLoadingReject ? t('desk.invite.rejectLoading') : t('desk.invite.reject')}
 				</Button>
 			</div>
 		</>

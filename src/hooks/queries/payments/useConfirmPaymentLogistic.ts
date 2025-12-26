@@ -1,10 +1,10 @@
+import type { PatchedPaymentRequestDto } from '@/shared/types/Payment.interface'
+import { paymentsService } from '@/services/payments.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-import { paymentsService } from '@/services/payments.service'
-import type { PatchedPaymentRequestDto } from '@/shared/types/Payment.interface'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type ConfirmPaymentLogisticPayload = {
 	id: number | string
@@ -13,6 +13,7 @@ type ConfirmPaymentLogisticPayload = {
 }
 
 export const useConfirmPaymentLogistic = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
 
 	const { mutate: confirmPaymentLogistic, isPending: isLoadingConfirmPaymentLogistic } = useMutation({
@@ -25,10 +26,10 @@ export const useConfirmPaymentLogistic = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(orderId)] })
 			}
 
-			toast.success('Оплата подтверждена логистом')
+			toast.success(t('hooks.payments.confirm.logistic.success'))
 		},
 		onError(error) {
-			const message = getErrorMessage(error) ?? 'Failed to confirm payment as logistic'
+			const message = getErrorMessage(error) ?? t('hooks.payments.confirm.logistic.error')
 			toast.error(message)
 		},
 	})

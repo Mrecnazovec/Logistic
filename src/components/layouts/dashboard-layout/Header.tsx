@@ -3,15 +3,17 @@
 import { Button } from '@/components/ui/Button'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
-import { DASHBOARD_URL } from '@/config/url.config'
+import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
+import { useI18n } from '@/i18n/I18nProvider'
+import { stripLocaleFromPath } from '@/i18n/paths'
 import { cn } from '@/lib/utils'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { format } from 'date-fns'
-import { Bell, CheckCheck, ChevronLeft, Loader2, Search } from 'lucide-react'
+import { Bell, CheckCheck, ChevronLeft, Loader2, Search, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -30,6 +32,8 @@ const SEARCH_ENABLED_ROUTES = [
 
 export function Header() {
 	const pathname = usePathname()
+	const { locale, t } = useI18n()
+	const normalizedPathname = stripLocaleFromPath(pathname)
 	const role = useRoleStore((state) => state.role)
 	const { items: navItems, backLink } = resolveHeaderNavItems(pathname, role)
 	const { me, isLoading } = useGetMe()
@@ -41,7 +45,6 @@ export function Header() {
 		isFetchingNextPage,
 		hasNextPage,
 		fetchNextPage,
-		markRead,
 		markAllRead,
 		isMarkingAllRead,
 		isNotificationsEnabled,
@@ -51,7 +54,7 @@ export function Header() {
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
 
-	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => pathname?.startsWith(route))
+	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => normalizedPathname?.startsWith(route))
 
 	useEffect(() => {
 		audioRef.current = new Audio('/sounds/notification.mp3')
@@ -90,6 +93,8 @@ export function Header() {
 		}
 	}
 
+	const visibleNavItems = navItems.filter((item) => item.labelKey)
+
 	return (
 		<header className='h-auto md:min-h-24 flex items-center justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg md:px-4 px-3 max-md:pt-3 gap-4 sticky top-0 z-30'>
 			<div className='flex flex-col items-center gap-3 self-end flex-1 min-w-0'>
@@ -98,12 +103,12 @@ export function Header() {
 						className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1'
 						href={backLink.href}
 					>
-						<ChevronLeft /> {backLink.label}
+						<ChevronLeft /> {t(backLink.labelKey)}
 					</Link>
 				)}
-				{navItems.length > 0 && (
+				{visibleNavItems.length > 0 && (
 					<nav className='flex self-start gap-4 sm:gap-6 font-medium text-gray-700 overflow-x-auto max-w-full whitespace-nowrap'>
-						{navItems.map((item) => (
+						{visibleNavItems.map((item) => (
 							<Link
 								key={item.href}
 								href={item.href}
@@ -114,7 +119,7 @@ export function Header() {
 										: 'border-b-transparent hover:text-brand/70',
 								)}
 							>
-								{item.label}
+								{t(item.labelKey)}
 							</Link>
 						))}
 					</nav>
@@ -158,9 +163,13 @@ export function Header() {
 								<PopoverContent align='end' className='w-[360px] p-0 shadow-xl'>
 									<div className='flex items-center justify-between px-4 py-3 border-b'>
 										<div>
-											<p className='text-base font-semibold'>Уведомления</p>
+											<p className='text-base font-semibold'>{t('components.dashboard.header.notifications.title')}</p>
 											<p className='text-xs text-gray-500'>
-												{isLoadingNotifications ? 'Загрузка...' : `Последние: ${notifications.length}`}
+												{isLoadingNotifications
+													? t('components.dashboard.header.notifications.loading')
+													: t('components.dashboard.header.notifications.latest', {
+														count: notifications.length,
+													})}
 											</p>
 										</div>
 										<Button
@@ -173,11 +182,13 @@ export function Header() {
 											className='h-8 px-2 text-xs text-brand hover:text-brand/80'
 										>
 											<CheckCheck className='size-4' />
-											Все прочитано
+											{t('components.dashboard.header.notifications.allRead')}
 										</Button>
 									</div>
 									{notifications.length === 0 && !isLoadingNotifications ? (
-										<div className='py-6 text-center text-sm text-muted-foreground'>Нет уведомлений</div>
+										<div className='py-6 text-center text-sm text-muted-foreground'>
+											{t('components.dashboard.header.notifications.empty')}
+										</div>
 									) : (
 										<div
 											ref={scrollRef}
@@ -188,7 +199,7 @@ export function Header() {
 												{notifications.map((item) => (
 													<Link
 														key={item.id}
-														href={`${DASHBOARD_URL.home()}notifications?id=${item.id}`}
+														href={`${withLocale(DASHBOARD_URL.notifications(), locale)}?id=${item.id}`}
 														className={cn(
 															'text-left px-4 py-3 flex flex-col gap-1 transition-colors border-b last:border-none',
 															item.is_read
@@ -209,7 +220,9 @@ export function Header() {
 												))}
 											</div>
 											{isFetchingNextPage && (
-												<div className='py-2 text-center text-xs text-muted-foreground'>Загрузка...</div>
+												<div className='py-2 text-center text-xs text-muted-foreground'>
+													{t('components.dashboard.header.notifications.loading')}
+												</div>
 											)}
 										</div>
 									)}
@@ -218,7 +231,7 @@ export function Header() {
 						</div>
 
 						<Link
-							href={DASHBOARD_URL.cabinet()}
+							href={withLocale(DASHBOARD_URL.cabinet(), locale)}
 							className='flex items-center gap-3 max-md:mb-3'
 						>
 							{me?.photo ? (
@@ -234,15 +247,18 @@ export function Header() {
 							)}
 							<div>
 								<p className='font-medium text-base max-md:hidden'>
-									{me?.first_name || 'Без имени'}
+									{me?.first_name || t('components.dashboard.header.profile.noName')}
 								</p>
 								<div className='flex items-center justify-between gap-2'>
 									<p className='text-xs max-md:hidden'>
-										{RoleSelect.find((type) => type.type === me?.role)?.name ?? 'Неизвестно'}
+										{RoleSelect.find((type) => type.type === me?.role)?.nameKey
+											? t(RoleSelect.find((type) => type.type === me?.role)?.nameKey ?? '')
+											: t('components.dashboard.header.profile.unknownRole')}
 									</p>
 									{role !== RoleEnum.LOGISTIC && (
-										<p className='text-xs max-md:hidden'>
-											{role === RoleEnum.CARRIER ? me?.rating_as_carrier : me?.rating_as_customer} ★
+										<p className='text-xs max-md:hidden flex items-center'>
+											{role === RoleEnum.CARRIER ? me?.rating_as_carrier : me?.rating_as_customer}{' '}
+											<Star className='size-4 fill-warning-500 text-warning-500' />
 										</p>
 									)}
 								</div>

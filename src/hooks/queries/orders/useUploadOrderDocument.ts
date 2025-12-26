@@ -1,13 +1,14 @@
+import type { OrderDocumentUploadDto } from '@/shared/types/Order.interface'
 import { ordersService } from '@/services/orders.service'
-import { OrderDocumentUploadDto } from '@/shared/types/Order.interface'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const useUploadOrderDocument = () => {
+	const { t } = useI18n()
 	const queryClient = useQueryClient()
-
 	const {
 		mutate: uploadOrderDocument,
 		mutateAsync: uploadOrderDocumentAsync,
@@ -16,12 +17,12 @@ export const useUploadOrderDocument = () => {
 		mutationKey: ['order', 'upload-document'],
 		mutationFn: ({ id, data, category }: { id: string; data: OrderDocumentUploadDto; category: string }) =>
 			ordersService.uploadOrderDocument(id, data, category),
-		onSuccess: (_, variables) => {
-			queryClient.invalidateQueries({ queryKey: ['get order documents', variables.id] })
-			toast.success('Документ загружен')
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ['get order'] })
+			toast.success(t('hooks.orders.uploadDocument.success'))
 		},
-		onError: (error) => {
-			const message = getErrorMessage(error) ?? 'Не удалось загрузить документ'
+		onError(error) {
+			const message = getErrorMessage(error) ?? t('hooks.orders.uploadDocument.error')
 			toast.error(message)
 		},
 	})
