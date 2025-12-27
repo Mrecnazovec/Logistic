@@ -270,16 +270,16 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
 		items: [
 			{
-				labelKey: 'components.dashboard.headerNav.rating.logistics',
+				labelKey: 'components.dashboard.headerNav.rating.logistic',
 				href: DASHBOARD_URL.rating(),
 			},
 			{
-				labelKey: 'components.dashboard.headerNav.rating.carriers',
-				href: DASHBOARD_URL.rating('carriers'),
+				labelKey: 'components.dashboard.headerNav.rating.carrier',
+				href: DASHBOARD_URL.rating('carrier'),
 			},
 			{
-				labelKey: 'components.dashboard.headerNav.rating.customers',
-				href: DASHBOARD_URL.rating('customers'),
+				labelKey: 'components.dashboard.headerNav.rating.customer',
+				href: DASHBOARD_URL.rating('customer'),
 			},
 		],
 	},

@@ -24,7 +24,7 @@ export const useGetRatings = (role?: string) => {
 		if (role) {
 			nextParams.role = role
 		} else if (!nextParams.role) {
-			nextParams.role = 'logistics'
+			nextParams.role = 'logistic'
 		}
 
 		if (typeof nextParams.page === 'string') {

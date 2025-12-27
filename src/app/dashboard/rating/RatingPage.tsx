@@ -20,10 +20,10 @@ export function RatingPage() {
 	const params = useParams<{ role?: string | string[] }>()
 	const role = useMemo(() => {
 		if (Array.isArray(params?.role)) {
-			return params.role[0] || 'logistics'
+			return params.role[0] || 'logistic'
 		}
 
-		return params?.role || 'logistics'
+		return params?.role || 'logistic'
 	}, [params])
 	const { ratings, isLoading } = useGetRatings(role)
 	const { form, onSubmit } = useSearchForm()

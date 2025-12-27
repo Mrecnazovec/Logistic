@@ -24,9 +24,9 @@ const messages: Record<string, string> = {
 	'components.dashboard.headerNav.posting': 'Post an announcement',
 	'components.dashboard.headerNav.transportation.search': 'Shipping search',
 	'components.dashboard.headerNav.transportation.carrying': 'Carrying',
-	'components.dashboard.headerNav.rating.logistics': 'Logistics',
-	'components.dashboard.headerNav.rating.customers': 'Customers',
-	'components.dashboard.headerNav.rating.carriers': 'Carriers',
+	'components.dashboard.headerNav.rating.logistic': 'Logistics',
+	'components.dashboard.headerNav.rating.customer': 'Customers',
+	'components.dashboard.headerNav.rating.carrier': 'Carriers',
 
 	'components.dashboard.headerNav.desk.myOffers': 'My offers',
 	'components.dashboard.headerNav.back.toMyCargo': 'Back to my cargo',
@@ -286,7 +286,8 @@ const messages: Record<string, string> = {
 	'components.deskInvite.byId.loading': 'Sending...',
 	'components.deskInvite.byId.submit': 'Invite',
 	'components.deskInvite.byLink.title': 'Invite by link',
-	'components.deskInvite.byLink.description': 'The link opens the offer page where the carrier can respond. Generate a link and send it to your partner or copy it for quick access.',
+	'components.deskInvite.byLink.description':
+		'The link opens the offer page where the carrier can respond. Generate a link and send it to your partner or copy it for quick access.',
 	'components.deskInvite.byLink.placeholder': 'Link will appear after generation',
 	'components.deskInvite.byLink.copy': 'Copy link',
 	'components.deskInvite.byLink.loading': 'Generating...',
