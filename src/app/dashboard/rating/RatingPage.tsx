@@ -10,13 +10,22 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useI18n } from '@/i18n/I18nProvider'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useMemo } from 'react'
+import { useParams } from 'next/navigation'
 import { RatingCardList } from './components/RatingCardList'
 import { useSearchForm } from './Searching/useSearchForm'
 import { ExpandedRatingRow } from './table/ExpandedRatingRow'
 import { getRatingColumns } from './table/RatingColumns'
 
 export function RatingPage() {
-	const { ratings, isLoading } = useGetRatings()
+	const params = useParams<{ role?: string | string[] }>()
+	const role = useMemo(() => {
+		if (Array.isArray(params?.role)) {
+			return params.role[0] || 'logistics'
+		}
+
+		return params?.role || 'logistics'
+	}, [params])
+	const { ratings, isLoading } = useGetRatings(role)
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)

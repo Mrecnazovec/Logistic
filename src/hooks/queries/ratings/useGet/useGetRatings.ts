@@ -11,18 +11,21 @@ const toNumber = (value: string | null) => {
 	return Number.isNaN(parsed) ? undefined : parsed
 }
 
-export const useGetRatings = () => {
+export const useGetRatings = (role?: string) => {
 	const searchParams = useSearchParams()
 
-	const params = useMemo<RatingsListQuery | undefined>(() => {
+	const params = useMemo<RatingsListQuery>(() => {
 		const page = toNumber(searchParams.get('page'))
+		const normalizedRole = role || 'logistics'
 
-		if (page === undefined) {
-			return undefined
+		const nextParams = { role: normalizedRole } as RatingsListQuery
+
+		if (page !== undefined) {
+			nextParams.page = page as RatingsListQuery['page']
 		}
 
-		return { page } as RatingsListQuery
-	}, [searchParams])
+		return nextParams
+	}, [searchParams, role])
 
 	const { data: ratings, isLoading } = useQuery({
 		queryKey: ['get ratings', params],
