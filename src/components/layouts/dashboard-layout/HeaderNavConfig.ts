@@ -267,6 +267,23 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		],
 	},
 	{
+		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/rating'),
+		items: [
+			{
+				labelKey: 'components.dashboard.headerNav.rating.logistics',
+				href: DASHBOARD_URL.rating(),
+			},
+			{
+				labelKey: 'components.dashboard.headerNav.rating.carriers',
+				href: DASHBOARD_URL.rating('carriers'),
+			},
+			{
+				labelKey: 'components.dashboard.headerNav.rating.customers',
+				href: DASHBOARD_URL.rating('customers'),
+			},
+		],
+	},
+	{
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/cabinet'),
 		items: [
 			{
@@ -339,7 +356,7 @@ export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): Resolv
 		? {
 				...resolvedBackLink,
 				href: withLocale(resolvedBackLink.href, locale),
-			}
+		  }
 		: null
 
 	if (!localizedItems.length) {

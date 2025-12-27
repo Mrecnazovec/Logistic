@@ -24,6 +24,10 @@ const messages: Record<string, string> = {
 	'components.dashboard.headerNav.posting': 'Post an announcement',
 	'components.dashboard.headerNav.transportation.search': 'Shipping search',
 	'components.dashboard.headerNav.transportation.carrying': 'Carrying',
+	'components.dashboard.headerNav.rating.logistics': 'Logistics',
+	'components.dashboard.headerNav.rating.customers': 'Customers',
+	'components.dashboard.headerNav.rating.carriers': 'Carriers',
+
 	'components.dashboard.headerNav.desk.myOffers': 'My offers',
 	'components.dashboard.headerNav.back.toMyCargo': 'Back to my cargo',
 	'components.dashboard.headerNav.back.toAnnouncements': 'Back to announcements list',
