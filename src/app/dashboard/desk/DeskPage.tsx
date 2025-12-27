@@ -83,7 +83,7 @@ export function DeskPage() {
 							form={form}
 							showOffersFilter
 							showWeightRadiusFields={false}
-							uuidPlaceholder='По id заявки'
+							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

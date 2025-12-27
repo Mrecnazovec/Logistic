@@ -77,6 +77,9 @@ const messages: Record<string, string> = {
 	// ui/search/SearchFields.tsx
 	'components.search.search': 'Search',
 	'components.search.byId': 'Search by id',
+	'components.search.uuidPlaceholder.request': 'By request id',
+	'components.search.uuidPlaceholder.offer': 'By offer id',
+	'components.search.uuidPlaceholder.shipment': 'By shipment id',
 	'components.search.filters': 'Filters',
 	'components.search.currency': 'Currency',
 	'components.search.price': 'Price',

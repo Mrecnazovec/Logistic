@@ -67,7 +67,7 @@ export function AnnouncementsPage() {
 					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<SearchFields
 							form={form}
-							uuidPlaceholder='По id заявки'
+							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

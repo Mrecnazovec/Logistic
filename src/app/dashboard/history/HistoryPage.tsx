@@ -90,7 +90,7 @@ export function HistoryPage() {
 						<SearchFields
 							form={form}
 							showWeightRadiusFields={false}
-							uuidPlaceholder='По id перевозки'
+							uuidPlaceholder={t('components.search.uuidPlaceholder.shipment')}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

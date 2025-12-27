@@ -152,7 +152,7 @@ export function DeskMyPage() {
 							form={form}
 							showOffersFilter
 							showWeightRadiusFields={false}
-							uuidPlaceholder='По id предложения'
+							uuidPlaceholder={t('components.search.uuidPlaceholder.offer')}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

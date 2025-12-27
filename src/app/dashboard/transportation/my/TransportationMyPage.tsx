@@ -12,6 +12,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAgreements } from '@/hooks/queries/agreements/useGetAgreements'
 import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IAgreement } from '@/shared/types/Agreement.interface'
 import { IOrderList } from '@/shared/types/Order.interface'
@@ -45,6 +46,7 @@ export function TransportationMyPage() {
 	const searchParams = useSearchParams()
 	const status = searchParams.get('status') ?? 'agreements'
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const { t } = useI18n()
 	const role = useRoleStore((state) => state.role)
 	const tableColumns = createTransportationColumns(role)
 	const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'logistic' : undefined
@@ -117,7 +119,7 @@ export function TransportationMyPage() {
 						<SearchFields
 							form={form}
 							showWeightRadiusFields={false}
-							uuidPlaceholder='По id перевозки'
+							uuidPlaceholder={t('components.search.uuidPlaceholder.shipment')}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>
