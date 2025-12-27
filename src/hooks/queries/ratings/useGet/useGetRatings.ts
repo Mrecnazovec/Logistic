@@ -15,16 +15,26 @@ export const useGetRatings = (role?: string) => {
 	const searchParams = useSearchParams()
 
 	const params = useMemo<RatingsListQuery>(() => {
-		const page = toNumber(searchParams.get('page'))
-		const normalizedRole = role || 'logistics'
+		const nextParams: Record<string, string | number> = {}
 
-		const nextParams = { role: normalizedRole } as RatingsListQuery
+		searchParams.forEach((value, key) => {
+			nextParams[key] = value
+		})
 
-		if (page !== undefined) {
-			nextParams.page = page as RatingsListQuery['page']
+		if (role) {
+			nextParams.role = role
+		} else if (!nextParams.role) {
+			nextParams.role = 'logistics'
 		}
 
-		return nextParams
+		if (typeof nextParams.page === 'string') {
+			const parsedPage = toNumber(nextParams.page)
+			if (parsedPage !== undefined) {
+				nextParams.page = parsedPage
+			}
+		}
+
+		return nextParams as RatingsListQuery
 	}, [searchParams, role])
 
 	const { data: ratings, isLoading } = useQuery({
