@@ -14,7 +14,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3002
-ENV NEXT_PUBLIC_API_URL=https://kad-one.com
+ENV APP_URL=https://kad-one.com
+ENV APP_DOMAIN=kad-one.com
+ENV SERVER_URL=https://kad-one.com/api
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/.next ./.next
