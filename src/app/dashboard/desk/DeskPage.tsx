@@ -79,7 +79,13 @@ export function DeskPage() {
 			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} showOffersFilter onSubmit={form.handleSubmit(onSubmit)} />
+						<SearchFields
+							form={form}
+							showOffersFilter
+							showWeightRadiusFields={false}
+							uuidPlaceholder='По id заявки'
+							onSubmit={form.handleSubmit(onSubmit)}
+						/>
 					</form>
 				</Form>
 			</div>

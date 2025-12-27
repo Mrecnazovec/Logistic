@@ -27,10 +27,18 @@ import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 interface SearchFieldsProps {
 	form: UseFormReturn<ISearch, undefined>
 	showOffersFilter?: boolean
+	showWeightRadiusFields?: boolean
+	uuidPlaceholder?: string
 	onSubmit: () => void | Promise<void>
 }
 
-export function SearchFields({ form, showOffersFilter = true, onSubmit }: SearchFieldsProps) {
+export function SearchFields({
+	form,
+	showOffersFilter = true,
+	showWeightRadiusFields = true,
+	uuidPlaceholder,
+	onSubmit,
+}: SearchFieldsProps) {
 	const { t } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
@@ -92,7 +100,7 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 							<FormControl>
 								<InputGroup>
 									<InputGroupInput
-										placeholder={t('components.search.byId')}
+										placeholder={uuidPlaceholder ?? t('components.search.byId')}
 										{...field}
 										value={field.value ?? ''}
 									/>
@@ -205,47 +213,49 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 								}}
 							/>
 						) : null}
-						<div className='flex items-end gap-1'>
-							<FormField
-								control={form.control}
-								name='min_weight'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className='text-grayscale'>{t('components.search.weight')}</FormLabel>
-										<FormControl>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('components.search.from')}
-													{...field}
-													value={field.value ?? ''}
-													className='pl-4'
-													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-												/>
-											</InputGroup>
-										</FormControl>
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name='max_weight'
-								render={({ field }) => (
-									<FormItem>
-										<FormControl>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('components.search.to')}
-													{...field}
-													value={field.value ?? ''}
-													className='pl-4'
-													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-												/>
-											</InputGroup>
-										</FormControl>
-									</FormItem>
-								)}
-							/>
-						</div>
+						{showWeightRadiusFields ? (
+							<div className='flex items-end gap-1'>
+								<FormField
+									control={form.control}
+									name='min_weight'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className='text-grayscale'>{t('components.search.weight')}</FormLabel>
+											<FormControl>
+												<InputGroup>
+													<InputGroupInput
+														placeholder={t('components.search.from')}
+														{...field}
+														value={field.value ?? ''}
+														className='pl-4'
+														onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													/>
+												</InputGroup>
+											</FormControl>
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name='max_weight'
+									render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<InputGroup>
+													<InputGroupInput
+														placeholder={t('components.search.to')}
+														{...field}
+														value={field.value ?? ''}
+														className='pl-4'
+														onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													/>
+												</InputGroup>
+											</FormControl>
+										</FormItem>
+									)}
+								/>
+							</div>
+						) : null}
 					</PopoverContent>
 				</Popover>
 				{hasQuery ? (
@@ -286,25 +296,27 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name='origin_radius_km'
-					render={({ field }) => (
-						<FormItem className='max-xs:w-full'>
-							<FormControl>
-								<InputGroup>
-									<InputGroupInput
-										placeholder={t('components.search.radius')}
-										{...field}
-										value={field.value ?? ''}
-										className='pl-4'
-										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-									/>
-								</InputGroup>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
+				{showWeightRadiusFields ? (
+					<FormField
+						control={form.control}
+						name='origin_radius_km'
+						render={({ field }) => (
+							<FormItem className='max-xs:w-full'>
+								<FormControl>
+									<InputGroup>
+										<InputGroupInput
+											placeholder={t('components.search.radius')}
+											{...field}
+											value={field.value ?? ''}
+											className='pl-4'
+											onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+										/>
+									</InputGroup>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+				) : null}
 			</div>
 			<ArrowRight className='size-5 flex text-grayscale shrink-0 max-xl:rotate-90' />
 			<div className='flex gap-3 w-full max-xs:flex-wrap'>
@@ -329,25 +341,27 @@ export function SearchFields({ form, showOffersFilter = true, onSubmit }: Search
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name='dest_radius_km'
-					render={({ field }) => (
-						<FormItem className='max-xs:w-full'>
-							<FormControl>
-								<InputGroup>
-									<InputGroupInput
-										placeholder={t('components.search.radius')}
-										{...field}
-										value={field.value ?? ''}
-										className='pl-4'
-										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-									/>
-								</InputGroup>
-							</FormControl>
-						</FormItem>
-					)}
-				/>
+				{showWeightRadiusFields ? (
+					<FormField
+						control={form.control}
+						name='dest_radius_km'
+						render={({ field }) => (
+							<FormItem className='max-xs:w-full'>
+								<FormControl>
+									<InputGroup>
+										<InputGroupInput
+											placeholder={t('components.search.radius')}
+											{...field}
+											value={field.value ?? ''}
+											className='pl-4'
+											onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+										/>
+									</InputGroup>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+				) : null}
 			</div>
 			<FormField
 				control={form.control}

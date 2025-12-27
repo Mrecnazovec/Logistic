@@ -65,7 +65,11 @@ export function AnnouncementsPage() {
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchFields form={form} onSubmit={form.handleSubmit(onSubmit)} />
+						<SearchFields
+							form={form}
+							uuidPlaceholder='По id заявки'
+							onSubmit={form.handleSubmit(onSubmit)}
+						/>
 					</form>
 				</Form>
 			</div>

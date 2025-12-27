@@ -66,7 +66,7 @@ const messages: Record<string, string> = {
 
 	// ui/search/SearchRatingFields.tsx
 	'components.searchRating.search': 'Поиск',
-	'components.searchRating.byId': 'Поиск по id',
+	'components.searchRating.byId': 'По id пользователя',
 	'components.searchRating.filters': 'Фильтры',
 	'components.searchRating.reset': 'Сбросить фильтры',
 	'components.searchRating.rating': 'Рейтинг',
