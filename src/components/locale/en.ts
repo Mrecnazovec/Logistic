@@ -192,6 +192,7 @@ const messages: Record<string, string> = {
 	'components.offerDecision.paymentPlaceholder': 'Payment method',
 	'components.offerDecision.accept': 'Accept',
 	'components.offerDecision.counter': 'Counter',
+	'components.offerDecision.send': 'Send',
 	'components.offerDecision.reject': 'Reject',
 	'components.offerDecision.acceptInvite': 'Accept invitation',
 	'components.offerDecision.ton': 't',
@@ -222,10 +223,10 @@ const messages: Record<string, string> = {
 	'components.offerCard.pricePlaceholder': 'Enter price',
 	'components.offerCard.currencyPlaceholder': 'Select currency',
 	'components.offerCard.paymentPlaceholder': 'Payment method',
-	'components.offerCard.counter': 'Counter offer',
+	'components.offerCard.send': 'Send',
 	'components.offerCard.reject': 'Reject',
 	'components.offerCard.accept': 'Accept',
-	'components.offerCard.negotiate': 'Negotiate',
+	'components.offerCard.counter': 'Counter',
 
 	// ui/modals/DeskOffersModal/CargoInfo.tsx
 	'components.cargoInfo.transport': 'Transport type',

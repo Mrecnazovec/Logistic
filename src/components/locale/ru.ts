@@ -1,4 +1,4 @@
-const messages: Record<string, string> = {
+﻿const messages: Record<string, string> = {
 	// layouts/main-layout/Header.tsx
 	'components.main.header.login': 'Войти',
 
@@ -191,6 +191,7 @@ const messages: Record<string, string> = {
 	'components.offerDecision.paymentPlaceholder': 'Способ оплаты',
 	'components.offerDecision.accept': 'Принять',
 	'components.offerDecision.counter': 'Торговаться',
+	'components.offerDecision.send': 'Отправить',
 	'components.offerDecision.reject': 'Отказать',
 	'components.offerDecision.acceptInvite': 'Принять приглашение',
 	'components.offerDecision.ton': 'т',
@@ -215,18 +216,18 @@ const messages: Record<string, string> = {
 	'components.offerHistory.empty': 'История пока пустая.',
 
 	// ui/modals/DeskOffersModal/OfferCard.tsx
-	'components.offerCard.company': 'Компания',
-	'components.offerCard.rating': 'Рейтинг',
-	'components.offerCard.price': 'Цена',
-	'components.offerCard.pricePlaceholder': 'Введите цену',
-	'components.offerCard.currencyPlaceholder': 'Выберите валюту',
-	'components.offerCard.paymentPlaceholder': 'Способ оплаты',
-	'components.offerCard.counter': 'Контрпредложение',
-	'components.offerCard.reject': 'Отказать',
-	'components.offerCard.accept': 'Принять',
-	'components.offerCard.negotiate': 'Торговаться',
+ 'components.offerCard.company': 'Компания',
+ 'components.offerCard.rating': 'Рейтинг',
+ 'components.offerCard.price': 'Цена',
+ 'components.offerCard.pricePlaceholder': 'Введите цену',
+ 'components.offerCard.currencyPlaceholder': 'Выберите валюту',
+ 'components.offerCard.paymentPlaceholder': 'Метод оплаты',
+ 'components.offerCard.send': 'Отправить',
+ 'components.offerCard.reject': 'Отклонить',
+ 'components.offerCard.accept': 'Принять',
+ 'components.offerCard.counter': 'Торговаться',
 
-	// ui/modals/DeskOffersModal/CargoInfo.tsx
+ // ui/modals/DeskOffersModal/CargoInfo.tsx
 	'components.cargoInfo.transport': 'Тип транспорта',
 	'components.cargoInfo.weight': 'Вес',
 	'components.cargoInfo.initialPrice': 'Начальная цена',
@@ -371,3 +372,4 @@ const messages: Record<string, string> = {
 }
 
 export default messages
+

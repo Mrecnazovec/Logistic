@@ -1,16 +1,17 @@
 "use client"
 
+import { useState } from "react"
+import { ProfileLink } from "@/components/ui/actions/ProfileLink"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/form-control/Input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
 import { PaymentSelector } from "@/components/ui/selectors/PaymentSelector"
+import { useI18n } from "@/i18n/I18nProvider"
 import type { PriceCurrencyCode } from "@/lib/currency"
 import { formatCurrencyPerKmValue, formatCurrencyValue } from "@/lib/currency"
 import { cn } from "@/lib/utils"
 import { PaymentMethodEnum } from "@/shared/enums/PaymentMethod.enum"
 import type { IOfferShort } from "@/shared/types/Offer.interface"
-import { ProfileLink } from "@/components/ui/actions/ProfileLink"
-import { useI18n } from "@/i18n/I18nProvider"
 
 import { currencyOptions } from "./constants"
 import type { OfferFormState } from "./types"
@@ -56,12 +57,17 @@ export function OfferCard({
     price: offer.price_value ?? "",
   }
   const form = { ...defaultForm, ...formState }
+  const [isCounterMode, setIsCounterMode] = useState(false)
   const isCounterDisabled =
     !form.price || !form.currency || !form.paymentMethod || isLoadingCounter
 
   const updateForm = (next: Partial<OfferFormState>) => onFormChange(next, defaultForm)
 
   const handleCounterOffer = () => {
+    if (!isCounterMode) {
+      setIsCounterMode(true)
+      return
+    }
     if (isCounterDisabled) return
     onCounter({
       price_value: form.price as string,
@@ -111,12 +117,14 @@ export function OfferCard({
           value={form.price ?? ""}
           onChange={(event) => updateForm({ price: event.target.value })}
           placeholder={t("components.offerCard.pricePlaceholder")}
+          disabled={!isCounterMode}
           className="w-full rounded-full border-none bg-muted/40 placeholder:text-muted-foreground"
         />
 
         <Select
           value={form.currency}
           onValueChange={(value) => updateForm({ currency: value as PriceCurrencyCode })}
+          disabled={!isCounterMode}
         >
           <SelectTrigger
             className={cn(
@@ -139,6 +147,7 @@ export function OfferCard({
           value={form.paymentMethod}
           onChange={(value) => updateForm({ paymentMethod: value })}
           placeholder={t("components.offerCard.paymentPlaceholder")}
+          disabled={!isCounterMode}
           className="bg-muted/40 shadow-none [&>button]:border-none [&>button]:bg-transparent"
         />
       </div>
@@ -147,14 +156,14 @@ export function OfferCard({
         {mode === "incoming" ? (
           <>
             <Button
-              className="rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60"
+              className="rounded-full bg-success-500 text-white hover:bg-success-400 disabled:opacity-60"
               onClick={handleCounterOffer}
-              disabled={isCounterDisabled}
+              disabled={isCounterMode && isCounterDisabled}
             >
-              {t("components.offerCard.counter")}
+              {isCounterMode ? t("components.offerCard.send") : t("components.offerCard.counter")}
             </Button>
             <Button
-              className="rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60"
+              className="rounded-full bg-error-500 text-white hover:bg-error-400 disabled:opacity-60"
               onClick={onReject}
               disabled={isLoadingReject}
             >
@@ -164,21 +173,21 @@ export function OfferCard({
         ) : (
           <>
             <Button
-              className="rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60"
+              className="rounded-full bg-success-500 text-white hover:bg-success-400 disabled:opacity-60"
               onClick={onAccept}
               disabled={isLoadingAccept}
             >
               {t("components.offerCard.accept")}
             </Button>
             <Button
-              className="rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60"
+              className="rounded-full bg-warning-500 text-white hover:bg-warning-400 disabled:opacity-60"
               onClick={handleCounterOffer}
-              disabled={isCounterDisabled}
+              disabled={isCounterMode && isCounterDisabled}
             >
-              {t("components.offerCard.negotiate")}
+              {isCounterMode ? t("components.offerCard.send") : t("components.offerCard.counter")}
             </Button>
             <Button
-              className="rounded-full bg-error-400 text-white hover:bg-error-500 disabled:opacity-60"
+              className="rounded-full bg-error-500 text-white hover:bg-error-400 disabled:opacity-60"
               onClick={onReject}
               disabled={isLoadingReject}
             >

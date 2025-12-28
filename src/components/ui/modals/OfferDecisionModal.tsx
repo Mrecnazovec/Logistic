@@ -41,6 +41,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 	const [priceValue, setPriceValue] = useState(initialPriceValue)
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(initialCurrency)
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(initialPaymentMethod)
+	const [isCounterMode, setIsCounterMode] = useState(false)
 	const dialogKey = offer ? `${offer.id}-${open}` : 'empty'
 
 	const { acceptOffer, isLoadingAcceptOffer } = useAcceptOffer()
@@ -52,11 +53,18 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 		? getTransportName(t, offer.transport_type as TransportTypeEnum) || offer.transport_type || EMPTY
 		: EMPTY
 
-	const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)
-	const formattedPricePerKm = formatCurrencyPerKmValue(offer?.price_per_km, offer?.price_currency as PriceCurrencyCode)
-	const isCounterDisabled = !priceValue || !currency || !paymentMethod || isLoadingCounterOffer || !offer
-	const inviteToken = (offer as { invite_token?: string } | undefined)?.invite_token
-	const isInviteFlow = Boolean(inviteToken)
+const formattedPrice = formatCurrencyValue(offer?.price_value, offer?.price_currency as PriceCurrencyCode)
+const formattedPricePerKm = formatCurrencyPerKmValue(offer?.price_per_km, offer?.price_currency as PriceCurrencyCode)
+const isCounterDisabled = !priceValue || !currency || !paymentMethod || isLoadingCounterOffer || !offer
+const inviteToken = (offer as { invite_token?: string } | undefined)?.invite_token
+const isInviteFlow = Boolean(inviteToken)
+
+	const resetCounterState = () => {
+		setPriceValue(initialPriceValue)
+		setCurrency(initialCurrency)
+		setPaymentMethod(initialPaymentMethod)
+		setIsCounterMode(false)
+	}
 
 	const handleAcceptInvite = () => {
 		if (!inviteToken) return
@@ -83,6 +91,10 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 	}
 
 	const handleCounter = () => {
+		if (!isCounterMode) {
+			setIsCounterMode(true)
+			return
+		}
 		if (isCounterDisabled || !offer) return
 		counterOffer(
 			{
@@ -100,7 +112,15 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog
+			open={open}
+			onOpenChange={(nextOpen) => {
+				if (nextOpen) {
+					resetCounterState()
+				}
+				onOpenChange(nextOpen)
+			}}
+		>
 			<DialogContent key={dialogKey} className='w-[900px] max-w-[calc(100vw-2rem)] rounded-3xl'>
 				<DialogHeader>
 					<DialogTitle className='text-center text-2xl font-bold'>{t('components.offerDecision.title')}</DialogTitle>
@@ -173,17 +193,22 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 
 								{!isInviteFlow ? (
 									<>
-										<div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
+								<div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
 											<Input
 												placeholder={t('components.offerDecision.pricePlaceholder')}
 												value={priceValue}
 												onChange={(event) => setPriceValue(event.target.value)}
+												disabled={!isCounterMode}
 												type='number'
 												inputMode='decimal'
 												min='0'
 												className='rounded-full border-none bg-muted/40'
 											/>
-											<Select value={currency || undefined} onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}>
+											<Select
+												value={currency || undefined}
+												onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}
+												disabled={!isCounterMode}
+											>
 												<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none'>
 													<SelectValue placeholder={t('components.offerDecision.currencyPlaceholder')} />
 												</SelectTrigger>
@@ -199,6 +224,7 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 												value={paymentMethod}
 												onChange={(value) => setPaymentMethod(value)}
 												placeholder={t('components.offerDecision.paymentPlaceholder')}
+												disabled={!isCounterMode}
 												className='bg-muted/40 shadow-none'
 											/>
 										</div>
@@ -213,10 +239,10 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 											</Button>
 											<Button
 												onClick={handleCounter}
-												disabled={isCounterDisabled}
+												disabled={isCounterMode && isCounterDisabled}
 												className='rounded-full bg-warning-400 text-white hover:bg-warning-500 disabled:opacity-60'
 											>
-												{t('components.offerDecision.counter')}
+												{isCounterMode ? t('components.offerDecision.send') : t('components.offerDecision.counter')}
 											</Button>
 											<Button
 												onClick={handleReject}
@@ -245,6 +271,6 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 					</div>
 				)}
 			</DialogContent>
-		</Dialog>
-	)
+	</Dialog>
+)
 }

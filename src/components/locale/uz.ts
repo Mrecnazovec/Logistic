@@ -191,6 +191,7 @@ const messages: Record<string, string> = {
 	'components.offerDecision.paymentPlaceholder': "To'lov usuli",
 	'components.offerDecision.accept': 'Qabul qilish',
 	'components.offerDecision.counter': 'Qarshi taklif',
+	'components.offerDecision.send': 'Yuborish',
 	'components.offerDecision.reject': 'Rad etish',
 	'components.offerDecision.acceptInvite': 'Taklifnomani qabul qilish',
 	'components.offerDecision.ton': 't',
@@ -221,10 +222,10 @@ const messages: Record<string, string> = {
 	'components.offerCard.pricePlaceholder': 'Narxni kiriting',
 	'components.offerCard.currencyPlaceholder': 'Valyutani tanlang',
 	'components.offerCard.paymentPlaceholder': "To'lov usuli",
-	'components.offerCard.counter': 'Qarshi taklif',
+	'components.offerCard.send': 'Yuborish',
 	'components.offerCard.reject': 'Rad etish',
 	'components.offerCard.accept': 'Qabul qilish',
-	'components.offerCard.negotiate': 'Kelishish',
+	'components.offerCard.counter': 'Kelishish',
 
 	// ui/modals/DeskOffersModal/CargoInfo.tsx
 	'components.cargoInfo.transport': 'Transport turi',
