@@ -33,11 +33,16 @@ function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: 
 	const [decisionNote, setDecisionNote] = useState<string | undefined>()
 	const [decisionActionable, setDecisionActionable] = useState(false)
 
-	const openDecisionModal = (offer: IOfferShort) => {
+	const openDecisionModal = (offer: IOfferShort, options?: { forceFull?: boolean }) => {
 		const meta = getOfferStatusMeta(offer, role, t)
 		setSelectedOffer(offer)
-		setDecisionNote(meta.note)
-		setDecisionActionable(Boolean(meta.requireDecision))
+		if (options?.forceFull) {
+			setDecisionNote(undefined)
+			setDecisionActionable(true)
+		} else {
+			setDecisionNote(meta.note)
+			setDecisionActionable(Boolean(meta.requireDecision))
+		}
 		setIsDecisionModalOpen(true)
 	}
 
@@ -93,8 +98,8 @@ export function DeskMyPage() {
 				],
 		[role, t],
 	)
-	const deskColumns = useMemo(() => getDeskMyColumns(t), [t])
-	const incomeColumns = useMemo(() => getDeskIncomeColumns(t), [t])
+	const deskColumns = useMemo(() => getDeskMyColumns(t, openDecisionModal), [openDecisionModal, t])
+	const incomeColumns = useMemo(() => getDeskIncomeColumns(t, openDecisionModal), [openDecisionModal, t])
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []

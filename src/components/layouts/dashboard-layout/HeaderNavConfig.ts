@@ -115,7 +115,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CUSTOMER],
 		items: [
 			{
-				labelKey: 'components.dashboard.headerNav.transportation.search',
+				labelKey: 'components.dashboard.headerNav.transportation.orders',
 				href: DASHBOARD_URL.transportation(),
 			},
 		],
@@ -257,7 +257,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/transportation'),
 		items: [
 			{
-				labelKey: 'components.dashboard.headerNav.transportation.search',
+				labelKey: 'components.dashboard.headerNav.transportation.orders',
 				href: DASHBOARD_URL.transportation(),
 			},
 			{

@@ -27,16 +27,6 @@ import { createTransportationColumns } from './table/TransportationColumns'
 
 const AGREEMENT_COLUMNS = createAgreementColumns()
 
-const AGREEMENTS_TAB = { value: 'agreements', label: 'Соглашения' } as const
-
-const STATUS_TABS = [
-    { value: 'no_driver', label: 'Без водителя' },
-    { value: 'pending', label: 'В ожидании' },
-    { value: 'in_process', label: 'В процессе' },
-    { value: 'delivered', label: 'Доставлен' },
-    { value: 'paid', label: 'Оплачен' },
-] as const
-
 export function TransportationPage() {
     const { data: agreementsData, isLoading: isLoadingAgreements } = useGetAgreements()
     const { form, onSubmit } = useSearchForm()
@@ -47,6 +37,14 @@ export function TransportationPage() {
     const status = searchParams.get('status') ?? 'agreements'
     const tableType = useTableTypeStore((state) => state.tableType)
     const { t } = useI18n()
+    const agreementsTab = { value: 'agreements', label: t('transportation.tabs.agreements') } as const
+    const statusTabs = [
+        { value: 'no_driver', label: t('transportation.tabs.noDriver') },
+        { value: 'pending', label: t('transportation.tabs.pending') },
+        { value: 'in_process', label: t('transportation.tabs.inProcess') },
+        { value: 'delivered', label: t('transportation.tabs.delivered') },
+        { value: 'paid', label: t('transportation.tabs.paid') },
+    ] as const
     const role = useRoleStore((state) => state.role)
     const tableColumns = createTransportationColumns(role)
     const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
@@ -55,7 +53,7 @@ export function TransportationPage() {
     const agreements = agreementsData?.results ?? []
     const orders = data?.results ?? []
     const { statusCounts } = useTransportationStatusCounts(
-        STATUS_TABS,
+        statusTabs,
         searchParams,
         ordersRoleParam ? { as_role: ordersRoleParam } : undefined,
     )
@@ -130,7 +128,7 @@ export function TransportationPage() {
                 <Tabs className='h-full' value={status} onValueChange={handleStatusChange}>
                     <div className='flex flex-wrap items-end gap-4'>
                         <TabsList className='-mb-2 bg-transparent overflow-x-auto'>
-                            {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
+                            {[agreementsTab, ...statusTabs].map((tab) => (
                                 <TabsTrigger
                                     key={tab.value}
                                     className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -138,7 +136,7 @@ export function TransportationPage() {
                                 >
                                     <span className='inline-flex items-center gap-2'>
                                         <span>{tab.label}</span>
-                                        {tab.value === AGREEMENTS_TAB.value ? (
+                                        {tab.value === agreementsTab.value ? (
                                             typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
                                         ) : typeof statusCounts[tab.value] === 'number' ? (
                                             <span>({statusCounts[tab.value]})</span>
@@ -152,16 +150,16 @@ export function TransportationPage() {
                         </div>
                     </div>
 
-                    {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
+                    {[agreementsTab, ...statusTabs].map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
-                            {tab.value === AGREEMENTS_TAB.value ? agreementsContent : ordersContent}
+                            {tab.value === agreementsTab.value ? agreementsContent : ordersContent}
                         </TabsContent>
                     ))}
                 </Tabs>
             ) : (
                 <Tabs value={status} onValueChange={handleStatusChange} className='h-full rounded-4xl xs:bg-background'>
                     <TabsList className='-mb-2 w-full justify-start overflow-x-scroll bg-transparent'>
-                        {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
+                        {[agreementsTab, ...statusTabs].map((tab) => (
                             <TabsTrigger
                                 key={tab.value}
                                 className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -169,7 +167,7 @@ export function TransportationPage() {
                             >
                                 <span className='inline-flex items-center gap-2'>
                                     <span>{tab.label}</span>
-                                    {tab.value === AGREEMENTS_TAB.value ? (
+                                    {tab.value === agreementsTab.value ? (
                                         typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
                                     ) : typeof statusCounts[tab.value] === 'number' ? (
                                         <span>({statusCounts[tab.value]})</span>
@@ -179,9 +177,9 @@ export function TransportationPage() {
                         ))}
                     </TabsList>
 
-                    {[AGREEMENTS_TAB, ...STATUS_TABS].map((tab) => (
+                    {[agreementsTab, ...statusTabs].map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
-                            {tab.value === AGREEMENTS_TAB.value ? agreementsContent : ordersContent}
+                            {tab.value === agreementsTab.value ? agreementsContent : ordersContent}
                         </TabsContent>
                     ))}
                 </Tabs>

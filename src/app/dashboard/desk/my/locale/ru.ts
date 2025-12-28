@@ -42,6 +42,7 @@ const messages: Record<string, string> = {
 	'deskMy.card.phone': 'Телефон',
 	'deskMy.card.email': 'Email',
 	'deskMy.card.openOffer': 'Открыть предложение',
+	'deskMy.card.edit': 'Изменить',
 
 	// components/DeskIncomeCardList.tsx
 	'deskMy.income.card.rating': 'Рейтинг',
@@ -55,6 +56,7 @@ const messages: Record<string, string> = {
 	'deskMy.income.card.phone': 'Телефон',
 	'deskMy.income.card.email': 'Email',
 	'deskMy.income.card.openOffer': 'Открыть предложение',
+	'deskMy.income.card.edit': 'Изменить',
 }
 
 export default messages

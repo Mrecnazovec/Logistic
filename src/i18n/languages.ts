@@ -10,4 +10,6 @@ export type LanguageOption = {
 export const languageOptions: LanguageOption[] = [
 	{ code: 'ru', label: 'Русский', flag: IMG_URL.svg('rus') },
 	{ code: 'en', label: 'English', flag: IMG_URL.svg('eng') },
+	{ code: 'uz', label: 'Uzbek', flag: IMG_URL.svg('uzb') },
 ]
+

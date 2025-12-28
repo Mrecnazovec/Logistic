@@ -15,12 +15,12 @@ import { IOfferShort } from '@/shared/types/Offer.interface'
 
 interface CargoActionsDropdownProps {
 	cargo: IOfferShort
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 }
 
-export function DeskMyActions({ cargo }: CargoActionsDropdownProps) {
+export function DeskMyActions({ cargo, onOpenDecision }: CargoActionsDropdownProps) {
 	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
-	const [offerOpen, setOfferOpen] = useState(false)
 
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen}>
@@ -33,8 +33,10 @@ export function DeskMyActions({ cargo }: CargoActionsDropdownProps) {
 
 			<DropdownMenuContent align='end'>
 				<DropdownMenuItem
-					onClick={() => {
-						setOfferOpen(true)
+					onClick={(event) => {
+						event.preventDefault()
+						event.stopPropagation()
+						onOpenDecision?.(cargo, { forceFull: true })
 						setOpen(false)
 					}}
 					className='flex items-center gap-2'
@@ -46,7 +48,9 @@ export function DeskMyActions({ cargo }: CargoActionsDropdownProps) {
 				<DropdownMenuSeparator />
 
 				<DropdownMenuItem
-					onClick={() => {
+					onClick={(event) => {
+						event.preventDefault()
+						event.stopPropagation()
 						console.log(t('components.deskMyActions.hideLog'), cargo.id)
 						setOpen(false)
 					}}

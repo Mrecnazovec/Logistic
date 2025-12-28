@@ -19,7 +19,7 @@ import { InfoChip, InfoSection } from './DeskCardShared'
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
 	serverPagination?: ServerPaginationMeta
-	onOpenDecision?: (offer: IOfferShort) => void
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
 }
 
@@ -42,7 +42,7 @@ export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role 
 type DeskDriverCardProps = {
 	cargo: IOfferShort
 	index: number
-	onOpenDecision?: (offer: IOfferShort) => void
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
 }
 
@@ -103,10 +103,18 @@ function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 				<Button
 					type='button'
 					onClick={() => onOpenDecision?.(cargo)}
-					className='w-full rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+					className='flex-1 rounded-full bg-warning-500 text-white hover:bg-warning-400 disabled:opacity-60'
 				>
 					{t('deskMy.income.card.openOffer')}
 				</Button>
+				<Button
+					type='button'
+					onClick={() => onOpenDecision?.(cargo, { forceFull: true })}
+					className='flex-1 rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+				>
+					{t('deskMy.income.card.edit')}
+				</Button>
+
 			</CardFooter>
 		</Card>
 	)

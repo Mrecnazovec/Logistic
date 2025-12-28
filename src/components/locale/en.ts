@@ -22,7 +22,7 @@ const messages: Record<string, string> = {
 	'components.dashboard.headerNav.order.payment': 'Payment',
 	'components.dashboard.headerNav.announcements': 'Announcements board',
 	'components.dashboard.headerNav.posting': 'Post an announcement',
-	'components.dashboard.headerNav.transportation.search': 'Shipping search',
+	'components.dashboard.headerNav.transportation.orders': 'Orders',
 	'components.dashboard.headerNav.transportation.carrying': 'Carrying',
 	'components.dashboard.headerNav.rating.logistic': 'Logistics',
 	'components.dashboard.headerNav.rating.customer': 'Customers',

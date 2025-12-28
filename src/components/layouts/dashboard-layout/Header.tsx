@@ -16,7 +16,7 @@ import { format } from 'date-fns'
 import { Bell, CheckCheck, ChevronLeft, Loader2, Search, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { resolveHeaderNavItems } from './HeaderNavConfig'
 
@@ -32,6 +32,7 @@ const SEARCH_ENABLED_ROUTES = [
 
 export function Header() {
 	const pathname = usePathname()
+	const router = useRouter()
 	const { locale, t } = useI18n()
 	const normalizedPathname = stripLocaleFromPath(pathname)
 	const role = useRoleStore((state) => state.role)
@@ -95,16 +96,27 @@ export function Header() {
 
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
 
+	const handleBackClick = () => {
+		if (typeof window !== 'undefined' && window.history.length > 1) {
+			router.back()
+			return
+		}
+		if (backLink) {
+			router.push(backLink.href)
+		}
+	}
+
 	return (
 		<header className='h-auto md:min-h-24 flex items-center justify-between md:pl-10 md:pr-15 bg-white border-b shadow-lg md:px-4 px-3 max-md:pt-3 gap-4 sticky top-0 z-30'>
 			<div className='flex flex-col items-center gap-3 self-end flex-1 min-w-0'>
 				{backLink && (
-					<Link
-						className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1'
-						href={backLink.href}
+					<button
+						type='button'
+						className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1 cursor-pointer'
+						onClick={handleBackClick}
 					>
 						<ChevronLeft /> {t(backLink.labelKey)}
-					</Link>
+					</button>
 				)}
 				{visibleNavItems.length > 0 && (
 					<nav className='flex self-start gap-4 sm:gap-6 font-medium text-gray-700 overflow-x-auto max-w-full whitespace-nowrap'>

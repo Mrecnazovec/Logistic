@@ -6,9 +6,9 @@ import { useEffect } from "react"
 
 
 export function Dashboard() {
-	// const router = useRouter()
-	// useEffect(() => {
-	// 	router.push(DASHBOARD_URL.announcements())
-	// })
+	const router = useRouter()
+	useEffect(() => {
+		router.push(DASHBOARD_URL.announcements())
+	})
 	return <div>Dashboard</div>
 }

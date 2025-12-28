@@ -17,7 +17,10 @@ import { Minus } from 'lucide-react'
 
 type Translator = (key: string, params?: Record<string, string | number>) => string
 
-export const getDeskIncomeColumns = (t: Translator): ColumnDef<IOfferShort>[] => [
+export const getDeskIncomeColumns = (
+	t: Translator,
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void,
+): ColumnDef<IOfferShort>[] => [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -112,7 +115,7 @@ export const getDeskIncomeColumns = (t: Translator): ColumnDef<IOfferShort>[] =>
 	{
 		id: 'actions',
 		header: '',
-		cell: ({ row }) => <DeskMyActions cargo={row.original} />,
+		cell: ({ row }) => <DeskMyActions cargo={row.original} onOpenDecision={onOpenDecision} />,
 		enableSorting: false,
 		enableHiding: false,
 	},

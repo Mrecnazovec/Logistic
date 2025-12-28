@@ -19,7 +19,7 @@ import { InfoChip, InfoSection } from './DeskCardShared'
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
 	serverPagination?: ServerPaginationMeta
-	onOpenDecision?: (offer: IOfferShort) => void
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
 }
 
@@ -39,7 +39,7 @@ export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role 
 
 type DeskMyCardProps = {
 	cargo: IOfferShort
-	onOpenDecision?: (offer: IOfferShort) => void
+	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
 }
 
@@ -97,10 +97,18 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 				<Button
 					type='button'
 					onClick={() => onOpenDecision?.(cargo)}
-					className='w-full rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+					className='flex-1 rounded-full bg-warning-500 text-white hover:bg-warning-400 disabled:opacity-60'
 				>
 					{t('deskMy.card.openOffer')}
 				</Button>
+				<Button
+					type='button'
+					onClick={() => onOpenDecision?.(cargo, { forceFull: true })}
+					className='flex-1 rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+				>
+					{t('deskMy.card.edit')}
+				</Button>
+
 			</CardFooter>
 		</Card>
 	)
