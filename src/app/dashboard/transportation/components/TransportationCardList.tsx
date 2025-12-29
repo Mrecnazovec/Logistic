@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
 import type { IOrderList } from '@/shared/types/Order.interface'
 import { Building2, CalendarDays, Home, MapPin, Wallet } from 'lucide-react'
@@ -42,40 +43,43 @@ type TransportationCardProps = {
 }
 
 function TransportationCard({ cargo }: TransportationCardProps) {
+	const { t } = useI18n()
+	const placeholder = t('transportation.card.placeholder')
+	const addressMissing = t('transportation.card.addressMissing')
 	const sections: CardSection[] = [
 		{
-			title: 'Перевозчик / Посредник',
+			title: t('transportation.card.section.carrierLogistic'),
 			items: [
-				{ icon: Building2, primary: cargo.carrier_name || '—', secondary: 'Перевозчик' },
-				{ icon: Building2, primary: cargo.logistic_name || '—', secondary: 'Посредник' },
+				{ icon: Building2, primary: cargo.carrier_name || placeholder, secondary: t('transportation.card.label.carrier') },
+				{ icon: Building2, primary: cargo.logistic_name || placeholder, secondary: t('transportation.card.label.logistic') },
 			],
 		},
 		{
-			title: 'Откуда',
+			title: t('transportation.card.section.origin'),
 			items: [
-				{ icon: MapPin, primary: cargo.origin_city || '—', secondary: 'Город' },
-				{ icon: Home, primary: 'Адрес не указан', secondary: 'Адрес' },
+				{ icon: MapPin, primary: cargo.origin_city || placeholder, secondary: t('transportation.card.label.city') },
+				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
 			],
 		},
 		{
-			title: 'Куда',
+			title: t('transportation.card.section.destination'),
 			items: [
-				{ icon: MapPin, primary: cargo.destination_city || '—', secondary: 'Город' },
-				{ icon: Home, primary: 'Адрес не указан', secondary: 'Адрес' },
+				{ icon: MapPin, primary: cargo.destination_city || placeholder, secondary: t('transportation.card.label.city') },
+				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
 			],
 		},
 		{
-			title: 'Когда',
+			title: t('transportation.card.section.when'),
 			items: [
-				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: 'Погрузка' },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: 'Доставка' },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: t('transportation.card.label.load') },
+				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: t('transportation.card.label.delivery') },
 			],
 		},
 		{
-			title: 'Цена',
+			title: t('transportation.card.section.price'),
 			items: [
-				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: 'Цена за км' },
-				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: 'Стоимость' },
+				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: t('transportation.card.label.pricePerKm') },
+				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: t('transportation.card.label.totalPrice') },
 			],
 		},
 	]
@@ -87,7 +91,9 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<UuidCopy id={cargo.id} isPlaceholder />
 					</div>
-					<span className='ml-auto text-xs text-muted-foreground'>Документы: {cargo.documents_count ?? 0}</span>
+					<span className='ml-auto text-xs text-muted-foreground'>
+						{t('transportation.card.docsCount', { count: cargo.documents_count ?? 0 })}
+					</span>
 				</div>
 			</CardHeader>
 
@@ -97,7 +103,7 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Link className='flex-1 min-w-[140px]' href={DASHBOARD_URL.order(String(cargo.id))}>
-					<Button className='w-full bg-warning-400 hover:bg-warning-500 text-white'>Посмотреть</Button>
+					<Button className='w-full bg-warning-400 hover:bg-warning-500 text-white'>{t('transportation.card.view')}</Button>
 				</Link>
 			</CardFooter>
 		</Card>

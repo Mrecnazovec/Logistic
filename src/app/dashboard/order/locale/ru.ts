@@ -1,4 +1,4 @@
-const messages: Record<string, string> = {
+﻿const messages: Record<string, string> = {
 	// [id]/page.tsx
 	'order.meta.title': 'Заказ',
 
@@ -85,12 +85,32 @@ const messages: Record<string, string> = {
 	'order.agreement.field.travelTime': 'Время поездки',
 	'order.agreement.terms.text': 'Я ознакомился и согласен с',
 	'order.agreement.terms.link': 'условиями пользования',
-	'order.agreement.terms.title': 'Условия соглашения',
-	'order.agreement.terms.paragraph': 'Принятие задания означает, что все стороны согласны с условиями сотрудничества. Условия регулируют порядок взаимодействия, оплату и ответственность.',
-	'order.agreement.terms.item1': 'Заказчик предоставляет корректные данные и принимает результаты работ.',
-	'order.agreement.terms.item2': 'Посредник организует взаимодействие сторон и соблюдает сроки.',
-	'order.agreement.terms.item3': 'Водитель обеспечивает безопасную перевозку и своевременную доставку.',
-	'order.agreement.terms.item4': 'Споры решаются путем переговоров и в рамках действующего законодательства.',
+	'order.agreement.terms.title': 'Условия сотрудничества',
+	'order.agreement.terms.intro':
+		'В случае задержек, вызванных по вине Логиста, возможна компенсация простоя — если это было заранее оговорено.',
+	'order.agreement.terms.delay':
+		'1. В случае задержек или повреждений по вине Водителя, Логист вправе пересмотреть сумму выплаты.',
+	'order.agreement.terms.responsibility.title': '2. Ответственность сторон',
+	'order.agreement.terms.responsibility.logistic.title': 'Логист несёт ответственность за:',
+	'order.agreement.terms.responsibility.logistic.item1': 'корректность предоставленной информации;',
+	'order.agreement.terms.responsibility.logistic.item2': 'своевременную оплату.',
+	'order.agreement.terms.responsibility.driver.title': 'Водитель несёт ответственность за:',
+	'order.agreement.terms.responsibility.driver.item1': 'сохранность груза;',
+	'order.agreement.terms.responsibility.driver.item2': 'соблюдение сроков;',
+	'order.agreement.terms.responsibility.driver.item3': 'выполнение задания в соответствии с требованиями перевозки.',
+	'order.agreement.terms.conflicts.title': '3. Конфликтные ситуации',
+	'order.agreement.terms.conflicts.text':
+		'Любые разногласия стороны обязуются решать путём прямого общения. Если договориться не получается, стороны вправе обратиться к третьей нейтральной стороне или действовать в соответствии с законодательством страны, где выполняется перевозка.',
+	'order.agreement.terms.cancel.title': '4. Отмена задания',
+	'order.agreement.terms.cancel.item1': 'Логист может отменить заказ до начала перевозки без штрафов.',
+	'order.agreement.terms.cancel.item2':
+		'Если Водитель отменяет рейс после подтверждения, Логист вправе отказаться от дальнейшего сотрудничества и/или потребовать компенсацию, если была понесена реальная потеря.',
+	'order.agreement.terms.force.title': '5. Форс-мажор',
+	'order.agreement.terms.force.text':
+		'Стороны освобождаются от ответственности за события, на которые невозможно повлиять: аварии, стихийные бедствия, блокировки дорог, технические поломки, не зависящие от Водителя и другие обстоятельства непреодолимой силы.',
+	'order.agreement.terms.final.title': '6. Заключительные положения',
+	'order.agreement.terms.final.text':
+		'Принятие задания означает, что обе стороны согласны с настоящими условиями. Условия могут быть обновлены по взаимному согласию.',
 	'order.agreement.accepted.customer.yes': 'Заказчик принял условия пользования',
 	'order.agreement.accepted.customer.no': 'Заказчик еще не принял условия пользования',
 	'order.agreement.accepted.logistic.yes': 'Посредник принял условия пользования',

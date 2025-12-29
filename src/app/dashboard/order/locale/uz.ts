@@ -85,13 +85,32 @@ const messages: Record<string, string> = {
 	'order.agreement.field.travelTime': 'Safar vaqti',
 	'order.agreement.terms.text': "Men o'qib chiqdim va roziman",
 	'order.agreement.terms.link': 'foydalanish shartlari',
-	'order.agreement.terms.title': 'Shartnoma shartlari',
-	'order.agreement.terms.paragraph':
-		"Topshiriq qabul qilinganda barcha tomonlar hamkorlik shartlariga rozi bo'ladi. Shartlar o'zaro hamkorlik, to'lov va javobgarlikni tartibga soladi.",
-	'order.agreement.terms.item1': "Mijoz aniq ma'lumot beradi va natijalarni qabul qiladi.",
-	'order.agreement.terms.item2': 'Vositachi hamkorlikni tashkil etadi va muddatlarga rioya qiladi.',
-	'order.agreement.terms.item3': "Haydovchi xavfsiz tashishni va o'z vaqtida yetkazishni ta'minlaydi.",
-	'order.agreement.terms.item4': 'Nizolar amaldagi qonunlarga muvofiq muzokara orqali hal qilinadi.',
+	'order.agreement.terms.title': 'Hamkorlik shartlari',
+	'order.agreement.terms.intro':
+		"Logist aybi bilan kechikishlar yuz bersa, oldindan kelishilgan bo'lsa, to'xtab turish uchun kompensatsiya mumkin.",
+	'order.agreement.terms.delay':
+		"1. Haydovchi aybi bilan kechikish yoki shikastlanish bo'lsa, Logist to'lov miqdorini qayta ko'rib chiqishi mumkin.",
+	'order.agreement.terms.responsibility.title': '2. Tomonlarning javobgarligi',
+	'order.agreement.terms.responsibility.logistic.title': 'Logist quyidagilar uchun javobgar:',
+	'order.agreement.terms.responsibility.logistic.item1': "taqdim etilgan ma'lumotlarning to'g'riligi;",
+	'order.agreement.terms.responsibility.logistic.item2': "o'z vaqtida to'lov.",
+	'order.agreement.terms.responsibility.driver.title': 'Haydovchi quyidagilar uchun javobgar:',
+	'order.agreement.terms.responsibility.driver.item1': 'yukning saqlanishi;',
+	'order.agreement.terms.responsibility.driver.item2': 'muddatlarga rioya qilish;',
+	'order.agreement.terms.responsibility.driver.item3': 'tashish talablari asosida vazifani bajarish.',
+	'order.agreement.terms.conflicts.title': '3. Nizoli vaziyatlar',
+	'order.agreement.terms.conflicts.text':
+		"Har qanday kelishmovchiliklar tomonlar tomonidan bevosita muloqot orqali hal qilinadi. Kelishuvga erishilmasa, tomonlar neytral uchinchi tomonga murojaat qilishi yoki tashish amalga oshirilayotgan mamlakat qonunchiligiga muvofiq harakat qilishi mumkin.",
+	'order.agreement.terms.cancel.title': '4. Vazifani bekor qilish',
+	'order.agreement.terms.cancel.item1': "Logist tashish boshlanishidan oldin buyurtmani jarimasiz bekor qilishi mumkin.",
+	'order.agreement.terms.cancel.item2':
+		"Agar Haydovchi tasdiqlangandan keyin reysni bekor qilsa, Logist keyingi hamkorlikdan voz kechishi va/yoki real zarar bo'lsa kompensatsiya talab qilishi mumkin.",
+	'order.agreement.terms.force.title': '5. Fors-major',
+	'order.agreement.terms.force.text':
+		"Tomonlar o'zlari ta'sir qila olmaydigan hodisalar uchun javobgarlikdan ozod qilinadi: avariyalar, tabiiy ofatlar, yo'llarning bloklanishi, Haydovchiga bog'liq bo'lmagan texnik nosozliklar va boshqa yengib bo'lmas holatlar.",
+	'order.agreement.terms.final.title': '6. Yakuniy qoidalar',
+	'order.agreement.terms.final.text':
+		"Vazifani qabul qilish ikkala tomon ham ushbu shartlarga rozi ekanini bildiradi. Shartlar o'zaro kelishuv bilan yangilanishi mumkin.",
 	'order.agreement.accepted.customer.yes': 'Mijoz foydalanish shartlarini qabul qildi',
 	'order.agreement.accepted.customer.no': 'Mijoz hali foydalanish shartlarini qabul qilmagan',
 	'order.agreement.accepted.logistic.yes': 'Vositachi foydalanish shartlarini qabul qildi',

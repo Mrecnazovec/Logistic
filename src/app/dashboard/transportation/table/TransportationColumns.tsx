@@ -3,30 +3,31 @@ import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatDateValue, formatPriceValue, parseDateToTimestamp } from '@/lib/formatters'
-import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 
-export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderList>[] => [
+type Translator = (key: string, params?: Record<string, string | number>) => string
+
+export const createTransportationColumns = (t: Translator): ColumnDef<IOrderList>[] => [
     {
         accessorKey: 'id',
-        header: 'ID',
+        header: t('transportation.columns.id'),
         cell: ({ row }) => <UuidCopy id={row.original.id} />,
     },
     {
         accessorKey: 'carrier_name',
-        header: 'Перевозчик',
+        header: t('transportation.columns.carrier'),
     },
     {
         accessorKey: 'logistic_name',
-        header: 'Посредник',
+        header: t('transportation.columns.logistic'),
     },
     {
         id: 'origin',
         header: ({ column }) => (
             <Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-                Откуда / дата погрузки
+                {t('transportation.columns.origin')}
                 <SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
             </Button>
         ),
@@ -46,7 +47,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
         id: 'destination',
         header: ({ column }) => (
             <Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-                Куда / дата доставки
+                {t('transportation.columns.destination')}
                 <SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
             </Button>
         ),
@@ -64,16 +65,16 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
     },
     {
         accessorKey: 'currency',
-        header: 'Валюта',
+        header: t('transportation.columns.currency'),
     },
     {
         accessorKey: 'price_total',
-        header: 'Цена',
+        header: t('transportation.columns.price'),
         cell: ({ row }) => formatPriceValue(row.original.price_total, row.original.currency),
     },
     {
         accessorKey: 'documents_count',
-        header: 'Документы',
+        header: t('transportation.columns.documents'),
         cell: ({ row }) => (
             <div className='flex size-7 items-center justify-center rounded-full border bg-[#F8F9FC]'>
                 {row.original.documents_count ?? 0}
@@ -82,7 +83,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
     },
     {
         accessorKey: 'price_per_km',
-        header: 'Цена за км',
+        header: t('transportation.columns.pricePerKm'),
         cell: ({ row }) => Number(row.original.price_per_km || 0).toLocaleString(),
     },
 ]

@@ -306,14 +306,46 @@ export function AgreementPage() {
 							<DialogHeader>
 								<DialogTitle className='text-center text-2xl font-semibold'>{t('order.agreement.terms.title')}</DialogTitle>
 							</DialogHeader>
-							<div className='space-y-3 text-sm leading-relaxed text-foreground'>
-								<p>{t('order.agreement.terms.paragraph')}</p>
-								<ol className='list-decimal space-y-2 pl-5'>
-									<li>{t('order.agreement.terms.item1')}</li>
-									<li>{t('order.agreement.terms.item2')}</li>
-									<li>{t('order.agreement.terms.item3')}</li>
-									<li>{t('order.agreement.terms.item4')}</li>
-								</ol>
+							<div className='space-y-4 text-sm leading-relaxed text-foreground'>
+								<p>{t('order.agreement.terms.intro')}</p>
+								<p>{t('order.agreement.terms.delay')}</p>
+								<div className='space-y-2'>
+									<p className='font-semibold'>{t('order.agreement.terms.responsibility.title')}</p>
+									<div className='space-y-2'>
+										<p>{t('order.agreement.terms.responsibility.logistic.title')}</p>
+										<ul className='list-disc space-y-1 pl-5'>
+											<li>{t('order.agreement.terms.responsibility.logistic.item1')}</li>
+											<li>{t('order.agreement.terms.responsibility.logistic.item2')}</li>
+										</ul>
+									</div>
+									<div className='space-y-2'>
+										<p>{t('order.agreement.terms.responsibility.driver.title')}</p>
+										<ul className='list-disc space-y-1 pl-5'>
+											<li>{t('order.agreement.terms.responsibility.driver.item1')}</li>
+											<li>{t('order.agreement.terms.responsibility.driver.item2')}</li>
+											<li>{t('order.agreement.terms.responsibility.driver.item3')}</li>
+										</ul>
+									</div>
+								</div>
+								<div className='space-y-2'>
+									<p className='font-semibold'>{t('order.agreement.terms.conflicts.title')}</p>
+									<p>{t('order.agreement.terms.conflicts.text')}</p>
+								</div>
+								<div className='space-y-2'>
+									<p className='font-semibold'>{t('order.agreement.terms.cancel.title')}</p>
+									<ol className='list-decimal space-y-1 pl-5'>
+										<li>{t('order.agreement.terms.cancel.item1')}</li>
+										<li>{t('order.agreement.terms.cancel.item2')}</li>
+									</ol>
+								</div>
+								<div className='space-y-2'>
+									<p className='font-semibold'>{t('order.agreement.terms.force.title')}</p>
+									<p>{t('order.agreement.terms.force.text')}</p>
+								</div>
+								<div className='space-y-2'>
+									<p className='font-semibold'>{t('order.agreement.terms.final.title')}</p>
+									<p>{t('order.agreement.terms.final.text')}</p>
+								</div>
 							</div>
 						</DialogContent>
 					</Dialog>

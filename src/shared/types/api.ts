@@ -1156,6 +1156,8 @@ export interface components {
             readonly loading_address: string;
             /** Format: date */
             readonly loading_date: string;
+            readonly customer: string;
+            readonly other_party: string;
             readonly unloading_city: string;
             readonly unloading_address: string;
             /** Format: date */
@@ -1178,11 +1180,20 @@ export interface components {
             readonly status: "pending" | "accepted" | "expired" | "cancelled";
             /** Format: date-time */
             readonly expires_at: string;
+            /** Format: date-time */
+            readonly created_at: string;
             readonly accepted_by_customer: boolean;
             readonly accepted_by_carrier: boolean;
             readonly accepted_by_logistic: boolean;
-            /** Format: date-time */
-            readonly created_at: string;
+            readonly loading_city: string;
+            readonly loading_address: string;
+            /** Format: date */
+            readonly loading_date: string;
+            readonly unloading_city: string;
+            readonly unloading_address: string;
+            /** Format: date */
+            readonly unloading_date: string;
+            readonly participants: string;
         };
         Analytics: {
             successful_deliveries: number;
@@ -1682,7 +1693,9 @@ export interface components {
             /** Format: double */
             readonly carrier_rating: number;
             readonly logistic_id: number;
+            /** @description Название компании логиста. */
             readonly logistic_company: string;
+            /** @description Полное имя логиста. */
             readonly logistic_full_name: string;
             /** @description Телефон перевозчика (вместо contact_value). */
             readonly phone: string;
@@ -1814,7 +1827,9 @@ export interface components {
             /** Format: double */
             readonly carrier_rating: number;
             readonly logistic_id: number;
+            /** @description Название компании логиста. */
             readonly logistic_company: string;
+            /** @description Полное имя логиста. */
             readonly logistic_full_name: string;
             /** @description Телефон перевозчика (вместо contact_value). */
             readonly phone: string;
@@ -3525,15 +3540,20 @@ export interface operations {
                 initiator?: string;
                 /** @description true|false */
                 is_active?: string;
+                load_date?: string;
                 load_date_from?: string;
                 load_date_to?: string;
+                max_price?: string;
+                min_price?: string;
                 order?: string;
                 origin_city?: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                price_currency?: string;
                 q?: string;
                 /** @description mine | incoming | all */
                 scope?: string;
+                transport_type?: string;
             };
             header?: never;
             path?: never;
@@ -3871,14 +3891,8 @@ export interface operations {
     orders_list: {
         parameters: {
             query?: {
-                cargo?: number;
-                date_from?: string;
-                date_to?: string;
-                load?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
-                role?: string;
-                status?: string;
             };
             header?: never;
             path?: never;

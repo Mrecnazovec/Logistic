@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useMemo } from 'react'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -25,8 +26,6 @@ import { createAgreementColumns } from '../table/AgreementColumns'
 import { TransportationMyCardList } from './components/TransportationMyCardList'
 import { createTransportationColumns } from './table/TransportationColumns'
 
-const AGREEMENT_COLUMNS = createAgreementColumns()
-
 export function TransportationMyPage() {
 	const { data: agreementsData, isLoading: isLoadingAgreements } = useGetAgreements()
 	const { form, onSubmit } = useSearchForm()
@@ -45,8 +44,9 @@ export function TransportationMyPage() {
 		{ value: 'delivered', label: t('transportation.tabs.delivered') },
 		{ value: 'paid', label: t('transportation.tabs.paid') },
 	] as const
+	const agreementColumns = useMemo(() => createAgreementColumns(t), [t])
 	const role = useRoleStore((state) => state.role)
-	const tableColumns = createTransportationColumns(role)
+	const tableColumns = useMemo(() => createTransportationColumns(t, role), [t, role])
 	const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'logistic' : undefined
 	const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { as_role: ordersRoleParam } : undefined)
 
@@ -83,7 +83,7 @@ export function TransportationMyPage() {
 		<AgreementsCardList agreements={agreements} serverPagination={agreementPaginationMeta} />
 	) : (
 		<DataTable
-			columns={AGREEMENT_COLUMNS}
+			columns={agreementColumns}
 			data={agreements}
 			onRowClick={(agreement: IAgreement) => router.push(`/dashboard/order/agreement/${agreement.id}`)}
 			getRowHref={(agreement: IAgreement) => `/dashboard/order/agreement/${agreement.id}`}

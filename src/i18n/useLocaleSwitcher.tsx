@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Cookies from 'js-cookie'
 import type { Locale } from './config'
 import { localeCookie } from './config'
-import { addLocaleToPath } from './paths'
+import { addLocaleToPath, getLocaleFromPath } from './paths'
 
 export const useLocaleSwitcher = () => {
 	const router = useRouter()
@@ -12,11 +12,17 @@ export const useLocaleSwitcher = () => {
 	const searchParams = useSearchParams()
 
 	const switchLocale = (nextLocale: Locale) => {
+		if (getLocaleFromPath(pathname) === nextLocale) {
+			return
+		}
 		const query = searchParams.toString()
 		const nextPath = `${addLocaleToPath(pathname, nextLocale)}${query ? `?${query}` : ''}`
 		Cookies.set(localeCookie, nextLocale, { path: '/' })
+		if (typeof window !== 'undefined') {
+			window.location.assign(nextPath)
+			return
+		}
 		router.replace(nextPath)
-		router.refresh()
 	}
 
 	return { switchLocale }

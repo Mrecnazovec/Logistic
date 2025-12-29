@@ -8,28 +8,30 @@ import { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 
-export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderList>[] => [
+type Translator = (key: string, params?: Record<string, string | number>) => string
+
+export const createTransportationColumns = (t: Translator, role?: RoleEnum): ColumnDef<IOrderList>[] => [
 		{
 				accessorKey: 'id',
-				header: 'ID',
+				header: t('transportation.columns.id'),
 				cell: ({ row }) => <UuidCopy id={row.original.id} />,
 		},
 		{
 				accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_name' : 'customer_name',
-				header: role === RoleEnum.CUSTOMER ? 'Перевозчик' : 'Заказчик',
+				header: role === RoleEnum.CUSTOMER ? t('transportation.columns.carrier') : t('transportation.columns.customer'),
 				cell: ({ row }) => (role === RoleEnum.CUSTOMER ? row.original.roles.carrier?.name : row.original.roles.customer.name),
 
 		},
 		{
 				accessorKey: role === RoleEnum.LOGISTIC ? 'carrier_name' : 'logistic_name',
-				header: role === RoleEnum.LOGISTIC ? 'Перевозчик' : 'Посредник',
+				header: role === RoleEnum.LOGISTIC ? t('transportation.columns.carrier') : t('transportation.columns.logistic'),
 				cell: ({ row }) => (role === RoleEnum.LOGISTIC ? row.original.roles.carrier?.name : row.original.roles.logistic?.name),
 		},
 		{
 				id: 'origin',
 				header: ({ column }) => (
 						<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-								Откуда / дата погрузки
+								{t('transportation.columns.origin')}
 								<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 						</Button>
 				),
@@ -49,7 +51,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 				id: 'destination',
 				header: ({ column }) => (
 						<Button variant='ghost' className='p-0 hover:bg-transparent' onClick={(event) => cycleColumnSort(event, column)}>
-								Куда / дата доставки
+								{t('transportation.columns.destination')}
 								<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 						</Button>
 				),
@@ -67,16 +69,16 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 		},
 		{
 				accessorKey: 'currency',
-				header: 'Валюта',
+				header: t('transportation.columns.currency'),
 		},
 		{
 				accessorKey: 'price_total',
-				header: 'Цена',
+				header: t('transportation.columns.price'),
 				cell: ({ row }) => formatPriceValue(row.original.price_total, row.original.currency),
 		},
 		{
 				accessorKey: 'documents_count',
-				header: 'Документы',
+				header: t('transportation.columns.documents'),
 				cell: ({ row }) => (
 						<div className='flex size-7 items-center justify-center rounded-full border bg-[#F8F9FC]'>
 								{row.original.documents_count ?? 0}
@@ -85,7 +87,7 @@ export const createTransportationColumns = (role?: RoleEnum): ColumnDef<IOrderLi
 		},
 		{
 				accessorKey: 'price_per_km',
-				header: 'Цена за км',
+				header: t('transportation.columns.pricePerKm'),
 				cell: ({ row }) => Number(row.original.price_per_km || 0).toLocaleString(),
 		},
 ]
