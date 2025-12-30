@@ -101,7 +101,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		roles: [RoleEnum.CUSTOMER],
 		items: [
 			{
-				labelKey: 'components.dashboard.headerNav.announcements',
+				labelKey: 'components.dashboard.headerNav.desk',
 				href: DASHBOARD_URL.desk(),
 			},
 			{
@@ -210,7 +210,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		matcher: (pathname) => normalizePath(pathname).startsWith('/dashboard/desk'),
 		items: [
 			{
-				labelKey: 'components.dashboard.headerNav.announcements',
+				labelKey: 'components.dashboard.headerNav.desk',
 				href: DASHBOARD_URL.desk(),
 			},
 			{
