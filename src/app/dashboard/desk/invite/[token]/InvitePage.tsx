@@ -9,12 +9,13 @@ import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigat
 import { Suspense, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/form-control/Input'
 import { Loader } from '@/components/ui/Loader'
-import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useLoadInvite } from '@/hooks/queries/loads/useLoadInvite'
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
@@ -24,6 +25,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { getAccessToken } from '@/services/auth/auth-token.service'
+import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import type { InviteResponseActionsProps } from '@/shared/types/Invite.interface'
 
@@ -61,8 +63,9 @@ function InvitePageContent() {
 	const accessToken = getAccessToken()
 	const returnPath = useMemo(() => {
 		const query = searchParams.toString()
-		return query ? `${pathname}?${query}` : pathname
-	}, [pathname, searchParams])
+		const basePath = token ? DASHBOARD_URL.desk(`invite/${token}`) : pathname
+		return query ? `${basePath}?${query}` : basePath
+	}, [pathname, searchParams, token])
 	const authHref = useMemo(() => `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`, [returnPath])
 	const {
 		invite,
@@ -92,9 +95,15 @@ function InvitePageContent() {
 	const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
 	const { rejectOffer, isLoadingRejectOffer } = useRejectOffer()
 
-	const inviteWithOfferId = invite as (typeof invite & { offer_id?: number; offer?: { id?: number }; id?: number }) | null
+	const inviteWithOfferId = invite as (typeof invite & {
+		offer_id?: number
+		offer?: { id?: number; payment_method?: PaymentMethodEnum }
+		id?: number
+		payment_method?: PaymentMethodEnum
+	}) | null
 	const inviteOfferId =
 		inviteWithOfferId?.offer_id ?? inviteWithOfferId?.offer?.id ?? inviteWithOfferId?.id ?? null
+	const defaultPaymentMethod = inviteWithOfferId?.payment_method ?? inviteWithOfferId?.offer?.payment_method ?? null
 
 	const formattedLoadDate = cargo?.load_date
 		? format(new Date(cargo.load_date), 'dd.MM.yyyy', { locale: dateLocale })
@@ -234,9 +243,13 @@ function InvitePageContent() {
 						</div>
 						<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
 							<span className='font-semibold text-foreground'>{t('desk.invite.company')}:</span> {cargo.company_name}
+
+						</div>
+						<div className='flex flex-wrap items-center gap-3 text-sm text-muted-foreground'>
 							<span className='font-semibold text-foreground'>{t('desk.invite.representative')}:</span>{' '}
 							{<ProfileLink id={Number(cargo.user_id)} name={cargo.user_name} />}
 						</div>
+
 					</CardContent>
 				</Card>
 
@@ -251,6 +264,7 @@ function InvitePageContent() {
 							offerId={inviteOfferId}
 							defaultPrice={defaultPriceValue}
 							defaultCurrency={defaultCurrencyValue}
+							defaultPaymentMethod={defaultPaymentMethod}
 							onAccept={(offerId) => {
 								if (!offerId) {
 									toast.error(t('desk.invite.offerIdMissing'))
@@ -350,6 +364,7 @@ function InviteResponseActions({
 	offerId,
 	defaultPrice,
 	defaultCurrency,
+	defaultPaymentMethod,
 	onAccept,
 	onCounter,
 	onReject,
@@ -363,6 +378,10 @@ function InviteResponseActions({
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(
 		() => (defaultCurrency ? (defaultCurrency as PriceCurrencyCode) : ''),
 	)
+	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(
+		() => (defaultPaymentMethod ? (defaultPaymentMethod as PaymentMethodEnum) : ''),
+	)
+	const [isCounterEditing, setIsCounterEditing] = useState(false)
 
 	const isActionDisabled = !offerId || isProcessing
 
@@ -375,11 +394,15 @@ function InviteResponseActions({
 	}
 
 	const handleCounter = () => {
+		if (!isCounterEditing) {
+			setIsCounterEditing(true)
+			return
+		}
 		if (!offerId) {
 			toast.error(t('desk.invite.offerIdMissing'))
 			return
 		}
-		if (!priceValue || !currency) {
+		if (!priceValue || !currency || !paymentMethod) {
 			toast.error(t('desk.invite.counterNeedPrice'))
 			return
 		}
@@ -389,6 +412,7 @@ function InviteResponseActions({
 			data: {
 				price_value: String(priceValue),
 				price_currency: currency as PriceCurrencyCode,
+				payment_method: paymentMethod as PaymentMethodEnum,
 			},
 		})
 	}
@@ -403,7 +427,7 @@ function InviteResponseActions({
 
 	return (
 		<>
-			<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
+			<div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
 				<Input
 					placeholder={t('desk.invite.pricePlaceholder')}
 					value={priceValue}
@@ -412,9 +436,13 @@ function InviteResponseActions({
 					inputMode='decimal'
 					min='0'
 					className='rounded-full border-none bg-muted/40'
+					disabled={isActionDisabled || !isCounterEditing}
 				/>
 				<Select value={currency || undefined} onValueChange={(value) => setCurrency(value as PriceCurrencyCode)}>
-					<SelectTrigger className='rounded-full border-none bg-muted/40 shadow-none'>
+					<SelectTrigger
+						className='rounded-full border-none bg-muted/40 shadow-none'
+						disabled={isActionDisabled || !isCounterEditing}
+					>
 						<SelectValue placeholder={t('desk.invite.currencyPlaceholder')} />
 					</SelectTrigger>
 					<SelectContent>
@@ -425,6 +453,13 @@ function InviteResponseActions({
 						))}
 					</SelectContent>
 				</Select>
+				<PaymentSelector
+					value={paymentMethod}
+					onChange={(value) => setPaymentMethod(value)}
+					placeholder={t('components.offerCard.paymentPlaceholder')}
+					disabled={isActionDisabled || !isCounterEditing}
+					className='bg-muted/40 shadow-none [&>button]:border-none [&>button]:bg-transparent'
+				/>
 			</div>
 
 			<div className='flex flex-wrap gap-3 justify-end pt-2'>
@@ -437,10 +472,14 @@ function InviteResponseActions({
 				</Button>
 				<Button
 					onClick={handleCounter}
-					disabled={isActionDisabled || !priceValue || !currency}
+					disabled={isActionDisabled || (isCounterEditing && (!priceValue || !currency || !paymentMethod))}
 					className='rounded-full bg-warning-500 text-white hover:bg-warning-600 disabled:opacity-60'
 				>
-					{isLoadingCounter ? t('desk.invite.counterLoading') : t('desk.invite.counter')}
+					{isLoadingCounter
+						? t('desk.invite.counterLoading')
+						: isCounterEditing
+							? t('desk.invite.counterSubmit')
+							: t('desk.invite.counter')}
 				</Button>
 				<Button
 					onClick={handleReject}

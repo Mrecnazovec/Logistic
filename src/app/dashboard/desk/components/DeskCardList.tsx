@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -22,12 +23,6 @@ import { useState } from 'react'
 
 const DeskInviteModal = dynamic(() => import('@/components/ui/modals/DeskInviteModal').then((mod) => mod.DeskInviteModal))
 const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
-
-const hasOffersValue = (cargo: ICargoList) => {
-	if (cargo.offers_count && cargo.offers_count > 0) return true
-	const normalized = String(cargo.has_offers ?? '').toLowerCase()
-	return normalized === 'true' || normalized === '1'
-}
 
 type DeskCardListProps = {
 	cargos: ICargoList[]
@@ -169,7 +164,11 @@ function DeskCard({ cargo }: DeskCardProps) {
 function HasOffersField({ cargo }: { cargo: ICargoList }) {
 	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
-	const hasOffers = hasOffersValue(cargo)
+	const { data, isLoading } = useGetOffers(
+		cargo.uuid ? { cargo_uuid: cargo.uuid } : undefined,
+		{ enabled: Boolean(cargo.uuid) }
+	)
+	const hasOffers = (data?.results?.length ?? 0) > 0
 
 	return (
 		<>
@@ -178,7 +177,7 @@ function HasOffersField({ cargo }: { cargo: ICargoList }) {
 				variant='outline'
 				className='flex items-center gap-2 border-0 p-0 text-sm font-semibold text-foreground shadow-none disabled:text-muted-foreground'
 				onClick={() => setOpen(true)}
-				disabled={!hasOffers}
+				disabled={isLoading || !hasOffers}
 			>
 				{hasOffers ? (
 					<>

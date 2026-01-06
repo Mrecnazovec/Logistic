@@ -8,6 +8,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { useI18n } from '@/i18n/I18nProvider'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
@@ -107,6 +108,21 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 											<InputGroup>
 												<InputGroupInput placeholder={t('components.searchRating.to')} {...field} value={field.value ?? ''} className='pl-4' />
 											</InputGroup>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='country'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className='text-grayscale'>{t('components.searchRating.country')}</FormLabel>
+										<FormControl>
+											<CountrySelector
+												value={field.value ? { name: String(field.value), code: String(field.value) } : null}
+												onChange={(country) => field.onChange(country.name)}
+											/>
 										</FormControl>
 									</FormItem>
 								)}

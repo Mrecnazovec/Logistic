@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
-import { formatDateTimeValue } from '@/lib/formatters'
+import { formatDateValue } from '@/lib/formatters'
 import type { IAgreement } from '@/shared/types/Agreement.interface'
-import { BadgeCheck, Clock4, ClipboardList, FileCheck2 } from 'lucide-react'
+import { BadgeCheck, Clock4, MapPin, User } from 'lucide-react'
 import Link from 'next/link'
 
 type AgreementsCardListProps = {
@@ -42,33 +42,57 @@ function AgreementCard({ agreement }: { agreement: IAgreement }) {
 		expired: t('transportation.agreement.status.expired'),
 		cancelled: t('transportation.agreement.status.cancelled'),
 	}
-	const booleanLabel = (value?: boolean | null) => {
+	const acceptedLabel = (value?: boolean | null) => {
 		if (value === null || value === undefined) return placeholder
-		return value ? t('transportation.agreement.boolean.yes') : t('transportation.agreement.boolean.no')
+		return value ? t('transportation.agreement.accepted.yes') : t('transportation.agreement.accepted.no')
+	}
+	const participantName = (role: string) => {
+		const participant = agreement.participants?.find((item) => item.role === role)
+		return participant?.full_name || placeholder
+	}
+	const executorName = () => {
+		const carrier = agreement.participants?.find((item) => item.role === 'CARRIER')
+		if (carrier?.full_name) return carrier.full_name
+		const logistic = agreement.participants?.find((item) => item.role === 'LOGISTIC')
+		return logistic?.full_name || placeholder
 	}
 	const sections: CardSection[] = [
 		{
 			title: t('transportation.agreement.card.section.status'),
 			items: [
 				{ icon: BadgeCheck, primary: statusLabels[agreement.status] ?? placeholder, secondary: t('transportation.agreement.card.label.status') },
-				{ icon: Clock4, primary: formatDateTimeValue(agreement.expires_at, placeholder), secondary: t('transportation.agreement.card.label.expires') },
-				{ icon: Clock4, primary: formatDateTimeValue(agreement.created_at, placeholder), secondary: t('transportation.agreement.card.label.created') },
+				{ icon: Clock4, primary: formatDateValue(agreement.expires_at, 'dd.MM.yyyy HH:mm', placeholder), secondary: t('transportation.agreement.card.label.expires') },
+				{ icon: Clock4, primary: formatDateValue(agreement.created_at, 'dd.MM.yyyy HH:mm', placeholder), secondary: t('transportation.agreement.card.label.created') },
 			],
 		},
 		{
-			title: t('transportation.agreement.card.section.ids'),
+			title: t('transportation.agreement.card.section.route'),
 			items: [
-				{ icon: ClipboardList, primary: <UuidCopy id={agreement.id} isPlaceholder /> },
-				{ icon: ClipboardList, primary: agreement.offer_id ?? placeholder, secondary: t('transportation.agreement.card.label.offerId') },
-				{ icon: ClipboardList, primary: agreement.cargo_id ?? placeholder, secondary: t('transportation.agreement.card.label.cargoId') },
+				{
+					icon: MapPin,
+					primary: agreement.loading_city || placeholder,
+					secondary: formatDateValue(agreement.loading_date, 'dd.MM.yyyy', placeholder),
+				},
+				{
+					icon: MapPin,
+					primary: agreement.unloading_city || placeholder,
+					secondary: formatDateValue(agreement.unloading_date, 'dd.MM.yyyy', placeholder),
+				},
 			],
 		},
 		{
-			title: t('transportation.agreement.card.section.confirmations'),
+			title: t('transportation.agreement.card.section.participants'),
 			items: [
-				{ icon: FileCheck2, primary: booleanLabel(agreement.accepted_by_customer), secondary: t('transportation.agreement.card.label.customer') },
-				{ icon: FileCheck2, primary: booleanLabel(agreement.accepted_by_carrier), secondary: t('transportation.agreement.card.label.carrier') },
-				{ icon: FileCheck2, primary: booleanLabel(agreement.accepted_by_logistic), secondary: t('transportation.agreement.card.label.logistic') },
+				{
+					icon: User,
+					primary: participantName('CUSTOMER'),
+					secondary: acceptedLabel(agreement.accepted_by_customer),
+				},
+				{
+					icon: User,
+					primary: executorName(),
+					secondary: acceptedLabel(Boolean(agreement.accepted_by_carrier || agreement.accepted_by_logistic)),
+				},
 			],
 		},
 	]
@@ -78,7 +102,6 @@ function AgreementCard({ agreement }: { agreement: IAgreement }) {
 			<CardHeader className='gap-4 border-b'>
 				<div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
 					<UuidCopy id={agreement.id} isPlaceholder />
-					<span className='ml-auto'>{t('transportation.agreement.card.cargoLabel', { id: agreement.cargo_id ?? placeholder })}</span>
 				</div>
 			</CardHeader>
 

@@ -45,20 +45,6 @@ export function DeskMyActions({ cargo, onOpenDecision }: CargoActionsDropdownPro
 					{t('components.deskMyActions.edit')}
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator />
-
-				<DropdownMenuItem
-					onClick={(event) => {
-						event.preventDefault()
-						event.stopPropagation()
-						console.log(t('components.deskMyActions.hideLog'), cargo.id)
-						setOpen(false)
-					}}
-					className='flex items-center gap-2 text-red-500 focus:text-red-500'
-				>
-					<Trash2 className='size-4 text-red-500' />
-					{t('components.deskMyActions.delete')}
-				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

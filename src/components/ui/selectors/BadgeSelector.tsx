@@ -66,7 +66,7 @@ export const getOfferStatusMeta = (offer: IOfferShort | undefined, role: RoleEnu
 		}
 	}
 
-	if ((counterpartyAccepted && !selfAccepted) || (offer.response_status === 'counter_from_customer' && !selfAccepted)) {
+	if ((counterpartyAccepted && !selfAccepted) || (offer.response_status === 'counter_from_customer' && !selfAccepted) || (offer.response_status === 'action_required' && offer.source_status === 'Предложение от заказчика')) {
 		return {
 			variant: 'violet',
 			label: t('components.badge.offer.awaiting.label'),

@@ -88,7 +88,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 		items: [
 			{
 				labelKey: 'components.dashboard.headerNav.announcements',
-				href: DASHBOARD_URL.desk(),
+				href: DASHBOARD_URL.announcements(),
 			},
 			{
 				labelKey: 'components.dashboard.headerNav.posting',

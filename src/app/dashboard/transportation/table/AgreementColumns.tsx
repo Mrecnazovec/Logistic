@@ -41,16 +41,6 @@ export const createAgreementColumns = (t: Translator): ColumnDef<IAgreement>[] =
 			cell: ({ row }) => statusLabels[row.original.status] || row.original.status,
 		},
 		{
-			accessorKey: 'offer_id',
-			header: t('transportation.agreement.columns.offerId'),
-			cell: ({ row }) => row.original.offer_id ?? <Minus className='size-4' />,
-		},
-		{
-			accessorKey: 'cargo_id',
-			header: t('transportation.agreement.columns.cargoId'),
-			cell: ({ row }) => row.original.cargo_id ?? <Minus className='size-4' />,
-		},
-		{
 			accessorKey: 'loading_city',
 			header: t('transportation.agreement.columns.loading'),
 			cell: ({ row }) => {

@@ -71,6 +71,7 @@
 	'components.searchRating.filters': 'Фильтры',
 	'components.searchRating.reset': 'Сбросить фильтры',
 	'components.searchRating.rating': 'Рейтинг',
+	'components.searchRating.country': 'Страна',
 	'components.searchRating.from': 'От',
 	'components.searchRating.to': 'До',
 
@@ -89,6 +90,8 @@
 	'components.search.hasOffers.yes': 'Есть предложения',
 	'components.search.hasOffers.no': 'Нет предложений',
 	'components.search.weight': 'Масса',
+	'components.search.axles': 'Оси',
+	'components.search.volume': 'Объем (м3)',
 	'components.search.resetTitle': 'Сбросить фильтры',
 	'components.search.origin': 'Откуда',
 	'components.search.radius': 'Радиус, км',
@@ -208,6 +211,7 @@
 	'components.deskOffers.emptyIncoming': 'Нет входящих предложений.',
 	'components.deskOffers.emptyAccepted': 'Нет принятых предложений.',
 	'components.deskOffers.emptyHistory': 'История пока пустая.',
+	'components.deskOffers.inactiveHeading': 'Неактивные предложения',
 
 	// ui/modals/DeskOffersModal/OfferHistoryItem.tsx
 	'components.offerHistory.company': 'Компания',

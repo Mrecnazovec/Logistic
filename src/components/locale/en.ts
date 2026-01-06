@@ -72,6 +72,7 @@ const messages: Record<string, string> = {
 	'components.searchRating.filters': 'Filters',
 	'components.searchRating.reset': 'Reset filters',
 	'components.searchRating.rating': 'Rating',
+	'components.searchRating.country': 'Country',
 	'components.searchRating.from': 'From',
 	'components.searchRating.to': 'To',
 
@@ -90,6 +91,8 @@ const messages: Record<string, string> = {
 	'components.search.hasOffers.yes': 'Has offers',
 	'components.search.hasOffers.no': 'No offers',
 	'components.search.weight': 'Weight',
+	'components.search.axles': 'Axles',
+	'components.search.volume': 'Volume (m3)',
 	'components.search.resetTitle': 'Reset filters',
 	'components.search.origin': 'From',
 	'components.search.radius': 'Radius, km',
@@ -209,6 +212,7 @@ const messages: Record<string, string> = {
 	'components.deskOffers.emptyIncoming': 'No incoming offers.',
 	'components.deskOffers.emptyAccepted': 'No accepted offers.',
 	'components.deskOffers.emptyHistory': 'History is empty.',
+	'components.deskOffers.inactiveHeading': 'Inactive offers',
 
 	// ui/modals/DeskOffersModal/OfferHistoryItem.tsx
 	'components.offerHistory.company': 'Company',

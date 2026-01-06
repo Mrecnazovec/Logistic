@@ -45,6 +45,8 @@ const messages: Record<string, string> = {
 	'transportation.agreement.card.section.status': 'Status va muddatlar',
 	'transportation.agreement.card.section.ids': 'Identifikatorlar',
 	'transportation.agreement.card.section.confirmations': 'Tasdiqlar',
+	'transportation.agreement.card.section.route': 'Yo\'nalish',
+	'transportation.agreement.card.section.participants': 'Ishtirokchilar',
 	'transportation.agreement.card.label.status': 'Status',
 	'transportation.agreement.card.label.expires': 'Muddati',
 	'transportation.agreement.card.label.created': 'Yaratilgan',

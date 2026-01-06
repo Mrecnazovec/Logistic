@@ -15,6 +15,10 @@ type SearchExtras = Partial<{
 	max_weight: number
 	min_price: number
 	max_price: number
+	min_axles: number
+	max_axles: number
+	min_volume_m3: number
+	max_volume_m3: number
 	price_currency: PriceCurrency
 	has_offers: boolean | string
 	origin_lat: number
@@ -28,6 +32,7 @@ type SearchExtras = Partial<{
 	rating_min: number
 	rating_max: number
 	order: 'path_km' | '-path_km' | 'origin_dist_km' | '-origin_dist_km' | 'price_value' | '-price_value' | 'load_date' | '-load_date'
+	country: string
 }>
 
 export type ISearch = ApiSearchQuery & SearchExtras

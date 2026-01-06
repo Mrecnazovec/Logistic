@@ -45,6 +45,8 @@ const messages: Record<string, string> = {
 	'transportation.agreement.card.section.status': 'Статус и сроки',
 	'transportation.agreement.card.section.ids': 'Идентификаторы',
 	'transportation.agreement.card.section.confirmations': 'Подтверждения',
+	'transportation.agreement.card.section.route': 'Маршрут',
+	'transportation.agreement.card.section.participants': 'Участники',
 	'transportation.agreement.card.label.status': 'Статус',
 	'transportation.agreement.card.label.expires': 'Истекает',
 	'transportation.agreement.card.label.created': 'Создан',

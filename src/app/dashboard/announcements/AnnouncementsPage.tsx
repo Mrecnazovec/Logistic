@@ -68,6 +68,7 @@ export function AnnouncementsPage() {
 						<SearchFields
 							form={form}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
+							showOffersFilter={false}
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

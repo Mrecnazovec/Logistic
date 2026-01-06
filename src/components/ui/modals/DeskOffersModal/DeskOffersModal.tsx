@@ -57,6 +57,8 @@ export function DeskOffersModal({
       (offer.accepted_by_logistic && !offer.accepted_by_customer) ||
       (offer.accepted_by_carrier && !offer.accepted_by_customer),
   )
+  const activeHistoryOffers = offers.filter((offer) => offer.is_active !== false)
+  const inactiveHistoryOffers = offers.filter((offer) => offer.is_active === false)
 
   const cargoInfo = buildCargoInfo(offers, t, initialPrice)
 
@@ -110,21 +112,30 @@ export function DeskOffersModal({
                 <TabsList className="flex min-w-max flex-nowrap justify-start gap-8 border-b bg-transparent p-0 whitespace-nowrap w-full max-sm:flex-col max-sm:h-fit">
                   <TabsTrigger
                     value="incoming"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
+                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
                   >
                     {t("components.deskOffers.tabs.incoming")}
+                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
+                      <span className="-mt-0.5">{incomingOffers.length}</span>
+                    </div>
                   </TabsTrigger>
                   <TabsTrigger
                     value="accepted"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
+                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
                   >
                     {t("components.deskOffers.tabs.accepted")}
+                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
+                      <span className="-mt-0.5">{acceptedOffers.length}</span>
+                    </div>
                   </TabsTrigger>
                   <TabsTrigger
                     value="history"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border"
+                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
                   >
                     {t("components.deskOffers.tabs.history")}
+                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
+                      <span className="-mt-0.5">{offers.length}</span>
+                    </div>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -184,7 +195,25 @@ export function DeskOffersModal({
               <TabsContent value="history" className="space-y-4">
                 {offers.length ? (
                   <div className="space-y-4">
-                    {offers.map((offer) => (
+                    {activeHistoryOffers.map((offer) => (
+                      <OfferHistoryItem
+                        key={offer.id}
+                        offer={offer}
+                        isExpanded={expandedOfferId === offer.id}
+                        onToggle={() =>
+                          setExpandedOfferId((prev) => (prev === offer.id ? null : offer.id))
+                        }
+                      />
+                    ))}
+                    {inactiveHistoryOffers.length ? (
+                      <div className="relative py-2">
+                        <div className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden />
+                        <div className="relative mx-auto w-fit bg-background px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {t("components.deskOffers.inactiveHeading")}
+                        </div>
+                      </div>
+                    ) : null}
+                    {inactiveHistoryOffers.map((offer) => (
                       <OfferHistoryItem
                         key={offer.id}
                         offer={offer}

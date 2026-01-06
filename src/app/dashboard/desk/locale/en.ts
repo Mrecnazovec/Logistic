@@ -153,11 +153,11 @@ const messages: Record<string, string> = {
 	'desk.invite.currencyPlaceholder': 'Select currency',
 	'desk.invite.accept': 'Accept',
 	'desk.invite.acceptLoading': 'Accepting...',
-	'desk.invite.counter': 'Make counter offer',
+	'desk.invite.counter': 'Counter',
+	'desk.invite.counterSubmit': 'Send',
 	'desk.invite.counterLoading': 'Sending...',
 	'desk.invite.reject': 'Reject',
 	'desk.invite.rejectLoading': 'Rejecting...',
 }
 
 export default messages
-

@@ -30,11 +30,11 @@ export function AuthFields({ form, isPending }: AuthFieldsProps) {
 						<FormControl>
 							<InputGroup>
 								<InputGroupInput
-									placeholder={t('auth.fields.loginPlaceholder')}
+									placeholder={t('auth.fields.loginLabel')}
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}
-									autoComplete='email'
+									autoComplete='login'
 								/>
 								<InputGroupAddon className='pr-2'>
 									<User className='text-grayscale size-5' />

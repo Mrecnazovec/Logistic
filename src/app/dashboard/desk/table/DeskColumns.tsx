@@ -9,18 +9,13 @@ import { formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValue } from '@/lib/formatters'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
+import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import type { ColumnDef } from '@tanstack/react-table'
 import { CircleCheck, Minus } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
 const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
-
-const hasOffersValue = (cargo: ICargoList) => {
-	if (cargo.offers_count && cargo.offers_count > 0) return true
-	const normalized = String(cargo.has_offers ?? '').toLowerCase()
-	return normalized === 'true' || normalized === '1'
-}
 
 export const getDeskRowClassName = (cargo: ICargoList) => {
 	const classes: string[] = []
@@ -126,7 +121,11 @@ export const getDeskColumns = (t: Translator): ColumnDef<ICargoList>[] => [
 
 function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 	const [open, setOpen] = useState(false)
-	const hasOffers = hasOffersValue(cargo)
+	const { data, isLoading } = useGetOffers(
+		cargo.uuid ? { cargo_uuid: cargo.uuid } : undefined,
+		{ enabled: Boolean(cargo.uuid) }
+	)
+	const hasOffers = (data?.results?.length ?? 0) > 0
 
 	return (
 		<>
@@ -135,7 +134,7 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				variant='link'
 				className='h-auto px-0 font-medium disabled:text-muted-foreground'
 				onClick={() => setOpen(true)}
-				disabled={!hasOffers}
+				disabled={isLoading || !hasOffers}
 			>
 				{hasOffers ? <CircleCheck className='size-5 text-success-400' /> : <Minus className='size-5 text-neutral-400' />}
 			</Button>

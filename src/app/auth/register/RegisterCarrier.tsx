@@ -11,6 +11,10 @@ interface RegisterFieldsProps {
 	isPending: boolean
 }
 
+interface RegisterCompanyFieldsProps extends RegisterFieldsProps {
+	onPhoneChange?: (value: string) => void
+}
+
 interface RegisterVehicleFieldsProps extends RegisterFieldsProps {
 	showTransportName?: boolean
 }
@@ -21,7 +25,7 @@ interface RegisterTransportFieldProps extends RegisterFieldsProps {
 	onChange?: (value: string) => void
 }
 
-export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) {
+export function RegisterCompanyFields({ form, isPending, onPhoneChange }: RegisterCompanyFieldsProps) {
 	const { t } = useI18n()
 
 	return (
@@ -87,6 +91,10 @@ export function RegisterCompanyFields({ form, isPending }: RegisterFieldsProps) 
 									disabled={isPending}
 									{...field}
 									value={field.value ?? ''}
+									onChange={(event) => {
+										field.onChange(event)
+										onPhoneChange?.(event.target.value)
+									}}
 								/>
 								<InputGroupAddon className='pr-2'>
 									<Phone className='text-grayscale size-5' />

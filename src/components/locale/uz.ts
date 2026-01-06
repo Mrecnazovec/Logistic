@@ -71,6 +71,7 @@ const messages: Record<string, string> = {
 	'components.searchRating.filters': 'Filtrlar',
 	'components.searchRating.reset': 'Filtrlarni tozalash',
 	'components.searchRating.rating': 'Reyting',
+	'components.searchRating.country': 'Mamlakat',
 	'components.searchRating.from': 'Dan',
 	'components.searchRating.to': 'Gacha',
 
@@ -89,6 +90,8 @@ const messages: Record<string, string> = {
 	'components.search.hasOffers.yes': 'Takliflar bor',
 	'components.search.hasOffers.no': "Takliflar yo'q",
 	'components.search.weight': "Og'irlik",
+	'components.search.axles': "O'qlar",
+	'components.search.volume': 'Hajm (m3)',
 	'components.search.resetTitle': 'Filtrlarni tozalash',
 	'components.search.origin': 'Qayerdan',
 	'components.search.radius': 'Radius, km',
@@ -208,6 +211,7 @@ const messages: Record<string, string> = {
 	'components.deskOffers.emptyIncoming': "Kiruvchi takliflar yo'q.",
 	'components.deskOffers.emptyAccepted': "Qabul qilingan takliflar yo'q.",
 	'components.deskOffers.emptyHistory': "Tarix bo'sh.",
+	'components.deskOffers.inactiveHeading': 'Faol bo‘lmagan takliflar',
 
 	// ui/modals/DeskOffersModal/OfferHistoryItem.tsx
 	'components.offerHistory.company': 'Kompaniya',

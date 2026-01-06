@@ -69,6 +69,19 @@ export function SearchFields({
 		form.reset({}, { keepDefaultValues: false })
 	}
 
+	const handleAxlesInput = (value: string, onChange: (value: string) => void) => {
+		if (value === '') {
+			onChange(value)
+			return
+		}
+		const parsed = Number(value)
+		if (Number.isNaN(parsed)) {
+			onChange(value)
+			return
+		}
+		onChange(String(Math.min(parsed, 10)))
+	}
+
 	const renderCurrencyBadge = () => (
 		<span className='w-5 h-5 rounded-sm border border-grayscale-200 bg-grayscale-50 text-[10px] leading-[14px] text-black flex items-center justify-center'>
 			{priceCurrency ?? '???'}
@@ -256,6 +269,92 @@ export function SearchFields({
 								/>
 							</div>
 						) : null}
+						<div className='flex items-end gap-1'>
+							<FormField
+								control={form.control}
+								name='min_axles'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className='text-grayscale'>{t('components.search.axles')}</FormLabel>
+										<FormControl>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('components.search.from')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) =>
+														handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))
+													}
+												/>
+											</InputGroup>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='max_axles'
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('components.search.to')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) =>
+														handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))
+													}
+												/>
+											</InputGroup>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className='flex items-end gap-1'>
+							<FormField
+								control={form.control}
+								name='min_volume_m3'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className='text-grayscale'>{t('components.search.volume')}</FormLabel>
+										<FormControl>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('components.search.from')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												/>
+											</InputGroup>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='max_volume_m3'
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('components.search.to')}
+													{...field}
+													value={field.value ?? ''}
+													className='pl-4'
+													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+												/>
+											</InputGroup>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+						</div>
 					</PopoverContent>
 				</Popover>
 				{hasQuery ? (

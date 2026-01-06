@@ -41,8 +41,10 @@ export function RegisterPage() {
 	const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1)
 	const [otpCode, setOtpCode] = useState('')
 	const [otpSecondsLeft, setOtpSecondsLeft] = useState<number | null>(null)
+	const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null)
 	const transportName = form.watch('transport_name') ?? ''
 	const hasTransportName = transportName.trim().length > 0
+	const phoneValue = form.watch('phone') ?? ''
 
 	const roles = useMemo(
 		() => [
@@ -79,15 +81,15 @@ export function RegisterPage() {
 		return role === RoleEnum.CARRIER && hasTransportName ? 3 : 2
 	}, [role, hasTransportName])
 
-	const totalSteps = role ? baseSteps + 2 : 2
+	const isPhoneVerified = verifiedPhone !== null && verifiedPhone === phoneValue
+	const totalSteps = role ? baseSteps + (isPhoneVerified ? 1 : 2) : 2
 
 	const currentStepIndex = useMemo(() => {
 		if (!role) return step
 		if (step <= baseSteps) return step
+		if (isPhoneVerified) return baseSteps + 1
 		return baseSteps + (step === 4 ? 1 : 2)
-	}, [step, baseSteps, role])
-
-	const phoneValue = form.watch('phone') ?? ''
+	}, [step, baseSteps, role, isPhoneVerified])
 
 	const { mutateAsync: sendPhoneOtp, isPending: isSendingOtp } = useMutation({
 		mutationKey: ['send phone otp'],
@@ -109,6 +111,7 @@ export function RegisterPage() {
 			authService.verifyPhoneOtp({ phone: payload.phone, code: payload.code, purpose: 'verify' }),
 		onSuccess: (data) => {
 			if (data.verified) {
+				setVerifiedPhone(phoneValue)
 				setStep(5)
 				return
 			}
@@ -123,6 +126,12 @@ export function RegisterPage() {
 	const handleTransportChange = (value: string) => {
 		if (step === 3 && value.trim().length === 0) {
 			setStep(2)
+		}
+	}
+
+	const handlePhoneChange = (value: string) => {
+		if (verifiedPhone && value !== verifiedPhone) {
+			setVerifiedPhone(null)
 		}
 	}
 
@@ -151,6 +160,10 @@ export function RegisterPage() {
 		}
 
 		if (step === 5) {
+			if (isPhoneVerified) {
+				setStep(role === RoleEnum.CARRIER && hasTransportName ? 3 : 2)
+				return
+			}
 			setStep(4)
 		}
 	}
@@ -158,6 +171,7 @@ export function RegisterPage() {
 	const handleBackToRole = () => {
 		setRole(undefined)
 		setStep(1)
+		setVerifiedPhone(null)
 	}
 
 	const handleNext = async () => {
@@ -186,6 +200,11 @@ export function RegisterPage() {
 
 		if (step === 2 && role === RoleEnum.CARRIER && hasTransportName) {
 			setStep(3)
+			return
+		}
+
+		if (isPhoneVerified) {
+			setStep(5)
 			return
 		}
 
@@ -322,7 +341,7 @@ export function RegisterPage() {
 										)}
 										{step === 2 && (
 											<>
-												<RegisterCompanyFields form={form} isPending={isPending} />
+												<RegisterCompanyFields form={form} isPending={isPending} onPhoneChange={handlePhoneChange} />
 												{role === RoleEnum.CARRIER && (
 													<RegisterTransportField form={form} isPending={isPending} onChange={handleTransportChange} />
 												)}
