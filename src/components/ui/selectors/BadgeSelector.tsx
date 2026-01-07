@@ -50,19 +50,19 @@ export const getOfferStatusMeta = (offer: IOfferShort | undefined, role: RoleEnu
 	const counterpartyAccepted = offer.accepted_by_customer
 	const selfAccepted = role === RoleEnum.CARRIER ? offer.accepted_by_carrier : offer.accepted_by_logistic
 
-	if (counterpartyAccepted && selfAccepted) {
-		return {
-			variant: 'success',
-			label: t('components.badge.offer.agreed.label'),
-			note: t('components.badge.offer.agreed.note'),
-		}
-	}
-
 	if (isCancelled) {
 		return {
 			variant: 'danger',
 			label: t('components.badge.offer.declined.label'),
 			note: t('components.badge.offer.declined.note'),
+		}
+	}
+
+	if (counterpartyAccepted && selfAccepted) {
+		return {
+			variant: 'success',
+			label: t('components.badge.offer.agreed.label'),
+			note: t('components.badge.offer.agreed.note'),
 		}
 	}
 
