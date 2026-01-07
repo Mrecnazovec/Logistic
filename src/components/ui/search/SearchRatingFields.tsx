@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
+import { useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { Search, Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -12,6 +13,7 @@ import { CountrySelector } from '@/components/ui/selectors/CountrySelector'
 import { useI18n } from '@/i18n/I18nProvider'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
+import type { Country } from '@/shared/types/Geo.interface'
 import { ISearch } from '@/shared/types/Search.interface'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 
@@ -26,10 +28,18 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 	const pathname = usePathname()
 	const isDesktop = useMediaQuery('(min-width: 1024px)')
 	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
+	const countryCodeValue = form.watch('code')
+	const [manualSelectedCountry, setManualSelectedCountry] = useState<Country | null>(null)
+	const selectedCountry = useMemo(() => {
+		if (!countryCodeValue) return null
+		if (manualSelectedCountry?.code === String(countryCodeValue)) return manualSelectedCountry
+		return { code: String(countryCodeValue), name: String(countryCodeValue) }
+	}, [countryCodeValue, manualSelectedCountry])
 
 	const handleDeleteFilter = () => {
 		form.reset()
 		router.push(pathname)
+		setManualSelectedCountry(null)
 	}
 
 	const searchButton = (
@@ -114,14 +124,17 @@ export function SearchRatingFields({ form, onSubmit }: SearchFieldsProps) {
 							/>
 							<FormField
 								control={form.control}
-								name='country'
+								name='code'
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className='text-grayscale'>{t('components.searchRating.country')}</FormLabel>
 										<FormControl>
 											<CountrySelector
-												value={field.value ? { name: String(field.value), code: String(field.value) } : null}
-												onChange={(country) => field.onChange(country.name)}
+												value={selectedCountry ?? (field.value ? { name: String(field.value), code: String(field.value) } : null)}
+												onChange={(country) => {
+													setManualSelectedCountry(country)
+													field.onChange(country.code)
+												}}
 											/>
 										</FormControl>
 									</FormItem>

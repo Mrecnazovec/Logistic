@@ -50,6 +50,11 @@ export const getRatingColumns = (t: Translator, locale: string): ColumnDef<IRati
 			cell: ({ row }) => row.original.display_name ?? '-',
 		},
 		{
+			accessorKey: 'country',
+			header: ({ column }) => renderSortableHeader(column, t('rating.table.country')),
+			cell: ({ row }) => row.original.country ?? '-',
+		},
+		{
 			accessorKey: 'avg_rating',
 			header: ({ column }) => renderSortableHeader(column, t('rating.table.rating')),
 			cell: ({ row }) => (

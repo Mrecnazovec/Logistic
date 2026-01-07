@@ -50,12 +50,12 @@ export function DeskOffersModal({
       !offer.accepted_by_customer &&
       !offer.accepted_by_logistic &&
       !offer.accepted_by_carrier &&
-      offer.response_status !== "counter_from_customer",
+      offer.response_status !== "counter_from_customer" && offer.response_status !== 'rejected'
   )
   const acceptedOffers = offers.filter(
     (offer) =>
-      (offer.accepted_by_logistic && !offer.accepted_by_customer) ||
-      (offer.accepted_by_carrier && !offer.accepted_by_customer),
+      (offer.accepted_by_logistic && !offer.accepted_by_customer && offer.response_status !== 'rejected') ||
+      (offer.accepted_by_carrier && !offer.accepted_by_customer && offer.response_status !== 'rejected'),
   )
   const activeHistoryOffers = offers.filter((offer) => offer.is_active !== false)
   const inactiveHistoryOffers = offers.filter((offer) => offer.is_active === false)

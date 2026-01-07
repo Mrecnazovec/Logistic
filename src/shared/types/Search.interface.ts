@@ -32,7 +32,7 @@ type SearchExtras = Partial<{
 	rating_min: number
 	rating_max: number
 	order: 'path_km' | '-path_km' | 'origin_dist_km' | '-origin_dist_km' | 'price_value' | '-price_value' | 'load_date' | '-load_date'
-	country: string
+	code: string
 }>
 
 export type ISearch = ApiSearchQuery & SearchExtras

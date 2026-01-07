@@ -18,6 +18,7 @@ const messages: Record<string, string> = {
 	// table/RatingColumns.tsx
 	'rating.table.company': 'Company',
 	'rating.table.person': 'Contact person',
+	'rating.table.country': 'Country',
 	'rating.table.rating': 'Rating',
 	'rating.table.reviews': 'Reviews',
 	'rating.table.completed': 'Completed',

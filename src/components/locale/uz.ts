@@ -127,11 +127,11 @@ const messages: Record<string, string> = {
 
 	// ui/selectors/BadgeSelector.tsx
 	'components.badge.counterparty': 'mijoz',
-	'components.badge.token.cancelled': 'bekor qilindi',
-	'components.badge.token.inviteMessage': 'Buyurtma orqali taklif',
-	'components.badge.token.waiting': 'kutilmoqda',
-	'components.badge.token.received': 'qabul qilindi',
-	'components.badge.token.cancelPrefix': 'bek',
+	'components.badge.token.cancelled': 'отменено',
+	'components.badge.token.inviteMessage': 'Приглашение через заказ',
+	'components.badge.token.waiting': 'ожидает',
+	'components.badge.token.received': 'получен',
+	'components.badge.token.cancelPrefix': 'отм',
 	'components.badge.offer.invite.label': 'Haydovchi kerak',
 	'components.badge.offer.invite.note': 'Taklifnomani qabul qilish mumkin',
 	'components.badge.offer.expired.label': 'Taklif muddati tugagan',

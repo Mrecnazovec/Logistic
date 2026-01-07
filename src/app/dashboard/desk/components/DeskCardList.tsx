@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
-import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
+import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
@@ -127,19 +127,19 @@ function DeskCard({ cargo }: DeskCardProps) {
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>
 				<Button
 					variant='outline'
-					className='min-w-[140px] flex-1 bg-[#111827] text-white'
+					className='min-w-[140px] flex-1 bg-[#111827] hover:bg-[#1e273ad3] text-white hover:text-white'
 					onClick={() => refreshLoad({ uuid: cargo.uuid, detail: t('desk.card.refreshDetail') })}
 				>
 					<RefreshCcw /> {t('desk.card.refresh')}
 				</Button>
 				<Link className='min-w-[140px] flex-1' href={DASHBOARD_URL.edit(cargo.uuid)}>
-					<Button variant='outline' className='w-full bg-warning-400 text-white'>
+					<Button variant='outline' className='w-full bg-warning-500 text-white hover:bg-warning-400 hover:text-white'>
 						<Pen /> {t('desk.card.edit')}
 					</Button>
 				</Link>
 				<Button
 					variant='outline'
-					className='min-w-[140px] flex-1 bg-error-500 text-white'
+					className='min-w-[140px] flex-1 bg-error-500 text-white hover:bg-error-400 hover:text-white'
 					onClick={() => toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })}
 					disabled={isLoadingToggle}
 				>
@@ -149,7 +149,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 				<Button
 					variant='outline'
 					onClick={() => setOfferOpen(true)}
-					className='min-w-[240px] flex flex-1 items-center gap-2 bg-brand text-white'
+					className='min-w-[240px] flex flex-1 items-center gap-2 bg-brand text-white hover:bg-brand/80 hover:text-white'
 				>
 					<Handshake className='size-4' />
 					{t('desk.card.offer')}

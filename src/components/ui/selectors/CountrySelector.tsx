@@ -46,9 +46,12 @@ function CountrySelectorInner({
 
 	const filteredCountries = useMemo(() => {
 		const countries = data?.results ?? []
-		if (!search) return countries
+		const uniqueCountries = Array.from(
+			new Map(countries.map((country) => [`${country.code}::${country.name}`, country])).values()
+		)
+		if (!search) return uniqueCountries
 		const normalized = search.toLowerCase()
-		return countries.filter((country) => country.name.toLowerCase().includes(normalized))
+		return uniqueCountries.filter((country) => country.name.toLowerCase().includes(normalized))
 	}, [data?.results, search])
 
 	const handleSelect = (country: Country) => {
@@ -97,7 +100,7 @@ function CountrySelectorInner({
 									<CommandGroup>
 										{filteredCountries.map((country) => (
 											<CommandItem
-												key={country.code}
+												key={`${country.code}-${country.name}`}
 												value={country.name}
 												onSelect={() => handleSelect(country)}
 											>

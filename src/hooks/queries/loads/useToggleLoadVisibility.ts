@@ -18,7 +18,7 @@ export const useToggleLoadVisibility = () => {
 			loadsService.toggleLoadVisibility(uuid, isHidden),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
-			queryClient.invalidateQueries({ queryKey: ['get loads', 'by-user'] })
+			queryClient.invalidateQueries({ queryKey: ['get loads'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success(t('hooks.loads.toggleVisibility.success'))
 		},
