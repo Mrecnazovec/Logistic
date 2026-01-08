@@ -25,12 +25,12 @@ export function DeskPage() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const { role } = useRoleStore()
 	const tableType = useTableTypeStore((state) => state.tableType)
-	const { t } = useI18n()
+	const { t, locale } = useI18n()
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const tabs = useMemo(() => [{ value: 'desk', label: t('desk.tabs.requests') }], [t])
-	const columns = useMemo(() => getDeskColumns(t), [t])
+	const columns = useMemo(() => getDeskColumns(t, locale), [t, locale])
 
 	useEffect(() => {
 		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))

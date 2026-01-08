@@ -21,7 +21,7 @@ const messages: Record<string, string> = {
 
 	// language/page.tsx
 	'settings.language.title': 'Til',
-	'settings.language.description': "Afzal ko'rilgan tilni tanlang",
+	'settings.language.description': "O'zingiz yoqtirgan tilni tanlang",
 	'settings.language.save': "O'zgarishlarni saqlash",
 
 	// password/page.tsx

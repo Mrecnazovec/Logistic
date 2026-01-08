@@ -5,8 +5,8 @@ const messages: Record<string, string> = {
 	'shared.transport.type.reefer': 'Refrijerator',
 	'shared.transport.type.dump': 'Samossval',
 	'shared.transport.type.cartr': 'Avtovoz',
-	'shared.transport.type.grain': 'Don tashuvchi',
-	'shared.transport.type.log': "Yog'och tashuvchi",
+	'shared.transport.type.grain': 'Don haydovchi',
+	'shared.transport.type.log': "Yog'och haydovchi",
 	'shared.transport.type.pickup': 'Pikap',
 	'shared.transport.type.mega': 'Mega treyler',
 	'shared.transport.type.other': 'Boshqa',
@@ -24,7 +24,7 @@ const messages: Record<string, string> = {
 	// enums/Role.enum.ts
 	'shared.role.logistic': 'Logistika',
 	'shared.role.customer': 'Mijoz',
-	'shared.role.carrier': 'Tashuvchi',
+	'shared.role.carrier': 'Haydovchi',
 
 	// enums/PriceCurrency.enum.ts
 	'shared.currency.uzs': 'Som',

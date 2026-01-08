@@ -16,12 +16,12 @@ import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 import { useMemo } from 'react'
 
 export function AnnouncementsPage() {
-	const { t } = useI18n()
+	const { t, locale } = useI18n()
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)
-	const columns = useMemo(() => getCargoColumns(t), [t])
+	const columns = useMemo(() => getCargoColumns(t, locale), [t, locale])
 
 	const results = data?.results ?? []
 	const hasResults = results.length > 0

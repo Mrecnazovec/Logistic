@@ -7,6 +7,7 @@ import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValue } from '@/lib/formatters'
+import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
 import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
@@ -28,7 +29,7 @@ export const getDeskRowClassName = (cargo: ICargoList) => {
 
 type Translator = (key: string) => string
 
-export const getDeskColumns = (t: Translator): ColumnDef<ICargoList>[] => [
+export const getDeskColumns = (t: Translator, locale: Locale): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -46,7 +47,7 @@ export const getDeskColumns = (t: Translator): ColumnDef<ICargoList>[] => [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-'),
+		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-', locale),
 		sortingFn: (a, b) => new Date(a.original.created_at).getTime() - new Date(b.original.created_at).getTime(),
 	},
 	{

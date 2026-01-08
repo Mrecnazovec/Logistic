@@ -7,8 +7,8 @@ const messages: Record<string, string> = {
 	'rating.card.section.rating': 'Reyting',
 	'rating.card.section.extra': "Qo'shimcha",
 	'rating.card.company': 'Kompaniya',
-	'rating.card.person': 'Aloqa shaxs',
-	'rating.card.reviews': 'Sharhlar: {count}',
+	'rating.card.person': 'Login',
+	'rating.card.reviews': 'Izohlar: {count}',
 	'rating.card.completedDeals': 'Yakunlangan bitimlar',
 	'rating.card.country': 'Mamlakat',
 	'rating.card.registeredAt': "Ro'yxatdan o'tgan",
@@ -17,10 +17,10 @@ const messages: Record<string, string> = {
 
 	// table/RatingColumns.tsx
 	'rating.table.company': 'Kompaniya',
-	'rating.table.person': 'Aloqa shaxs',
+	'rating.table.person': 'Login',
 	'rating.table.country': 'Mamlakat',
 	'rating.table.rating': 'Reyting',
-	'rating.table.reviews': 'Sharhlar',
+	'rating.table.reviews': 'Izohlar',
 	'rating.table.completed': 'Yakunlangan',
 	'rating.table.registeredAt': "Ro'yxatdan o'tgan sana",
 
@@ -31,7 +31,7 @@ const messages: Record<string, string> = {
 	'rating.expanded.distance': 'Masofa',
 	'rating.expanded.registeredAt': "Ro'yxatdan o'tgan",
 	'rating.expanded.company': 'Kompaniya',
-	'rating.expanded.person': 'Aloqa shaxs',
+	'rating.expanded.person': 'Login',
 	'rating.expanded.role': 'Rol',
 	'rating.expanded.country': 'Mamlakat',
 }

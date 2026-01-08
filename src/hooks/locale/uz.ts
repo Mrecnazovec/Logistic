@@ -1,7 +1,7 @@
 const messages: Record<string, string> = {
 	// useLogin.ts
-	'hooks.auth.login.success': 'Kirish muvaffaqiyatli',
-	'hooks.auth.login.error': 'Kirish amalga oshmadi',
+	'hooks.auth.login.success': 'Muvaffaqiyatli kirish',
+	'hooks.auth.login.error': "Noto'g'ri hisob ma'lumotlari",
 
 	// useLogout.ts
 	'hooks.auth.logout.success': 'Chiqish bajarildi',
@@ -131,8 +131,8 @@ const messages: Record<string, string> = {
 	'hooks.payments.confirm.customer.error': "Mijoz sifatida to'lovni tasdiqlab bo'lmadi",
 
 	// queries/payments/useConfirmPaymentCarrier.ts
-	'hooks.payments.confirm.carrier.success': "To'lov tashuvchi tomonidan tasdiqlandi",
-	'hooks.payments.confirm.carrier.error': "Tashuvchi sifatida to'lovni tasdiqlab bo'lmadi",
+	'hooks.payments.confirm.carrier.success': "To'lov haydovchi tomonidan tasdiqlandi",
+	'hooks.payments.confirm.carrier.error': "Haydovchi sifatida to'lovni tasdiqlab bo'lmadi",
 
 	// queries/orders/useAcceptOrderInvite.ts
 	'hooks.orders.acceptInvite.success': 'Taklif qabul qilindi',

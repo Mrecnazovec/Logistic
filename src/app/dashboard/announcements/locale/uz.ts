@@ -29,8 +29,8 @@ const messages: Record<string, string> = {
 	'announcements.expanded.payment.title': "To'lov va kontaktlar",
 	'announcements.expanded.payment.method': "To'lov usuli",
 	'announcements.expanded.payment.price': 'Narx',
-	'announcements.expanded.description.title': 'Tavsif',
-	'announcements.expanded.description.empty': "Tavsif yo'q",
+	'announcements.expanded.description.title': 'Izoh',
+	'announcements.expanded.description.empty': "Izoh yo'q",
 	'announcements.expanded.offer': 'Taklif yuborish',
 
 	// table/CargoColumns.tsx
@@ -105,7 +105,7 @@ const messages: Record<string, string> = {
 	'announcements.posting.equipment.weightNumber': "Og'irlik raqam bo'lishi kerak",
 	'announcements.posting.equipment.weightPlaceholder': "Og'irlik (t)",
 	'announcements.posting.equipment.descriptionPlaceholder':
-		"E'lon tavsifi: yuk, sanalar, shartlar va tafsilotlar",
+		"E'lon Izohi: yuk, sanalar, shartlar va tafsilotlar",
 	'announcements.posting.actions.cancel': 'Bekor qilish',
 	'announcements.posting.actions.submit': "E'lon qilish",
 	'announcements.posting.cancel.title': "E'lonni bekor qilmoqchimisiz?",

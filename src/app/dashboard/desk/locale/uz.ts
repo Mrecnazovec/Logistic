@@ -3,7 +3,7 @@ const messages: Record<string, string> = {
 	'desk.meta.title': 'Savdo',
 
 	// DeskPage.tsx
-	'desk.tabs.requests': "So'rovlar",
+	'desk.tabs.requests': "Arizalar",
 
 	// table/DeskColumns.tsx
 	'desk.table.product': 'Mahsulot',
@@ -58,8 +58,8 @@ const messages: Record<string, string> = {
 	'desk.card.noOffers': "Takliflar yo'q",
 
 	// components/DeskCardDriverList.tsx
-	'desk.driver.title': "Tashuvchi so'rovi",
-	'desk.driver.requestLabel': "So'rov: tashuvchi so'rovi",
+	'desk.driver.title': "Haydovchi so'rovi",
+	'desk.driver.requestLabel': "So'rov: haydovchi so'rovi",
 	'desk.driver.originTitle': 'Yuk olish nuqtasi',
 	'desk.driver.destinationTitle': 'Yetkazish nuqtasi',
 	'desk.driver.payment': "To'lov",

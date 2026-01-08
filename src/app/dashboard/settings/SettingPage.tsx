@@ -101,17 +101,6 @@ export function SettingPage() {
                     </div>
 
                     <div className='space-y-2'>
-                        <Label htmlFor='phone' className='text-sm font-medium text-foreground'>{t('settings.profile.phone.label')}</Label>
-                        <Input
-                            id='phone'
-                            placeholder={t('settings.profile.phone.placeholder')}
-                            disabled={isLoading || isLoadingUpdateMe}
-                            className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
-                            {...register('phone')}
-                        />
-                    </div>
-
-                    <div className='space-y-2'>
                         <Label htmlFor='city' className='text-sm font-medium text-foreground'>{t('settings.profile.city.label')}</Label>
                         <CitySelector
                             value={watchedCity}

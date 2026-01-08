@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
 import {
+	DEFAULT_PLACEHOLDER,
 	formatDateValue,
 	formatPlace,
 	formatPricePerKmValue,
@@ -51,7 +52,7 @@ type AnnouncementCardProps = {
 }
 
 function AnnouncementCard({ cargo }: AnnouncementCardProps) {
-	const { t } = useI18n()
+	const { t, locale } = useI18n()
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
 	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
@@ -122,7 +123,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 						{cargo.company_name || '—'}
 					</CardTitle>
 					<span className='text-lg font-semibold leading-tight text-grayscale'>
-						{formatRelativeDate(cargo.created_at)}
+						{formatRelativeDate(cargo.created_at, DEFAULT_PLACEHOLDER, locale)}
 					</span>
 				</div>
 			</CardHeader>

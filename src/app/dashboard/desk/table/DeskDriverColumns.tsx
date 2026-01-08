@@ -5,13 +5,14 @@ import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValue } from '@/lib/formatters'
+import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import type { ColumnDef } from '@tanstack/react-table'
 
 type Translator = (key: string) => string
 
-export const getDeskDriverColumns = (t: Translator): ColumnDef<IOfferShort>[] => [
+export const getDeskDriverColumns = (t: Translator, locale: Locale): ColumnDef<IOfferShort>[] => [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -20,7 +21,7 @@ export const getDeskDriverColumns = (t: Translator): ColumnDef<IOfferShort>[] =>
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-'),
+		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-', locale),
 		sortingFn: (a, b) => new Date(a.original.created_at).getTime() - new Date(b.original.created_at).getTime(),
 	},
 	{

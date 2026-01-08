@@ -25,6 +25,7 @@ import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { RegisterCompanyFields, RegisterTransportField, RegisterVehicleFields } from './RegisterCarrier'
 import { RegisterRoles } from './RegisterRoles'
+import { Logo } from '@/components/ui/Logo'
 
 const AUTH_FIELDS = ['email', 'password', 'password2'] as const
 const COMPANY_FIELDS = ['first_name', 'phone', 'country', 'country_code', 'city', 'company_name'] as const
@@ -285,6 +286,7 @@ export function RegisterPage() {
 			<h1 className='sr-only'>{t('register.title')}</h1>
 			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover bg-bottom px-12 py-16 min-h-[200px]'>
 				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
+					<Logo href='/' className='sm:mb-8 mb-4' imageClassName='sm:w-[122px]' />
 					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>{t('auth.hero')}</h2>
 				</div>
 			</div>

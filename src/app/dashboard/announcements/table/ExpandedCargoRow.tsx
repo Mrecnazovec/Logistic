@@ -28,7 +28,7 @@ const InfoRow = ({ label, value }: InfoRowProps) => (
 )
 
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
-	const { t } = useI18n()
+	const { t, locale } = useI18n()
 	const { role } = useRoleStore()
 
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || EMPTY_VALUE
@@ -55,7 +55,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					<UuidCopy uuid={cargo.uuid} id={cargo.id} isPlaceholder />
 				</div>
 				<p className='text-sm text-muted-foreground'>
-					{t('announcements.expanded.published', { date: formatRelativeDate(cargo.created_at, EMPTY_VALUE) })}
+					{t('announcements.expanded.published', { date: formatRelativeDate(cargo.created_at, EMPTY_VALUE, locale) })}
 				</p>
 			</div>
 

@@ -11,7 +11,7 @@ const messages: Record<string, string> = {
 
 	// HistoryColumns.tsx
 	'history.table.customer': 'Mijoz',
-	'history.table.carrier': 'Tashuvchi',
+	'history.table.carrier': 'Haydovchi',
 	'history.table.logistic': 'Logistika',
 	'history.table.status': 'Status',
 	'history.table.origin': "Jo'nash",
@@ -29,7 +29,7 @@ const messages: Record<string, string> = {
 	'history.card.section.documents': 'Hujjatlar',
 	'history.card.customer': 'Mijoz',
 	'history.card.logistic': 'Logistika',
-	'history.card.carrier': 'Tashuvchi',
+	'history.card.carrier': 'Haydovchi',
 	'history.card.load': 'Yuklash',
 	'history.card.unload': 'Tushirish',
 	'history.card.distance': 'Masofa',

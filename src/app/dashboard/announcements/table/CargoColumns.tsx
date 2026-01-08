@@ -11,6 +11,7 @@ import {
 	formatWeightValue,
 	parseDateToTimestamp,
 } from '@/lib/formatters'
+import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -18,7 +19,7 @@ import { Minus } from 'lucide-react'
 
 type Translator = (key: string) => string
 
-export const getCargoColumns = (t: Translator): ColumnDef<ICargoList>[] => [
+export const getCargoColumns = (t: Translator, locale: Locale): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -27,7 +28,7 @@ export const getCargoColumns = (t: Translator): ColumnDef<ICargoList>[] => [
 				<SortIcon direction={column.getIsSorted()} className='ml-2 size-4' />
 			</Button>
 		),
-		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-'),
+		cell: ({ row }) => formatRelativeDate(row.original.created_at, '-', locale),
 		sortingFn: (a, b) => parseDateToTimestamp(a.original.created_at) - parseDateToTimestamp(b.original.created_at),
 	},
 	{

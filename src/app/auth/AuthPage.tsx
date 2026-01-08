@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/form-control/Form'
 import { LanguageSelect } from '@/components/ui/LanguageSelect'
+import { Logo } from '@/components/ui/Logo'
 import { PUBLIC_URL } from '@/config/url.config'
 import { useI18n } from '@/i18n/I18nProvider'
 import Link from 'next/link'
@@ -23,6 +24,7 @@ export function AuthPage() {
 			<h1 className='sr-only'>{t('auth.title')}</h1>
 			<div className='bg-[url(/png/bg_auth.png)] h-full flex lg:flex-col items-center justify-center bg-no-repeat bg-cover bg-bottom px-12 min-h-[200px]'>
 				<div className='bg-brand-900 rounded-6xl lg:p-12 sm:p-6 p-3'>
+					<Logo href='/' className='sm:mb-8 mb-4' imageClassName='sm:w-[122px]' />
 					<h2 className='lg:text-[32px] sm:text-xl text-base text-white font-raleway font-semibold'>{t('auth.hero')}</h2>
 				</div>
 			</div>

@@ -1,5 +1,6 @@
-import { format } from 'date-fns'
+﻿import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import type { Locale } from '@/i18n/config'
 
 import { formatCurrencyPerKmValue, formatCurrencyValue, type PriceCurrencyCode } from './currency'
 
@@ -29,18 +30,39 @@ export function formatDateTimeValue(value?: string | number | Date | null, place
 	}
 }
 
-export function formatRelativeDate(value?: string | null, placeholder = DEFAULT_PLACEHOLDER) {
+export function formatRelativeDate(value?: string | null, placeholder = DEFAULT_PLACEHOLDER, locale: Locale = 'ru') {
 	if (!value) return placeholder
 	try {
 		const createdAt = new Date(value)
-		const diffMs = Date.now() - createdAt.getTime()
-		const minutes = Math.floor(diffMs / (1000 * 60))
-		const hours = Math.floor(diffMs / (1000 * 60 * 60))
-		const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+		if (Number.isNaN(createdAt.getTime())) return placeholder
 
-		if (days >= 1) return `${days} дн. назад`
-		if (hours >= 1) return `${hours} ч. назад`
-		return `${minutes} мин. назад`
+		const diffMs = createdAt.getTime() - Date.now()
+		const absMs = Math.abs(diffMs)
+		const minutes = Math.floor(absMs / (1000 * 60))
+		const hours = Math.floor(absMs / (1000 * 60 * 60))
+		const days = Math.floor(absMs / (1000 * 60 * 60 * 24))
+
+		if (locale === 'uz') {
+			const isPast = diffMs <= 0
+			const formatUz = (valueCount: number, unit: 'kun' | 'soat' | 'minut') =>
+				isPast ? `${valueCount} ${unit} oldin` : `${valueCount} ${unit}dan keyin`
+
+			if (days >= 1) return formatUz(days, 'kun')
+			if (hours >= 1) return formatUz(hours, 'soat')
+			return formatUz(minutes, 'minut')
+		}
+
+		const localeMap: Record<Locale, string> = {
+			ru: 'ru-RU',
+			en: 'en-US',
+			uz: 'uz-UZ',
+		}
+		const formatter = new Intl.RelativeTimeFormat(localeMap[locale] ?? localeMap.ru, { numeric: 'always', style: 'long' })
+		const sign = diffMs <= 0 ? -1 : 1
+
+		if (days >= 1) return formatter.format(sign * days, 'day')
+		if (hours >= 1) return formatter.format(sign * hours, 'hour')
+		return formatter.format(sign * minutes, 'minute')
 	} catch {
 		return placeholder
 	}
@@ -101,7 +123,7 @@ export function formatDurationFromMinutes(totalMinutes?: number | null, placehol
 
 export function formatAgeFromMinutes(ageMinutes?: number | null, placeholder = DEFAULT_PLACEHOLDER) {
 	if (!Number.isFinite(ageMinutes)) return placeholder
-	if (!ageMinutes) return 'Только что'
+	if (!ageMinutes) return 'только что'
 	if (ageMinutes < 60) return `${ageMinutes} мин назад`
 
 	const hours = Math.floor(ageMinutes / 60)
@@ -126,3 +148,6 @@ export function formatFileSize(bytes?: number | null, placeholder = DEFAULT_PLAC
 	const value = numeric / 1000 ** exponent
 	return `${value.toFixed(value >= 10 || value === Math.trunc(value) ? 0 : 1)} ${units[exponent]}`
 }
+
+
+
