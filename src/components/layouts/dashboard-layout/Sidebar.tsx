@@ -12,10 +12,11 @@ import { useI18n } from '@/i18n/I18nProvider'
 
 export function Sidebar() {
 	const pathname = usePathname()
-	const filteredPathname = `${pathname}/`
+	const normalizedPathname = pathname.endsWith('/') ? pathname : `${pathname}/`
 	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
 	const navItems = getNavItems(role, locale)
+	const homeHref = navItems[0]?.items[0]?.href
 
 	const isAllowed = (roles?: NavItem['roles']) => {
 		if (!roles) return true
@@ -42,7 +43,11 @@ export function Sidebar() {
 						{group.group && <p className='font-medium text-[10px] uppercase'>{group.group}</p>}
 						{group.items.map((item, i) => {
 							const Icon = item.icon
-							const isActive = filteredPathname.startsWith(item.href)
+							const normalizedHref = item.href.endsWith('/') ? item.href : `${item.href}/`
+							const isHome = homeHref === item.href
+							const isActive = isHome
+								? normalizedPathname === normalizedHref
+								: normalizedPathname.startsWith(normalizedHref)
 							return (
 								<Tooltip key={i}>
 									<TooltipTrigger asChild>

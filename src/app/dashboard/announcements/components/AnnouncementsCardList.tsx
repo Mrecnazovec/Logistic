@@ -8,16 +8,13 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
 import {
 	DEFAULT_PLACEHOLDER,
-	formatDateValue,
 	formatPlace,
-	formatPricePerKmValue,
 	formatPriceValue,
-	formatRelativeDate,
-	formatWeightValue,
+	formatRelativeDate
 } from '@/lib/formatters'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { CalendarDays, Mail, MapPin, Minus, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
+import { Mail, MapPin, Minus, Phone, Star, Wallet } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 const AnnouncementDetailModal = dynamic(() =>
@@ -66,7 +63,6 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					primary: formatPlace(cargo.origin_city, cargo.origin_country),
 					secondary: t('announcements.card.place'),
 				},
-				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: t('announcements.card.load') },
 			],
 		},
 		{
@@ -77,14 +73,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					primary: formatPlace(cargo.destination_city, cargo.destination_country),
 					secondary: t('announcements.card.place'),
 				},
-				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: t('announcements.card.unload') },
-			],
-		},
-		{
-			title: t('announcements.card.transportWeight'),
-			items: [
-				{ icon: Truck, primary: transportName || '-', secondary: t('announcements.card.transportType') },
-				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: t('announcements.card.weight') },
+
 			],
 		},
 		{
@@ -94,11 +83,6 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					icon: Wallet,
 					primary: formatPriceValue(cargo.price_value, cargo.price_currency),
 					secondary: t('announcements.card.price'),
-				},
-				{
-					icon: Wallet,
-					primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency),
-					secondary: t('announcements.card.pricePerKm'),
 				},
 			],
 		},
@@ -113,7 +97,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 	]
 
 	return (
-		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
+		<Card className='rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b [.border-b]:pb-0'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<span className='flex items-center text-sm text-muted-foreground'>
@@ -132,7 +116,7 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 				<CardSections sections={sections} />
 			</CardContent>
 
-			<CardFooter className='flex max-sm:flex-col gap-3 border-t pt-4'>
+			<CardFooter className='flex flex-wrap max-sm:flex-col gap-3 border-t pt-4'>
 				<AnnouncementDetailModal cargo={cargo} />
 				<OfferModal className='min-w-[140px] flex-1 max-sm:w-full' title={t('announcements.card.offer')} selectedRow={cargo} />
 			</CardFooter>

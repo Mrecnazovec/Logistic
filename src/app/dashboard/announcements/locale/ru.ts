@@ -52,17 +52,11 @@ const messages: Record<string, string> = {
 	// components/AnnouncementsCardList.tsx
 	'announcements.card.from': 'Откуда',
 	'announcements.card.to': 'Куда',
-	'announcements.card.transportWeight': 'Транспорт / вес',
 	'announcements.card.priceKm': 'Цена / км',
 	'announcements.card.phone': 'Телефон',
 	'announcements.card.email': 'Почта',
 	'announcements.card.place': 'Город / страна',
-	'announcements.card.load': 'Загрузка',
-	'announcements.card.unload': 'Разгрузка',
-	'announcements.card.transportType': 'Тип транспорта',
-	'announcements.card.weight': 'Вес',
 	'announcements.card.price': 'Стоимость перевозки',
-	'announcements.card.pricePerKm': 'Цена за км',
 	'announcements.card.offer': 'Предложить',
 
 	// posting/PostingPage.tsx

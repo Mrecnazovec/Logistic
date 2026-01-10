@@ -45,27 +45,30 @@ type TransportationCardProps = {
 function TransportationCard({ cargo }: TransportationCardProps) {
 	const { t } = useI18n()
 	const placeholder = t('transportation.card.placeholder')
-	const addressMissing = t('transportation.card.addressMissing')
+	const carrierLogisticItems = [
+		cargo.carrier_name
+			? { icon: Building2, primary: cargo.carrier_name, secondary: t('transportation.card.label.carrier') }
+			: null,
+		cargo.logistic_name
+			? { icon: Building2, primary: cargo.logistic_name, secondary: t('transportation.card.label.logistic') }
+			: null,
+	].filter(Boolean) as CardSection['items']
 	const sections: CardSection[] = [
-		{
-			title: t('transportation.card.section.carrierLogistic'),
-			items: [
-				{ icon: Building2, primary: cargo.carrier_name || placeholder, secondary: t('transportation.card.label.carrier') },
-				{ icon: Building2, primary: cargo.logistic_name || placeholder, secondary: t('transportation.card.label.logistic') },
-			],
-		},
+		...(carrierLogisticItems.length
+			? [{ title: t('transportation.card.section.carrierLogistic'), items: carrierLogisticItems }]
+			: []),
 		{
 			title: t('transportation.card.section.origin'),
 			items: [
 				{ icon: MapPin, primary: cargo.origin_city || placeholder, secondary: t('transportation.card.label.city') },
-				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
+
 			],
 		},
 		{
 			title: t('transportation.card.section.destination'),
 			items: [
 				{ icon: MapPin, primary: cargo.destination_city || placeholder, secondary: t('transportation.card.label.city') },
-				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
+
 			],
 		},
 		{
@@ -78,7 +81,7 @@ function TransportationCard({ cargo }: TransportationCardProps) {
 		{
 			title: t('transportation.card.section.price'),
 			items: [
-				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: t('transportation.card.label.pricePerKm') },
+
 				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: t('transportation.card.label.totalPrice') },
 			],
 		},

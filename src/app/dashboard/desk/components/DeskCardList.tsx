@@ -12,11 +12,11 @@ import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
 import { useI18n } from '@/i18n/I18nProvider'
-import { formatDateValue, formatPlace, formatPricePerKmValue, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { formatPlace, formatPriceValue } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
-import { CalendarDays, CircleCheck, Eye, EyeOff, Handshake, Mail, MapPin, Minus, Pen, Phone, RefreshCcw, Scale, Truck, Wallet } from 'lucide-react'
+import { CircleCheck, Eye, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Wallet } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -65,55 +65,35 @@ function DeskCard({ cargo }: DeskCardProps) {
 			title: t('desk.card.from'),
 			items: [
 				{ icon: MapPin, primary: formatPlace(cargo.origin_city, cargo.origin_country), secondary: t('desk.card.place') },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.load_date), secondary: t('desk.card.load') },
 			],
 		},
 		{
 			title: t('desk.card.to'),
 			items: [
 				{ icon: MapPin, primary: formatPlace(cargo.destination_city, cargo.destination_country), secondary: t('desk.card.place') },
-				{ icon: CalendarDays, primary: formatDateValue(cargo.delivery_date), secondary: t('desk.card.unload') },
-			],
-		},
-		{
-			title: t('desk.card.transportWeight'),
-			items: [
-				{ icon: Truck, primary: transportName, secondary: t('desk.card.transportType') },
-				{ icon: Scale, primary: formatWeightValue(cargo.weight_t), secondary: t('desk.card.weight') },
 			],
 		},
 		{
 			title: t('desk.card.price'),
 			items: [
 				{ icon: Wallet, primary: formatPriceValue(cargo.price_value, cargo.price_currency), secondary: t('desk.card.priceFixed') },
-				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.price_currency), secondary: t('desk.card.pricePerKm') },
-			],
-		},
-		{
-			title: t('desk.card.contacts'),
-			items: [
-				{ icon: Phone, primary: canShowPhone ? cargo.phone : '-', secondary: t('desk.card.phone') },
-				{ icon: Mail, primary: canShowEmail ? cargo.email : '-', secondary: t('desk.card.email') },
 			],
 		},
 
 	]
 
 	return (
-		<Card className={cn('h-full rounded-3xl border-0 xs:bg-neutral-500', cargo.moderation_status === 'pending' && 'xs:bg-purple-50 bg-purple-50', cargo.moderation_status === 'rejected' && 'xs:bg-purple-50 bg-red-50', cargo.is_hidden && 'opacity-60')}>
+		<Card className={cn('rounded-3xl border-0 xs:bg-neutral-500', cargo.moderation_status === 'pending' && 'xs:bg-purple-50 bg-purple-50', cargo.moderation_status === 'rejected' && 'xs:bg-purple-50 bg-red-50', cargo.is_hidden && 'opacity-60')}>
 			<CardHeader className='gap-4 border-b pb-4'>
-				<div className='flex flex-wrap items-center justify-between gap-3'>
+				<div className='flex items-center justify-between gap-1'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.company_name || cargo.product || t('desk.card.noTitle')}
+						{cargo.product ?? '-'}
 					</CardTitle>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<span className='font-semibold text-foreground'>ID:</span>
 						<UuidCopy uuid={cargo.uuid} />
 					</div>
 				</div>
-				<p className='text-sm text-muted-foreground'>
-					{t('desk.card.productLabel', { product: cargo.product ?? '-' })}
-				</p>
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>

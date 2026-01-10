@@ -34,7 +34,7 @@ export function useAuthForm() {
 
 			toast.success(t('auth.toast.success'))
 			setTimeout(() => router.refresh(), 3000)
-			router.push(safeNext ?? DASHBOARD_URL.announcements())
+			router.push(safeNext ?? DASHBOARD_URL.home())
 		},
 		onError(error) {
 			const err = error as AxiosError<IErrorResponse>

@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
+import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
@@ -14,7 +15,6 @@ import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/Trans
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { MapPin, Mail, Phone, Scale, Truck, Wallet } from 'lucide-react'
-import { InfoChip, InfoSection } from './DeskCardShared'
 
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
@@ -51,6 +51,45 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
 	const contactPhone = cargo.phone || '-'
 	const contactEmail = cargo.email || '-'
+	const sections = [
+		{
+			title: t('deskMy.card.from'),
+			items: [
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.origin_city, cargo.origin_country, '-'),
+					secondary: formattedLoadDate || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.card.to'),
+			items: [
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.destination_city, cargo.destination_country, '-'),
+					secondary: formattedDeliveryDate || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.card.price'),
+			items: [
+				{
+					icon: Wallet,
+					primary: formatPriceValue(cargo.price_value, cargo.price_currency),
+					secondary: cargo.price_currency || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.card.contacts'),
+			items: [
+				{ icon: Phone, primary: contactPhone, secondary: t('deskMy.card.phone') },
+				{ icon: Mail, primary: contactEmail, secondary: t('deskMy.card.email') },
+			],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -66,31 +105,7 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
-				<InfoSection title={t('deskMy.card.from')}>
-					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '-')} secondary={formattedLoadDate || '-'} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.card.to')}>
-					<InfoChip
-						icon={MapPin}
-						primary={formatPlace(cargo.destination_city, cargo.destination_country, '-')}
-						secondary={formattedDeliveryDate || '-'}
-					/>
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.card.transportWeight')}>
-					<InfoChip icon={Truck} primary={transportName || '-'} secondary={t('deskMy.card.transportType')} />
-					<InfoChip icon={Scale} primary={formatWeightValue(cargo.weight_t)} secondary={t('deskMy.card.weight')} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.card.price')}>
-					<InfoChip icon={Wallet} primary={formatPriceValue(cargo.price_value, cargo.price_currency)} secondary={cargo.price_currency || '-'} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.card.contacts')}>
-					<InfoChip icon={Phone} primary={contactPhone} secondary={t('deskMy.card.phone')} className='flex-1' />
-					<InfoChip icon={Mail} primary={contactEmail} secondary={t('deskMy.card.email')} className='flex-1' />
-				</InfoSection>
+				<CardSections sections={sections} />
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>

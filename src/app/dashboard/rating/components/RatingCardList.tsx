@@ -3,6 +3,7 @@
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -10,7 +11,6 @@ import { IRatingUserList } from '@/shared/types/Rating.interface'
 import { format } from 'date-fns'
 import { enUS, ru } from 'date-fns/locale'
 import { BadgeCheck, Briefcase, CalendarDays, Globe2, Star, UserRound } from 'lucide-react'
-import { useMemo } from 'react'
 
 type RatingCardListProps = {
 	items: IRatingUserList[]
@@ -39,6 +39,8 @@ type RatingCardProps = {
 function RatingCard({ rating }: RatingCardProps) {
 	const { t, locale } = useI18n()
 	const dateLocale = locale === 'en' ? enUS : ru
+	const displayName = rating.display_name ?? ''
+	const personName = displayName || t('rating.card.noName')
 	const registeredAt = rating.registered_at
 		? format(new Date(rating.registered_at), 'dd.MM.yyyy', { locale: dateLocale })
 		: '-'
@@ -54,75 +56,62 @@ function RatingCard({ rating }: RatingCardProps) {
 	const completedOrders = toNumber(rating.completed_orders)
 	const numberLocale = locale === 'en' ? 'en-US' : 'ru-RU'
 
-	const sections = useMemo(
-		() => [
-			{
-				title: t('rating.card.section.company'),
-				items: [
-					{
-						icon: BadgeCheck,
-						primary: rating.company_name ?? '-',
-						secondary: t('rating.card.company'),
-					},
-					{
-						icon: UserRound,
-						primary: rating.display_name ?? '-',
-						secondary: t('rating.card.person'),
-					},
-				],
-			},
-			{
-				title: t('rating.card.section.rating'),
-				items: [
-					{
-						icon: Star,
-						primary: `${avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'} / 5`,
-						secondary: t('rating.card.reviews', {
-							count: ratingCount !== null ? ratingCount.toLocaleString(numberLocale) : '-',
-						}),
-					},
-					{
-						icon: Briefcase,
-						primary: completedOrders !== null ? completedOrders.toLocaleString(numberLocale) : '-',
-						secondary: t('rating.card.completedDeals'),
-					},
-				],
-			},
-			{
-				title: t('rating.card.section.extra'),
-				items: [
-					{
-						icon: Globe2,
-						primary: rating.country ?? '-',
-						secondary: t('rating.card.country'),
-					},
-					{
-						icon: CalendarDays,
-						primary: registeredAt,
-						secondary: t('rating.card.registeredAt'),
-					},
-				],
-			},
-		],
-		[
-			t,
-			numberLocale,
-			avgRatingValue,
-			completedOrders,
-			rating.company_name,
-			rating.country,
-			rating.display_name,
-			ratingCount,
-			registeredAt,
-		],
-	)
+	const sections = [
+		{
+			title: t('rating.card.section.company'),
+			items: [
+				{
+					icon: BadgeCheck,
+					primary: rating.company_name ?? '-',
+					secondary: t('rating.card.company'),
+				},
+				{
+					icon: UserRound,
+					primary: displayName ? <ProfileLink name={displayName} id={rating.id} /> : '-',
+					secondary: t('rating.card.person'),
+				},
+			],
+		},
+		{
+			title: t('rating.card.section.rating'),
+			items: [
+				{
+					icon: Star,
+					primary: `${avgRatingValue !== null ? avgRatingValue.toFixed(1) : '-'} / 5`,
+					secondary: t('rating.card.reviews', {
+						count: ratingCount !== null ? ratingCount.toLocaleString(numberLocale) : '-',
+					}),
+				},
+				{
+					icon: Briefcase,
+					primary: completedOrders !== null ? completedOrders.toLocaleString(numberLocale) : '-',
+					secondary: t('rating.card.completedDeals'),
+				},
+			],
+		},
+		{
+			title: t('rating.card.section.extra'),
+			items: [
+				{
+					icon: Globe2,
+					primary: rating.country ?? '-',
+					secondary: t('rating.card.country'),
+				},
+				{
+					icon: CalendarDays,
+					primary: registeredAt,
+					secondary: t('rating.card.registeredAt'),
+				},
+			],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{t('rating.card.title', { id: rating.id, name: rating.company_name ?? rating.display_name ?? t('rating.card.noName') })}
+						{t('rating.card.title', { id: rating.id, name: rating.company_name ?? personName })}
 					</CardTitle>
 					<span className='flex items-center gap-2 rounded-full bg-warning-50 px-3 py-1 text-sm font-semibold text-warning-700'>
 						<Star className='size-4 text-warning-500 fill-warning-500' aria-hidden />

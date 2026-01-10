@@ -52,17 +52,11 @@ const messages: Record<string, string> = {
 	// components/AnnouncementsCardList.tsx
 	'announcements.card.from': 'From',
 	'announcements.card.to': 'To',
-	'announcements.card.transportWeight': 'Transport / weight',
 	'announcements.card.priceKm': 'Price / km',
 	'announcements.card.phone': 'Phone',
 	'announcements.card.email': 'Email',
 	'announcements.card.place': 'City / country',
-	'announcements.card.load': 'Loading',
-	'announcements.card.unload': 'Unloading',
-	'announcements.card.transportType': 'Transport type',
-	'announcements.card.weight': 'Weight',
 	'announcements.card.price': 'Shipping price',
-	'announcements.card.pricePerKm': 'Price per km',
 	'announcements.card.offer': 'Offer',
 
 	// posting/PostingPage.tsx

@@ -10,7 +10,9 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useI18n } from '@/i18n/I18nProvider'
 import { formatDateValue, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { IOrderList } from '@/shared/types/Order.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 import { Building2, CalendarDays, Home, MapPin, Wallet } from 'lucide-react'
 import Link from 'next/link'
 
@@ -22,6 +24,7 @@ type TransportationMyCardListProps = {
 
 export function TransportationMyCardList({ cargos, serverPagination, statusValue }: TransportationMyCardListProps) {
 	const pagination = useCardPagination(serverPagination)
+	const role = useRoleStore((state) => state.role)
 
 	if (!cargos.length) {
 		return null
@@ -31,7 +34,7 @@ export function TransportationMyCardList({ cargos, serverPagination, statusValue
 		<CardListLayout
 			items={cargos}
 			getKey={(cargo) => cargo.id}
-			renderItem={(cargo) => <TransportationMyCard cargo={cargo} statusValue={statusValue} />}
+			renderItem={(cargo) => <TransportationMyCard cargo={cargo} role={role} statusValue={statusValue} />}
 			pagination={pagination}
 		/>
 	)
@@ -39,33 +42,49 @@ export function TransportationMyCardList({ cargos, serverPagination, statusValue
 
 type TransportationMyCardProps = {
 	cargo: IOrderList
+	role?: RoleEnum
 	statusValue: string
 }
 
-function TransportationMyCard({ cargo }: TransportationMyCardProps) {
+function TransportationMyCard({ cargo, role }: TransportationMyCardProps) {
 	const { t } = useI18n()
 	const placeholder = t('transportation.card.placeholder')
-	const addressMissing = t('transportation.card.addressMissing')
+	const customerCarrierLabel = role === RoleEnum.CUSTOMER
+		? t('transportation.card.label.carrier')
+		: t('transportation.card.label.customer')
+	const customerCarrierValue = role === RoleEnum.CUSTOMER
+		? cargo.roles?.carrier?.name
+		: cargo.roles?.customer?.name
+	const logisticCarrierLabel = role === RoleEnum.LOGISTIC
+		? t('transportation.card.label.carrier')
+		: t('transportation.card.label.logistic')
+	const logisticCarrierValue = role === RoleEnum.LOGISTIC
+		? cargo.roles?.carrier?.name
+		: cargo.roles?.logistic?.name
+	const customerCarrierItems = [
+		customerCarrierValue
+			? { icon: Building2, primary: customerCarrierValue, secondary: customerCarrierLabel }
+			: null,
+		logisticCarrierValue
+			? { icon: Building2, primary: logisticCarrierValue, secondary: logisticCarrierLabel }
+			: null,
+	].filter(Boolean) as CardSection['items']
 	const sections: CardSection[] = [
-		{
-			title: t('transportation.card.section.customerCarrier'),
-			items: [
-				{ icon: Building2, primary: cargo.customer_name || placeholder, secondary: t('transportation.card.label.customer') },
-				{ icon: Building2, primary: cargo.carrier_name || placeholder, secondary: t('transportation.card.label.carrier') },
-			],
-		},
+		...(customerCarrierItems.length
+			? [{ title: t('transportation.card.section.customerCarrier'), items: customerCarrierItems }]
+			: []),
 		{
 			title: t('transportation.card.section.origin'),
 			items: [
 				{ icon: MapPin, primary: cargo.origin_city || placeholder, secondary: t('transportation.card.label.city') },
-				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
+
 			],
 		},
 		{
 			title: t('transportation.card.section.destination'),
 			items: [
 				{ icon: MapPin, primary: cargo.destination_city || placeholder, secondary: t('transportation.card.label.city') },
-				{ icon: Home, primary: addressMissing, secondary: t('transportation.card.label.address') },
+
 			],
 		},
 		{
@@ -78,7 +97,6 @@ function TransportationMyCard({ cargo }: TransportationMyCardProps) {
 		{
 			title: t('transportation.card.section.price'),
 			items: [
-				{ icon: Wallet, primary: formatPricePerKmValue(cargo.price_per_km, cargo.currency), secondary: t('transportation.card.label.pricePerKm') },
 				{ icon: Wallet, primary: formatPriceValue(cargo.price_total, cargo.currency), secondary: t('transportation.card.label.totalPrice') },
 			],
 		},

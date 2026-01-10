@@ -52,17 +52,11 @@ const messages: Record<string, string> = {
 	// components/AnnouncementsCardList.tsx
 	'announcements.card.from': 'Qayerdan',
 	'announcements.card.to': 'Qayerga',
-	'announcements.card.transportWeight': "Transport / og'irlik",
 	'announcements.card.priceKm': 'Narx / km',
 	'announcements.card.phone': 'Telefon',
 	'announcements.card.email': 'Email',
 	'announcements.card.place': 'Shahar / mamlakat',
-	'announcements.card.load': 'Yuklash',
-	'announcements.card.unload': 'Tushirish',
-	'announcements.card.transportType': 'Transport turi',
-	'announcements.card.weight': "Og'irlik",
 	'announcements.card.price': 'Tashish narxi',
-	'announcements.card.pricePerKm': 'Km uchun narx',
 	'announcements.card.offer': 'Taklif',
 
 	// posting/PostingPage.tsx

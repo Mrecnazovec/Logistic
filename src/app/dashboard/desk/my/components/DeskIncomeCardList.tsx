@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { CardListLayout } from '@/components/card/CardListLayout'
+import { CardSections } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
@@ -14,7 +15,6 @@ import { RoleEnum } from '@/shared/enums/Role.enum'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { Mail, MapPin, Phone, Scale, Truck, Wallet } from 'lucide-react'
-import { InfoChip, InfoSection } from './DeskCardShared'
 
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
@@ -30,7 +30,7 @@ export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role 
 	return (
 		<CardListLayout
 			items={cargos}
-			getKey={(cargo) => cargo.cargo_uuid || String(cargo.id)}
+			getKey={(cargo) => String(cargo.id)}
 			renderItem={(cargo, index) => (
 				<DeskDriverCard cargo={cargo} index={index} onOpenDecision={onOpenDecision} role={role} />
 			)}
@@ -55,6 +55,45 @@ function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 	const contactPhone = cargo.phone || '-'
 	const contactEmail = cargo.email || '-'
 	const rating = cargo.carrier_rating ?? '-'
+	const sections = [
+		{
+			title: t('deskMy.income.card.from'),
+			items: [
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.origin_city, cargo.origin_country, '-'),
+					secondary: formattedLoadDate || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.income.card.to'),
+			items: [
+				{
+					icon: MapPin,
+					primary: formatPlace(cargo.destination_city, cargo.destination_country, '-'),
+					secondary: formattedDeliveryDate || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.income.card.price'),
+			items: [
+				{
+					icon: Wallet,
+					primary: formatPriceValue(cargo.price_value, cargo.price_currency),
+					secondary: cargo.price_currency || '-',
+				},
+			],
+		},
+		{
+			title: t('deskMy.income.card.contacts'),
+			items: [
+				{ icon: Phone, primary: contactPhone, secondary: t('deskMy.income.card.phone') },
+				{ icon: Mail, primary: contactEmail, secondary: t('deskMy.income.card.email') },
+			],
+		},
+	]
 
 	return (
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
@@ -72,31 +111,7 @@ function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 			</CardHeader>
 
 			<CardContent className='flex flex-col gap-5 py-6'>
-				<InfoSection title={t('deskMy.income.card.from')}>
-					<InfoChip icon={MapPin} primary={formatPlace(cargo.origin_city, cargo.origin_country, '-')} secondary={formattedLoadDate || '-'} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.income.card.to')}>
-					<InfoChip
-						icon={MapPin}
-						primary={formatPlace(cargo.destination_city, cargo.destination_country, '-')}
-						secondary={formattedDeliveryDate || '-'}
-					/>
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.income.card.transportWeight')}>
-					<InfoChip icon={Truck} primary={transportName || '-'} secondary={t('deskMy.income.card.transportType')} />
-					<InfoChip icon={Scale} primary={formatWeightValue(cargo.weight_t)} secondary={t('deskMy.income.card.weight')} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.income.card.price')}>
-					<InfoChip icon={Wallet} primary={formatPriceValue(cargo.price_value, cargo.price_currency)} secondary={cargo.price_currency || '-'} />
-				</InfoSection>
-
-				<InfoSection title={t('deskMy.income.card.contacts')}>
-					<InfoChip icon={Phone} primary={contactPhone} secondary={t('deskMy.income.card.phone')} className='flex-1' />
-					<InfoChip icon={Mail} primary={contactEmail} secondary={t('deskMy.income.card.email')} className='flex-1' />
-				</InfoSection>
+				<CardSections sections={sections} />
 			</CardContent>
 
 			<CardFooter className='flex flex-wrap gap-3 border-t pt-4'>

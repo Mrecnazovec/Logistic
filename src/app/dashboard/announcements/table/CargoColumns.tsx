@@ -71,19 +71,19 @@ export const getCargoColumns = (t: Translator, locale: Locale): ColumnDef<ICargo
 		header: t('announcements.table.origin'),
 		cell: ({ row }) => `${row.original.origin_city}, ${row.original.origin_country}`,
 	},
-	{
-		accessorKey: 'origin_radius_km',
-		header: t('announcements.table.originRadius'),
-	},
+	// {
+	// 	accessorKey: 'origin_radius_km',
+	// 	header: t('announcements.table.originRadius'),
+	// },
 	{
 		accessorKey: 'destination_city',
 		header: t('announcements.table.destination'),
 		cell: ({ row }) => `${row.original.destination_city}, ${row.original.destination_country}`,
 	},
-	{
-		accessorKey: 'dest_radius_km',
-		header: t('announcements.table.destinationRadius'),
-	},
+	// {
+	// 	accessorKey: 'dest_radius_km',
+	// 	header: t('announcements.table.destinationRadius'),
+	// },
 	{
 		accessorKey: 'load_date',
 		header: ({ column }) => (

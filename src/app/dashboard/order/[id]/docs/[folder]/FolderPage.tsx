@@ -83,7 +83,8 @@ export function FolderPage() {
 	const { t, locale } = useI18n()
 	const params = useParams<{ id: string; folder: string }>()
 	const orderId = params.id
-	const normalizedFolder = (params.folder ?? 'others').toLowerCase()
+	const folderParam = Array.isArray(params.folder) ? params.folder[0] : params.folder
+	const normalizedFolder = (folderParam ?? 'others').toLowerCase()
 	const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
 	const folderKey = normalizedFolder === 'others' ? 'other' : normalizedFolder
 	const folderLabel = t(`order.docs.folder.${folderKey}` as string, {})

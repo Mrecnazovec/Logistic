@@ -106,6 +106,13 @@ useDebounce — returns a debounced value with a delay timer.
 useMediaQuery — subscribes to matchMedia for a media query string, returns boolean.
 useI18n - provides access to locale and t() from I18nProvider.
 useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
+/i18n - translation keys and locale messages directory.
+config.ts - locales list, Locale type, defaultLocale, localeCookie.
+getLocale - reads locale from cookie (server) with fallback to default.
+I18nProvider/useI18n - provider and hook for locale + t() with interpolation.
+languages.ts - languageOptions with labels/flags for selector UI.
+paths.ts - getLocaleFromPath/stripLocaleFromPath/addLocaleToPath helpers.
+messages/index.ts - aggregates messages and getMessages(locale).
 
 ## Lib helpers
 

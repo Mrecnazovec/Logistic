@@ -4,15 +4,17 @@ import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
 
 type PageProps = {
-	params: { folder: string }
+	params: Promise<{ folder?: string | string[] }>
 }
 
 export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
 	const locale = await getLocale()
 	const messages = getMessages(locale)
-	const normalized = (params.folder ?? '').toLowerCase() === 'others'
+	const resolvedParams = await params
+	const folderParam = Array.isArray(resolvedParams?.folder) ? resolvedParams?.folder[0] : resolvedParams?.folder
+	const normalized = (folderParam ?? 'others').toLowerCase() === 'others'
 		? 'other'
-		: (params.folder ?? '').toLowerCase()
+		: (folderParam ?? 'others').toLowerCase()
 	const key = `order.docs.folder.${normalized}`
 	const title = messages[key] ?? messages['order.docs.section.documents'] ?? 'Documents'
 	return { title }
