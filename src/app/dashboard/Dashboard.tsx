@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { MessageCircle, Phone, UserCircle2 } from "lucide-react"
+import { MessageCircle, MessageCircleHeart, Phone, UserCircle2 } from "lucide-react"
 
 import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
@@ -145,8 +145,8 @@ export function Dashboard() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
 					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center">
-							<MessageCircle className="size-6" />
+						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
+							<MessageCircleHeart className="size-6" />
 						</div>
 						<div className="space-y-2">
 							<p className="text-lg font-semibold">{t('dashboard.contact.sales.title')}</p>
@@ -155,7 +155,7 @@ export function Dashboard() {
 						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">kad.noreply1@gmail.com</Link>
 					</div>
 					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center">
+						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
 							<MessageCircle className="size-6" />
 						</div>
 						<div className="space-y-2">
@@ -165,7 +165,7 @@ export function Dashboard() {
 						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">kad.noreply1@gmail.com</Link>
 					</div>
 					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center">
+						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
 							<Phone className="size-6" />
 						</div>
 						<div className="space-y-2">
