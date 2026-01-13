@@ -50,6 +50,20 @@ const messages: Record<string, string> = {
 	'settings.support.placeholder': 'Yozishni boshlang...',
 	'settings.support.send': 'Yuborish',
 	'settings.support.orContact': 'Yoki quyidagi orqali bog\'laning',
+	'settings.password.confirm.label': 'Yangi parolni takrorlang',
+	'settings.password.confirm.hint': 'Yangi parolni qayta kiriting',
+	'settings.password.confirm.placeholder': 'Yangi parolni kiriting',
+	'settings.profile.phone.required': 'Telefon raqamini kiriting',
+	'settings.profile.phone.otpTitle': 'Telefon raqamini tasdiqlash',
+	'settings.profile.phone.otpSubtitle': '{phone} raqamiga kod yubordik',
+	'settings.profile.phone.otpSent': 'Tasdiqlash kodi yuborildi',
+	'settings.profile.phone.otpError': 'Kod yuborilmadi',
+	'settings.profile.phone.otpRequired': 'Tasdiqlash kodini kiriting',
+	'settings.profile.phone.otpInvalid': "Tasdiqlash kodi noto'g'ri",
+	'settings.profile.phone.otpVerifyError': "Telefonni tasdiqlab bo'lmadi",
+	'settings.profile.phone.otpVerified': 'Telefon raqami tasdiqlandi',
+	'settings.profile.phone.otpResend': 'Kodni qayta yuborish',
+	'settings.profile.phone.otpConfirm': 'Tasdiqlash',
 }
 
 export default messages

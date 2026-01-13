@@ -50,6 +50,20 @@ const messages: Record<string, string> = {
 	'settings.support.placeholder': 'Начните писать...',
 	'settings.support.send': 'Отправить',
 	'settings.support.orContact': 'Либо свяжитесь через',
+	'settings.password.confirm.label': 'Повторите новый пароль',
+	'settings.password.confirm.hint': 'Введите новый пароль еще раз',
+	'settings.password.confirm.placeholder': 'Введите новый пароль',
+	'settings.profile.phone.required': 'Введите номер телефона',
+	'settings.profile.phone.otpTitle': 'Подтверждение номера',
+	'settings.profile.phone.otpSubtitle': 'Мы отправили код на {phone}',
+	'settings.profile.phone.otpSent': 'Код подтверждения отправлен',
+	'settings.profile.phone.otpError': 'Не удалось отправить код',
+	'settings.profile.phone.otpRequired': 'Введите код подтверждения',
+	'settings.profile.phone.otpInvalid': 'Неверный код подтверждения',
+	'settings.profile.phone.otpVerifyError': 'Не удалось подтвердить телефон',
+	'settings.profile.phone.otpVerified': 'Номер телефона подтвержден',
+	'settings.profile.phone.otpResend': 'Отправить код повторно',
+	'settings.profile.phone.otpConfirm': 'Подтвердить',
 }
 
 export default messages

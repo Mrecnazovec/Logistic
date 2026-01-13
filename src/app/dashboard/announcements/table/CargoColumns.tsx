@@ -14,12 +14,20 @@ import {
 import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { Minus } from 'lucide-react'
 
 type Translator = (key: string) => string
+type CargoColumnVisibility = {
+	showOriginRadius?: boolean
+	showDestinationRadius?: boolean
+}
 
-export const getCargoColumns = (t: Translator, locale: Locale): ColumnDef<ICargoList>[] => [
+export const getCargoColumns = (
+	t: Translator,
+	locale: Locale,
+	{ showOriginRadius, showDestinationRadius }: CargoColumnVisibility = {},
+): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'created_at',
 		header: ({ column }) => (
@@ -71,19 +79,29 @@ export const getCargoColumns = (t: Translator, locale: Locale): ColumnDef<ICargo
 		header: t('announcements.table.origin'),
 		cell: ({ row }) => `${row.original.origin_city}, ${row.original.origin_country}`,
 	},
-	// {
-	// 	accessorKey: 'origin_radius_km',
-	// 	header: t('announcements.table.originRadius'),
-	// },
+	...(showOriginRadius
+		? [
+				{
+					accessorKey: 'origin_radius_km',
+					header: t('announcements.table.originRadius'),
+					cell: (info: CellContext<ICargoList, unknown>) => formatDistanceKm(info.row.original.origin_radius_km, '-'),
+				},
+			]
+		: []),
 	{
 		accessorKey: 'destination_city',
 		header: t('announcements.table.destination'),
 		cell: ({ row }) => `${row.original.destination_city}, ${row.original.destination_country}`,
 	},
-	// {
-	// 	accessorKey: 'dest_radius_km',
-	// 	header: t('announcements.table.destinationRadius'),
-	// },
+	...(showDestinationRadius
+		? [
+				{
+					accessorKey: 'dest_radius_km',
+					header: t('announcements.table.destinationRadius'),
+					cell: (info: CellContext<ICargoList, unknown>) => formatDistanceKm(info.row.original.dest_radius_km, '-'),
+				},
+			]
+		: []),
 	{
 		accessorKey: 'load_date',
 		header: ({ column }) => (

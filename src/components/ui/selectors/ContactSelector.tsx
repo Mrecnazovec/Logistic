@@ -4,17 +4,18 @@ import { Phone } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
-import { ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
+import { ContactPrefEnum, ContactPrefSelector } from '@/shared/enums/ContactPref.enum'
 
 interface CurrencySelectProps {
 	value?: string
 	onChange: (value: string) => void
 	placeholder?: string
 	disabled?: boolean
+	disableEmailOptions?: boolean
 	className?: string
 }
 
-export function ContactSelector({ value, onChange, placeholder, disabled, className }: CurrencySelectProps) {
+export function ContactSelector({ value, onChange, placeholder, disabled, disableEmailOptions, className }: CurrencySelectProps) {
 	const { t } = useI18n()
 	const resolvedPlaceholder = placeholder ?? t('components.select.contact.placeholder')
 
@@ -33,11 +34,16 @@ export function ContactSelector({ value, onChange, placeholder, disabled, classN
 				</div>
 			</SelectTrigger>
 			<SelectContent>
-				{ContactPrefSelector.map((item) => (
-					<SelectItem value={item.type} key={item.type}>
+				{ContactPrefSelector.map((item) => {
+					const isDisabled =
+						disableEmailOptions && (item.type === ContactPrefEnum.EMAIL || item.type === ContactPrefEnum.BOTH)
+
+					return (
+						<SelectItem value={item.type} key={item.type} disabled={isDisabled}>
 						{t(item.nameKey)}
-					</SelectItem>
-				))}
+						</SelectItem>
+					)
+				})}
 			</SelectContent>
 		</Select>
 	)

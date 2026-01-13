@@ -14,14 +14,21 @@ import { useSearchForm } from './Searching/useSearchForm'
 import { getCargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 import { useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 export function AnnouncementsPage() {
 	const { t, locale } = useI18n()
 	const { data, isLoading } = useGetLoadsPublic()
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
+	const searchParams = useSearchParams()
+	const showOriginRadius = searchParams.has('origin_radius_km')
+	const showDestinationRadius = searchParams.has('dest_radius_km')
 	const tableType = useTableTypeStore((state) => state.tableType)
-	const columns = useMemo(() => getCargoColumns(t, locale), [t, locale])
+	const columns = useMemo(
+		() => getCargoColumns(t, locale, { showOriginRadius, showDestinationRadius }),
+		[t, locale, showOriginRadius, showDestinationRadius]
+	)
 
 	const results = data?.results ?? []
 	const hasResults = results.length > 0
@@ -49,7 +56,12 @@ export function AnnouncementsPage() {
 	) : !hasResults ? (
 		<EmptyTableState />
 	) : isCardView ? (
-		<AnnouncementsCardList cargos={results} serverPagination={serverPaginationMeta} />
+		<AnnouncementsCardList
+			cargos={results}
+			serverPagination={serverPaginationMeta}
+			showOriginRadius={showOriginRadius}
+			showDestinationRadius={showDestinationRadius}
+		/>
 	) : (
 		<DataTable
 			columns={columns}
@@ -69,6 +81,7 @@ export function AnnouncementsPage() {
 							form={form}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
 							showOffersFilter={false}
+							showAxlesVolumeFields
 							onSubmit={form.handleSubmit(onSubmit)}
 						/>
 					</form>

@@ -27,7 +27,7 @@ import { RegisterCompanyFields, RegisterTransportField, RegisterVehicleFields } 
 import { RegisterRoles } from './RegisterRoles'
 import { Logo } from '@/components/ui/Logo'
 
-const AUTH_FIELDS = ['email', 'password', 'password2'] as const
+const AUTH_FIELDS = ['username', 'password', 'password2'] as const
 const COMPANY_FIELDS = ['first_name', 'phone', 'country', 'country_code', 'city', 'company_name'] as const
 const VEHICLE_FIELDS = ['car_number', 'trailer_number', 'driver_license'] as const
 

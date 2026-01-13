@@ -8,6 +8,7 @@ import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
 import {
 	DEFAULT_PLACEHOLDER,
+	formatDistanceKm,
 	formatPlace,
 	formatPriceValue,
 	formatRelativeDate
@@ -25,9 +26,16 @@ const OfferModal = dynamic(() => import('@/components/ui/modals/OfferModal').the
 type AnnouncementsCardListProps = {
 	cargos: ICargoList[]
 	serverPagination?: ServerPaginationMeta
+	showOriginRadius?: boolean
+	showDestinationRadius?: boolean
 }
 
-export function AnnouncementsCardList({ cargos, serverPagination }: AnnouncementsCardListProps) {
+export function AnnouncementsCardList({
+	cargos,
+	serverPagination,
+	showOriginRadius,
+	showDestinationRadius,
+}: AnnouncementsCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 
 	if (!cargos.length) {
@@ -38,7 +46,13 @@ export function AnnouncementsCardList({ cargos, serverPagination }: Announcement
 		<CardListLayout
 			items={cargos}
 			getKey={(cargo) => cargo.uuid}
-			renderItem={(cargo) => <AnnouncementCard cargo={cargo} />}
+			renderItem={(cargo) => (
+				<AnnouncementCard
+					cargo={cargo}
+					showOriginRadius={showOriginRadius}
+					showDestinationRadius={showDestinationRadius}
+				/>
+			)}
 			pagination={pagination}
 		/>
 	)
@@ -46,9 +60,11 @@ export function AnnouncementsCardList({ cargos, serverPagination }: Announcement
 
 type AnnouncementCardProps = {
 	cargo: ICargoList
+	showOriginRadius?: boolean
+	showDestinationRadius?: boolean
 }
 
-function AnnouncementCard({ cargo }: AnnouncementCardProps) {
+function AnnouncementCard({ cargo, showOriginRadius, showDestinationRadius }: AnnouncementCardProps) {
 	const { t, locale } = useI18n()
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
@@ -63,6 +79,15 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					primary: formatPlace(cargo.origin_city, cargo.origin_country),
 					secondary: t('announcements.card.place'),
 				},
+				...(showOriginRadius
+					? [
+							{
+								icon: MapPin,
+								primary: formatDistanceKm(cargo.origin_radius_km, DEFAULT_PLACEHOLDER),
+								secondary: t('announcements.table.originRadius'),
+							},
+						]
+					: []),
 			],
 		},
 		{
@@ -73,6 +98,15 @@ function AnnouncementCard({ cargo }: AnnouncementCardProps) {
 					primary: formatPlace(cargo.destination_city, cargo.destination_country),
 					secondary: t('announcements.card.place'),
 				},
+				...(showDestinationRadius
+					? [
+							{
+								icon: MapPin,
+								primary: formatDistanceKm(cargo.dest_radius_km, DEFAULT_PLACEHOLDER),
+								secondary: t('announcements.table.destinationRadius'),
+							},
+						]
+					: []),
 
 			],
 		},

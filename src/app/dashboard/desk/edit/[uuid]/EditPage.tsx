@@ -18,6 +18,7 @@ import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
 import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
@@ -49,6 +50,7 @@ const createCityFromValues = (name?: string | null, country?: string | null): Ci
 export function EditPage() {
 	const { form, isLoadingPatch, onSubmit } = useEditForm()
 	const { load } = useGetLoad()
+	const { me } = useGetMe()
 	const { t } = useI18n()
 
 	const router = useRouter()
@@ -346,7 +348,12 @@ export function EditPage() {
 							render={({ field }) => (
 								<FormItem className='mb-6'>
 									<FormControl>
-										<ContactSelector onChange={field.onChange} disabled={isLoadingPatch} value={field.value} />
+										<ContactSelector
+											onChange={field.onChange}
+											disabled={isLoadingPatch}
+											value={field.value}
+											disableEmailOptions={!me?.email}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>

@@ -242,7 +242,7 @@ Checkbox — Radix checkbox (file Сheckbox.tsx).
 NoPhoto — profile image placeholder.
 BadgeSelector — badge status selector dropdown.
 CitySelector — city selector with suggestions/search and optional Nominatim coordinates callback.
-ContactSelector — preferred contact selector.
+ContactSelector - preferred contact selector with optional email option disabling.
 CountrySelector — country selector with suggestions.
 CurrencySelector — currency selector based on PriceSelector.
 DateSelector — single or range date selector.
@@ -251,7 +251,7 @@ PaymentSelector — payment method selector.
 TableTypeSelector — toggle between card/table view.
 TransportSelector — transport type selector from TransportSelect.
 LanguageSelect - locale switcher select component.
-SearchFields — cargo search filters form.
+SearchFields - cargo search filters form with optional axles/volume fields.
 SearchRatingFields — rating filters form.
 Form — React Hook Form wrapper with validation.
 Input — text input field.

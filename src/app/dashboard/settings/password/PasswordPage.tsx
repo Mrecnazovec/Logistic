@@ -11,6 +11,7 @@ export function PasswordPage() {
 	const { t } = useI18n()
 	const [isOldVisible, setIsOldVisible] = useState(false)
 	const [isNewVisible, setIsNewVisible] = useState(false)
+	const [isConfirmVisible, setIsConfirmVisible] = useState(false)
 
 	return (
 		<div className="rounded-[32px] bg-white p-6 shadow-sm md:p-8">
@@ -73,6 +74,35 @@ export function PasswordPage() {
 								aria-label={isNewVisible ? t("settings.password.hide") : t("settings.password.show")}
 							>
 								{isNewVisible ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+							</InputGroupButton>
+						</InputGroupAddon>
+					</InputGroup>
+				</section>
+
+				<section className="space-y-3">
+					<div>
+						<Label className="text-base font-semibold text-foreground">{t("settings.password.confirm.label")}</Label>
+						<p className="text-sm text-muted-foreground">{t("settings.password.confirm.hint")}</p>
+					</div>
+					<InputGroup className="h-[52px] rounded-full bg-grayscale-50">
+						<InputGroupAddon className="pl-4 text-muted-foreground">
+							<Lock className="size-5" />
+						</InputGroupAddon>
+						<InputGroupInput
+							type={isConfirmVisible ? "text" : "password"}
+							placeholder={t("settings.password.confirm.placeholder")}
+							className="text-[15px] placeholder:text-muted-foreground/80"
+						/>
+						<InputGroupAddon align="inline-end" className="pr-3">
+							<InputGroupButton
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								className="text-muted-foreground hover:text-foreground"
+								onClick={() => setIsConfirmVisible((prev) => !prev)}
+								aria-label={isConfirmVisible ? t("settings.password.hide") : t("settings.password.show")}
+							>
+								{isConfirmVisible ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
 							</InputGroupButton>
 						</InputGroupAddon>
 					</InputGroup>

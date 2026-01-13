@@ -23,6 +23,7 @@ import toast from 'react-hot-toast'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useGetOrderDocuments } from '@/hooks/queries/orders/useGet/useGetOrderDocuments'
 import { useUploadOrderDocument } from '@/hooks/queries/orders/useUploadOrderDocument'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -90,7 +91,19 @@ export function FolderPage() {
 	const folderLabel = t(`order.docs.folder.${folderKey}` as string, {})
 	const resolvedFolderLabel = folderLabel.includes('order.docs.folder.') ? t('order.docs.section.documents') : folderLabel
 	const role = useRoleStore((state) => state.role)
+	const { me } = useGetMe()
+	const { orderDocuments, isLoading } = useGetOrderDocuments()
+	const orderDetail = Array.isArray(orderDocuments) ? null : orderDocuments
+	const participantIds = [
+		orderDetail?.roles?.customer?.id,
+		orderDetail?.roles?.logistic?.id,
+		orderDetail?.roles?.carrier?.id,
+	].filter((id): id is number => typeof id === 'number')
+	const isOrderParticipant = Boolean(me?.id && participantIds.includes(me.id))
+	const isParticipantRestricted = Boolean(orderDetail && me?.id && !isOrderParticipant)
+
 	const isUploadBlocked =
+		isParticipantRestricted ||
 		(role === RoleEnum.CUSTOMER || role === RoleEnum.LOGISTIC) &&
 		(normalizedFolder === 'loading' || normalizedFolder === 'unloading')
 
@@ -108,7 +121,6 @@ export function FolderPage() {
 	const [isDragActive, setIsDragActive] = useState(false)
 	const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
 
-	const { orderDocuments, isLoading } = useGetOrderDocuments()
 	const { uploadOrderDocumentAsync } = useUploadOrderDocument()
 
 	const documentsForFolder = useMemo(() => {
@@ -321,7 +333,7 @@ export function FolderPage() {
 
 				{isUploadBlocked ? (
 					<div className='rounded-3xl border border-dashed px-6 py-10 text-center text-muted-foreground'>
-						{t('order.docs.upload.onlyCarrier')}
+						{isParticipantRestricted ? t('order.docs.upload.onlyParticipants') : t('order.docs.upload.onlyCarrier')}
 					</div>
 				) : (
 					<div

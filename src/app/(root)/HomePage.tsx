@@ -4,5 +4,5 @@ import { AuthPage } from "../auth/AuthPage"
 
 
 export function HomePage() {
-	return <AuthPage />
+	return <div></div>
 }

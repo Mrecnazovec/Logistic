@@ -45,6 +45,13 @@ const messages: Record<string, string> = {
 	'cabinet.profile.country': 'Страна',
 	'cabinet.profile.city': 'Город',
 	'cabinet.profile.id': 'ID',
+	'cabinet.profile.emailPlaceholder': 'Email',
+	'cabinet.profile.emailEdit': 'Изменить email',
+	'cabinet.profile.emailSendCode': 'Отправить код',
+	'cabinet.profile.emailVerify': 'Подтвердить email',
+	'cabinet.profile.emailCancel': 'Отмена',
+	'cabinet.profile.emailRequired': 'Введите email',
+	'cabinet.profile.emailNeedsVerify': 'Требуется подтверждение email',
 }
 
 export default messages

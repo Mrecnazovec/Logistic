@@ -36,6 +36,9 @@ const messages: Record<string, string> = {
 	'order.field.pricePerKm': 'Price per km',
 	'order.actions.uploadDocument': 'Upload document',
 	'order.actions.uploadFile': 'Upload file',
+	'order.actions.share': 'Share',
+	'order.actions.shareSuccess': 'Link copied to clipboard',
+	'order.actions.shareError': 'Failed to copy link',
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx
@@ -185,6 +188,7 @@ const messages: Record<string, string> = {
 	// [id]/docs/[folder]/FolderPage.tsx
 	'order.docs.section.documents': 'Documents',
 	'order.docs.upload.onlyCarrier': 'Uploading documents for this section is available only to the carrier.',
+	'order.docs.upload.onlyParticipants': 'Only order participants can add documents',
 	'order.docs.upload.aria': 'Upload documents',
 	'order.docs.upload.drag': 'Drag files here',
 	'order.docs.upload.orClick': 'or click to select and upload',

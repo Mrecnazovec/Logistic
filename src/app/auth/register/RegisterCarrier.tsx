@@ -3,7 +3,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/fo
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { useI18n } from '@/i18n/I18nProvider'
 import { RegisterDto } from '@/shared/types/Registration.interface'
-import { Mail, Phone, User } from 'lucide-react'
+import { Phone, User } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
 interface RegisterFieldsProps {
@@ -47,29 +47,6 @@ export function RegisterCompanyFields({ form, isPending, onPhoneChange }: Regist
 								/>
 								<InputGroupAddon className='pr-2'>
 									<User className='text-grayscale size-5' />
-								</InputGroupAddon>
-							</InputGroup>
-						</FormControl>
-					</FormItem>
-				)}
-			/>
-
-			<FormField
-				control={form.control}
-				name='email'
-				render={({ field }) => (
-					<FormItem className='mb-6'>
-						<FormLabel className='text-grayscale'>{t('register.company.emailLabel')}</FormLabel>
-						<FormControl>
-							<InputGroup>
-								<InputGroupInput
-									placeholder={t('register.company.emailPlaceholder')}
-									disabled={isPending}
-									{...field}
-									value={field.value ?? ''}
-								/>
-								<InputGroupAddon className='pr-2'>
-									<Mail className='text-grayscale size-5' />
 								</InputGroupAddon>
 							</InputGroup>
 						</FormControl>

@@ -36,6 +36,9 @@
 	'order.field.pricePerKm': 'Цена за километр',
 	'order.actions.uploadDocument': 'Загрузить документ',
 	'order.actions.uploadFile': 'Загрузить файл',
+	'order.actions.share': 'Поделиться',
+	'order.actions.shareSuccess': 'Ссылка скопирована в буфер обмена',
+	'order.actions.shareError': 'Не удалось скопировать ссылку',
 	'order.unit.km': 'км',
 
 	// invite/[token]/page.tsx
@@ -187,6 +190,7 @@
 	// [id]/docs/[folder]/FolderPage.tsx
 	'order.docs.section.documents': 'Документы',
 	'order.docs.upload.onlyCarrier': 'Загрузка документов для этого раздела доступна только перевозчику.',
+	'order.docs.upload.onlyParticipants': 'Документы могут добавлять только участники заказа',
 	'order.docs.upload.aria': 'Загрузить документы',
 	'order.docs.upload.drag': 'Перетащите файлы сюда',
 	'order.docs.upload.orClick': 'или нажмите, чтобы выбрать и загрузить',

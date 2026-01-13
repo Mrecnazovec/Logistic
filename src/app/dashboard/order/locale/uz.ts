@@ -36,6 +36,9 @@ const messages: Record<string, string> = {
 	'order.field.pricePerKm': 'Km uchun narx',
 	'order.actions.uploadDocument': 'Hujjat yuklash',
 	'order.actions.uploadFile': 'Fayl yuklash',
+	'order.actions.share': "Ulashish",
+	'order.actions.shareSuccess': "Havola buferga nusxalandi",
+	'order.actions.shareError': "Havolani nusxalab bo'lmadi",
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx
@@ -187,6 +190,7 @@ const messages: Record<string, string> = {
 	// [id]/docs/[folder]/FolderPage.tsx
 	'order.docs.section.documents': 'Hujjatlar',
 	'order.docs.upload.onlyCarrier': 'Bu bo\'limga hujjatlarni faqat haydovchi yuklay oladi.',
+	'order.docs.upload.onlyParticipants': 'Hujjatlarni faqat buyurtma ishtirokchilari qo\'shishi mumkin',
 	'order.docs.upload.aria': 'Hujjatlarni yuklash',
 	'order.docs.upload.drag': 'Fayllarni bu yerga sudrab tashlang',
 	'order.docs.upload.orClick': 'yoki tanlash va yuklash uchun bosing',

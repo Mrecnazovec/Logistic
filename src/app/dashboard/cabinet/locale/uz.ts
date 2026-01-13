@@ -45,6 +45,13 @@ const messages: Record<string, string> = {
 	'cabinet.profile.country': 'Mamlakat',
 	'cabinet.profile.city': 'Shahar',
 	'cabinet.profile.id': 'ID',
+	'cabinet.profile.emailPlaceholder': 'Email',
+	'cabinet.profile.emailEdit': "Emailni o'zgartirish",
+	'cabinet.profile.emailSendCode': 'Kodni yuborish',
+	'cabinet.profile.emailVerify': 'Emailni tasdiqlash',
+	'cabinet.profile.emailCancel': 'Bekor qilish',
+	'cabinet.profile.emailRequired': 'Emailni kiriting',
+	'cabinet.profile.emailNeedsVerify': 'Emailni tasdiqlash kerak',
 }
 
 export default messages

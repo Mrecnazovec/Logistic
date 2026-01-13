@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
+import toast from 'react-hot-toast'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
@@ -114,6 +115,20 @@ export function OrderPage() {
 		unloading: { hasDocument: hasUnloadingDocument, documentDate: firstUnloadingDocumentDate, href: `${docsBasePath}/unloading` },
 		other: { hasDocument: hasOtherDocument, documentDate: firstOtherDocumentDate, href: `${docsBasePath}/other` },
 	})
+
+	const handleShare = async () => {
+		const link = typeof window !== 'undefined' ? window.location.href : ''
+
+		try {
+			if (!link || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+				throw new Error('Clipboard is not available')
+			}
+			await navigator.clipboard.writeText(link)
+			toast.success(t('order.actions.shareSuccess'))
+		} catch {
+			toast.error(t('order.actions.shareError'))
+		}
+	}
 
 	const renderDocumentAction = (
 		hasDocument: boolean,
@@ -367,6 +382,9 @@ export function OrderPage() {
 			</div>
 
 			<div className='flex flex-wrap items-center justify-end gap-3'>
+				<Button type='button' variant='outline' onClick={handleShare}>
+					{t('order.actions.share')}
+				</Button>
 				{role === RoleEnum.CARRIER &&
 					renderDocumentAction(
 						currentDocumentAction.hasDocument,

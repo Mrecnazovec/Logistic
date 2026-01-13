@@ -11,6 +11,7 @@ import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useI18n } from '@/i18n/I18nProvider'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ const RichTextEditor = dynamic(() =>
 
 export function PostingPage() {
 	const { t } = useI18n()
+	const { me } = useGetMe()
 	const { form, isLoadingCreate, onSubmit } = usePostForm()
 	const originCountryValue = form.watch('origin_country')
 	const destinationCountryValue = form.watch('destination_country')
@@ -281,13 +283,13 @@ export function PostingPage() {
 							rules={{ required: t('announcements.posting.shipping.contactRequired') }}
 							render={({ field }) => (
 								<FormItem className='mb-6'>
-									<FormLabel className='text-brand'>{t('announcements.posting.shipping.contactLabel')}</FormLabel>
-									<FormControl>
-										<ContactSelector onChange={field.onChange} value={field.value} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
+								<FormLabel className='text-brand'>{t('announcements.posting.shipping.contactLabel')}</FormLabel>
+								<FormControl>
+									<ContactSelector onChange={field.onChange} value={field.value} disableEmailOptions={!me?.email} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 						/>
 						<FormField
 							control={form.control}
