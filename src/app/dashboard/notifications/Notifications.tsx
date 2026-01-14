@@ -4,13 +4,20 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Loader } from '@/components/ui/Loader'
 import { ScrollArea, ScrollBar } from '@/components/ui/ScrollArea'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { notificationTypeSamples } from '@/app/dashboard/notifications/notificationTypes'
+import { NotificationDetails } from '@/app/dashboard/notifications/NotificationDetails'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { formatDateTimeValue } from '@/lib/formatters'
 import { Bell, CheckCheck, RefreshCcw, Tag } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+const IMPORTANT_NOTIFICATION_TYPES = new Set<string>(
+	notificationTypeSamples.filter((item) => item.importance).map((item) => item.type)
+)
 
 export function Notifications() {
 	const {
@@ -32,6 +39,7 @@ export function Notifications() {
 	const router = useRouter()
 	const listRef = useRef<HTMLDivElement | null>(null)
 	const sentinelRef = useRef<HTMLDivElement | null>(null)
+	const [notificationsTab, setNotificationsTab] = useState<'all' | 'important'>('all')
 
 	const selectedId = useMemo(() => {
 		const param = searchParams.get('id')
@@ -54,7 +62,17 @@ export function Notifications() {
 		}
 		if (hasNextPage && !isFetchingNextPage) fetchNextPage()
 		else if (!hasNextPage && !isLoadingNotifications && !isFetchingNextPage) refetchNotifications()
-	}, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoadingNotifications, isNotificationsEnabled, markRead, notifications, refetchNotifications, selectedId])
+	}, [
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoadingNotifications,
+		isNotificationsEnabled,
+		markRead,
+		notifications,
+		refetchNotifications,
+		selectedId,
+	])
 
 	useEffect(() => {
 		const root = listRef.current
@@ -71,6 +89,12 @@ export function Notifications() {
 
 	const selectedNotification = useMemo(() => notifications.find((item) => item.id === selectedId), [notifications, selectedId])
 	const unreadCount = useMemo(() => notifications.filter((item) => !item.is_read).length, [notifications])
+	const importantNotifications = useMemo(
+		() => notifications.filter((item) => IMPORTANT_NOTIFICATION_TYPES.has(item.type)),
+		[notifications],
+	)
+	const activeNotifications = notificationsTab === 'all' ? notifications : importantNotifications
+	const isListLoading = isLoadingNotifications || !isNotificationsEnabled
 
 	const handleSelect = (id: number, isRead?: boolean) => {
 		router.push(`${pathname}?id=${id}`)
@@ -94,7 +118,7 @@ export function Notifications() {
 						variant='ghost'
 						size='sm'
 						className='has-[>svg]:px-0'
-						disabled={isLoadingNotifications || !isNotificationsEnabled}
+						disabled={isListLoading}
 						onClick={() => refetchNotifications()}
 					>
 						<RefreshCcw className='size-4' />
@@ -104,7 +128,7 @@ export function Notifications() {
 						variant='ghost'
 						size='sm'
 						className='has-[>svg]:px-0'
-						disabled={isMarkingAllRead || notifications.length === 0 || !isNotificationsEnabled}
+						disabled={isMarkingAllRead || notifications.length === 0 || isListLoading}
 						onClick={() => markAllRead()}
 					>
 						<CheckCheck className='size-4' />
@@ -118,14 +142,26 @@ export function Notifications() {
 					<div className='flex items-center justify-between border-b px-4 py-3'>
 						<p className='text-sm font-semibold'>{t('notifications.list.title')}</p>
 						<p className='text-xs text-muted-foreground'>
-							{isLoadingNotifications
+							{isListLoading
 								? t('notifications.list.loading')
 								: t('notifications.list.total', { count: notifications.length })}
 						</p>
 					</div>
+					<div className='border-b px-4 py-2'>
+						<Tabs value={notificationsTab} onValueChange={(value) => setNotificationsTab(value as 'all' | 'important')}>
+							<TabsList className='w-full'>
+								<TabsTrigger value='all' className='flex-1'>
+									{t('notifications.tabs.all', { count: notifications.length })}
+								</TabsTrigger>
+								<TabsTrigger value='important' className='flex-1'>
+									{t('notifications.tabs.important', { count: importantNotifications.length })}
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</div>
 					<ScrollArea className='h-[580px]'>
 						<div ref={listRef} className='max-h-full overflow-y-auto'>
-							{notifications.map((item) => (
+							{activeNotifications.map((item) => (
 								<button
 									key={item.id}
 									type='button'
@@ -148,7 +184,7 @@ export function Notifications() {
 									{t('notifications.list.loading')}
 								</div>
 							)}
-							{notifications.length === 0 && !isLoadingNotifications && (
+							{activeNotifications.length === 0 && !isListLoading && (
 								<div className='py-6 text-center text-sm text-muted-foreground'>{t('notifications.list.empty')}</div>
 							)}
 						</div>
@@ -158,28 +194,10 @@ export function Notifications() {
 
 				<div className='min-h-[320px] rounded-2xl border bg-white p-5 shadow-sm'>
 					{selectedNotification ? (
-						<div className='flex flex-col gap-3'>
-							<div className='flex flex-wrap items-center justify-between gap-2 border-b pb-3'>
-								<div className='flex items-center gap-2'>
-									<Tag className='size-4 text-brand' />
-									<h2 className='text-lg font-semibold'>{selectedNotification.title}</h2>
-								</div>
-								<p className='text-xs text-muted-foreground'>{formatDateTimeValue(selectedNotification.created_at)}</p>
-							</div>
-							{selectedNotification.message && <p className='text-sm leading-relaxed text-gray-800'>{selectedNotification.message}</p>}
-							<div className='text-xs text-muted-foreground'>
-								{t('notifications.details.type')}: <span className='font-semibold text-gray-900'>{selectedNotification.type}</span>
-							</div>
-							{selectedNotification.payload && (
-								<div className='rounded-xl border bg-gray-50 p-3 text-xs text-gray-700'>
-									<p className='mb-2 text-sm font-semibold'>{t('notifications.details.payloadTitle')}</p>
-									<pre className='whitespace-pre-wrap break-all text-xs'>{JSON.stringify(selectedNotification.payload, null, 2)}</pre>
-								</div>
-							)}
-						</div>
+						<NotificationDetails notification={selectedNotification} />
 					) : (
 						<div className='flex h-full items-center justify-center text-sm text-muted-foreground'>
-							{isLoadingNotifications ? <Loader /> : t('notifications.details.empty')}
+							{isListLoading ? <Loader /> : t('notifications.details.empty')}
 						</div>
 					)}
 				</div>

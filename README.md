@@ -1,52 +1,80 @@
-# Logistic Project
+﻿# Logistic Project
 
-Next.js 16 + React 19 интерфейс для управления логистическими процессами: панели, формы и таблицы из dashboard-а работают поверх backend-а, а схемы API синхронизируются в `src/shared/types/api.ts`. Проект собирает UI на shadcn/ui и Tailwind, использует React Query для работы с серверным состоянием и строгую типизацию TypeScript.
+Frontend приложение для платформы логистики: кабинеты для клиентов, перевозчиков и логистов, доски грузов и заказов, предложения и договоренности, уведомления и профиль.
 
-## Скрипты
+## Основные возможности
+
+- Аутентификация, регистрация, восстановление доступа.
+- Управление грузами: публикация, обновление, приглашения, видимость.
+- Работа с предложениями: создание, встречные предложения, приглашения, статусы.
+- Заказы: создание, статусы, документы, приглашения водителей.
+- Договоренности, рейтинги, платежи.
+- Уведомления и аналитика профиля.
+- Гео подсказки городов и стран.
+- Мультиязычность через i18n.
+
+## Технологии
+
+- Next.js 16 (App Router), React 19, TypeScript.
+- Tailwind CSS и shadcn/ui, Radix UI, Vaul.
+- React Query, Zustand.
+- React Hook Form, Tiptap editor.
+- Axios, date-fns.
+- OpenAPI типы: `src/shared/types/api.ts`.
+
+## Используемые библиотеки
+
+| Библиотека | Назначение |
+| --- | --- |
+| `next` | Next.js фреймворк и App Router. |
+| `react`, `react-dom` | Базовый UI рендеринг. |
+| `@tanstack/react-query` | Запросы, кэш и мутации API. |
+| `@tanstack/react-table` | Таблицы, сортировка и пагинация. |
+| `tailwind-merge`, `clsx` | Склейка классов Tailwind. |
+| `class-variance-authority` | Варианты классов для компонентов. |
+| `cmdk` | Командная палитра. |
+| `@radix-ui/react-*` | Низкоуровневые доступные UI примитивы. |
+| `@floating-ui/dom` | Позиционирование поповеров и тултипов. |
+| `vaul` | Drawer панели. |
+| `react-day-picker` | Выбор дат. |
+| `react-hook-form` | Формы и валидация. |
+| `react-hot-toast` | Toast уведомления. |
+| `nextjs-toploader` | Индикатор загрузки маршрутов. |
+| `lucide-react` | Иконки. |
+| `recharts` | Графики и чарты. |
+| `date-fns` | Работа с датами. |
+| `dompurify` | Очистка HTML. |
+| `input-otp` | Ввод одноразовых кодов. |
+| `js-cookie` | Работа с cookies. |
+| `@tiptap/*` | Редактор текста (Tiptap). |
+| `axios` | HTTP клиент. |
+| `zustand` | Глобальные сторы. |
+
+## Команды
 
 | Скрипт | Назначение |
 | --- | --- |
-| `npm run dev` | Локальный дев-сервер Next.js |
-| `npm run build` | Продакшн-сборка приложения |
-| `npm run start` | Старт собранного приложения на порту `3002` |
-| `npm run lint` | Проверка кода ESLint |
-| `npm run gen:types` | Генерация клиентских типов из OpenAPI схемы |
+| `npm run dev` | Запуск dev сервера Next.js |
+| `npm run build` | Production сборка |
+| `npm run start` | Запуск production на порту `3002` |
+| `npm run lint` | Проверка ESLint |
+| `npm run gen:types` | Генерация типов из OpenAPI в `src/shared/types/api.ts` |
 
-## Runtime зависимости
+## Структура проекта
 
-| Пакет | Для чего нужен |
-| --- | --- |
-| `next` | Фреймворк и рендеринг приложения |
-| `react`, `react-dom` | UI-движок и рендерер |
-| `next-devtools-mcp` | Девтулы для Next.js в MCP окружении |
-| `axios` | HTTP-клиент для вызова API |
-| `@tanstack/react-query` | Серверное состояние, запросы и кэш |
-| `@tanstack/react-table` | Табличные данные в dashboard |
-| `zustand` | Легковесное клиентское состояние |
-| `react-hook-form` | Формы и валидации |
-| `react-day-picker` | Компоненты выбора дат |
-| `date-fns` | Утилиты работы с датами |
-| `react-hot-toast` | Toast-уведомления |
-| `nextjs-toploader` | Прогресс-бар при навигации |
-| `js-cookie` | Работа с cookie в браузере |
-| `@floating-ui/dom` | Позиционирование поповеров и тултипов |
-| `shadcn/ui`, `cmdk`, `class-variance-authority`, `clsx`, `tailwind-merge` | Библиотеки дизайн-системы и утилиты классов |
-| `@tailwindcss/typography` | Tailwind пресет типографики |
-| `lucide-react` | Иконки |
-| `@radix-ui/react-*` (checkbox, dialog, dropdown-menu, label, popover, radio-group, select, slot, tabs, toggle, tooltip) | Аксессибл-примитивы для компонентов интерфейса |
-| `@tiptap/*` (core, extensions, pm, react, starter-kit) | Редактор контента и все расширения (heading, highlight, link, placeholder, text-align, youtube) |
+- `src/app` - роуты и страницы (App Router).
+- `src/components` - UI компоненты и составные виджеты, включая `src/components/ui`.
+- `src/hooks` - React hooks для запросов и бизнес логики.
+- `src/services` - слой API сервисов.
+- `src/lib` - утилиты и форматтеры.
+- `src/shared` - общие типы, enums и regex.
+- `src/i18n` - локализация, сообщения и helpers.
+- `src/store` - Zustand хранилища.
+- `src/config` - конфигурация приложения.
+- `src/api` - API helpers и прокси.
 
-## DevDependencies
+## Документация
 
-| Пакет | Для чего нужен |
-| --- | --- |
-| `typescript` | Язык и проверки типов |
-| `@types/node`, `@types/react`, `@types/react-dom`, `@types/js-cookie` | Тайпинги для TS |
-| `eslint`, `eslint-config-next`, `@eslint/eslintrc` | Линтинг и правила |
-| `tailwindcss`, `@tailwindcss/postcss`, `tailwind-scrollbar`, `tw-animate-css` | Настройка Tailwind и анимаций |
-| `openapi-typescript` | Генерация типов API |
-
-## Архитектура
-
-- **Frontend**: корень репозитория, Next.js App Router, shadcn/ui компоненты (`src/components/ui`).  
-- **Типы API**: актуализируются в `src/shared/types/api.ts` через OpenAPI схему.  
+- `documentation/DOCS.md` - единый справочник по hooks, services, utils, enums, types, regex, components и stores.
+- `documentation/COMMANDS.md` - доступные команды для агента.
+- `documentation/AGENTS.md` - правила разработки и соглашения проекта.

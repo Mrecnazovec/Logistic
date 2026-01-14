@@ -1,60 +1,71 @@
-## Hooks
+﻿## Hooks
 
 - ## Auth
 
-useLogin — mutation for user login via authService.login; returns login/isLoading.
-useLogout — mutation for logout with token cleanup and page refresh.
-useRegister — mutation for registration via authService.register; returns register/isLoading.
-useChangeRole — mutation to switch user role via authService.changeRole with toasts.
-useForgotPassword — mutation to request password reset email via authService.forgotPassword.
-useResendVerify — mutation to resend verification email via authService.resendVerify.
-useResetPassword — mutation to set a new password via authService.resetPassword.
-useVerifyEmail — mutation to verify email via authService.verifyEmail.
+useLogin вЂ” mutation for user login via authService.login; returns login/isLoading.
+useLogout вЂ” mutation for logout with token cleanup and page refresh.
+useRegister вЂ” mutation for registration via authService.register; returns register/isLoading.
+useChangeRole вЂ” mutation to switch user role via authService.changeRole with toasts.
+useForgotPassword вЂ” mutation to request password reset email via authService.forgotPassword.
+useResendVerify вЂ” mutation to resend verification email via authService.resendVerify.
+useResetPassword вЂ” mutation to set a new password via authService.resetPassword.
+useVerifyEmail вЂ” mutation to verify email via authService.verifyEmail.
 
 - ## Me
 
-useGetAnalytics — fetches profile analytics via meService.getAnalytics.
-useGetMe — fetches current user profile via meService.getMe.
-usePatchMe — mutation for partial profile update via meService.patchMe.
-useUpdateMe — mutation for full profile update via meService.updateMe.
+useGetAnalytics вЂ” fetches profile analytics via meService.getAnalytics.
+useGetMe вЂ” fetches current user profile via meService.getMe.
+usePatchMe вЂ” mutation for partial profile update via meService.patchMe.
+useUpdateMe вЂ” mutation for full profile update via meService.updateMe.
 
 - ## Notifications
 
-useNotifications — loads notifications with pagination via notificationsService.getNotifications.
+useNotifications вЂ” loads notifications with pagination via notificationsService.getNotifications and exposes firstPageNotifications.
+getNotificationDetailsText - returns details text for a notification using message or localized templates.
+getNotificationTypeLabel - returns a localized label for a notification type.
+getNotificationOrderId - extracts order_id from notification payload for routing.
+getNotificationOfferId - returns offer_id for offer-related notifications.
+getNotificationRatedById - extracts rated_by from notification payload.
+getNotificationRatedUserId - extracts rated_user from notification payload.
+getNotificationCargoId - extracts cargo_id from notification payload or top-level field.
+getNotificationStatusChange - returns localized status change labels from payload.
+getNotificationDetailsModel - builds localized notification details text, instruction, status change, and action links.
+NotificationDetails - renders notification detail view with text, instruction, status change, and actions.
 
 - ## Geo
 
-useGetCitySuggest — fetches city suggestions by term via geoService.getCitySuggest.
-useGetCountrySuggest — fetches country suggestions by term via geoService.getCountrySuggest.
+useGetCitySuggest вЂ” fetches city suggestions by term via geoService.getCitySuggest.
+useGetCountrySuggest вЂ” fetches country suggestions by term via geoService.getCountrySuggest.
 
 - ## Loads
 
-useGetLoad — fetches load details by uuid via loadsService.getLoad.
-useGetLoadsBoard — fetches board loads with filters via loadsService.getLoadsBoard.
-useGetLoadsMine — fetches my loads with filters via loadsService.getLoadsMine.
-useGetLoadsPublic — fetches public loads using URL params via loadsService.getLoadsPublic.
-useCreateLoad — creates load, invalidates list, redirects to announcements.
-useGenerateLoadInvite — generates invite link for load via loadsService.generateLoadInvite.
-useLoadInvite — opens invite by token via loadsService.getLoadInviteByToken.
-usePatchLoad — partial load update by id via loadsService.patchLoad.
-usePutLoad — full load update by id via loadsService.putLoad.
-useRefreshLoad — refreshes load announcement via loadsService.refreshLoad.
-useToggleLoadVisibility — toggles load visibility for the current user via loadsService.toggleLoadVisibility.
-useCancelLoad — cancels load with reason via loadsService.cancelLoad.
+useGetLoad вЂ” fetches load details by uuid via loadsService.getLoad.
+useGetLoadsBoard вЂ” fetches board loads with filters via loadsService.getLoadsBoard.
+useGetLoadsMine вЂ” fetches my loads with filters via loadsService.getLoadsMine.
+useGetLoadsPublic вЂ” fetches public loads using URL params via loadsService.getLoadsPublic.
+useCreateLoad вЂ” creates load, invalidates list, redirects to announcements.
+useGenerateLoadInvite вЂ” generates invite link for load via loadsService.generateLoadInvite.
+useLoadInvite вЂ” opens invite by token via loadsService.getLoadInviteByToken.
+usePatchLoad вЂ” partial load update by id via loadsService.patchLoad.
+usePutLoad вЂ” full load update by id via loadsService.putLoad.
+useRefreshLoad вЂ” refreshes load announcement via loadsService.refreshLoad.
+useToggleLoadVisibility вЂ” toggles load visibility for the current user via loadsService.toggleLoadVisibility.
+useCancelLoad вЂ” cancels load with reason via loadsService.cancelLoad.
 
 - ## Offers
 
-useAcceptOffer — accepts offer via offersService.acceptOffer.
-useCounterOffer — sends counter-offer with price via offersService.counterOffer.
-useInviteOffer — invites to offer via offersService.inviteOffer.
-useRejectOffer — rejects offer via offersService.rejectOffer.
-useCreateOffer — creates offer via offersService.createOffer.
-useDeleteOffer — deletes offer by uuid via offersService.deleteOffer.
-useGetIncomingOffers — loads incoming offers with pagination via offersService.getIncomingOffers.
-useGetMyOffers — loads my offers with pagination via offersService.getMyOffers.
-useGetOfferById — loads offer details by uuid via offersService.getOfferById.
+useAcceptOffer вЂ” accepts offer via offersService.acceptOffer.
+useCounterOffer вЂ” sends counter-offer with price via offersService.counterOffer.
+useInviteOffer вЂ” invites to offer via offersService.inviteOffer.
+useRejectOffer вЂ” rejects offer via offersService.rejectOffer.
+useCreateOffer вЂ” creates offer via offersService.createOffer.
+useDeleteOffer вЂ” deletes offer by uuid via offersService.deleteOffer.
+useGetIncomingOffers вЂ” loads incoming offers with pagination via offersService.getIncomingOffers.
+useGetMyOffers вЂ” loads my offers with pagination via offersService.getMyOffers.
+useGetOfferById вЂ” loads offer details by uuid via offersService.getOfferById.
+useGetOffer - loads offer detail by id via offersService.getOfferById.
 useGetOfferLogs - loads offer status logs by offer id via offersService.getOfferLogs.
-useGetOffers — loads offers list with filters via offersService.getOffers.
+useGetOffers вЂ” loads offers list with filters via offersService.getOffers.
 
 - ## Agreements
 
@@ -69,8 +80,8 @@ useCreateSupportTicket - sends support message via supportService.createSupportT
 
 - ## Orders
 
-useCreateOrder — creates order via ordersService.createOrder.
-useDeleteOrder — deletes order by id via ordersService.deleteOrder.
+useCreateOrder вЂ” creates order via ordersService.createOrder.
+useDeleteOrder вЂ” deletes order by id via ordersService.deleteOrder.
 useGetOrder - loads order details by id via ordersService.getOrder.
 useGetOrderDocuments - loads order documents via ordersService.getOrderDocuments.
 useGetOrderStatusHistory - loads driver status history via ordersService.getOrderStatusHistory.
@@ -93,17 +104,19 @@ useGetPayment - fetches payment details by id via paymentsService.getPayment.
 
 - ## Ratings
 
-useCreateRating — creates user rating via ratingsService.createRating.
-useDeleteRating — deletes rating via ratingsService.deleteRating.
-useGetRating — fetches rating detail by id via ratingsService.getRating.
-useGetRatings — fetches ratings list via ratingsService.getRatings.
-usePatchRating — partial rating update via ratingsService.patchRating.
-useUpdateRating — rating update via ratingsService.updateRating.
+useCreateRating вЂ” creates user rating via ratingsService.createRating.
+useDeleteRating вЂ” deletes rating via ratingsService.deleteRating.
+useGetRating вЂ” fetches rating detail by id via ratingsService.getRating.
+useGetRatingUser - fetches rating user by id via ratingsService.getRatingUser.
+useGetRatings вЂ” fetches ratings list via ratingsService.getRatings.
+useGetRatingUser - fetches rating user by id via ratingsService.getRatingUser.
+usePatchRating вЂ” partial rating update via ratingsService.patchRating.
+useUpdateRating вЂ” rating update via ratingsService.updateRating.
 
 - ## Others
 
-useDebounce — returns a debounced value with a delay timer.
-useMediaQuery — subscribes to matchMedia for a media query string, returns boolean.
+useDebounce вЂ” returns a debounced value with a delay timer.
+useMediaQuery вЂ” subscribes to matchMedia for a media query string, returns boolean.
 useI18n - provides access to locale and t() from I18nProvider.
 useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
 /i18n - translation keys and locale messages directory.
@@ -116,38 +129,38 @@ messages/index.ts - aggregates messages and getMessages(locale).
 
 ## Lib helpers
 
-currencySymbols — mapping of currency codes to symbols (USD/EUR/RUB/KZT/UZS).
-getCurrencySymbol — returns currency symbol or code.
-formatCurrencyValue — formats number/string as currency with grouping.
-formatCurrencyPerKmValue — formats currency value and appends “/км”.
-formatDateValue — safe date formatting with pattern (default dd.MM.yyyy).
-formatDateTimeValue — formats date/time with Russian locale full date and time.
-formatRelativeDate — relative time formatting (min/hour/day ago).
-formatPlace — joins city/country with comma or placeholder.
-formatWeightValue — formats weight with thousand separators and “кг”.
-formatPriceValue — wrapper over formatCurrencyValue for convenience.
-formatPricePerKmValue — wrapper over formatCurrencyPerKmValue.
-formatDistanceKm — formats numeric distance with “км”.
-parseDistanceKm — parses distance value to number for sorting.
-parseDateToTimestamp — parses date to timestamp for sorting.
-formatDurationFromMinutes – formats total minutes to “X ч Y мин”.
-formatAgeFromMinutes – human-readable age from minutes (“мин/ч/дн назад”).
-handleNumericInput – normalizes numeric input (comma to dot) and applies regex.
+currencySymbols вЂ” mapping of currency codes to symbols (USD/EUR/RUB/KZT/UZS).
+getCurrencySymbol вЂ” returns currency symbol or code.
+formatCurrencyValue вЂ” formats number/string as currency with grouping.
+formatCurrencyPerKmValue вЂ” formats currency value and appends вЂњ/РєРјвЂќ.
+formatDateValue вЂ” safe date formatting with pattern (default dd.MM.yyyy).
+formatDateTimeValue вЂ” formats date/time with Russian locale full date and time.
+formatRelativeDate вЂ” relative time formatting (min/hour/day ago).
+formatPlace вЂ” joins city/country with comma or placeholder.
+formatWeightValue вЂ” formats weight with thousand separators and вЂњРєРівЂќ.
+formatPriceValue вЂ” wrapper over formatCurrencyValue for convenience.
+formatPricePerKmValue вЂ” wrapper over formatCurrencyPerKmValue.
+formatDistanceKm вЂ” formats numeric distance with вЂњРєРјвЂќ.
+parseDistanceKm вЂ” parses distance value to number for sorting.
+parseDateToTimestamp вЂ” parses date to timestamp for sorting.
+formatDurationFromMinutes вЂ“ formats total minutes to вЂњX С‡ Y РјРёРЅвЂќ.
+formatAgeFromMinutes вЂ“ human-readable age from minutes (вЂњРјРёРЅ/С‡/РґРЅ РЅР°Р·Р°РґвЂќ).
+handleNumericInput вЂ“ normalizes numeric input (comma to dot) and applies regex.
 InputOTP - OTP code input built on input-otp.
-transliterate – transliterates between Cyrillic and Latin characters.
-cn – merges className strings via clsx and tailwind-merge.
+transliterate вЂ“ transliterates between Cyrillic and Latin characters.
+cn вЂ“ merges className strings via clsx and tailwind-merge.
 getLocale - resolves locale from path/cookie on the server.
 getLocaleFromPath - extracts locale from a path if present.
 addLocaleToPath - prefixes a path with locale when needed.
 stripLocaleFromPath - removes locale prefix from a path.
-buildSearchDefaultValues – builds ISearch object from URLSearchParams with type coercion.
-buildPaginationItems – creates pagination page list with ellipsis handling for long ranges.
-getPageNumberFromUrl – extracts a valid positive page number from a URL search param.
+buildSearchDefaultValues вЂ“ builds ISearch object from URLSearchParams with type coercion.
+buildPaginationItems вЂ“ creates pagination page list with ellipsis handling for long ranges.
+getPageNumberFromUrl вЂ“ extracts a valid positive page number from a URL search param.
 
 ## Services
 
-authService — auth, registration, role change, password recovery, email verification APIs.
-auth-token.service — token storage in cookies (read/save/remove).
+authService вЂ” auth, registration, role change, password recovery, email verification APIs.
+auth-token.service вЂ” token storage in cookies (read/save/remove).
 loadsService - load CRUD, invites, visibility management via /loads API.
 meService - fetch/update profile and analytics.
 notificationsService - load notifications and mark as read.
@@ -161,10 +174,10 @@ supportService - submits support tickets via /support endpoint.
 
 ## Shared enums
 
-CategoryEnum — categories (licenses, contracts, loading, unloading, other).
-ContactPrefEnum — contact preferences (email/phone/both) plus ContactPrefSelector and getContactPrefName.
-InitiatorEnum — initiator of event (CUSTOMER or CARRIER).
-ModerationStatusEnum — moderation statuses pending/approved/rejected.
+CategoryEnum вЂ” categories (licenses, contracts, loading, unloading, other).
+ContactPrefEnum вЂ” contact preferences (email/phone/both) plus ContactPrefSelector and getContactPrefName.
+InitiatorEnum вЂ” initiator of event (CUSTOMER or CARRIER).
+ModerationStatusEnum вЂ” moderation statuses pending/approved/rejected.
 OrderStatusEnum - order statuses pending/in_process/delivered/no_driver/paid.
 OrderDriverStatusEnum - driver statuses (stopped/en_route/problem) and selector.
 PaymentMethodEnum - payment methods (cash/cashless/both) and PaymentMethodSelector.
@@ -176,18 +189,18 @@ TransportTypeEnum - transport types (TENT/CONT/REEFER/DUMP/CARTR/GRAIN/LOG/PICKU
 
 ## Shared types
 
-Analytics.interface.ts — IAnalytics schema type from api.
-api.ts — generated OpenAPI components/operations types for backend.
+Analytics.interface.ts вЂ” IAnalytics schema type from api.
+api.ts вЂ” generated OpenAPI components/operations types for backend.
 Agreement.interface.ts - agreement list/detail types and query params for agreements endpoints.
-CargoList.interface.ts — ICargoList type for cargo list.
-CargoPublish.interface.ts — ICargoPublish and DTOs for create/update cargo.
-Error.interface.ts — IErrorResponse and FieldError for error responses.
-Geo.interface.ts — City/Country types and suggest responses.
-Invite.interface.ts — InviteResponseActionsProps for invite/offer actions (accept/counter/reject) using offerId payloads.
-Login.interface.ts — types for login/tokens/forgot password/reset password.
-Logout.interface.ts — ILogoutRequest and ILogoutResponse for logout.
-Me.interface.ts — profile/update/role change types.
-Notification.interface.ts — INotification and IPaginatedNotificationList.
+CargoList.interface.ts вЂ” ICargoList type for cargo list.
+CargoPublish.interface.ts вЂ” ICargoPublish and DTOs for create/update cargo.
+Error.interface.ts вЂ” IErrorResponse and FieldError for error responses.
+Geo.interface.ts вЂ” City/Country types and suggest responses.
+Invite.interface.ts вЂ” InviteResponseActionsProps for invite/offer actions (accept/counter/reject) using offerId payloads.
+Login.interface.ts вЂ” types for login/tokens/forgot password/reset password.
+Logout.interface.ts вЂ” ILogoutRequest and ILogoutResponse for logout.
+Me.interface.ts вЂ” profile/update/role change types.
+Notification.interface.ts вЂ” INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses and status logs; IOfferShort includes invite_token and invite_offer.
 Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
@@ -202,96 +215,97 @@ Support.interface.ts - support ticket create request DTO.
 
 ## Shared regex
 
-NUMERIC_REGEX — matches numbers up to 12 digits with optional 2 decimals.
-PRODUCT_MAX_LENGTH — max length for product string (120).
+NUMERIC_REGEX вЂ” matches numbers up to 12 digits with optional 2 decimals.
+PRODUCT_MAX_LENGTH вЂ” max length for product string (120).
 
 ## Components
 
-Badge — badge component built on shadcn/ui.
+Badge вЂ” badge component built on shadcn/ui.
 getLocale - resolves locale from path/cookie on the server.
 getLocaleFromPath - extracts locale from a path if present.
 addLocaleToPath - prefixes a path with locale when needed.
 stripLocaleFromPath - removes locale prefix from a path.
-Button — shadcn button with variants.
+Button вЂ” shadcn button with variants.
 getLocale - resolves locale from path/cookie on the server.
 getLocaleFromPath - extracts locale from a path if present.
 addLocaleToPath - prefixes a path with locale when needed.
 stripLocaleFromPath - removes locale prefix from a path.
-Calendar — date picker using react-day-picker.
+Calendar вЂ” date picker using react-day-picker.
 I18nProvider - provides locale/messages context for translations.
-Card — card container components (Card/CardHeader/CardContent/CardFooter/CardTitle).
-Command — command palette component on shadcn/ui.
+Card вЂ” card container components (Card/CardHeader/CardContent/CardFooter/CardTitle).
+Command вЂ” command palette component on shadcn/ui.
 getLocale - resolves locale from path/cookie on the server.
 getLocaleFromPath - extracts locale from a path if present.
 addLocaleToPath - prefixes a path with locale when needed.
 stripLocaleFromPath - removes locale prefix from a path.
-Container — layout wrapper with max width.
-Dialog — modal dialog built on Radix Dialog.
-DropdownMenu — Radix dropdown menu.
-Loader — spinner loader indicator.
-Logo — app SVG logo.
-Popover — Radix popover wrapper.
-RadioGroup — radio button group.
-ScrollArea — styled scroll container.
-Select — Radix select dropdown.
-Skeleton — skeleton placeholder.
-Tabs — Radix tabs.
-Toggle — toggle button.
-Tooltip — Radix tooltip.
-Checkbox — Radix checkbox (file Сheckbox.tsx).
-NoPhoto — profile image placeholder.
-BadgeSelector — badge status selector dropdown.
-CitySelector — city selector with suggestions/search and optional Nominatim coordinates callback.
+Container вЂ” layout wrapper with max width.
+Dialog вЂ” modal dialog built on Radix Dialog.
+DropdownMenu вЂ” Radix dropdown menu.
+Loader вЂ” spinner loader indicator.
+Logo вЂ” app SVG logo.
+Popover вЂ” Radix popover wrapper.
+RadioGroup вЂ” radio button group.
+ScrollArea вЂ” styled scroll container.
+Select вЂ” Radix select dropdown.
+Skeleton вЂ” skeleton placeholder.
+Tabs вЂ” Radix tabs.
+Toggle вЂ” toggle button.
+Tooltip вЂ” Radix tooltip.
+Checkbox вЂ” Radix checkbox (file РЎheckbox.tsx).
+NoPhoto вЂ” profile image placeholder.
+BadgeSelector вЂ” badge status selector dropdown.
+CitySelector вЂ” city selector with suggestions/search and optional Nominatim coordinates callback.
 ContactSelector - preferred contact selector with optional email option disabling.
-CountrySelector — country selector with suggestions.
-CurrencySelector — currency selector based on PriceSelector.
-DateSelector — single or range date selector.
-Drawer — Vaul-based drawer component with trigger/overlay/content/title helpers for slide-in panels.
-PaymentSelector — payment method selector.
-TableTypeSelector — toggle between card/table view.
-TransportSelector — transport type selector from TransportSelect.
+CountrySelector вЂ” country selector with suggestions.
+CurrencySelector вЂ” currency selector based on PriceSelector.
+DateSelector вЂ” single or range date selector.
+Drawer вЂ” Vaul-based drawer component with trigger/overlay/content/title helpers for slide-in panels.
+PaymentSelector вЂ” payment method selector.
+TableTypeSelector вЂ” toggle between card/table view.
+TransportSelector вЂ” transport type selector from TransportSelect.
 LanguageSelect - locale switcher select component.
 SearchFields - cargo search filters form with optional axles/volume fields.
-SearchRatingFields — rating filters form.
-Form — React Hook Form wrapper with validation.
-Input — text input field.
-InputGroup — grouped inputs/buttons with shared border.
-Label — field label.
-Textarea — multiline text field.
-RichTextEditor — Tiptap editor with toolbar.
-MenuBar — toolbar for RichTextEditor.
-CargoActionsDropdown — cargo actions (edit/delete etc).
-DeskMyActions — quick actions for my dashboard items.
-DeskOfferQuickActions — quick offer actions (accept/reject/contacts).
-OrdersActionsDropdown — order actions menu.
-UuidCopy — copy UUID to clipboard with tooltip.
-CounterOfferModal — modal to send counter offer.
-DeskInviteModal — modal with offer details and actions.
-DeskOffersModal — modal with offers list for cargo/order.
-OfferDecisionModal — modal to accept/reject offer invitation.
-OfferModal – modal to create offer for cargo.
-CardPagination – hook useCardPagination and pagination controls for cards.
-CardListLayout – card grid with pagination.
-CardSections – renders card sections with icons.
-cycleColumnSort – table column sort direction helper.
-TableStates – empty/error table states.
-Table – base table component with header/body/cells.
-SortIcon – sort icon for tables.
-DataTable – data table with pagination/sorting/page selection.
-DashboardLayout – dashboard layout with navigation and content.
-Header – dashboard header with search/notifications/profile.
-HeaderNavConfig – nav links/roles config for header.
-MobileNav – dashboard mobile menu.
-NavItems – sidebar nav items list.
-Sidebar – dashboard sidebar with logo and links.
-MainLayout – base layout for public pages.
-Header (main-layout) – public pages header.
-Footer – public pages footer.
-InviteDriverModal – modal to invite driver to order by id or link and allow accepting invite token.
+SearchRatingFields вЂ” rating filters form.
+Form вЂ” React Hook Form wrapper with validation.
+Input вЂ” text input field.
+InputGroup вЂ” grouped inputs/buttons with shared border.
+Label вЂ” field label.
+Textarea вЂ” multiline text field.
+RichTextEditor вЂ” Tiptap editor with toolbar.
+MenuBar вЂ” toolbar for RichTextEditor.
+CargoActionsDropdown вЂ” cargo actions (edit/delete etc).
+DeskMyActions вЂ” quick actions for my dashboard items.
+DeskOfferQuickActions вЂ” quick offer actions (accept/reject/contacts).
+OrdersActionsDropdown вЂ” order actions menu.
+UuidCopy вЂ” copy UUID to clipboard with tooltip.
+CounterOfferModal вЂ” modal to send counter offer.
+DeskInviteModal вЂ” modal with offer details and actions.
+DeskOffersModal вЂ” modal with offers list for cargo/order.
+OfferDecisionModal вЂ” modal to accept/reject offer invitation.
+OfferModal вЂ“ modal to create offer for cargo.
+CardPagination вЂ“ hook useCardPagination and pagination controls for cards.
+CardListLayout вЂ“ card grid with pagination.
+CardSections вЂ“ renders card sections with icons.
+cycleColumnSort вЂ“ table column sort direction helper.
+TableStates вЂ“ empty/error table states.
+Table вЂ“ base table component with header/body/cells.
+SortIcon вЂ“ sort icon for tables.
+DataTable вЂ“ data table with pagination/sorting/page selection.
+DashboardLayout вЂ“ dashboard layout with navigation and content.
+Header вЂ“ dashboard header with search/notifications/profile.
+HeaderNavConfig вЂ“ nav links/roles config for header.
+MobileNav вЂ“ dashboard mobile menu.
+NavItems вЂ“ sidebar nav items list.
+Sidebar вЂ“ dashboard sidebar with logo and links.
+MainLayout вЂ“ base layout for public pages.
+Header (main-layout) вЂ“ public pages header.
+Footer вЂ“ public pages footer.
+InviteDriverModal вЂ“ modal to invite driver to order by id or link and allow accepting invite token.
 
 ## Stores
 
-useRoleStore — Zustand store for user role with setRole.
-useTableTypeStore — Zustand store for current view mode (card/table) with setTableType.
-useSearchDrawerStore — Zustand store for opening/closing the shared search drawer.
+useRoleStore вЂ” Zustand store for user role with setRole.
+useTableTypeStore вЂ” Zustand store for current view mode (card/table) with setTableType.
+useSearchDrawerStore вЂ” Zustand store for opening/closing the shared search drawer.
+
 

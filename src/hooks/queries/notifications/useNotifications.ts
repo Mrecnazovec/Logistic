@@ -70,10 +70,12 @@ export const useNotifications = (enabled: boolean) => {
 	})
 
 	const notifications = useMemo(() => (data?.pages ?? []).flatMap((page) => page.results), [data?.pages])
+	const firstPageNotifications = useMemo(() => data?.pages?.[0]?.results ?? [], [data?.pages])
 
 	return useMemo(
 		() => ({
 			notifications,
+			firstPageNotifications,
 			refetchNotifications,
 			isLoadingNotifications: canQuery ? isLoading || isFetching : false,
 			isFetchingNextPage: canQuery ? isFetchingNextPage : false,
@@ -94,6 +96,7 @@ export const useNotifications = (enabled: boolean) => {
 			isMarkingAllRead,
 			markAllRead,
 			markRead,
+			firstPageNotifications,
 			notifications,
 			refetchNotifications,
 		]

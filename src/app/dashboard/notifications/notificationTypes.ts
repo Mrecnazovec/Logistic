@@ -206,6 +206,21 @@ export const notificationTypeSamples = [
 		importance: false,
 	},
 	{
+		id: 2215,
+		type: 'cargo_status_changed',
+		title: 'Статус заказа изменён',
+		message: 'Статус заказа обновлён: pending → in_process',
+		payload: {
+			order_id: 111,
+			new_status: 'in_process',
+			old_status: 'pending',
+		},
+		cargo_id: 237,
+		is_read: false,
+		created_at: '2026-01-14T23:50:57.967544+05:00',
+		importance: false,
+	},
+	{
 		id: 31,
 		type: 'test_ws',
 		title: 'WS работает',

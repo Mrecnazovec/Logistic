@@ -44,6 +44,8 @@
 	'components.dashboard.header.notifications.latest': 'Последние: {count}',
 	'components.dashboard.header.notifications.allRead': 'Все прочитано',
 	'components.dashboard.header.notifications.empty': 'Нет уведомлений',
+	'components.dashboard.header.notifications.tabs.all': 'Все({count})',
+	'components.dashboard.header.notifications.tabs.important': 'Важные({count})',
 	'components.dashboard.header.profile.noName': 'Без имени',
 	'components.dashboard.header.profile.unknownRole': 'Неизвестно',
 	'components.dashboard.header.profile.rating': 'рейтинг',

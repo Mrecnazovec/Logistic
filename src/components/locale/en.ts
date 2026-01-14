@@ -45,6 +45,8 @@ const messages: Record<string, string> = {
 	'components.dashboard.header.notifications.latest': 'Latest: {count}',
 	'components.dashboard.header.notifications.allRead': 'All read',
 	'components.dashboard.header.notifications.empty': 'No notifications',
+	'components.dashboard.header.notifications.tabs.all': 'All({count})',
+	'components.dashboard.header.notifications.tabs.important': 'Important({count})',
 	'components.dashboard.header.profile.noName': 'No name',
 	'components.dashboard.header.profile.unknownRole': 'Unknown',
 	'components.dashboard.header.profile.rating': 'rating',

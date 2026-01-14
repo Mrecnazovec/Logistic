@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/Button'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { notificationTypeSamples } from '@/app/dashboard/notifications/notificationTypes'
 import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
@@ -10,6 +12,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { stripLocaleFromPath } from '@/i18n/paths'
 import { cn } from '@/lib/utils'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
+import type { INotification } from '@/shared/types/Notification.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { format } from 'date-fns'
@@ -30,6 +33,10 @@ const SEARCH_ENABLED_ROUTES = [
 	'/dashboard/rating',
 ]
 
+const IMPORTANT_NOTIFICATION_TYPES = new Set<string>(
+	notificationTypeSamples.filter((item) => item.importance).map((item) => item.type)
+)
+
 export function Header() {
 	const pathname = usePathname()
 	const router = useRouter()
@@ -39,18 +46,15 @@ export function Header() {
 	const { items: navItems, backLink } = resolveHeaderNavItems(pathname, role)
 	const { me, isLoading } = useGetMe()
 	const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+	const [notificationsTab, setNotificationsTab] = useState<'all' | 'important'>('all')
 	const {
-		notifications,
+		firstPageNotifications,
 		refetchNotifications,
 		isLoadingNotifications,
-		isFetchingNextPage,
-		hasNextPage,
-		fetchNextPage,
 		markAllRead,
 		isMarkingAllRead,
 		isNotificationsEnabled,
 	} = useNotifications(true)
-	const scrollRef = useRef<HTMLDivElement | null>(null)
 	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
@@ -75,7 +79,10 @@ export function Header() {
 		return () => clearInterval(interval)
 	}, [isNotificationsEnabled, refetchNotifications])
 
-	const unreadCount = notifications.filter((item) => !item.is_read).length
+	const allNotifications = firstPageNotifications
+	const importantNotifications = allNotifications.filter((item) => IMPORTANT_NOTIFICATION_TYPES.has(item.type))
+	const activeNotifications = notificationsTab === 'all' ? allNotifications : importantNotifications
+	const unreadCount = allNotifications.filter((item) => !item.is_read).length
 
 	useEffect(() => {
 		const currentUnread = unreadCount
@@ -85,16 +92,42 @@ export function Header() {
 		lastUnreadRef.current = currentUnread
 	}, [unreadCount])
 
-	const handleScroll = () => {
-		const node = scrollRef.current
-		if (!node || isFetchingNextPage || !hasNextPage) return
-		const threshold = 40
-		if (node.scrollTop + node.clientHeight >= node.scrollHeight - threshold) {
-			fetchNextPage()
-		}
-	}
-
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
+
+	const renderNotifications = (list: INotification[]) => {
+		if (list.length === 0 && !isLoadingNotifications) {
+			return (
+				<div className='py-6 text-center text-sm text-muted-foreground'>
+					{t('components.dashboard.header.notifications.empty')}
+				</div>
+			)
+		}
+
+		return (
+			<div className='max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-border'>
+				<div className='flex flex-col'>
+					{list.map((item) => (
+						<Link
+							key={item.id}
+							href={`${withLocale(DASHBOARD_URL.notifications(), locale)}?id=${item.id}`}
+							className={cn(
+								'text-left px-4 py-3 flex flex-col gap-1 transition-colors border-b last:border-none',
+								item.is_read
+									? 'bg-white hover:bg-accent/40'
+									: 'bg-brand/5 border-l-4 border-l-brand hover:bg-brand/10',
+							)}
+						>
+							<p className='text-sm font-semibold text-gray-900 line-clamp-2'>{item.title}</p>
+							{item.message && <p className='text-sm text-gray-600 line-clamp-2'>{item.message}</p>}
+							<p className='text-[11px] text-gray-500'>
+								{format(new Date(item.created_at), 'dd.MM.yyyy HH:mm')}
+							</p>
+						</Link>
+					))}
+				</div>
+			</div>
+		)
+	}
 
 	const handleBackClick = () => {
 		if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -173,71 +206,47 @@ export function Header() {
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent align='end' className='w-[360px] p-0 shadow-xl'>
-									<div className='flex items-center justify-between px-4 py-3 border-b'>
-										<div>
-											<p className='text-base font-semibold'>{t('components.dashboard.header.notifications.title')}</p>
-											<p className='text-xs text-gray-500'>
-												{isLoadingNotifications
-													? t('components.dashboard.header.notifications.loading')
-													: t('components.dashboard.header.notifications.latest', {
-														count: notifications.length,
-													})}
-											</p>
-										</div>
-										<Button
-											variant='ghost'
-											size='sm'
-											disabled={
-												isLoadingNotifications || isMarkingAllRead || notifications.length === 0
-											}
-											onClick={() => markAllRead()}
-											className='h-8 px-2 text-xs text-brand hover:text-brand/80'
-										>
-											<CheckCheck className='size-4' />
-											{t('components.dashboard.header.notifications.allRead')}
-										</Button>
-									</div>
-									{notifications.length === 0 && !isLoadingNotifications ? (
-										<div className='py-6 text-center text-sm text-muted-foreground'>
-											{t('components.dashboard.header.notifications.empty')}
-										</div>
-									) : (
-										<div
-											ref={scrollRef}
-											onScroll={handleScroll}
-											className='max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-border'
-										>
-											<div className='flex flex-col'>
-												{notifications.map((item) => (
-													<Link
-														key={item.id}
-														href={`${withLocale(DASHBOARD_URL.notifications(), locale)}?id=${item.id}`}
-														className={cn(
-															'text-left px-4 py-3 flex flex-col gap-1 transition-colors border-b last:border-none',
-															item.is_read
-																? 'bg-white hover:bg-accent/40'
-																: 'bg-brand/5 border-l-4 border-l-brand hover:bg-brand/10',
-														)}
-													>
-														<p className='text-sm font-semibold text-gray-900 line-clamp-2'>
-															{item.title}
-														</p>
-														{item.message && (
-															<p className='text-sm text-gray-600 line-clamp-2'>{item.message}</p>
-														)}
-														<p className='text-[11px] text-gray-500'>
-															{format(new Date(item.created_at), 'dd.MM.yyyy HH:mm')}
-														</p>
-													</Link>
-												))}
+									<Tabs value={notificationsTab} onValueChange={(value) => setNotificationsTab(value as 'all' | 'important')}>
+										<div className='flex items-center justify-between px-4 py-3 border-b'>
+											<div>
+												<p className='text-base font-semibold'>{t('components.dashboard.header.notifications.title')}</p>
+												<p className='text-xs text-gray-500'>
+													{isLoadingNotifications
+														? t('components.dashboard.header.notifications.loading')
+														: t('components.dashboard.header.notifications.latest', {
+															count: allNotifications.length,
+														})}
+												</p>
 											</div>
-											{isFetchingNextPage && (
-												<div className='py-2 text-center text-xs text-muted-foreground'>
-													{t('components.dashboard.header.notifications.loading')}
-												</div>
-											)}
+											<Button
+												variant='ghost'
+												size='sm'
+												disabled={
+													isLoadingNotifications || isMarkingAllRead || allNotifications.length === 0
+												}
+												onClick={() => markAllRead()}
+												className='h-8 px-2 text-xs text-brand hover:text-brand/80'
+											>
+												<CheckCheck className='size-4' />
+												{t('components.dashboard.header.notifications.allRead')}
+											</Button>
 										</div>
-									)}
+										<div className='px-4 py-2 border-b'>
+											<TabsList className='w-full'>
+												<TabsTrigger value='all' className='flex-1'>
+													{t('components.dashboard.header.notifications.tabs.all', {
+														count: allNotifications.length,
+													})}
+												</TabsTrigger>
+												<TabsTrigger value='important' className='flex-1'>
+													{t('components.dashboard.header.notifications.tabs.important', {
+														count: importantNotifications.length,
+													})}
+												</TabsTrigger>
+											</TabsList>
+										</div>
+										{renderNotifications(activeNotifications)}
+									</Tabs>
 								</PopoverContent>
 							</Popover>
 						</div>

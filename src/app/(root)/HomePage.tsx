@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { AuthPage } from "../auth/AuthPage"
 
