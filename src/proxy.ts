@@ -44,6 +44,8 @@ export async function proxy(request: NextRequest) {
 		defaultLocale
 	const activeLocale = preferredLocale ?? defaultLocale
 	const normalizedPath = stripLocaleFromPath(pathname)
+	const requestHeaders = new Headers(request.headers)
+	requestHeaders.set('x-locale', activeLocale)
 
 	const isAuthPage = normalizedPath.startsWith('/auth')
 	const isDashboard = normalizedPath.startsWith('/dashboard')
@@ -83,12 +85,12 @@ export async function proxy(request: NextRequest) {
 	if (pathnameLocale && pathnameLocale !== defaultLocale) {
 		const rewriteUrl = request.nextUrl.clone()
 		rewriteUrl.pathname = normalizedPath
-		const response = NextResponse.rewrite(rewriteUrl)
+		const response = NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } })
 		response.cookies.set(localeCookie, activeLocale, { path: '/' })
 		return response
 	}
 
-	const response = NextResponse.next()
+	const response = NextResponse.next({ request: { headers: requestHeaders } })
 	response.cookies.set(localeCookie, activeLocale, { path: '/' })
 	return response
 }
