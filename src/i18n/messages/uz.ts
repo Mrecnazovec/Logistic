@@ -60,6 +60,9 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Yopish',
 	'consultationModal.submit': 'Yuborish',
+	'register.company.emailLabel': 'Elektron pochta',
+	'register.company.emailPlaceholder': 'Email kiriting',
+	'register.company.emailRequired': 'Email majburiy',
 	'header.nav.home': 'Bosh sahifa',
 	'header.nav.info': 'Ma’lumot',
 	'header.nav.how': 'Qanday ishlaydi',
@@ -67,6 +70,18 @@
 	'header.login': 'Kirish',
 	'header.menu.open': 'Menyuni ochish',
 	'header.menu.close': 'Menyuni yopish',
+	'hooks.me.emailSend.success': 'Tasdiqlash xati yuborildi.',
+	'hooks.me.emailSend.error': 'Tasdiqlash xatini yuborib bo‘lmadi.',
+	'hooks.me.emailVerify.success': 'Email muvaffaqiyatli tasdiqlandi.',
+	'hooks.me.emailVerify.error': 'Emailni tasdiqlab bo‘lmadi.',
+	'policy.modal.title': 'Foydalanuvchi kelishuvi',
+	'policy.modal.subtitle': 'Davom etishdan oldin shartlarni ko‘rib chiqing.',
+	'policy.modal.content':
+		'Xizmatdan foydalanganingizda, shartlar bilan tanishganingizni va ularni qabul qilganingizni tasdiqlaysiz. Ma’lumotlaringiz maxfiylik siyosatiga muvofiq qayta ishlanadi.',
+	'policy.modal.accept': 'Foydalanuvchi kelishuvi shartlarini qabul qilaman',
+	'policy.modal.submit': 'Yuborish',
+	'policy.modal.success': 'Kelishuv qabul qilindi.',
+	'policy.modal.error': 'Kelishuvni qabul qilib bo‘lmadi.',
 }
 
 export default messages

@@ -60,6 +60,9 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Close',
 	'consultationModal.submit': 'Send',
+	'register.company.emailLabel': 'Email',
+	'register.company.emailPlaceholder': 'Enter email',
+	'register.company.emailRequired': 'Email is required',
 	'header.nav.home': 'Home',
 	'header.nav.info': 'Information',
 	'header.nav.how': 'How it works',
@@ -67,6 +70,18 @@
 	'header.login': 'Sign in',
 	'header.menu.open': 'Open menu',
 	'header.menu.close': 'Close menu',
+	'hooks.me.emailSend.success': 'Verification email sent.',
+	'hooks.me.emailSend.error': 'Failed to send verification email.',
+	'hooks.me.emailVerify.success': 'Email verified successfully.',
+	'hooks.me.emailVerify.error': 'Failed to verify email.',
+	'policy.modal.title': 'User Agreement',
+	'policy.modal.subtitle': 'Please review the terms before continuing.',
+	'policy.modal.content':
+		'By using the service, you confirm that you have read and accepted the terms. We process your data in accordance with the privacy policy.',
+	'policy.modal.accept': 'I accept the user agreement terms',
+	'policy.modal.submit': 'Submit',
+	'policy.modal.success': 'Agreement accepted.',
+	'policy.modal.error': 'Failed to accept agreement.',
 }
 
 export default messages

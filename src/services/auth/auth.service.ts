@@ -12,6 +12,7 @@ import {
 } from '@/shared/types/Login.interface'
 import { removeFromStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
+import type { IDashboardStats } from '@/shared/types/DashboardStats.interface'
 import { ILogoutResponse } from '@/shared/types/Logout.interface'
 import {
 	IRegisterResponse,
@@ -146,6 +147,15 @@ class AuthService {
 		})
 
 		if (result.access) saveTokenStorage(result.access)
+		return result
+	}
+
+	async getDashboardStats() {
+		const { data: result } = await axiosWithAuth<IDashboardStats>({
+			url: API_URL.auth('dashboard-stats'),
+			method: 'GET',
+		})
+
 		return result
 	}
 }

@@ -10,6 +10,7 @@ useForgotPassword вЂ” mutation to request password reset email via authServi
 useResendVerify вЂ” mutation to resend verification email via authService.resendVerify.
 useResetPassword вЂ” mutation to set a new password via authService.resetPassword.
 useVerifyEmail вЂ” mutation to verify email via authService.verifyEmail.
+useGetDashboardStats - fetches dashboard stats via authService.getDashboardStats.
 
 - ## Me
 
@@ -17,6 +18,8 @@ useGetAnalytics вЂ” fetches profile analytics via meService.getAnalytics.
 useGetMe вЂ” fetches current user profile via meService.getMe.
 usePatchMe вЂ” mutation for partial profile update via meService.patchMe.
 useUpdateMe вЂ” mutation for full profile update via meService.updateMe.
+useSendEmailVerifyFromProfile - sends a verification email via meService.sendEmailVerifyFromProfile.
+useVerifyEmailFromProfile - verifies email via meService.verifyEmailFromProfile and refreshes profile.
 
 - ## Notifications
 
@@ -200,7 +203,7 @@ Geo.interface.ts вЂ” City/Country types and suggest responses.
 Invite.interface.ts вЂ” InviteResponseActionsProps for invite/offer actions (accept/counter/reject) using offerId payloads.
 Login.interface.ts вЂ” types for login/tokens/forgot password/reset password.
 Logout.interface.ts вЂ” ILogoutRequest and ILogoutResponse for logout.
-Me.interface.ts вЂ” profile/update/role change types.
+Me.interface.ts - profile/update/role change and email verification types.
 Notification.interface.ts вЂ” INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses and status logs; IOfferShort includes invite_token and invite_offer.
@@ -211,6 +214,7 @@ Rating.interface.ts - rating types with enriched rating user list (nullable stat
 RatingTableRow.interface.ts - alias for rating table row type.
 Registration.interface.ts - registration/verification DTOs and refresh response.
 Search.interface.ts - ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
+DashboardStats.interface.ts - dashboard statistics response type for auth dashboard stats endpoint.
 Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
 Support.interface.ts - support ticket create request DTO.
 

@@ -1,4 +1,4 @@
-import { PUBLIC_URL } from '@/config/url.config'
+import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useI18n } from '@/i18n/I18nProvider'
 import { authService } from '@/services/auth/auth.service'
 import { RegisterDto } from '@/shared/types/Registration.interface'
@@ -26,7 +26,7 @@ export function useRegisterForm() {
 			form.reset()
 
 			toast.success(t('register.toast.success'))
-			router.replace(safeNext ?? PUBLIC_URL.auth('verification'))
+			router.replace(safeNext ?? DASHBOARD_URL.home(''))
 		},
 		onError(error) {
 			const message = getErrorMessage(error) ?? t('register.toast.error')

@@ -60,6 +60,9 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Закрыть',
 	'consultationModal.submit': 'Отправить',
+	'register.company.emailLabel': 'Электронная почта',
+	'register.company.emailPlaceholder': 'Введите email',
+	'register.company.emailRequired': 'Email обязателен',
 	'header.nav.home': 'Главная',
 	'header.nav.info': 'Информация',
 	'header.nav.how': 'Как это работает',
@@ -67,6 +70,18 @@
 	'header.login': 'Войти',
 	'header.menu.open': 'Открыть меню',
 	'header.menu.close': 'Закрыть меню',
+	'hooks.me.emailSend.success': 'Письмо подтверждения отправлено.',
+	'hooks.me.emailSend.error': 'Не удалось отправить письмо подтверждения.',
+	'hooks.me.emailVerify.success': 'Email успешно подтвержден.',
+	'hooks.me.emailVerify.error': 'Не удалось подтвердить email.',
+	'policy.modal.title': 'Пользовательское соглашение',
+	'policy.modal.subtitle': 'Пожалуйста, ознакомьтесь с условиями перед продолжением.',
+	'policy.modal.content':
+		'Используя сервис, вы подтверждаете, что ознакомились с условиями и принимаете их. Мы обрабатываем ваши данные в соответствии с политикой конфиденциальности.',
+	'policy.modal.accept': 'Я принимаю условия пользовательского соглашения',
+	'policy.modal.submit': 'Отправить',
+	'policy.modal.success': 'Соглашение принято.',
+	'policy.modal.error': 'Не удалось принять соглашение.',
 }
 
 export default messages

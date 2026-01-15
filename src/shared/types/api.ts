@@ -88,6 +88,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/dashboard-stats/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Возвращает статистику:
+         *     - total_users: общее количество пользователей
+         *     - online_users: пользователи с last_login в последние 5 минут
+         *     - total_cargos: общее количество заявок */
+        get: operations["auth_dashboard_stats_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/fcm-token/": {
         parameters: {
             query?: never;
@@ -178,6 +198,38 @@ export interface paths {
         get: operations["auth_me_analytics_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me/email/send/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_me_email_send_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me/email/verify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_me_email_verify_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1509,6 +1561,11 @@ export interface components {
         CountrySuggestResponse: {
             results: components["schemas"]["Country"][];
         };
+        DashboardStatsResponse: {
+            total_users: number;
+            online_users: number;
+            total_cargos: number;
+        };
         FCMUpdateRequestRequest: {
             fcm_token: string;
         };
@@ -1586,6 +1643,9 @@ export interface components {
             date_joined?: string;
             readonly profile: components["schemas"]["Profile"];
             fcm_token?: string | null;
+            is_accept_policy?: boolean;
+            /** Format: date-time */
+            policy_accepted_at?: string | null;
         };
         Notification: {
             readonly id: number;
@@ -2392,6 +2452,7 @@ export interface components {
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
             fcm_token?: string | null;
+            is_accept_policy?: boolean;
         };
         PatchedUserRatingRequest: {
             /** Оцениваемый пользователь */
@@ -2544,6 +2605,14 @@ export interface components {
             detail: string;
             role?: string;
         };
+        SendEmailVerifyFromProfileRequest: {
+            /** Format: email */
+            email: string;
+        };
+        SendEmailVerifyFromProfileResponse: {
+            detail: string;
+            seconds_left: number;
+        };
         SendPhoneOTPRequest: {
             phone: string;
             /**
@@ -2578,6 +2647,7 @@ export interface components {
             photo?: string | null;
             profile?: components["schemas"]["ProfileRequest"];
             fcm_token?: string | null;
+            is_accept_policy?: boolean;
         };
         UserRating: {
             readonly id: number;
@@ -2602,6 +2672,12 @@ export interface components {
             score: number;
             /** Комментарий */
             comment?: string | null;
+        };
+        VerifyEmailFromProfileRequestRequest: {
+            code: string;
+        };
+        VerifyEmailFromProfileResponse: {
+            detail: string;
         };
         VerifyEmailRequest: {
             /** Format: email */
@@ -2747,6 +2823,25 @@ export interface operations {
             };
         };
     };
+    auth_dashboard_stats_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardStatsResponse"];
+                };
+            };
+        };
+    };
     auth_fcm_token_create: {
         parameters: {
             query?: never;
@@ -2881,6 +2976,56 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Analytics"];
+                };
+            };
+        };
+    };
+    auth_me_email_send_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendEmailVerifyFromProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SendEmailVerifyFromProfileRequest"];
+                "multipart/form-data": components["schemas"]["SendEmailVerifyFromProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendEmailVerifyFromProfileResponse"];
+                };
+            };
+        };
+    };
+    auth_me_email_verify_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmailFromProfileRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["VerifyEmailFromProfileRequestRequest"];
+                "multipart/form-data": components["schemas"]["VerifyEmailFromProfileRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyEmailFromProfileResponse"];
                 };
             };
         };

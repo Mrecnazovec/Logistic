@@ -6,9 +6,11 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import Link from "next/link"
+import { useGetDashboardStats } from "@/hooks/queries/auth/useGetDashboardStats"
 
 export function Dashboard() {
 	const { t } = useI18n()
+	const { dashboardStats } = useGetDashboardStats()
 	const role = useRoleStore((state) => state.role)
 	const roleSections = {
 		[RoleEnum.CUSTOMER]: {
@@ -67,7 +69,7 @@ export function Dashboard() {
 								</div>
 							</div>
 							<div className="max-xs:flex max-xs:items-center max-xs:gap-2">
-								<p className="text-xl font-bold">15</p>
+								<p className="text-xl font-bold">{dashboardStats?.total_users ?? 0}</p>
 								<div className="flex items-center gap-3">
 									<p className="text-[#6B7280] text-xs max-xs:hidden">{t('dashboard.stats.caption')}</p>
 									<span className="bg-success-500/10 text-success-500 rounded-[12px] py-0.5 px-1">+13%</span>
@@ -85,7 +87,7 @@ export function Dashboard() {
 								</div>
 							</div>
 							<div className="max-xs:flex max-xs:items-center max-xs:gap-2">
-								<div className="flex items-center gap-2"><span className="size-2 rounded-full bg-success-500"></span> <p className="text-xl font-bold">8</p></div>
+								<div className="flex items-center gap-2"><span className="size-2 rounded-full bg-success-500"></span> <p className="text-xl font-bold">{dashboardStats?.online_users ?? 0}</p></div>
 								<div className="flex items-center gap-3">
 									<p className="text-[#6B7280] text-xs max-xs:hidden">{t('dashboard.stats.caption')}</p>
 									<span className="bg-success-500/10 text-success-500 rounded-[12px] py-0.5 px-1">+13%</span>
@@ -103,7 +105,7 @@ export function Dashboard() {
 								</div>
 							</div>
 							<div className="max-xs:flex max-xs:items-center max-xs:gap-2">
-								<div className="flex items-center gap-2"><span className="size-2 rounded-full bg-neutral-400"></span> <p className="text-xl font-bold">7</p></div>
+								<div className="flex items-center gap-2"><span className="size-2 rounded-full bg-neutral-400"></span> <p className="text-xl font-bold">{dashboardStats?.total_cargos ?? 0}</p></div>
 								<div className="flex items-center gap-3">
 									<p className="text-[#6B7280] text-xs max-xs:hidden">{t('dashboard.stats.caption')}</p>
 									<span className="bg-success-500/10 text-success-500 rounded-[12px] py-0.5 px-1">+13%</span>

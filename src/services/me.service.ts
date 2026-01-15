@@ -1,6 +1,14 @@
 import { axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
-import { IMe, PatchedMeDto, UpdateMeDto } from '@/shared/types/Me.interface'
+import {
+	IMe,
+	PatchedMeDto,
+	SendEmailVerifyFromProfileDto,
+	SendEmailVerifyFromProfileResponse,
+	UpdateMeDto,
+	VerifyEmailFromProfileDto,
+	VerifyEmailFromProfileResponse,
+} from '@/shared/types/Me.interface'
 import { IAnalytics } from '@/shared/types/Analytics.interface'
 
 class MeService {
@@ -45,6 +53,28 @@ class MeService {
 		})
 
 		return patchedMe
+	}
+
+	/* Email verify */
+
+	async sendEmailVerifyFromProfile(data: SendEmailVerifyFromProfileDto) {
+		const { data: result } = await axiosWithAuth<SendEmailVerifyFromProfileResponse>({
+			url: API_URL.auth('me/email/send'),
+			method: 'POST',
+			data,
+		})
+
+		return result
+	}
+
+	async verifyEmailFromProfile(data: VerifyEmailFromProfileDto) {
+		const { data: result } = await axiosWithAuth<VerifyEmailFromProfileResponse>({
+			url: API_URL.auth('me/email/verify'),
+			method: 'POST',
+			data,
+		})
+
+		return result
 	}
 }
 export const meService = new MeService()
