@@ -119,6 +119,7 @@ useDebounce вЂ” returns a debounced value with a delay timer.
 useMediaQuery вЂ” subscribes to matchMedia for a media query string, returns boolean.
 useI18n - provides access to locale and t() from I18nProvider.
 useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
+useIsMobile - tracks viewport width and returns true when below the mobile breakpoint.
 /i18n - translation keys and locale messages directory.
 config.ts - locales list, Locale type, defaultLocale, localeCookie.
 getLocale - reads locale from cookie (server) with fallback to default.
@@ -247,6 +248,9 @@ Popover вЂ” Radix popover wrapper.
 RadioGroup вЂ” radio button group.
 ScrollArea вЂ” styled scroll container.
 Select вЂ” Radix select dropdown.
+Separator - horizontal/vertical divider component.
+Sheet - sliding panel built on Radix Sheet.
+Sidebar - responsive sidebar component with mobile sheet behavior.
 Skeleton вЂ” skeleton placeholder.
 Tabs вЂ” Radix tabs.
 Toggle вЂ” toggle button.
@@ -301,6 +305,7 @@ MainLayout вЂ“ base layout for public pages.
 Header (main-layout) вЂ“ public pages header.
 Footer вЂ“ public pages footer.
 InviteDriverModal вЂ“ modal to invite driver to order by id or link and allow accepting invite token.
+ConsultationModal - modal with email input and actions for free consultation.
 
 ## Stores
 
