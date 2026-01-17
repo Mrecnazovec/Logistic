@@ -20,7 +20,21 @@ import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-function MobileSidebarContent() {
+const SECTION_IDS = ['main', 'info', 'how', 'contacts'] as const
+
+type NavItem = {
+	id: typeof SECTION_IDS[number]
+	href: `#${typeof SECTION_IDS[number]}`
+	label: string
+}
+
+type MobileSidebarContentProps = {
+	items: NavItem[]
+	activeId: NavItem['id']
+	onNavigate: (id: NavItem['id']) => void
+}
+
+function MobileSidebarContent({ items, activeId, onNavigate }: MobileSidebarContentProps) {
 	const { setOpenMobile } = useSidebar()
 	const { t } = useI18n()
 	const handleClose = () => setOpenMobile(false)
@@ -36,26 +50,20 @@ function MobileSidebarContent() {
 				<SidebarGroup className='p-0'>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild onClick={handleClose}>
-									<Link href={'#'}>{t('header.nav.home')}</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild onClick={handleClose}>
-									<Link href={'#info'}>{t('header.nav.info')}</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild onClick={handleClose}>
-									<Link href={'#how'}>{t('header.nav.how')}</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild onClick={handleClose}>
-									<Link href={'#contacts'}>{t('header.nav.contacts')}</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							{items.map((item) => (
+								<SidebarMenuItem key={item.id}>
+									<SidebarMenuButton
+										asChild
+										onClick={() => {
+											onNavigate(item.id)
+											handleClose()
+										}}
+										className={activeId === item.id ? 'text-white' : 'text-white/70'}
+									>
+										<Link href={item.href}>{item.label}</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
 							<SidebarMenuItem className='pt-2'>
 								<SidebarMenuButton asChild onClick={handleClose}>
 									<Link href={'/auth'}>
@@ -99,13 +107,45 @@ function MobileSidebarTrigger() {
 
 export function Header() {
 	const [hasBackground, setHasBackground] = useState(false)
+	const [activeId, setActiveId] = useState<NavItem['id']>('main')
 	const { t } = useI18n()
+
+	const navItems: NavItem[] = [
+		{ id: 'main', href: '#main', label: t('header.nav.home') },
+		{ id: 'info', href: '#info', label: t('header.nav.info') },
+		{ id: 'how', href: '#how', label: t('header.nav.how') },
+		{ id: 'contacts', href: '#contacts', label: t('header.nav.contacts') },
+	]
 
 	useEffect(() => {
 		const handleScroll = () => setHasBackground(window.scrollY > 8)
 		handleScroll()
 		window.addEventListener('scroll', handleScroll, { passive: true })
 		return () => window.removeEventListener('scroll', handleScroll)
+	}, [])
+
+	useEffect(() => {
+		const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter((section): section is HTMLElement => Boolean(section))
+		if (!sections.length) return
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const activeEntry = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+				if (activeEntry?.target?.id) {
+					setActiveId(activeEntry.target.id as NavItem['id'])
+				}
+			},
+			{
+				threshold: [0.1, 0.25, 0.5, 0.75],
+				rootMargin: '-20% 0px -60% 0px',
+			}
+		)
+
+		sections.forEach((section) => observer.observe(section))
+
+		return () => observer.disconnect()
 	}, [])
 
 	return (
@@ -115,12 +155,20 @@ export function Header() {
 		>
 			<Container className='p-0 md:py-5 py-0.5 px-5'>
 				<nav className='flex items-center w-full relative max-md:justify-between'>
-					<Logo href='#' className='max-md:w-[40px]' />
+					<Logo href='#main' className='max-md:w-[40px]' />
 					<ul className='hidden md:flex flex-1 items-center justify-center lg:gap-15 gap-3 text-white'>
-						<li><Link className='border-b border-transparent hover:border-white transition-color duration-150' href={'#'}>{t('header.nav.home')}</Link></li>
-						<li><Link className='border-b border-transparent hover:border-white transition-color duration-150' href={'#info'}>{t('header.nav.info')}</Link></li>
-						<li><Link className='border-b border-transparent hover:border-white transition-color duration-150' href={'#how'}>{t('header.nav.how')}</Link></li>
-						<li><Link className='border-b border-transparent hover:border-white transition-color duration-150' href={'#contacts'}>{t('header.nav.contacts')}</Link></li>
+						{navItems.map((item) => (
+							<li key={item.id}>
+								<Link
+									className={`border-b transition-color duration-150 ${activeId === item.id ? 'border-white text-white' : 'border-transparent text-white/80 hover:border-white hover:text-white'
+										}`}
+									href={item.href}
+									onClick={() => setActiveId(item.id)}
+								>
+									{item.label}
+								</Link>
+							</li>
+						))}
 					</ul>
 					<div className='hidden md:flex items-center gap-3 ml-auto'>
 						<LanguageSelect
@@ -133,7 +181,7 @@ export function Header() {
 					</div>
 					<SidebarProvider className='min-h-0 w-auto flex-none md:hidden'>
 						<MobileSidebarTrigger />
-						<MobileSidebarContent />
+						<MobileSidebarContent items={navItems} activeId={activeId} onNavigate={setActiveId} />
 					</SidebarProvider>
 				</nav>
 			</Container>
