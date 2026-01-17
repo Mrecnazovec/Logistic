@@ -60,6 +60,7 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Close',
 	'consultationModal.submit': 'Send',
+	'consultationModal.invalidEmail': 'Enter a valid email.',
 	'register.company.emailLabel': 'Email',
 	'register.company.emailPlaceholder': 'Enter email',
 	'register.company.emailRequired': 'Email is required',

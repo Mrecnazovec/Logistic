@@ -48,10 +48,13 @@ const messages: Record<string, string> = {
 	'cabinet.profile.emailPlaceholder': 'Email',
 	'cabinet.profile.emailEdit': 'Изменить email',
 	'cabinet.profile.emailSendCode': 'Отправить код',
+	'cabinet.profile.emailSend': 'Отправить',
 	'cabinet.profile.emailVerify': 'Подтвердить email',
 	'cabinet.profile.emailCancel': 'Отмена',
 	'cabinet.profile.emailRequired': 'Введите email',
 	'cabinet.profile.emailNeedsVerify': 'Требуется подтверждение email',
+	'cabinet.profile.emailStepIntro': 'Введите новую почту, и верифицируйте её.',
+	'cabinet.profile.emailOtpIntro': 'Введите код из письма.',
 }
 
 export default messages

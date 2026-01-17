@@ -1,4 +1,4 @@
-"use client"
+﻿'use client'
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
@@ -7,23 +7,23 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
 import { Label } from '@/components/ui/form-control/Label'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/InputOTP'
+import { CabinetEmailModal } from '@/components/ui/modals/CabinetEmailModal'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAnalytics } from '@/hooks/queries/me/useGetAnalytics'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
-import { useI18n } from '@/i18n/I18nProvider'
+import { useSendEmailVerifyFromProfile } from '@/hooks/queries/me/useSendEmailVerifyFromProfile'
+import { useVerifyEmailFromProfile } from '@/hooks/queries/me/useVerifyEmailFromProfile'
 import { useLogout } from '@/hooks/useLogout'
-import { useResendVerify } from '@/hooks/queries/auth/useResendVerify'
-import { useVerifyEmail } from '@/hooks/queries/auth/useVerifyEmail'
+import { useI18n } from '@/i18n/I18nProvider'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowUpRight, BarChart3, ChevronDown, DoorOpen, LogOut, Pencil, Star, Truck } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis } from 'recharts'
 import toast from 'react-hot-toast'
+import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis } from 'recharts'
 
 type AnalyticsCard = {
 	id: string
@@ -48,25 +48,16 @@ export function Cabinet() {
 	const { t, locale } = useI18n()
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
-	const { resendVerify, isLoading: isResendingVerify } = useResendVerify()
-	const { verifyEmail, isLoading: isVerifyingEmail } = useVerifyEmail()
+	const { sendEmailVerify, isLoading: isResendingVerify } = useSendEmailVerifyFromProfile()
+	const { verifyEmail, isLoading: isVerifyingEmail } = useVerifyEmailFromProfile()
 	const { analytics, isLoading: isLoadingAnalytics } = useGetAnalytics()
 	const [isRevenueOpen, setIsRevenueOpen] = useState(false)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
-	const [isEmailEditing, setIsEmailEditing] = useState(false)
-	const [emailDraft, setEmailDraft] = useState('')
-	const [emailCode, setEmailCode] = useState('')
-
+	const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 	const localeTag = locale === 'ru' ? 'ru-RU' : 'en-US'
 	const integerFormatter = useMemo(() => new Intl.NumberFormat(localeTag), [localeTag])
-	const decimalFormatter = useMemo(
-		() => new Intl.NumberFormat(localeTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
-		[localeTag],
-	)
-	const fullDateFormatter = useMemo(
-		() => new Intl.DateTimeFormat(localeTag, { day: 'numeric', month: 'long', year: 'numeric' }),
-		[localeTag],
-	)
+	const decimalFormatter = useMemo(() => new Intl.NumberFormat(localeTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }), [localeTag])
+	const fullDateFormatter = useMemo(() => new Intl.DateTimeFormat(localeTag, { day: 'numeric', month: 'long', year: 'numeric' }), [localeTag])
 
 	const formatTrend = (value?: number | null) => {
 		if (typeof value !== 'number') return undefined
@@ -85,7 +76,7 @@ export function Cabinet() {
 			success: { label: t('cabinet.transport.success'), color: '#22C55E' },
 			cancelled: { label: t('cabinet.transport.cancelled'), color: '#EF4444' },
 		}),
-		[t],
+		[t]
 	)
 
 	const incomeChartConfig = useMemo<ChartConfig>(
@@ -94,7 +85,7 @@ export function Cabinet() {
 			received: { label: t('cabinet.income.received'), color: '#93C5FD' },
 			earned: { label: t('cabinet.income.earned'), color: '#86EFAC' },
 		}),
-		[t],
+		[t]
 	)
 
 	const fallbackIncomeChartData = useMemo(
@@ -106,15 +97,13 @@ export function Cabinet() {
 			{ month: t('cabinet.month.may'), given: 3200, received: 6200, earned: 2100 },
 			{ month: t('cabinet.month.jun'), given: 900, received: 1600, earned: 500 },
 		],
-		[t],
+		[t]
 	)
 
 	const fallbackValue = '-'
 	const registrationValue = analytics ? fullDateFormatter.format(new Date(analytics.registered_since)) : fallbackValue
 	const ratingValue = analytics ? decimalFormatter.format(analytics.rating) : fallbackValue
-	const distanceValue = analytics
-		? `${integerFormatter.format(Math.round(analytics.distance_km))} ${t('cabinet.unit.km')}`
-		: fallbackValue
+	const distanceValue = analytics ? `${integerFormatter.format(Math.round(analytics.distance_km))} ${t('cabinet.unit.km')}` : fallbackValue
 	const dealsCount = analytics?.deals_count ?? 0
 	const averagePriceValue = fallbackValue
 	const ratingTrend = formatTrend(analytics?.successful_deliveries_change)
@@ -123,21 +112,21 @@ export function Cabinet() {
 	const hasBarChartLabels = barChartLabels.length > 0
 	const incomeChartData = hasBarChartLabels
 		? barChartLabels.map((label, index) => ({
-				month: label,
-				given: analyticsBarChart?.given?.[index] ?? 0,
-				received: analyticsBarChart?.received?.[index] ?? 0,
-				earned: analyticsBarChart?.earned?.[index] ?? 0,
-			}))
+			month: label,
+			given: analyticsBarChart?.given?.[index] ?? 0,
+			received: analyticsBarChart?.received?.[index] ?? 0,
+			earned: analyticsBarChart?.earned?.[index] ?? 0,
+		}))
 		: fallbackIncomeChartData
 
 	const pieChart = analytics?.pie_chart as
 		| {
-				in_search?: number
-				in_process?: number
-				successful?: number
-				cancelled?: number
-				total?: number
-		  }
+			in_search?: number
+			in_process?: number
+			successful?: number
+			cancelled?: number
+			total?: number
+		}
 		| undefined
 	const queued = pieChart?.in_search ?? 0
 	const inProgress = pieChart?.in_process ?? 0
@@ -196,10 +185,7 @@ export function Cabinet() {
 	const emailValue = me?.email ?? ''
 	const isEmailMissing = emailValue.trim().length === 0
 	const isEmailVerified = me?.is_email_verified ?? true
-	const isEmailEditingActive = isEmailEditing || isEmailMissing
-	const isEmailChanged = isEmailEditingActive && emailDraft.trim() !== emailValue.trim()
-	const shouldShowEmailActions = isEmailEditingActive || !isEmailVerified
-	const emailForActions = (isEmailEditingActive ? emailDraft : emailValue).trim()
+	const shouldShowEmailActions = isEmailMissing || !isEmailVerified
 
 	const profileFields = [
 		{ id: 'full-name', label: t('cabinet.profile.fullName'), value: me?.first_name || me?.company_name || me?.email || '' },
@@ -316,97 +302,34 @@ export function Cabinet() {
 								<Label className='text-xs text-muted-foreground' htmlFor='email'>
 									{t('cabinet.profile.email')}
 								</Label>
-							{!isEmailMissing && !isEmailEditing ? (
-								<Button
-									type='button'
-									variant='link'
-									size='sm'
-									className='h-auto px-0 text-xs text-brand'
-									onClick={() => {
-										setEmailDraft(emailValue)
-										setIsEmailEditing(true)
-									}}
-								>
-									{t('cabinet.profile.emailEdit')}
-								</Button>
-							) : null}
-						</div>
-						{isLoading ? (
-							<Skeleton className='h-11 w-full rounded-3xl' />
-						) : (
-							<Input
-								id='email'
-								value={isEmailEditingActive ? emailDraft : emailValue}
-								disabled={!isEmailEditingActive}
-								onChange={(event) => setEmailDraft(event.target.value)}
-								className='rounded-3xl bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80 disabled:opacity-100'
-								placeholder={t('cabinet.profile.emailPlaceholder')}
-							/>
-						)}
-							{!isEmailVerified ? (
-								<p className='text-xs text-warning-600'>{t('cabinet.profile.emailNeedsVerify')}</p>
-							) : null}
-							{shouldShowEmailActions ? (
-								<div className='space-y-3 pt-2'>
-									<div className='flex flex-wrap gap-2'>
-										<Button
-											type='button'
-											variant='outline'
-											disabled={isResendingVerify || emailForActions.length === 0}
-											onClick={() => {
-												if (!emailForActions) {
-													toast.error(t('cabinet.profile.emailRequired'))
-													return
-												}
-												resendVerify(isEmailChanged ? emailDraft.trim() : emailForActions)
-											}}
-										>
-											{t('cabinet.profile.emailSendCode')}
-										</Button>
-										{isEmailEditing ? (
-											<Button
-												type='button'
-												variant='outline'
-												disabled={isResendingVerify || isVerifyingEmail}
-												onClick={() => {
-													setIsEmailEditing(false)
-													setEmailDraft(emailValue)
-												setEmailCode('')
-											}}
-										>
-											{t('cabinet.profile.emailCancel')}
-										</Button>
-										) : null}
-									</div>
-									<div className='flex justify-center'>
-										<InputOTP maxLength={6} value={emailCode} onChange={setEmailCode}>
-											<InputOTPGroup>
-												{Array.from({ length: 6 }).map((_, index) => (
-													<InputOTPSlot key={`email-otp-${index}`} index={index} />
-												))}
-											</InputOTPGroup>
-										</InputOTP>
-									</div>
+								{!isEmailMissing ? (
 									<Button
 										type='button'
-										disabled={isVerifyingEmail || emailCode.trim().length < 6 || emailForActions.length === 0}
-										onClick={() => {
-											if (!emailForActions) {
-												toast.error(t('cabinet.profile.emailRequired'))
-												return
-											}
-											verifyEmail(
-												{ email: emailForActions, code: emailCode.trim() },
-												{
-													onSuccess: () => {
-														setEmailCode('')
-														setIsEmailEditing(false)
-													},
-												}
-											)
-										}}
+										variant='link'
+										size='sm'
+										className='h-auto px-0 text-xs text-brand'
+										onClick={() => setIsEmailModalOpen(true)}
 									>
-										{t('cabinet.profile.emailVerify')}
+										{t('cabinet.profile.emailEdit')}
+									</Button>
+								) : null}
+							</div>
+							{isLoading ? (
+								<Skeleton className='h-11 w-full rounded-3xl' />
+							) : (
+								<Input
+									id='email'
+									value={emailValue}
+									disabled
+									className='rounded-3xl bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80 disabled:opacity-100'
+									placeholder={t('cabinet.profile.emailPlaceholder')}
+								/>
+							)}
+							{!isEmailVerified ? <p className='text-xs text-warning-600'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
+							{shouldShowEmailActions ? (
+								<div className='pt-2'>
+									<Button type='button' variant='outline' disabled={isResendingVerify} onClick={() => setIsEmailModalOpen(true)}>
+										{t('cabinet.profile.emailSendCode')}
 									</Button>
 								</div>
 							) : null}
@@ -538,10 +461,36 @@ export function Cabinet() {
 							</DialogContent>
 						</Dialog>
 					</div>
-
-
 				</Card>
 			</div>
+
+			<CabinetEmailModal
+				open={isEmailModalOpen}
+				onOpenChange={setIsEmailModalOpen}
+				email={emailValue}
+				isEmailVerified={isEmailVerified}
+				isSending={isResendingVerify}
+				isVerifying={isVerifyingEmail}
+				onSendCode={(nextEmail) => {
+					if (!nextEmail) {
+						toast.error(t('cabinet.profile.emailRequired'))
+						return
+					}
+					sendEmailVerify({ email: nextEmail })
+				}}
+				onVerifyCode={(code) => {
+					if (!code) {
+						toast.error(t('cabinet.profile.emailRequired'))
+						return
+					}
+					verifyEmail(
+						{ code },
+						{
+							onSuccess: () => setIsEmailModalOpen(false),
+						}
+					)
+				}}
+			/>
 		</div>
 	)
 }

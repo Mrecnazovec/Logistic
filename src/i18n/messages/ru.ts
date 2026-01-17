@@ -60,6 +60,7 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Закрыть',
 	'consultationModal.submit': 'Отправить',
+	'consultationModal.invalidEmail': 'Введите корректный email.',
 	'register.company.emailLabel': 'Электронная почта',
 	'register.company.emailPlaceholder': 'Введите email',
 	'register.company.emailRequired': 'Email обязателен',

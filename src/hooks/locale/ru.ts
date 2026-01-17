@@ -1,4 +1,4 @@
-const messages: Record<string, string> = {
+﻿const messages: Record<string, string> = {
 	// useLogin.ts
 	'hooks.auth.login.success': 'Вход выполнен',
 	'hooks.auth.login.error': 'Не удалось выполнить вход',
@@ -31,6 +31,10 @@ const messages: Record<string, string> = {
 	'hooks.auth.resetPassword.success': 'Пароль обновлен',
 	'hooks.auth.resetPassword.error': 'Не удалось обновить пароль',
 
+// queries/auth/useChangePassword.ts
+'hooks.auth.changePassword.success': 'Пароль изменен',
+'hooks.auth.changePassword.error': 'Не удалось изменить пароль',
+
 	// queries/auth/useResendVerify.ts
 	'hooks.auth.resendVerify.success': 'Письмо подтверждения отправлено',
 	'hooks.auth.resendVerify.error': 'Не удалось отправить письмо подтверждения',
@@ -53,6 +57,10 @@ const messages: Record<string, string> = {
 	// queries/support/useCreateSupportTicket.ts
 	'hooks.support.create.success': 'Сообщение отправлено',
 	'hooks.support.create.error': 'Не удалось отправить сообщение',
+
+// queries/support/useCreateConsultation.ts
+'hooks.support.consultation.success': 'Запрос на консультацию отправлен',
+'hooks.support.consultation.error': 'Не удалось отправить запрос на консультацию',
 
 	// queries/offers/useCreateOffer.ts
 	'hooks.offers.create.success': 'Оффер создан',
@@ -176,3 +184,4 @@ const messages: Record<string, string> = {
 }
 
 export default messages
+

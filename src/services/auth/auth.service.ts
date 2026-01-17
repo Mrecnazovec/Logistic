@@ -5,10 +5,10 @@ import {
 	IForgotPasswordResponse,
 	ILogin,
 	ILoginResponse,
-	IResetPassword,
-	IResetPasswordResponse,
 	ITokenRefreshRequest,
 	ITokenRefreshResponse,
+	IChangePassword,
+	IChangePasswordResponse,
 } from '@/shared/types/Login.interface'
 import { removeFromStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
@@ -129,16 +129,6 @@ class AuthService {
 		return result
 	}
 
-	async resetPassword(data: IResetPassword) {
-		const { data: result } = await axiosClassic<IResetPasswordResponse>({
-			url: API_URL.auth('reset-password'),
-			method: 'POST',
-			data,
-		})
-
-		return result
-	}
-
 	async verifyEmail(data: IVerifyEmail) {
 		const { data: result } = await axiosClassic<IVerifyEmailResponse>({
 			url: API_URL.auth('verify-email'),
@@ -147,6 +137,16 @@ class AuthService {
 		})
 
 		if (result.access) saveTokenStorage(result.access)
+		return result
+	}
+
+	async changePassword(data: IChangePassword) {
+		const { data: result } = await axiosWithAuth<IChangePasswordResponse>({
+			url: API_URL.auth('change-password'),
+			method: 'POST',
+			data,
+		})
+
 		return result
 	}
 

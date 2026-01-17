@@ -7,8 +7,8 @@ useLogout вЂ” mutation for logout with token cleanup and page refresh.
 useRegister вЂ” mutation for registration via authService.register; returns register/isLoading.
 useChangeRole вЂ” mutation to switch user role via authService.changeRole with toasts.
 useForgotPassword вЂ” mutation to request password reset email via authService.forgotPassword.
+useChangePassword - changes password via authService.changePassword.
 useResendVerify вЂ” mutation to resend verification email via authService.resendVerify.
-useResetPassword вЂ” mutation to set a new password via authService.resetPassword.
 useVerifyEmail вЂ” mutation to verify email via authService.verifyEmail.
 useGetDashboardStats - fetches dashboard stats via authService.getDashboardStats.
 
@@ -80,6 +80,7 @@ useRejectAgreement - rejects agreement by id via agreementsService.rejectAgreeme
 - ## Support
 
 useCreateSupportTicket - sends support message via supportService.createSupportTicket.
+useCreateConsultation - sends a consultation request via supportService.createConsultation.
 
 - ## Orders
 
@@ -201,7 +202,7 @@ CargoPublish.interface.ts вЂ” ICargoPublish and DTOs for create/update cargo
 Error.interface.ts вЂ” IErrorResponse and FieldError for error responses.
 Geo.interface.ts вЂ” City/Country types and suggest responses.
 Invite.interface.ts вЂ” InviteResponseActionsProps for invite/offer actions (accept/counter/reject) using offerId payloads.
-Login.interface.ts вЂ” types for login/tokens/forgot password/reset password.
+Login.interface.ts - types for login/refresh/forgot password and change password.
 Logout.interface.ts вЂ” ILogoutRequest and ILogoutResponse for logout.
 Me.interface.ts - profile/update/role change and email verification types.
 Notification.interface.ts вЂ” INotification and IPaginatedNotificationList.
@@ -216,7 +217,7 @@ Registration.interface.ts - registration/verification DTOs and refresh response.
 Search.interface.ts - ISearch filter params with ordering, numeric/boolean extras, and rating_min/rating_max filters.
 DashboardStats.interface.ts - dashboard statistics response type for auth dashboard stats endpoint.
 Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
-Support.interface.ts - support ticket create request DTO.
+Support.interface.ts - support ticket and consultation request DTOs.
 
 ## Shared regex
 
@@ -310,6 +311,8 @@ Header (main-layout) вЂ“ public pages header.
 Footer вЂ“ public pages footer.
 InviteDriverModal вЂ“ modal to invite driver to order by id or link and allow accepting invite token.
 ConsultationModal - modal with email input and actions for free consultation.
+CabinetEmailModal - modal for updating email and verifying via OTP code.
+PolicyAgreementModal - modal to accept policy agreement with checkbox and submit action.
 
 ## Stores
 

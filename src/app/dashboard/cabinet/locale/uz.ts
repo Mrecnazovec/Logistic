@@ -48,10 +48,13 @@ const messages: Record<string, string> = {
 	'cabinet.profile.emailPlaceholder': 'Email',
 	'cabinet.profile.emailEdit': "Emailni o'zgartirish",
 	'cabinet.profile.emailSendCode': 'Kodni yuborish',
+	'cabinet.profile.emailSend': 'Yuborish',
 	'cabinet.profile.emailVerify': 'Emailni tasdiqlash',
 	'cabinet.profile.emailCancel': 'Bekor qilish',
 	'cabinet.profile.emailRequired': 'Emailni kiriting',
 	'cabinet.profile.emailNeedsVerify': 'Emailni tasdiqlash kerak',
+	'cabinet.profile.emailStepIntro': "Yangi emailingizni kiriting va uni tasdiqlang.",
+	'cabinet.profile.emailOtpIntro': 'Emaildagi kodni kiriting.',
 }
 
 export default messages

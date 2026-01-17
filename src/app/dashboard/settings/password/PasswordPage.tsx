@@ -3,15 +3,46 @@
 import { Button } from "@/components/ui/Button"
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/form-control/InputGroup"
 import { Label } from "@/components/ui/form-control/Label"
+import { useChangePassword } from "@/hooks/queries/auth/useChangePassword"
 import { useI18n } from "@/i18n/I18nProvider"
 import { Eye, EyeOff, Lock } from "lucide-react"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 export function PasswordPage() {
 	const { t } = useI18n()
+	const { changePassword, isLoading } = useChangePassword()
 	const [isOldVisible, setIsOldVisible] = useState(false)
 	const [isNewVisible, setIsNewVisible] = useState(false)
 	const [isConfirmVisible, setIsConfirmVisible] = useState(false)
+	const [oldPassword, setOldPassword] = useState("")
+	const [newPassword, setNewPassword] = useState("")
+	const [confirmPassword, setConfirmPassword] = useState("")
+
+	const handleReset = () => {
+		setOldPassword("")
+		setNewPassword("")
+		setConfirmPassword("")
+	}
+
+	const handleSave = () => {
+		if (!oldPassword || !newPassword || !confirmPassword) {
+			toast.error(t("settings.password.required"))
+			return
+		}
+
+		if (newPassword.length < 8) {
+			toast.error(t("settings.password.minLength"))
+			return
+		}
+
+		if (newPassword !== confirmPassword) {
+			toast.error(t("settings.password.mismatch"))
+			return
+		}
+
+		changePassword({ old_password: oldPassword, new_password: newPassword })
+	}
 
 	return (
 		<div className="rounded-[32px] bg-white p-6 shadow-sm md:p-8">
@@ -34,6 +65,8 @@ export function PasswordPage() {
 							type={isOldVisible ? "text" : "password"}
 							placeholder={t("settings.password.old.placeholder")}
 							className="text-[15px] placeholder:text-muted-foreground/80"
+							value={oldPassword}
+							onChange={(event) => setOldPassword(event.target.value)}
 						/>
 						<InputGroupAddon align="inline-end" className="pr-3">
 							<InputGroupButton
@@ -63,6 +96,8 @@ export function PasswordPage() {
 							type={isNewVisible ? "text" : "password"}
 							placeholder={t("settings.password.new.placeholder")}
 							className="text-[15px] placeholder:text-muted-foreground/80"
+							value={newPassword}
+							onChange={(event) => setNewPassword(event.target.value)}
 						/>
 						<InputGroupAddon align="inline-end" className="pr-3">
 							<InputGroupButton
@@ -92,6 +127,8 @@ export function PasswordPage() {
 							type={isConfirmVisible ? "text" : "password"}
 							placeholder={t("settings.password.confirm.placeholder")}
 							className="text-[15px] placeholder:text-muted-foreground/80"
+							value={confirmPassword}
+							onChange={(event) => setConfirmPassword(event.target.value)}
 						/>
 						<InputGroupAddon align="inline-end" className="pr-3">
 							<InputGroupButton
@@ -113,12 +150,16 @@ export function PasswordPage() {
 						type="button"
 						variant="outline"
 						className="h-11 rounded-full border-[#D1D5DB] bg-white px-5 text-sm font-medium text-muted-foreground hover:bg-muted/40"
+						disabled={isLoading}
+						onClick={handleReset}
 					>
 						{t("settings.password.reset")}
 					</Button>
 					<Button
 						type="button"
 						className="h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400"
+						disabled={isLoading}
+						onClick={handleSave}
 					>
 						{t("settings.password.save")}
 					</Button>

@@ -72,6 +72,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/change-password/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_change_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/change-role/": {
         parameters: {
             query?: never;
@@ -294,22 +310,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["auth_resend_verify_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/reset-password/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["auth_reset_password_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1160,6 +1160,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/consultation/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["support_consultation_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1546,6 +1562,13 @@ export interface components {
             detail: string;
             is_hidden_for_me: boolean;
         };
+        ChangePasswordRequest: {
+            old_password: string;
+            new_password: string;
+        };
+        ChangePasswordResponse: {
+            detail: string;
+        };
         City: {
             name: string;
             country: string;
@@ -1553,6 +1576,10 @@ export interface components {
         };
         CitySuggestResponse: {
             results: components["schemas"]["City"][];
+        };
+        ConsultationRequestRequest: {
+            /** Format: email */
+            email: string;
         };
         Country: {
             code: string;
@@ -2583,15 +2610,6 @@ export interface components {
         ResendVerifyResponse: {
             detail: string;
         };
-        ResetPasswordRequest: {
-            /** Format: email */
-            email: string;
-            code: string;
-            new_password: string;
-        };
-        ResetPasswordResponse: {
-            detail: string;
-        };
         RoleChangeRequest: {
             /**
              * @description * `LOGISTIC` - Логист
@@ -2795,6 +2813,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    auth_change_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ChangePasswordRequest"];
+                "multipart/form-data": components["schemas"]["ChangePasswordRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePasswordResponse"];
+                };
             };
         };
     };
@@ -3151,31 +3194,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResendVerifyResponse"];
-                };
-            };
-        };
-    };
-    auth_reset_password_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ResetPasswordRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["ResetPasswordRequest"];
-                "multipart/form-data": components["schemas"]["ResetPasswordRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ResetPasswordResponse"];
                 };
             };
         };
@@ -4780,6 +4798,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    support_consultation_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsultationRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConsultationRequestRequest"];
+                "multipart/form-data": components["schemas"]["ConsultationRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        detail?: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        email?: string[];
+                    };
+                };
             };
         };
     };

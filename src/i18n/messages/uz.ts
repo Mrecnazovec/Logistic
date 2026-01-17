@@ -60,6 +60,7 @@
 	'consultationModal.emailPlaceholder': 'email@example.com',
 	'consultationModal.close': 'Yopish',
 	'consultationModal.submit': 'Yuborish',
+	'consultationModal.invalidEmail': 'To‘g‘ri email kiriting.',
 	'register.company.emailLabel': 'Elektron pochta',
 	'register.company.emailPlaceholder': 'Email kiriting',
 	'register.company.emailRequired': 'Email majburiy',

@@ -31,6 +31,10 @@ const messages: Record<string, string> = {
 	'hooks.auth.resetPassword.success': 'Parol yangilandi',
 	'hooks.auth.resetPassword.error': 'Parolni yangilab bo\'lmadi',
 
+	// queries/auth/useChangePassword.ts
+	'hooks.auth.changePassword.success': 'Parol o‘zgartirildi',
+	'hooks.auth.changePassword.error': 'Parolni o‘zgartirib bo‘lmadi',
+
 	// queries/auth/useResendVerify.ts
 	'hooks.auth.resendVerify.success': 'Tasdiqlash xati yuborildi',
 	'hooks.auth.resendVerify.error': 'Tasdiqlash xatini yuborib bo\'lmadi',
@@ -53,6 +57,10 @@ const messages: Record<string, string> = {
 	// queries/support/useCreateSupportTicket.ts
 	'hooks.support.create.success': 'Xabar yuborildi',
 	'hooks.support.create.error': 'Xabarni yuborib bo\'lmadi',
+
+	// queries/support/useCreateConsultation.ts
+	'hooks.support.consultation.success': 'Konsultatsiya so‘rovi yuborildi',
+	'hooks.support.consultation.error': 'Konsultatsiya so‘rovini yuborib bo‘lmadi',
 
 	// queries/offers/useCreateOffer.ts
 	'hooks.offers.create.success': 'Taklif yaratildi',

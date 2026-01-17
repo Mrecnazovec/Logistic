@@ -31,6 +31,10 @@ const messages: Record<string, string> = {
 	'hooks.auth.resetPassword.success': 'Password updated',
 	'hooks.auth.resetPassword.error': 'Failed to update password',
 
+	// queries/auth/useChangePassword.ts
+	'hooks.auth.changePassword.success': 'Password changed',
+	'hooks.auth.changePassword.error': 'Failed to change password',
+
 	// queries/auth/useResendVerify.ts
 	'hooks.auth.resendVerify.success': 'Verification email sent',
 	'hooks.auth.resendVerify.error': 'Failed to send verification email',
@@ -53,6 +57,10 @@ const messages: Record<string, string> = {
 	// queries/support/useCreateSupportTicket.ts
 	'hooks.support.create.success': 'Message sent',
 	'hooks.support.create.error': 'Failed to send message',
+
+	// queries/support/useCreateConsultation.ts
+	'hooks.support.consultation.success': 'Consultation request sent',
+	'hooks.support.consultation.error': 'Failed to send consultation request',
 
 	// queries/offers/useCreateOffer.ts
 	'hooks.offers.create.success': 'Offer created',
