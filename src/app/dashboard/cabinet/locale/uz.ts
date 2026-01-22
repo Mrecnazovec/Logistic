@@ -55,6 +55,20 @@ const messages: Record<string, string> = {
 	'cabinet.profile.emailNeedsVerify': 'Emailni tasdiqlash kerak',
 	'cabinet.profile.emailStepIntro': "Yangi emailingizni kiriting va uni tasdiqlang.",
 	'cabinet.profile.emailOtpIntro': 'Emaildagi kodni kiriting.',
+	'cabinet.profile.phonePlaceholder': 'Telefon raqami',
+	'cabinet.profile.phoneEdit': "Telefonni o'zgartirish",
+	'cabinet.profile.phoneSendCode': 'Kodni yuborish',
+	'cabinet.profile.phoneSend': 'Yuborish',
+	'cabinet.profile.phoneCancel': 'Bekor qilish',
+	'cabinet.profile.phoneRequired': 'Telefon raqamini kiriting',
+	'cabinet.profile.phoneStepIntro': "Yangi telefon raqamingizni kiriting va uni tasdiqlang.",
+	'cabinet.profile.phoneOtpIntro': 'SMSdagi kodni kiriting.',
+	'cabinet.profile.phoneOtpRequired': 'Tasdiqlash kodini kiriting',
+	'cabinet.profile.phoneOtpInvalid': "Tasdiqlash kodi noto'g'ri",
+	'cabinet.profile.phoneOtpSent': 'Tasdiqlash kodi yuborildi',
+	'cabinet.profile.phoneOtpError': 'Kod yuborilmadi',
+	'cabinet.profile.phoneOtpVerifyError': "Telefonni tasdiqlab bo'lmadi",
+	'cabinet.profile.phoneOtpVerified': 'Telefon raqami tasdiqlandi',
 }
 
 export default messages

@@ -25,9 +25,21 @@ export function useSearchForm() {
 	}, [defaultValues, form])
 
 	const onSubmit: SubmitHandler<ISearch> = async (params) => {
+		const normalizedParams: Record<string, unknown> = { ...params }
+		const hasCurrency = Boolean(normalizedParams.price_currency)
+		const hasMinPrice = normalizedParams.min_price !== undefined && normalizedParams.min_price !== null && normalizedParams.min_price !== ''
+		const hasMaxPrice = normalizedParams.max_price !== undefined && normalizedParams.max_price !== null && normalizedParams.max_price !== ''
+
+		if (hasCurrency && !hasMinPrice && !hasMaxPrice) {
+			normalizedParams.price_currency_selected = normalizedParams.price_currency
+			delete normalizedParams.price_currency
+		} else {
+			delete normalizedParams.price_currency_selected
+		}
+
 		const cleanParams: Record<string, string> = {}
 
-		Object.entries(params).forEach(([key, value]) => {
+		Object.entries(normalizedParams).forEach(([key, value]) => {
 			if (value !== undefined && value !== null && value !== '' && !(typeof value === 'object' && Object.keys(value).length === 0)) {
 				cleanParams[key] = String(value)
 			}

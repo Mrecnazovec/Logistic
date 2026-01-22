@@ -1,6 +1,8 @@
 const messages: Record<string, string> = {
 	// [id]/page.tsx
 	'order.meta.title': 'Order',
+	// shared/[share_token]/page.tsx
+	'order.shared.meta.title': 'Order view',
 
 	// [id]/OrderPage.tsx
 	'order.driverStatus.enRoute': 'En route',
@@ -125,6 +127,8 @@ const messages: Record<string, string> = {
 
 	// [id]/payment/page.tsx
 	'order.payment.meta.title': 'Payment',
+	// shared/[share_token]/payment/page.tsx
+	'order.shared.payment.meta.title': 'Order payment view',
 
 	// [id]/payment/PaymentPage.tsx
 	'order.payment.notFound': 'Order not found',
@@ -144,7 +148,7 @@ const messages: Record<string, string> = {
 	'order.payment.field.ordersCount': 'Completed orders',
 	'order.payment.field.confirmation': 'Confirmation',
 	'order.payment.confirmation.yes': 'Yes',
-	'order.payment.confirmation.no': '-',
+	'order.payment.confirmation.no': '—',
 	'order.payment.confirmation.unavailable': 'Payment confirmation will be available after delivery.',
 	'order.payment.actions.finish': 'Finish',
 	'order.payment.actions.later': 'Later',
@@ -161,6 +165,8 @@ const messages: Record<string, string> = {
 
 	// [id]/status/page.tsx
 	'order.status.meta.title': 'Status',
+	// shared/[share_token]/status/page.tsx
+	'order.shared.status.meta.title': 'Order status view',
 
 	// [id]/status/StatusPage.tsx
 	'order.status.timeline.changed': 'Status changed from "{from}" to "{to}"',
@@ -170,9 +176,15 @@ const messages: Record<string, string> = {
 	'order.status.timeline.notSpecified': 'Not specified',
 	'order.status.empty.title': 'Statuses have not been updated yet',
 	'order.status.empty.description': 'Status history appears after status changes.',
+	// shared/[share_token]/status/StatusPage.tsx
+	'order.shared.status.restricted': 'Data for this tab is available only to shipment participants',
 
 	// [id]/docs/page.tsx
 	'order.docs.meta.title': 'Documents',
+	// shared/[share_token]/docs/page.tsx
+	'order.shared.docs.meta.title': 'Order documents view',
+	// shared/[share_token]/docs/[folder]/page.tsx
+	'order.shared.docs.folder.meta.title': 'Order document view',
 
 	// [id]/docs/DocsPage.tsx
 	'order.docs.folder.licenses': 'Licenses',

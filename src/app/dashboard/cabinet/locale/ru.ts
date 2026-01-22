@@ -55,6 +55,20 @@ const messages: Record<string, string> = {
 	'cabinet.profile.emailNeedsVerify': 'Требуется подтверждение email',
 	'cabinet.profile.emailStepIntro': 'Введите новую почту, и верифицируйте её.',
 	'cabinet.profile.emailOtpIntro': 'Введите код из письма.',
+	'cabinet.profile.phonePlaceholder': 'Номер телефона',
+	'cabinet.profile.phoneEdit': 'Изменить телефон',
+	'cabinet.profile.phoneSendCode': 'Отправить код',
+	'cabinet.profile.phoneSend': 'Отправить',
+	'cabinet.profile.phoneCancel': 'Отмена',
+	'cabinet.profile.phoneRequired': 'Введите номер телефона',
+	'cabinet.profile.phoneStepIntro': 'Введите новый номер телефона и подтвердите его.',
+	'cabinet.profile.phoneOtpIntro': 'Введите код из SMS.',
+	'cabinet.profile.phoneOtpRequired': 'Введите код подтверждения',
+	'cabinet.profile.phoneOtpInvalid': 'Неверный код подтверждения',
+	'cabinet.profile.phoneOtpSent': 'Код подтверждения отправлен',
+	'cabinet.profile.phoneOtpError': 'Не удалось отправить код',
+	'cabinet.profile.phoneOtpVerifyError': 'Не удалось подтвердить телефон',
+	'cabinet.profile.phoneOtpVerified': 'Номер телефона подтвержден',
 }
 
 export default messages

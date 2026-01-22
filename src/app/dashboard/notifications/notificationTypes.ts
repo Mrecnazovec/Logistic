@@ -9,7 +9,7 @@ export const notificationTypeSamples = [
 		offer_id: 251,
 		is_read: true,
 		created_at: '2026-01-08T15:06:03.618680+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2193,
@@ -34,7 +34,7 @@ export const notificationTypeSamples = [
 		cargo_id: 237,
 		is_read: true,
 		created_at: '2026-01-05T23:35:12.958711+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2147,
@@ -47,7 +47,7 @@ export const notificationTypeSamples = [
 		cargo_id: 237,
 		is_read: true,
 		created_at: '2026-01-05T23:35:11.156558+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2145,
@@ -59,7 +59,7 @@ export const notificationTypeSamples = [
 		offer_id: 243,
 		is_read: true,
 		created_at: '2026-01-05T23:34:13.079213+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2139,
@@ -110,7 +110,7 @@ export const notificationTypeSamples = [
 		payload: null,
 		is_read: true,
 		created_at: '2026-01-01T20:37:25.841789+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2079,
@@ -120,7 +120,7 @@ export const notificationTypeSamples = [
 		payload: null,
 		is_read: true,
 		created_at: '2026-01-01T20:29:26.324831+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 2046,
@@ -130,7 +130,7 @@ export const notificationTypeSamples = [
 		payload: null,
 		is_read: true,
 		created_at: '2025-12-28T13:39:17.681606+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 1999,
@@ -140,7 +140,7 @@ export const notificationTypeSamples = [
 		payload: null,
 		is_read: true,
 		created_at: '2025-12-26T17:18:52.108510+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 1976,
@@ -150,7 +150,7 @@ export const notificationTypeSamples = [
 		payload: null,
 		is_read: true,
 		created_at: '2025-12-26T12:14:14.111773+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 1968,
@@ -190,7 +190,7 @@ export const notificationTypeSamples = [
 		},
 		is_read: true,
 		created_at: '2025-12-24T16:47:23.668247+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 1817,
@@ -218,7 +218,7 @@ export const notificationTypeSamples = [
 		cargo_id: 237,
 		is_read: false,
 		created_at: '2026-01-14T23:50:57.967544+05:00',
-		importance: false,
+		importance: true,
 	},
 	{
 		id: 31,

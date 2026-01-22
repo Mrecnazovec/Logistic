@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getNavItems, type NavItem } from './NavItems'
 import { useI18n } from '@/i18n/I18nProvider'
+import { PUBLIC_URL } from '@/config/url.config'
 
 export function Sidebar() {
 	const pathname = usePathname()
@@ -31,12 +32,12 @@ export function Sidebar() {
 		.map((group) => ({
 			...group,
 			items: group.items.filter((item) => isAllowed(item.roles)),
-	}))
+		}))
 		.filter((group) => group.items.length > 0)
 
 	return (
 		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0 md:sticky md:top-0 md:h-screen md:z-20'>
-			<Logo />
+			<Logo href={PUBLIC_URL.home()} />
 			<nav className='flex-1 flex flex-col items-center gap-2 mt-8'>
 				{visibleNavGroups.map((group, idx) => (
 					<div key={idx} className='w-full flex flex-col items-center gap-2'>

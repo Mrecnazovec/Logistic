@@ -1,6 +1,8 @@
 ﻿const messages: Record<string, string> = {
 	// [id]/page.tsx
 	'order.meta.title': 'Заказ',
+	// shared/[share_token]/page.tsx
+	'order.shared.meta.title': 'Просмотр заказа',
 
 	// [id]/OrderPage.tsx
 	'order.driverStatus.enRoute': 'В пути',
@@ -127,6 +129,8 @@
 
 	// [id]/payment/page.tsx
 	'order.payment.meta.title': 'Платёж',
+	// shared/[share_token]/payment/page.tsx
+	'order.shared.payment.meta.title': 'Просмотр платежа заказа',
 
 	// [id]/payment/PaymentPage.tsx
 	'order.payment.notFound': 'Заказ не найден',
@@ -146,7 +150,7 @@
 	'order.payment.field.ordersCount': 'Выполнено заказов',
 	'order.payment.field.confirmation': 'Подтверждение',
 	'order.payment.confirmation.yes': 'Да',
-	'order.payment.confirmation.no': '-',
+	'order.payment.confirmation.no': '—',
 	'order.payment.confirmation.unavailable': 'Подтверждение оплаты будет доступно после доставки груза',
 	'order.payment.actions.finish': 'Завершить',
 	'order.payment.actions.later': 'Позже',
@@ -163,6 +167,8 @@
 
 	// [id]/status/page.tsx
 	'order.status.meta.title': 'Статусы',
+	// shared/[share_token]/status/page.tsx
+	'order.shared.status.meta.title': 'Просмотр статусов заказа',
 
 	// [id]/status/StatusPage.tsx
 	'order.status.timeline.changed': 'Статус изменён с "{from}" на "{to}"',
@@ -172,9 +178,15 @@
 	'order.status.timeline.notSpecified': 'Не указан',
 	'order.status.empty.title': 'Статусы пока не обновлялись',
 	'order.status.empty.description': 'История статусов отображается после изменения статусов.',
+	// shared/[share_token]/status/StatusPage.tsx
+	'order.shared.status.restricted': 'Данные этой вкладки доступны только участникам перевозки',
 
 	// [id]/docs/page.tsx
 	'order.docs.meta.title': 'Документы',
+	// shared/[share_token]/docs/page.tsx
+	'order.shared.docs.meta.title': 'Просмотр документов заказа',
+	// shared/[share_token]/docs/[folder]/page.tsx
+	'order.shared.docs.folder.meta.title': 'Просмотр документа заказа',
 
 	// [id]/docs/DocsPage.tsx
 	'order.docs.folder.licenses': 'Лицензии',

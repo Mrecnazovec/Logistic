@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Raleway, Manrope, Inter, Urbanist } from 'next/font/google'
 import './globals.css'
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME } from '@/constants/seo.constants'
@@ -47,6 +48,15 @@ export default async function RootLayout({
 
 	return (
 		<html lang={locale}>
+			<head>
+				<Script async src="https://www.googletagmanager.com/gtag/js?id=G-FHD577EN97" />
+				<Script id="google-analytics">
+					{`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-FHD577EN97');`}
+				</Script>
+			</head>
 			<body className={`${raleway.variable} ${manrope.variable} ${inter.variable} ${urbanist.variable} antialiased scroll-smooth`}>
 				<I18nProvider locale={locale} messages={messages}>
 					<Providers>{children}</Providers>

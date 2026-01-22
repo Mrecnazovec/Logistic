@@ -2,11 +2,12 @@
 
 import { MessageCircle, MessageCircleHeart, Phone, UserCircle2 } from "lucide-react"
 
+import { DASHBOARD_URL } from "@/config/url.config"
+import { useGetDashboardStats } from "@/hooks/queries/auth/useGetDashboardStats"
 import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import Link from "next/link"
-import { useGetDashboardStats } from "@/hooks/queries/auth/useGetDashboardStats"
 
 export function Dashboard() {
 	const { t } = useI18n()
@@ -17,36 +18,36 @@ export function Dashboard() {
 			eyebrow: t('dashboard.roles.eyebrow'),
 			title: t('dashboard.roles.customer.title'),
 			cards: [
-				{ title: t('dashboard.roles.customer.cards.publications.title'), description: t('dashboard.roles.customer.cards.publications.description') },
-				{ title: t('dashboard.roles.customer.cards.search.title'), description: t('dashboard.roles.customer.cards.search.description') },
-				{ title: t('dashboard.roles.customer.cards.open.title'), description: t('dashboard.roles.customer.cards.open.description') },
-				{ title: t('dashboard.roles.customer.cards.active.title'), description: t('dashboard.roles.customer.cards.active.description') },
-				{ title: t('dashboard.roles.customer.cards.check.title'), description: t('dashboard.roles.customer.cards.check.description') },
-				{ title: t('dashboard.roles.customer.cards.history.title'), description: t('dashboard.roles.customer.cards.history.description') },
+				{ title: t('dashboard.roles.customer.cards.publications.title'), description: t('dashboard.roles.customer.cards.publications.description'), link: DASHBOARD_URL.posting() },
+				{ title: t('dashboard.roles.customer.cards.search.title'), description: t('dashboard.roles.customer.cards.search.description'), link: DASHBOARD_URL.announcements() },
+				{ title: t('dashboard.roles.customer.cards.open.title'), description: t('dashboard.roles.customer.cards.open.description'), link: DASHBOARD_URL.desk() },
+				{ title: t('dashboard.roles.customer.cards.active.title'), description: t('dashboard.roles.customer.cards.active.description'), link: DASHBOARD_URL.transportation() },
+				{ title: t('dashboard.roles.customer.cards.check.title'), description: t('dashboard.roles.customer.cards.check.description'), link: DASHBOARD_URL.rating() },
+				{ title: t('dashboard.roles.customer.cards.history.title'), description: t('dashboard.roles.customer.cards.history.description'), link: DASHBOARD_URL.history() },
 			],
 		},
 		[RoleEnum.LOGISTIC]: {
 			eyebrow: t('dashboard.roles.eyebrow'),
 			title: t('dashboard.roles.logistic.title'),
 			cards: [
-				{ title: t('dashboard.roles.logistic.cards.publications.title'), description: t('dashboard.roles.logistic.cards.publications.description') },
-				{ title: t('dashboard.roles.logistic.cards.search.title'), description: t('dashboard.roles.logistic.cards.search.description') },
-				{ title: t('dashboard.roles.logistic.cards.trade.title'), description: t('dashboard.roles.logistic.cards.trade.description') },
-				{ title: t('dashboard.roles.logistic.cards.active.title'), description: t('dashboard.roles.logistic.cards.active.description') },
-				{ title: t('dashboard.roles.logistic.cards.check.title'), description: t('dashboard.roles.logistic.cards.check.description') },
-				{ title: t('dashboard.roles.logistic.cards.history.title'), description: t('dashboard.roles.logistic.cards.history.description') },
+				{ title: t('dashboard.roles.logistic.cards.publications.title'), description: t('dashboard.roles.logistic.cards.publications.description'), link: DASHBOARD_URL.posting() },
+				{ title: t('dashboard.roles.logistic.cards.search.title'), description: t('dashboard.roles.logistic.cards.search.description'), link: DASHBOARD_URL.announcements() },
+				{ title: t('dashboard.roles.logistic.cards.trade.title'), description: t('dashboard.roles.logistic.cards.trade.description'), link: DASHBOARD_URL.desk() },
+				{ title: t('dashboard.roles.logistic.cards.active.title'), description: t('dashboard.roles.logistic.cards.active.description'), link: DASHBOARD_URL.transportation() },
+				{ title: t('dashboard.roles.logistic.cards.check.title'), description: t('dashboard.roles.logistic.cards.check.description'), link: DASHBOARD_URL.rating() },
+				{ title: t('dashboard.roles.logistic.cards.history.title'), description: t('dashboard.roles.logistic.cards.history.description'), link: DASHBOARD_URL.history() },
 			],
 		},
 		[RoleEnum.CARRIER]: {
 			eyebrow: t('dashboard.roles.eyebrow'),
 			title: t('dashboard.roles.carrier.title'),
 			cards: [
-				{ title: t('dashboard.roles.carrier.cards.search.title'), description: t('dashboard.roles.carrier.cards.search.description') },
-				{ title: t('dashboard.roles.carrier.cards.myOffers.title'), description: t('dashboard.roles.carrier.cards.myOffers.description') },
-				{ title: t('dashboard.roles.carrier.cards.personal.title'), description: t('dashboard.roles.carrier.cards.personal.description') },
-				{ title: t('dashboard.roles.carrier.cards.active.title'), description: t('dashboard.roles.carrier.cards.active.description') },
-				{ title: t('dashboard.roles.carrier.cards.check.title'), description: t('dashboard.roles.carrier.cards.check.description') },
-				{ title: t('dashboard.roles.carrier.cards.history.title'), description: t('dashboard.roles.carrier.cards.history.description') },
+				{ title: t('dashboard.roles.carrier.cards.search.title'), description: t('dashboard.roles.carrier.cards.search.description'), link: DASHBOARD_URL.announcements() },
+				{ title: t('dashboard.roles.carrier.cards.myOffers.title'), description: t('dashboard.roles.carrier.cards.myOffers.description'), link: DASHBOARD_URL.desk() },
+				{ title: t('dashboard.roles.carrier.cards.personal.title'), description: t('dashboard.roles.carrier.cards.personal.description'), link: DASHBOARD_URL.desk() },
+				{ title: t('dashboard.roles.carrier.cards.active.title'), description: t('dashboard.roles.carrier.cards.active.description'), link: DASHBOARD_URL.transportation() },
+				{ title: t('dashboard.roles.carrier.cards.check.title'), description: t('dashboard.roles.carrier.cards.check.description'), link: DASHBOARD_URL.rating() },
+				{ title: t('dashboard.roles.carrier.cards.history.title'), description: t('dashboard.roles.carrier.cards.history.description'), link: DASHBOARD_URL.history() },
 			],
 		},
 	} as const
@@ -130,10 +131,10 @@ export function Dashboard() {
 						<h2 className="text-center text-3xl font-semibold">{roleSection.title}</h2>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 							{roleSection.cards.map((card) => (
-								<div key={card.title} className="rounded-2xl bg-[#1F2937] text-white p-6 min-h-[180px]">
+								<Link href={card.link} key={card.title} className="rounded-2xl bg-[#1F2937] text-white p-6 min-h-[180px]">
 									<p className="text-lg font-semibold pb-3 border-b border-white/20">{card.title}</p>
 									<p className="text-sm text-white/80 pt-3">{card.description}</p>
-								</div>
+								</Link>
 							))}
 						</div>
 					</div>

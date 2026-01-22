@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { UseFormReturn } from 'react-hook-form'
 import { ArrowRight, Search, Settings2, Trash2 } from 'lucide-react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useState, type ReactNode } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '@/components/ui/Button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/Drawer'
@@ -15,13 +15,14 @@ import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
-import { useI18n } from '@/i18n/I18nProvider'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useI18n } from '@/i18n/I18nProvider'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX } from '@/shared/regex/regex'
-import { ISearch } from '@/shared/types/Search.interface'
 import type { CityCoordinates } from '@/shared/types/Nominatim.interface'
+import { ISearch } from '@/shared/types/Search.interface'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 
 interface SearchFieldsProps {
@@ -55,6 +56,24 @@ export function SearchFields({
 	const isMobile = !isTablet
 	const { isOpen: isDrawerOpen, setOpen: setIsDrawerOpen, close: closeDrawer } = useSearchDrawerStore()
 	const [showAdvanced, setShowAdvanced] = useState(false)
+	const priceDisabledTooltip = t('components.search.priceDisabledHint')
+
+	const maybeWrapPriceInput = (content: ReactNode) => {
+		if (isPriceEnabled) {
+			return content
+		}
+
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<span className='block'>{content}</span>
+				</TooltipTrigger>
+				<TooltipContent side='bottom' className='text-black' sideOffset={6}>
+					{priceDisabledTooltip}
+				</TooltipContent>
+			</Tooltip>
+		)
+	}
 
 	const handleOriginCoordinates = (coordinates: CityCoordinates | null) => {
 		form.setValue('origin_lat', coordinates?.lat)
@@ -114,11 +133,7 @@ export function SearchFields({
 						<FormItem className='w-full'>
 							<FormControl>
 								<InputGroup>
-									<InputGroupInput
-										placeholder={uuidPlaceholder ?? t('components.search.byId')}
-										{...field}
-										value={field.value ?? ''}
-									/>
+									<InputGroupInput placeholder={uuidPlaceholder ?? t('components.search.byId')} {...field} value={field.value ?? ''} />
 									<InputGroupAddon className='pr-2'>
 										<Search className={cn('text-grayscale size-5', field.value && 'text-black')} />
 									</InputGroupAddon>
@@ -161,16 +176,18 @@ export function SearchFields({
 									<FormItem>
 										<FormLabel className='text-grayscale'>{t('components.search.price')}</FormLabel>
 										<FormControl>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('components.search.from')}
-													{...field}
-													disabled={!isPriceEnabled}
-													value={field.value ?? ''}
-													className='pl-4'
-													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-												/>
-											</InputGroup>
+											{maybeWrapPriceInput(
+												<InputGroup>
+													<InputGroupInput
+														placeholder={t('components.search.from')}
+														{...field}
+														disabled={!isPriceEnabled}
+														value={field.value ?? ''}
+														className='pl-4'
+														onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													/>
+												</InputGroup>,
+											)}
 										</FormControl>
 									</FormItem>
 								)}
@@ -181,16 +198,18 @@ export function SearchFields({
 								render={({ field }) => (
 									<FormItem>
 										<FormControl>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('components.search.to')}
-													{...field}
-													disabled={!isPriceEnabled}
-													value={field.value ?? ''}
-													className='pl-4'
-													onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-												/>
-											</InputGroup>
+											{maybeWrapPriceInput(
+												<InputGroup>
+													<InputGroupInput
+														placeholder={t('components.search.to')}
+														{...field}
+														disabled={!isPriceEnabled}
+														value={field.value ?? ''}
+														className='pl-4'
+														onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
+													/>
+												</InputGroup>,
+											)}
 										</FormControl>
 									</FormItem>
 								)}
@@ -201,18 +220,13 @@ export function SearchFields({
 								control={form.control}
 								name='has_offers'
 								render={({ field }) => {
-									const value =
-										field.value === undefined ? '' : field.value === true ? 'true' : field.value === false ? 'false' : String(field.value)
+									const value = field.value === undefined ? '' : field.value === true ? 'true' : field.value === false ? 'false' : String(field.value)
 
 									return (
 										<FormItem>
 											<FormLabel className='text-grayscale'>{t('components.search.hasOffers')}</FormLabel>
 											<FormControl>
-												<RadioGroup
-													className=''
-													value={value}
-													onValueChange={(next) => field.onChange(next === 'true')}
-												>
+												<RadioGroup className='' value={value} onValueChange={(next) => field.onChange(next === 'true')}>
 													<label className='flex items-center gap-2 rounded-4xl px-3 py-2 text-sm cursor-pointer bg-grayscale-50 h-13'>
 														<RadioGroupItem value='true' />
 														{t('components.search.hasOffers.yes')}
@@ -287,9 +301,7 @@ export function SearchFields({
 															{...field}
 															value={field.value ?? ''}
 															className='pl-4'
-															onChange={(event) =>
-																handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))
-															}
+															onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))}
 														/>
 													</InputGroup>
 												</FormControl>
@@ -308,9 +320,7 @@ export function SearchFields({
 															{...field}
 															value={field.value ?? ''}
 															className='pl-4'
-															onChange={(event) =>
-																handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))
-															}
+															onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, (value) => handleAxlesInput(value, field.onChange))}
 														/>
 													</InputGroup>
 												</FormControl>
@@ -364,12 +374,7 @@ export function SearchFields({
 					</PopoverContent>
 				</Popover>
 				{hasQuery ? (
-					<Button
-						variant='destructive'
-						type='button'
-						onClick={handleDeleteFilter}
-						title={t('components.search.resetTitle')}
-					>
+					<Button variant='destructive' type='button' onClick={handleDeleteFilter} title={t('components.search.resetTitle')}>
 						<Trash2 className='size-4' />
 					</Button>
 				) : null}
@@ -485,11 +490,7 @@ export function SearchFields({
 				render={({ field }) => (
 					<FormItem className='flex flex-col max-xl:w-full'>
 						<FormControl>
-							<DatePicker
-								value={field.value}
-								onChange={field.onChange}
-								placeholder={t('components.search.loadDate')}
-							/>
+							<DatePicker value={field.value} onChange={field.onChange} placeholder={t('components.search.loadDate')} />
 						</FormControl>
 					</FormItem>
 				)}
@@ -521,13 +522,7 @@ export function SearchFields({
 			{!isLarge && (
 				<div className='flex flex-wrap gap-3 justify-end'>
 					{searchButton}
-					<Button
-						type='button'
-						variant='outline'
-						size='icon'
-						onClick={() => setShowAdvanced((prev) => !prev)}
-						className='max-md:w-full'
-					>
+					<Button type='button' variant='outline' size='icon' onClick={() => setShowAdvanced((prev) => !prev)} className='max-md:w-full'>
 						{showAdvanced ? <ArrowRight className='-rotate-90 w-3/4 h-3/4' /> : <ArrowRight className='rotate-90 w-3/4 h-3/4' />}
 					</Button>
 				</div>

@@ -39,13 +39,37 @@ const getOrderIdFromPath = (pathname: string) => {
 	const [section, resource, orderId] = segments
 
 	if (section !== 'dashboard' || resource !== 'order') return null
+	if (orderId === 'shared') return null
 	if (!orderId || orderId === '[id]') return null
 
 	return orderId
 }
 
+const getSharedOrderTokenFromPath = (pathname: string) => {
+	const normalizedPath = normalizePath(pathname)
+	const match = normalizedPath.match(/^\/dashboard\/order\/shared\/([^/]+)(?:\/.*)?$/)
+
+	if (!match) return null
+
+	const [, shareToken] = match
+
+	if (!shareToken || shareToken === '[share_token]') return null
+
+	return shareToken
+}
+
 const getOrderDocsFolderInfo = (pathname: string) => {
 	const normalizedPath = normalizePath(pathname)
+	const sharedMatch = normalizedPath.match(/^\/dashboard\/order\/shared\/([^/]+)\/docs\/([^/]+)$/)
+
+	if (sharedMatch) {
+		const [, shareToken, folder] = sharedMatch
+
+		if (!shareToken || shareToken === '[share_token]' || !folder || folder === '[folder]') return null
+
+		return { orderId: `shared/${shareToken}`, folder }
+	}
+
 	const match = normalizedPath.match(/^\/dashboard\/order\/([^/]+)\/docs\/([^/]+)$/)
 
 	if (!match) return null
@@ -222,11 +246,11 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 	{
 		matcher: (pathname) => Boolean(getOrderDocsFolderInfo(pathname)),
 		items: (pathname) => {
-			const orderId = getOrderIdFromPath(pathname)
+			const info = getOrderDocsFolderInfo(pathname)
 
-			if (!orderId) return []
+			if (!info) return []
 
-			return getOrderNavItems(orderId)
+			return getOrderNavItems(info.orderId)
 		},
 		backLink: (pathname) => {
 			const info = getOrderDocsFolderInfo(pathname)
@@ -237,6 +261,20 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 				labelKey: 'components.dashboard.headerNav.back.toDocs',
 				href: DASHBOARD_URL.order(`${info.orderId}/docs`),
 			}
+		},
+	},
+	{
+		matcher: (pathname) => Boolean(getSharedOrderTokenFromPath(pathname)),
+		items: (pathname) => {
+			const shareToken = getSharedOrderTokenFromPath(pathname)
+
+			if (!shareToken) return []
+
+			return getOrderNavItems(`shared/${shareToken}`)
+		},
+		backLink: {
+			labelKey: 'components.dashboard.headerNav.back.toMyCargo',
+			href: DASHBOARD_URL.transportation(),
 		},
 	},
 	{

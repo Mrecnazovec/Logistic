@@ -43,8 +43,9 @@ export const buildSearchDefaultValues = (searchParams: SearchParamsLike): Partia
 	const params: Partial<ISearch> = {}
 
 	searchParams.forEach((value, key) => {
-		const parsedValue = parseParamValue(key, value)
-		;(params as Record<string, ISearch[keyof ISearch]>)[key] = parsedValue as ISearch[keyof ISearch]
+		const normalizedKey = key === 'price_currency_selected' ? 'price_currency' : key
+		const parsedValue = parseParamValue(normalizedKey, value)
+		;(params as Record<string, ISearch[keyof ISearch]>)[normalizedKey] = parsedValue as ISearch[keyof ISearch]
 	})
 
 	return params

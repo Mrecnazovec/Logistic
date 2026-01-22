@@ -87,6 +87,7 @@
 	'components.search.filters': 'Фильтры',
 	'components.search.currency': 'Валюта',
 	'components.search.price': 'Цена',
+	'components.search.priceDisabledHint': 'Сначала выберите валюту',
 	'components.search.from': 'От',
 	'components.search.to': 'До',
 	'components.search.hasOffers': 'Наличие предложений',

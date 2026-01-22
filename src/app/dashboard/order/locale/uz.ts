@@ -1,6 +1,8 @@
 const messages: Record<string, string> = {
 	// [id]/page.tsx
 	'order.meta.title': 'Buyurtma',
+	// shared/[share_token]/page.tsx
+	'order.shared.meta.title': 'Buyurtmani ko\'rish',
 
 	// [id]/OrderPage.tsx
 	'order.driverStatus.enRoute': "Yo'lda",
@@ -127,6 +129,8 @@ const messages: Record<string, string> = {
 
 	// [id]/payment/page.tsx
 	'order.payment.meta.title': "To'lov",
+	// shared/[share_token]/payment/page.tsx
+	'order.shared.payment.meta.title': 'Buyurtma to\'lovini ko\'rish',
 
 	// [id]/payment/PaymentPage.tsx
 	'order.payment.notFound': 'Buyurtma topilmadi',
@@ -146,7 +150,7 @@ const messages: Record<string, string> = {
 	'order.payment.field.ordersCount': 'Yakunlangan buyurtmalar',
 	'order.payment.field.confirmation': 'Tasdiqlash',
 	'order.payment.confirmation.yes': 'Ha',
-	'order.payment.confirmation.no': '-',
+	'order.payment.confirmation.no': '—',
 	'order.payment.confirmation.unavailable': "To'lovni tasdiqlash yetkazib berilgandan so'ng mavjud bo'ladi.",
 	'order.payment.actions.finish': 'Yakunlash',
 	'order.payment.actions.later': 'Keyinroq',
@@ -163,6 +167,8 @@ const messages: Record<string, string> = {
 
 	// [id]/status/page.tsx
 	'order.status.meta.title': 'Status',
+	// shared/[share_token]/status/page.tsx
+	'order.shared.status.meta.title': 'Buyurtma statuslarini ko\'rish',
 
 	// [id]/status/StatusPage.tsx
 	'order.status.timeline.changed': 'Status "{from}" dan "{to}" ga o\'zgardi',
@@ -172,9 +178,15 @@ const messages: Record<string, string> = {
 	'order.status.timeline.notSpecified': "Ko'rsatilmagan",
 	'order.status.empty.title': 'Statuslar hali yangilanmagan',
 	'order.status.empty.description': "Statuslar tarixi status o'zgargandan so'ng ko'rinadi.",
+	// shared/[share_token]/status/StatusPage.tsx
+	'order.shared.status.restricted': 'Ushbu bo‘lim maʼlumotlari faqat tashish ishtirokchilari uchun mavjud',
 
 	// [id]/docs/page.tsx
 	'order.docs.meta.title': 'Hujjatlar',
+	// shared/[share_token]/docs/page.tsx
+	'order.shared.docs.meta.title': 'Buyurtma hujjatlarini ko\'rish',
+	// shared/[share_token]/docs/[folder]/page.tsx
+	'order.shared.docs.folder.meta.title': 'Buyurtma hujjatini ko\'rish',
 
 	// [id]/docs/DocsPage.tsx
 	'order.docs.folder.licenses': 'Litsenziyalar',

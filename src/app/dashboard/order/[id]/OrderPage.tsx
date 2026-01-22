@@ -17,6 +17,7 @@ import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
 import { useI18n } from '@/i18n/I18nProvider'
+import { addLocaleToPath } from '@/i18n/paths'
 import {
 	DEFAULT_PLACEHOLDER,
 	formatDateTimeValue,
@@ -65,7 +66,7 @@ const getDocumentAction = (status: OrderStatusEnum | null, actions: Record<strin
 }
 
 export function OrderPage() {
-	const { t } = useI18n()
+	const { t, locale } = useI18n()
 	const { order, isLoading } = useGetOrder()
 	const { patchOrder } = usePatchOrder()
 	const { role } = useRoleStore()
@@ -117,7 +118,12 @@ export function OrderPage() {
 	})
 
 	const handleShare = async () => {
-		const link = typeof window !== 'undefined' ? window.location.href : ''
+		const sharePath = order?.share_token ? addLocaleToPath(`/dashboard/order/shared/${order.share_token}`, locale) : ''
+		const link = typeof window !== 'undefined'
+			? sharePath
+				? `${window.location.origin}${sharePath}`
+				: window.location.href
+			: ''
 
 		try {
 			if (!link || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {

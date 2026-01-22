@@ -1,4 +1,4 @@
-import { axiosWithAuth } from '@/api/api.interceptors'
+import { axiosClassic, axiosWithAuth } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
 import {
 	IOrderDetail,
@@ -35,6 +35,15 @@ class OrdersService {
 			url: API_URL.orders(`${id}`),
 			method: 'GET',
 			params,
+		})
+
+		return data
+	}
+
+	async getSharedOrder(shareToken: string) {
+		const { data } = await axiosClassic<IOrderDetail>({
+			url: API_URL.orders(`orders/shared/${shareToken}`),
+			method: 'GET',
 		})
 
 		return data

@@ -88,6 +88,7 @@ const messages: Record<string, string> = {
 	'components.search.filters': 'Filters',
 	'components.search.currency': 'Currency',
 	'components.search.price': 'Price',
+	'components.search.priceDisabledHint': 'Select a currency first',
 	'components.search.from': 'From',
 	'components.search.to': 'To',
 	'components.search.hasOffers': 'Offers availability',

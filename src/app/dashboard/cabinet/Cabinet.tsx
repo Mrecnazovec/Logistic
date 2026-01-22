@@ -8,15 +8,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/form-control/Input'
 import { Label } from '@/components/ui/form-control/Label'
 import { CabinetEmailModal } from '@/components/ui/modals/CabinetEmailModal'
+import { CabinetPhoneModal } from '@/components/ui/modals/CabinetPhoneModal'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGetAnalytics } from '@/hooks/queries/me/useGetAnalytics'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useSendEmailVerifyFromProfile } from '@/hooks/queries/me/useSendEmailVerifyFromProfile'
+import { useUpdateMe } from '@/hooks/queries/me/useUpdateMe'
 import { useVerifyEmailFromProfile } from '@/hooks/queries/me/useVerifyEmailFromProfile'
 import { useLogout } from '@/hooks/useLogout'
 import { useI18n } from '@/i18n/I18nProvider'
+import { authService } from '@/services/auth/auth.service'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { useMutation } from '@tanstack/react-query'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowUpRight, BarChart3, ChevronDown, DoorOpen, LogOut, Pencil, Star, Truck } from 'lucide-react'
 import Image from 'next/image'
@@ -48,12 +53,15 @@ export function Cabinet() {
 	const { t, locale } = useI18n()
 	const { me, isLoading } = useGetMe()
 	const { logout, isLoading: isLoadingLogout } = useLogout()
+	const { updateMe, isLoadingUpdateMe } = useUpdateMe()
 	const { sendEmailVerify, isLoading: isResendingVerify } = useSendEmailVerifyFromProfile()
 	const { verifyEmail, isLoading: isVerifyingEmail } = useVerifyEmailFromProfile()
 	const { analytics, isLoading: isLoadingAnalytics } = useGetAnalytics()
 	const [isRevenueOpen, setIsRevenueOpen] = useState(false)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
 	const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
+	const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false)
+	const [pendingPhone, setPendingPhone] = useState<string | null>(null)
 	const localeTag = locale === 'ru' ? 'ru-RU' : 'en-US'
 	const integerFormatter = useMemo(() => new Intl.NumberFormat(localeTag), [localeTag])
 	const decimalFormatter = useMemo(() => new Intl.NumberFormat(localeTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }), [localeTag])
@@ -186,10 +194,44 @@ export function Cabinet() {
 	const isEmailMissing = emailValue.trim().length === 0
 	const isEmailVerified = me?.is_email_verified ?? true
 	const shouldShowEmailActions = isEmailMissing || !isEmailVerified
+	const phoneValue = me?.phone ?? ''
+	const isPhoneMissing = phoneValue.trim().length === 0
+
+	const { mutate: sendPhoneOtp, isPending: isSendingPhoneOtp } = useMutation({
+		mutationKey: ['send phone otp', 'cabinet'],
+		mutationFn: (phone: string) => authService.sendPhoneOtp({ phone, purpose: 'verify' }),
+		onSuccess: (_data, phone) => {
+			setPendingPhone(phone)
+			toast.success(t('cabinet.profile.phoneOtpSent'))
+		},
+		onError: (error) => {
+			const message = getErrorMessage(error) ?? t('cabinet.profile.phoneOtpError')
+			toast.error(message)
+		},
+	})
+
+	const { mutate: verifyPhoneOtp, isPending: isVerifyingPhoneOtp } = useMutation({
+		mutationKey: ['verify phone otp', 'cabinet'],
+		mutationFn: (payload: { phone: string; code: string }) =>
+			authService.verifyPhoneOtp({ phone: payload.phone, code: payload.code, purpose: 'verify' }),
+		onSuccess: (data, variables) => {
+			if (!data.verified) {
+				toast.error(t('cabinet.profile.phoneOtpInvalid'))
+				return
+			}
+			setPendingPhone(null)
+			updateMe({ phone: variables.phone })
+			setIsPhoneModalOpen(false)
+			toast.success(t('cabinet.profile.phoneOtpVerified'))
+		},
+		onError: (error) => {
+			const message = getErrorMessage(error) ?? t('cabinet.profile.phoneOtpVerifyError')
+			toast.error(message)
+		},
+	})
 
 	const profileFields = [
 		{ id: 'full-name', label: t('cabinet.profile.fullName'), value: me?.first_name || me?.company_name || me?.email || '' },
-		{ id: 'phone', label: t('cabinet.profile.phone'), value: me?.phone || '' },
 		{ id: 'company', label: t('cabinet.profile.company'), value: me?.company_name || '' },
 		{ id: 'country', label: t('cabinet.profile.country'), value: me?.profile?.country || '' },
 		{ id: 'city', label: t('cabinet.profile.city'), value: me?.profile?.city || '' },
@@ -330,6 +372,48 @@ export function Cabinet() {
 								<div className='pt-2'>
 									<Button type='button' variant='outline' disabled={isResendingVerify} onClick={() => setIsEmailModalOpen(true)}>
 										{t('cabinet.profile.emailSendCode')}
+									</Button>
+								</div>
+							) : null}
+						</div>
+
+						<div className='space-y-2'>
+							<div className='flex items-center justify-between gap-2'>
+								<Label className='text-xs text-muted-foreground' htmlFor='phone'>
+									{t('cabinet.profile.phone')}
+								</Label>
+								{!isPhoneMissing ? (
+									<Button
+										type='button'
+										variant='link'
+										size='sm'
+										className='h-auto px-0 text-xs text-brand'
+										onClick={() => setIsPhoneModalOpen(true)}
+									>
+										{t('cabinet.profile.phoneEdit')}
+									</Button>
+								) : null}
+							</div>
+							{isLoading ? (
+								<Skeleton className='h-11 w-full rounded-3xl' />
+							) : (
+								<Input
+									id='phone'
+									value={phoneValue}
+									disabled
+									className='rounded-3xl bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80 disabled:opacity-100'
+									placeholder={t('cabinet.profile.phonePlaceholder')}
+								/>
+							)}
+							{isPhoneMissing ? (
+								<div className='pt-2'>
+									<Button
+										type='button'
+										variant='outline'
+										disabled={isSendingPhoneOtp || isVerifyingPhoneOtp || isLoadingUpdateMe}
+										onClick={() => setIsPhoneModalOpen(true)}
+									>
+										{t('cabinet.profile.phoneSendCode')}
 									</Button>
 								</div>
 							) : null}
@@ -489,6 +573,38 @@ export function Cabinet() {
 							onSuccess: () => setIsEmailModalOpen(false),
 						}
 					)
+				}}
+			/>
+
+			<CabinetPhoneModal
+				open={isPhoneModalOpen}
+				onOpenChange={(nextOpen) => {
+					setIsPhoneModalOpen(nextOpen)
+					if (!nextOpen) setPendingPhone(null)
+				}}
+				phone={phoneValue}
+				isSending={isSendingPhoneOtp}
+				isVerifying={isVerifyingPhoneOtp}
+				onSendCode={(nextPhone) => {
+					if (!nextPhone) {
+						toast.error(t('cabinet.profile.phoneRequired'))
+						return
+					}
+					sendPhoneOtp(nextPhone)
+				}}
+				onVerifyCode={({ phone, code }) => {
+					if (!phone) {
+						toast.error(t('cabinet.profile.phoneRequired'))
+						return
+					}
+					if (!code || code.trim().length < 6) {
+						toast.error(t('cabinet.profile.phoneOtpRequired'))
+						return
+					}
+					if (pendingPhone && pendingPhone.trim() !== phone.trim()) {
+						setPendingPhone(phone)
+					}
+					verifyPhoneOtp({ phone, code })
 				}}
 			/>
 		</div>

@@ -974,6 +974,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/orders/orders/shared/{share_token}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Публичный просмотр заказа по share_token */
+        get: operations["orders_orders_shared_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/payments/{id}/": {
         parameters: {
             query?: never;
@@ -2046,6 +2063,11 @@ export interface components {
             readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
+            /**
+             * Format: uuid
+             * @description Публичный токен для просмотра заказа
+             */
+            readonly share_token: string;
             /** Format: date-time */
             loading_datetime?: string | null;
             /** Format: date-time */
@@ -2185,6 +2207,11 @@ export interface components {
             readonly documents_count: number;
             /** Format: date-time */
             readonly created_at: string;
+            /**
+             * Format: uuid
+             * @description Публичный токен для просмотра заказа
+             */
+            readonly share_token: string;
         };
         OrderStatusHistory: {
             readonly id: number;
@@ -4417,6 +4444,27 @@ export interface operations {
                 "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
             };
         };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_orders_shared_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                share_token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {

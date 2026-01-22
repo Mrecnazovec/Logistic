@@ -87,6 +87,7 @@ const messages: Record<string, string> = {
 	'components.search.filters': 'Filtrlar',
 	'components.search.currency': 'Valyuta',
 	'components.search.price': 'Narx',
+	'components.search.priceDisabledHint': 'Avval valyutani tanlang',
 	'components.search.from': 'Dan',
 	'components.search.to': 'Gacha',
 	'components.search.hasOffers': 'Takliflar mavjudligi',
