@@ -49,12 +49,28 @@ export default async function RootLayout({
 	return (
 		<html lang={locale}>
 			<head>
+				<Script id="yandex-metrika">
+					{`(function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+   			})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106490012', 'ym');
+
+    		ym(106490012, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});`}
+				</Script>
+				<noscript>
+					<div>
+						{/* eslint-disable-next-line @next/next/no-img-element */}
+						<img src="https://mc.yandex.ru/watch/106490012" style={{ position: 'absolute', left: '-9999px' }} alt="" />
+					</div>
+				</noscript>
 				<Script async src="https://www.googletagmanager.com/gtag/js?id=G-FHD577EN97" />
 				<Script id="google-analytics">
 					{`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-FHD577EN97');`}
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-FHD577EN97');`}
 				</Script>
 			</head>
 			<body className={`${raleway.variable} ${manrope.variable} ${inter.variable} ${urbanist.variable} antialiased scroll-smooth`}>

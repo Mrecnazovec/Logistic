@@ -54,7 +54,7 @@ export function RegisterCompanyFields({ form, isPending, onPhoneChange }: Regist
 				)}
 			/>
 
-			<FormField
+			{/* <FormField
 				control={form.control}
 				name='email'
 				rules={{ required: t('register.company.emailRequired') }}
@@ -77,7 +77,7 @@ export function RegisterCompanyFields({ form, isPending, onPhoneChange }: Regist
 						</FormControl>
 					</FormItem>
 				)}
-			/>
+			/> */}
 
 			<FormField
 				control={form.control}
