@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
 import { Textarea } from '@/components/ui/form-control/Textarea'
 import { useCreateRating } from '@/hooks/queries/ratings/useCreateRating'
+import { useUpdateRating } from '@/hooks/queries/ratings/useUpdateRating'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
@@ -54,11 +55,56 @@ const getParticipants = (order: IOrderDetail, meId?: number) => {
 	return list.filter((participant) => participant.id !== meId)
 }
 
+type RatedEntry = {
+	customer_value?: number
+	carrier_value?: number
+	logistic_value?: number
+	customer_rating_id?: number
+	carrier_rating_id?: number
+	logistic_rating_id?: number
+}
+
+type RatedMap = {
+	by_customer?: RatedEntry
+	by_carrier?: RatedEntry
+	by_logistic?: RatedEntry
+}
+
+const getRatedMeta = (order: IOrderDetail, currentRole: RoleEnum | null, targetRole: RoleEnum) => {
+	if (!currentRole) return null
+	const rated = order.rated as RatedMap | null | undefined
+	if (!rated) return null
+
+	const entry =
+		currentRole === RoleEnum.CUSTOMER
+			? rated.by_customer
+			: currentRole === RoleEnum.CARRIER
+				? rated.by_carrier
+				: currentRole === RoleEnum.LOGISTIC
+					? rated.by_logistic
+					: null
+
+	if (!entry) return null
+
+	if (targetRole === RoleEnum.CUSTOMER) {
+		return { score: entry.customer_value ?? null, ratingId: entry.customer_rating_id ?? null }
+	}
+	if (targetRole === RoleEnum.CARRIER) {
+		return { score: entry.carrier_value ?? null, ratingId: entry.carrier_rating_id ?? null }
+	}
+	if (targetRole === RoleEnum.LOGISTIC) {
+		return { score: entry.logistic_value ?? null, ratingId: entry.logistic_rating_id ?? null }
+	}
+	return null
+}
+
 export function OrderRatingModal({ order, currentRole: _currentRole, disabled }: OrderRatingModalProps) {
 	const { t } = useI18n()
 	const [open, setOpen] = useState(false)
 	const [formState, setFormState] = useState<Record<number, { score: number | ''; comment: string }>>({})
+	const [editState, setEditState] = useState<Record<number, boolean>>({})
 	const { createRating, isLoadingCreate } = useCreateRating()
+	const { updateRating, isLoadingUpdate } = useUpdateRating()
 	const { me } = useGetMe()
 
 	const participants = getParticipants(order, me?.id)
@@ -101,6 +147,21 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 			comment: entry.comment || undefined,
 		}
 
+		const meta = getRatedMeta(order, _currentRole, participant.role)
+		if (meta?.ratingId) {
+			updateRating(
+				{ id: String(meta.ratingId), data: payload },
+				{
+					onSuccess: () =>
+						setFormState((prev) => ({
+							...prev,
+							[participant.id]: { score: '', comment: '' },
+						})),
+				},
+			)
+			return
+		}
+
 		createRating(payload, {
 			onSuccess: () =>
 				setFormState((prev) => ({
@@ -133,8 +194,13 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 					<div className='grid gap-4 md:grid-cols-2'>
 						{participants.map((participant) => {
 							const entry = formState[participant.id] ?? { score: '', comment: '' }
-							const scoreValue = entry.score
-							const isSubmitDisabled = !scoreValue || isLoadingCreate
+							const ratedMeta = getRatedMeta(order, _currentRole, participant.role)
+							const existingScore = ratedMeta?.score ?? null
+							const scoreValue = entry.score || existingScore || ''
+							const isEditing = Boolean(editState[participant.id])
+							const isLocked = Boolean(existingScore) && !isEditing
+							const isSubmitDisabled =
+								isLoadingCreate || isLoadingUpdate || !scoreValue || (Boolean(existingScore) && !isEditing)
 							return (
 								<div key={participant.id} className='rounded-2xl border bg-muted/20 p-4 space-y-3'>
 									<div className='flex items-center justify-between gap-2'>
@@ -157,6 +223,7 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 													aria-label={t('components.orderRating.scoreLabel', { rating: ratingValue })}
 													onClick={() => handleScoreSelect(participant.id, ratingValue)}
 													className='rounded-full p-1 transition-colors'
+													disabled={isLocked}
 												>
 													<Star
 														className={
@@ -174,7 +241,17 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 										value={entry.comment}
 										onChange={(event) => handleChange(participant.id, 'comment', event.target.value)}
 										className='min-h-[96px] resize-none'
+										disabled={isLocked}
 									/>
+									{isLocked ? (
+										<button
+											type='button'
+											onClick={() => setEditState((prev) => ({ ...prev, [participant.id]: true }))}
+											className='text-xs text-brand hover:text-brand/80 cursor-pointer border-b border-brand'
+										>
+											{t('components.orderRating.edit')}
+										</button>
+									) : null}
 									<Button
 										onClick={() => handleSubmit(participant)}
 										disabled={isSubmitDisabled}

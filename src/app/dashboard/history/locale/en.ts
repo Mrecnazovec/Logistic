@@ -19,6 +19,10 @@ const messages: Record<string, string> = {
 	'history.table.route': 'Route (km)',
 	'history.table.price': 'Total',
 	'history.table.documents': 'Documents',
+	'history.table.rating': 'Rating',
+	'history.table.rating.customer': 'Customer',
+	'history.table.rating.carrier': 'Carrier',
+	'history.table.rating.logistic': 'Logistic',
 	'history.placeholder': '-',
 
 	// HistoryCardList.tsx

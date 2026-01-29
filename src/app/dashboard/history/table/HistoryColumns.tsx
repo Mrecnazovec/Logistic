@@ -13,12 +13,58 @@ import {
 	parseDistanceKm,
 } from '@/lib/formatters'
 import type { IOrderList } from '@/shared/types/Order.interface'
+import { RoleEnum } from '@/shared/enums/Role.enum'
 import { ColumnDef } from '@tanstack/react-table'
+import { Star } from 'lucide-react'
 import { getOrderStatusLabel, getOrderStatusVariant } from '../orderStatusConfig'
 
 type Translator = (key: string, params?: Record<string, string | number>) => string
 
-export const getHistoryColumns = (t: Translator): ColumnDef<IOrderList>[] => [
+type RatedEntry = {
+	customer_value?: number
+	carrier_value?: number
+	logistic_value?: number
+}
+
+type RatedMap = {
+	by_customer?: RatedEntry
+	by_carrier?: RatedEntry
+	by_logistic?: RatedEntry
+}
+
+const getRatingsForRole = (order: IOrderList, role?: RoleEnum | null) => {
+	const rated = order.rated as RatedMap | null | undefined
+	if (!rated || !role) return []
+
+	if (role === RoleEnum.LOGISTIC) {
+		return [
+			order.roles.customer ? { key: 'customer', value: rated.by_customer?.logistic_value } : null,
+			order.roles.carrier ? { key: 'carrier', value: rated.by_carrier?.logistic_value } : null,
+		]
+			.filter(Boolean)
+			.map((item) => item as { key: string; value?: number })
+	}
+	if (role === RoleEnum.CARRIER) {
+		return [
+			order.roles.customer ? { key: 'customer', value: rated.by_customer?.carrier_value } : null,
+			order.roles.logistic ? { key: 'logistic', value: rated.by_logistic?.carrier_value } : null,
+		]
+			.filter(Boolean)
+			.map((item) => item as { key: string; value?: number })
+	}
+	if (role === RoleEnum.CUSTOMER) {
+		return [
+			order.roles.carrier ? { key: 'carrier', value: rated.by_carrier?.customer_value } : null,
+			order.roles.logistic ? { key: 'logistic', value: rated.by_logistic?.customer_value } : null,
+		]
+			.filter(Boolean)
+			.map((item) => item as { key: string; value?: number })
+	}
+
+	return []
+}
+
+export const getHistoryColumns = (t: Translator, role?: RoleEnum | null): ColumnDef<IOrderList>[] => [
 	{
 		accessorKey: 'id',
 		header: 'ID',
@@ -121,6 +167,25 @@ export const getHistoryColumns = (t: Translator): ColumnDef<IOrderList>[] => [
 				? 'rounded-full bg-[#F8F9FC] border border-[#D5D9EB] size-7 flex items-center justify-center'
 				: 'rounded-full bg-[#F4F3FF] border border-[#D9D6FE] size-7 flex items-center justify-center'
 			return <div className={className}>{count}</div>
+		},
+	},
+	{
+		id: 'ratings',
+		header: t('history.table.rating'),
+		cell: ({ row }) => {
+			const items = getRatingsForRole(row.original, role)
+			if (!items.length) return t('history.placeholder')
+			return (
+				<div className='flex flex-col text-sm text-muted-foreground'>
+					{items.map((item) => (
+						<span key={`${row.original.id}-${item.key}`} className='flex items-center gap-1'>
+							{t(`history.table.rating.${item.key}`)}:
+							{item.value ?? t('history.placeholder')}
+							{item.value ? <Star className='size-4 text-warning-500 fill-warning-500' /> : null}
+						</span>
+					))}
+				</div>
+			)
 		},
 	},
 ]

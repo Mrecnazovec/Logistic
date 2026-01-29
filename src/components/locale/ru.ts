@@ -162,6 +162,7 @@
 	'components.orderRating.scoreLabel': 'Оценка {rating}',
 	'components.orderRating.comment': 'Комментарий (необязательно)',
 	'components.orderRating.submit': 'Отправить оценку',
+	'components.orderRating.edit': 'Изменить оценку',
 
 	// ui/modals/CounterOfferModal.tsx
 	'components.counterOffer.title': 'Контрпредложение',

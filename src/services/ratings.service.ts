@@ -59,7 +59,7 @@ class RatingsService {
 
 	async putRating(id: string | number, data: UserRatingRequestDto) {
 		const { data: updatedRating } = await axiosWithAuth<IUserRating>({
-			url: API_URL.ratings(`${id}`),
+			url: API_URL.ratings(`ratings/${id}`),
 			method: 'PUT',
 			data,
 		})

@@ -5,6 +5,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { useParams } from 'next/navigation'
 
 type UpdateRatingPayload = {
 	id: string
@@ -14,6 +15,7 @@ type UpdateRatingPayload = {
 export const useUpdateRating = () => {
 	const { t } = useI18n()
 	const queryClient = useQueryClient()
+	const params = useParams<{ id: string }>()
 
 	const { mutate: updateRating, isPending: isLoadingUpdate } = useMutation({
 		mutationKey: ['rating', 'update'],
@@ -21,6 +23,8 @@ export const useUpdateRating = () => {
 		onSuccess(_, { id }) {
 			queryClient.invalidateQueries({ queryKey: ['get ratings'] })
 			queryClient.invalidateQueries({ queryKey: ['get rating', id] })
+			queryClient.invalidateQueries({ queryKey: ['get order', params.id] })
+
 			toast.success(t('hooks.ratings.update.success'))
 		},
 		onError(error) {

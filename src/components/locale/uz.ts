@@ -162,6 +162,7 @@ const messages: Record<string, string> = {
 	'components.orderRating.scoreLabel': 'Reyting {rating}',
 	'components.orderRating.comment': 'Izoh (ixtiyoriy)',
 	'components.orderRating.submit': 'Baholashni yuborish',
+	'components.orderRating.edit': 'Reytingni o\'zgartirish',
 
 	// ui/modals/CounterOfferModal.tsx
 	'components.counterOffer.title': 'Qarshi taklif',

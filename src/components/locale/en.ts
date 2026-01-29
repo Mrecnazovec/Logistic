@@ -163,6 +163,7 @@ const messages: Record<string, string> = {
 	'components.orderRating.scoreLabel': 'Rating {rating}',
 	'components.orderRating.comment': 'Comment (optional)',
 	'components.orderRating.submit': 'Submit rating',
+	'components.orderRating.edit': 'Edit rating',
 
 	// ui/modals/CounterOfferModal.tsx
 	'components.counterOffer.title': 'Counter offer',

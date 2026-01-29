@@ -10,6 +10,7 @@ import { useGetOrders } from '@/hooks/queries/orders/useGet/useGetOrders'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useI18n } from '@/i18n/I18nProvider'
 import type { IOrderList } from '@/shared/types/Order.interface'
+import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { useRouter } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
@@ -23,8 +24,9 @@ export function HistoryPage() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const router = useRouter()
 	const tableType = useTableTypeStore((state) => state.tableType)
+	const role = useRoleStore((state) => state.role)
 	const { t } = useI18n()
-	const columns = useMemo(() => getHistoryColumns(t), [t])
+	const columns = useMemo(() => getHistoryColumns(t, role), [role, t])
 
 	const handleRowClick = useCallback(
 		(order: IOrderList) => {
