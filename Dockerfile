@@ -18,7 +18,7 @@ ENV APP_URL=https://kad-one.com
 ENV APP_DOMAIN=kad-one.com
 ENV SERVER_URL=https://kad-one.com/api
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm i typescript
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./next.config.ts
