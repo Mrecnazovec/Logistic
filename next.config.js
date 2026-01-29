@@ -1,8 +1,7 @@
-import type { NextConfig } from 'next'
-
 const serverUrl = process.env.SERVER_URL ?? 'https://kad-one.com/api'
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
 	env: {
 		APP_ENV: process.env.APP_ENV,
 		APP_URL: process.env.APP_URL,
@@ -22,4 +21,4 @@ const nextConfig: NextConfig = {
 	},
 }
 
-export default nextConfig
+module.exports = nextConfig
