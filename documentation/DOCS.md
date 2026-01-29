@@ -300,6 +300,7 @@ DeskOffersModal - modal with offers list for cargo/order.
 ConfirmIrreversibleActionModal - reusable confirmation modal for irreversible actions (title/description/cancel/confirm).
 OfferDecisionModal - modal to accept/reject offer invitation.
 OfferModal - modal to create offer for cargo.
+OrderRatingModal - modal to view and edit role-based order ratings with update mode.
 CardPagination - hook useCardPagination and pagination controls for cards.
 CardListLayout - card grid with pagination.
 CardSections - renders card sections with icons.
@@ -308,6 +309,8 @@ TableStates - empty/error table states.
 Table - base table component with header/body/cells.
 SortIcon - sort icon for tables.
 DataTable - data table with pagination/sorting/page selection.
+HistoryColumns - history table columns with role-aware rating display.
+HistoryPage - order history page with role-aware rating summaries.
 DashboardLayout - dashboard layout with navigation and content.
 Header - dashboard header with search/notifications/profile.
 HeaderNavConfig - nav links/roles config for header.
