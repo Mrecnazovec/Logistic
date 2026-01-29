@@ -5,6 +5,7 @@ import {
 	IOrderDocument,
 	IOrderDriverStatusUpdate,
 	IOrderStatusHistory,
+	InvitePreview,
 	OrderAcceptInviteResponse,
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
@@ -45,6 +46,16 @@ class OrdersService {
 		const { data } = await axiosClassic<IOrderDetail>({
 			url: API_URL.orders(`orders/shared/${shareToken}`),
 			method: 'GET',
+		})
+
+		return data
+	}
+
+	async getInvitePreview(token: string) {
+		const { data } = await axiosClassic<InvitePreview>({
+			url: API_URL.orders('invite-preview'),
+			method: 'GET',
+			params: { token },
 		})
 
 		return data
@@ -105,6 +116,16 @@ class OrdersService {
 	async acceptOrderInvite(payload: OrderInvitePayload) {
 		const { data } = await axiosWithAuth<OrderAcceptInviteResponse>({
 			url: API_URL.orders('accept-invite'),
+			method: 'POST',
+			data: payload,
+		})
+
+		return data
+	}
+
+	async declineOrderInvite(payload: OrderInvitePayload) {
+		const { data } = await axiosWithAuth<IOrderDetail>({
+			url: API_URL.orders('decline-invite'),
 			method: 'POST',
 			data: payload,
 		})

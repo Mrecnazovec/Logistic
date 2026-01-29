@@ -138,7 +138,7 @@ const messages: Record<string, string> = {
 	'components.badge.token.received': 'получен',
 	'components.badge.token.cancelPrefix': 'отм',
 	'components.badge.offer.invite.label': 'Driver required',
-	'components.badge.offer.invite.note': 'Invitation is available to accept',
+	'components.badge.offer.invite.note': 'Invitation to become a driver in an order',
 	'components.badge.offer.expired.label': 'Offer expired',
 	'components.badge.offer.expired.note': 'Offer time expired or you accepted the invitation',
 	'components.badge.offer.agreed.label': 'Agreed',

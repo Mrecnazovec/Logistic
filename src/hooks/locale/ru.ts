@@ -145,6 +145,8 @@
 	// queries/orders/useAcceptOrderInvite.ts
 	'hooks.orders.acceptInvite.success': 'Приглашение принято.',
 	'hooks.orders.acceptInvite.error': 'Не удалось принять приглашение.',
+	'hooks.orders.declineInvite.success': 'Приглашение отклонено.',
+	'hooks.orders.declineInvite.error': 'Не удалось отклонить приглашение.',
 
 	// queries/orders/useConfirmOrderTerms.ts
 	'hooks.orders.confirmTerms.success': 'Условия заказа подтверждены',

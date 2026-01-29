@@ -91,8 +91,10 @@ useGetOrderDocuments - loads order documents via ordersService.getOrderDocuments
 useGetOrderStatusHistory - loads driver status history via ordersService.getOrderStatusHistory.
 useGetOrders - loads orders list with filters via ordersService.getOrders.
 useGenerateOrderInvite - posts invite generation for an order via ordersService.generateOrderInvite.
+useGetInvitePreview - loads order invite preview by token via ordersService.getInvitePreview.
 useInviteOrderById - sends an order invite to a specific user id via ordersService.inviteOrderById.
 useAcceptOrderInvite - accepts an order invite via ordersService.acceptOrderInvite.
+useDeclineOrderInvite - declines an order invite via ordersService.declineOrderInvite.
 useConfirmOrderTerms - confirms order terms by order id via ordersService.confirmOrderTerms.
 useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
@@ -208,7 +210,7 @@ Me.interface.ts - profile/update/role change and email verification types.
 Notification.interface.ts - INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses and status logs; IOfferShort includes invite_token and invite_offer.
-Order.interface.ts - order types with address fields, documents, status history, upload DTO, invite payload fields, driver payment method type, and accept invite response.
+Order.interface.ts - order types with address fields, documents, status history, upload DTO, invite preview, invite payload fields, driver payment method type, and accept invite response.
 PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, offer status logs, orders, ratings.
 Payment.interface.ts - payment schemas (payment and patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.

@@ -137,7 +137,7 @@
 	'components.badge.token.received': 'получен',
 	'components.badge.token.cancelPrefix': 'отм',
 	'components.badge.offer.invite.label': 'Требуется водитель',
-	'components.badge.offer.invite.note': 'Приглашение доступно для принятия',
+	'components.badge.offer.invite.note': 'Приглашение стать водителем в заказе',
 	'components.badge.offer.expired.label': 'Предложение истекло',
 	'components.badge.offer.expired.note': 'Время предложения истекло или вы приняли приглашение',
 	'components.badge.offer.agreed.label': 'Согласовано',

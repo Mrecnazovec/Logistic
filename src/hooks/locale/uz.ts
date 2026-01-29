@@ -145,6 +145,8 @@ const messages: Record<string, string> = {
 	// queries/orders/useAcceptOrderInvite.ts
 	'hooks.orders.acceptInvite.success': 'Taklif qabul qilindi',
 	'hooks.orders.acceptInvite.error': 'Taklifni qabul qilib bo\'lmadi',
+	'hooks.orders.declineInvite.success': 'Taklif rad etildi',
+	'hooks.orders.declineInvite.error': 'Taklifni rad etib bo\'lmadi',
 
 	// queries/orders/useConfirmOrderTerms.ts
 	'hooks.orders.confirmTerms.success': 'Buyurtma shartlari tasdiqlandi',

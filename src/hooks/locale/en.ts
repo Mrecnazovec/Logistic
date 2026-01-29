@@ -145,6 +145,8 @@ const messages: Record<string, string> = {
 	// queries/orders/useAcceptOrderInvite.ts
 	'hooks.orders.acceptInvite.success': 'Invitation accepted',
 	'hooks.orders.acceptInvite.error': 'Failed to accept invitation',
+	'hooks.orders.declineInvite.success': 'Invitation declined',
+	'hooks.orders.declineInvite.error': 'Failed to decline invitation',
 
 	// queries/orders/useConfirmOrderTerms.ts
 	'hooks.orders.confirmTerms.success': 'Order terms confirmed',

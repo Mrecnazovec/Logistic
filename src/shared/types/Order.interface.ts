@@ -34,6 +34,7 @@ export type IOrderDetail = Omit<OrderDetailBase, 'roles' | 'payment'> & {
 export type OrderDetailRequestDto = components['schemas']['OrderDetailRequest']
 export type PatchedOrderDetailDto = components['schemas']['PatchedOrderDetailRequest']
 export type IOrderDocument = components['schemas']['OrderDocument']
+export type InvitePreview = components['schemas']['InvitePreview']
 export type OrderDocumentRequestDto = components['schemas']['OrderDocumentRequest']
 export type IOrderDriverStatusUpdate = components['schemas']['OrderDriverStatusUpdate']
 export type IOrderStatusHistory = components['schemas']['OrderStatusHistory']

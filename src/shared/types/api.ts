@@ -974,6 +974,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/orders/decline-invite/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_decline_invite_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/invite-preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["orders_invite_preview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/orders/shared/{share_token}/": {
         parameters: {
             query?: never;
@@ -1626,6 +1658,26 @@ export interface components {
         GenerateInviteResponse: {
             token: string;
             invite_url: string;
+        };
+        InvitePreview: {
+            order_id: number;
+            origin_city: string | null;
+            destination_city: string | null;
+            /** Format: date */
+            load_date: string | null;
+            /** Format: date */
+            delivery_date: string | null;
+            /** Format: decimal */
+            route_distance_km: string | null;
+            weight_kg: number | null;
+            transport_type: string | null;
+            inviter: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: decimal */
+            driver_price: string | null;
+            driver_currency: string | null;
+            driver_payment_method: string | null;
         };
         LoginRequest: {
             login: string;
@@ -4457,6 +4509,53 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_decline_invite_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_invite_preview_retrieve: {
+        parameters: {
+            query: {
+                /** @description Invite token (UUID) */
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitePreview"];
                 };
             };
         };

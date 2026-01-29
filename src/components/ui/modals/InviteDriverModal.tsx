@@ -45,8 +45,6 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
   const inviteData = generatedOrder as OrderInviteResult | undefined
   const inviteToken = inviteData?.invite_token
   const shareLink = inviteToken ? `${typeof window !== 'undefined' ? window.location.origin : ''}${DASHBOARD_URL.order(`invite/${inviteToken}`)}` : ''
-  const maxDriverPriceValue = Number(order.price_total ?? 0)
-  const maxDriverPrice = Number.isFinite(maxDriverPriceValue) ? maxDriverPriceValue : 0
 
   const handleModalOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -81,10 +79,6 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
       return
     }
     const parsedDriverPrice = Number(driverPrice.replace(',', '.'))
-    if (maxDriverPrice > 0 && parsedDriverPrice > maxDriverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceTooHigh'))
-      return
-    }
 
     inviteOrderById(
       {
@@ -117,10 +111,6 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
       return
     }
     const parsedDriverPrice = Number(driverPrice.replace(',', '.'))
-    if (maxDriverPrice > 0 && parsedDriverPrice > maxDriverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceTooHigh'))
-      return
-    }
     setShareCopyStatus('idle')
     generateOrderInvite({
       id: String(order.id),
@@ -205,14 +195,9 @@ export function InviteDriverModal({ order, canInviteById }: InviteDriverModalPro
                         return
                       }
                       const parsedValue = Number(nextValue.replace(',', '.'))
-                      if (maxDriverPrice > 0 && parsedValue > maxDriverPrice) {
-                        setDriverPrice(String(maxDriverPrice))
-                        return
-                      }
                       setDriverPrice(nextValue)
                     }}
                     placeholder={t('components.inviteDriver.driverPricePlaceholder')}
-                    max={maxDriverPrice > 0 ? maxDriverPrice : undefined}
                     step='0.01'
                     inputMode='decimal'
                   />

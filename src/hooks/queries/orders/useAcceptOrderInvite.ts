@@ -20,6 +20,7 @@ export const useAcceptOrderInvite = () => {
 				queryClient.invalidateQueries({ queryKey: ['get order', String(order.order_id)] })
 			}
 			toast.success(t('hooks.orders.acceptInvite.success'))
+			queryClient.invalidateQueries({ queryKey: ['get offers'] })
 			if (order?.order_id) {
 				router.push(DASHBOARD_URL.order(String(order.order_id)))
 			}
