@@ -5,15 +5,19 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
+import { useParams } from 'next/navigation'
 
 export const useUpdateOrder = () => {
 	const { t } = useI18n()
 	const queryClient = useQueryClient()
+	const params = useParams<{ id: string }>()
+
 	const { mutate: updateOrder, isPending: isLoadingUpdate } = useMutation({
 		mutationKey: ['order', 'update'],
 		mutationFn: ({ id, data }: { id: string; data: PatchedOrderDetailDto }) => ordersService.patchOrder(id, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get orders', 'by-user'] })
+			queryClient.invalidateQueries({ queryKey: ['get order', params.id] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success(t('hooks.orders.update.success'))
 		},

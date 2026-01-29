@@ -367,7 +367,7 @@ export function Cabinet() {
 									placeholder={t('cabinet.profile.emailPlaceholder')}
 								/>
 							)}
-							{!isEmailVerified ? <p className='text-xs text-warning-600'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
+							{!isEmailVerified ? <p className='text-xs text-error-500'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
 							{shouldShowEmailActions ? (
 								<div className='pt-2'>
 									<Button type='button' variant='outline' disabled={isResendingVerify} onClick={() => setIsEmailModalOpen(true)}>

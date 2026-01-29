@@ -34,6 +34,15 @@ class RatingsService {
 		return data
 	}
 
+	async getRating(id: string | number) {
+		const { data } = await axiosWithAuth<IUserRating>({
+			url: API_URL.ratings(`ratings/${id}`),
+			method: 'GET',
+		})
+
+		return data
+	}
+
 	/* POST */
 
 	async createRating(data: UserRatingRequestDto) {

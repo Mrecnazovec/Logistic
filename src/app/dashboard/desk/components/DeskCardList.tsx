@@ -6,8 +6,10 @@ import { useCardPagination } from '@/components/pagination/CardPagination'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { ConfirmIrreversibleActionModal } from '@/components/ui/modals/ConfirmIrreversibleActionModal'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { useCancelLoad } from '@/hooks/queries/loads/useCancelLoad'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
@@ -52,13 +54,20 @@ function DeskCard({ cargo }: DeskCardProps) {
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const { refreshLoad } = useRefreshLoad()
+	const { cancelLoad, isLoadingCancel } = useCancelLoad()
 	const [offerOpen, setOfferOpen] = useState(false)
+	const [deleteOpen, setDeleteOpen] = useState(false)
 	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
 	const canShowEmail = cargo.contact_pref === 'email' || cargo.contact_pref === 'both'
 
 	const isHidden = Boolean(cargo.is_hidden)
 	const visibilityActionLabel = isHidden ? t('desk.card.show') : t('desk.card.hide')
 	const VisibilityIcon = isHidden ? Eye : EyeOff
+
+	const handleDeleteConfirm = () => {
+		cancelLoad({ id: cargo.uuid, detail: t('components.cargoActions.deleteDetail') })
+		setDeleteOpen(false)
+	}
 
 	const sections = [
 		{
@@ -134,9 +143,24 @@ function DeskCard({ cargo }: DeskCardProps) {
 					<Handshake className='size-4' />
 					{t('desk.card.offer')}
 				</Button>
+				<Button
+					variant='outline'
+					className='min-w-[140px] flex-1 bg-error-500 text-white hover:bg-error-400 hover:text-white'
+					onClick={() => setDeleteOpen(true)}
+					disabled={isLoadingCancel}
+				>
+					{t('components.cargoActions.delete')}
+				</Button>
 			</CardFooter>
 
 			<DeskInviteModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
+
+			<ConfirmIrreversibleActionModal
+				open={deleteOpen}
+				onOpenChange={setDeleteOpen}
+				onConfirm={handleDeleteConfirm}
+				isConfirmLoading={isLoadingCancel}
+			/>
 		</Card>
 	)
 }

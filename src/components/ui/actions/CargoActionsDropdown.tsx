@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { ConfirmIrreversibleActionModal } from '@/components/ui/modals/ConfirmIrreversibleActionModal'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,10 +12,14 @@ import {
 import { DeskInviteModal } from '@/components/ui/modals/DeskInviteModal'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { useCancelLoad } from '@/hooks/queries/loads/useCancelLoad'
 import { useRefreshLoad } from '@/hooks/queries/loads/useRefreshLoad'
 import { useToggleLoadVisibility } from '@/hooks/queries/loads/useToggleLoadVisibility'
 import { useI18n } from '@/i18n/I18nProvider'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw, Trash2 } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
 interface CargoActionsDropdownProps {
 	cargo: ICargoList
@@ -27,9 +29,11 @@ interface CargoActionsDropdownProps {
 export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDropdownProps) {
 	const { t } = useI18n()
 	const { refreshLoad } = useRefreshLoad()
+	const { cancelLoad, isLoadingCancel } = useCancelLoad()
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const [open, setOpen] = useState(false)
 	const [offerOpen, setOfferOpen] = useState(false)
+	const [deleteOpen, setDeleteOpen] = useState(false)
 	const isHidden = Boolean(cargo.is_hidden)
 	const visibilityActionLabel = isHidden
 		? t('components.cargoActions.show')
@@ -39,6 +43,11 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 	const handleToggleVisibility = () => {
 		toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })
 		setOpen(false)
+	}
+
+	const handleDeleteConfirm = () => {
+		cancelLoad({ id: cargo.uuid, detail: t('components.cargoActions.deleteDetail') })
+		setDeleteOpen(false)
 	}
 
 	return (
@@ -86,6 +95,8 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						{visibilityActionLabel}
 					</DropdownMenuItem>
 
+
+
 					<DropdownMenuSeparator />
 
 					<DropdownMenuItem
@@ -98,6 +109,20 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						<Handshake className='size-4 text-muted-foreground' />
 						{t('components.cargoActions.sendOffer')}
 					</DropdownMenuItem>
+
+					<DropdownMenuSeparator />
+
+					<DropdownMenuItem
+						onClick={() => {
+							setOpen(false)
+							setDeleteOpen(true)
+						}}
+						className='flex items-center gap-2 cursor-pointer text-error-500 bg-red-200 hover:bg-red-100 hover:text-error-400'
+						disabled={isLoadingCancel}
+					>
+						<Trash2 className='size-4 text-error-500' />
+						{t('components.cargoActions.delete')}
+					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 
@@ -106,6 +131,13 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 			) : (
 				<OfferModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} isAction />
 			)}
+
+			<ConfirmIrreversibleActionModal
+				open={deleteOpen}
+				onOpenChange={setDeleteOpen}
+				onConfirm={handleDeleteConfirm}
+				isConfirmLoading={isLoadingCancel}
+			/>
 		</>
 	)
 }

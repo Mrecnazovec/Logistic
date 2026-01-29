@@ -5,6 +5,7 @@ import {
 	IOrderDocument,
 	IOrderDriverStatusUpdate,
 	IOrderStatusHistory,
+	OrderAcceptInviteResponse,
 	OrderDetailRequestDto,
 	OrderDocumentUploadDto,
 	OrderDetailQuery,
@@ -102,7 +103,7 @@ class OrdersService {
 	}
 
 	async acceptOrderInvite(payload: OrderInvitePayload) {
-		const { data } = await axiosWithAuth<IOrderDetail>({
+		const { data } = await axiosWithAuth<OrderAcceptInviteResponse>({
 			url: API_URL.orders('accept-invite'),
 			method: 'POST',
 			data: payload,
@@ -111,11 +112,10 @@ class OrdersService {
 		return data
 	}
 
-	async confirmOrderTerms(id: string | number, data: OrderDetailRequestDto) {
+	async confirmOrderTerms(id: string | number) {
 		const { data: order } = await axiosWithAuth<IOrderDetail>({
 			url: API_URL.orders(`${id}/confirm-terms`),
 			method: 'POST',
-			data,
 		})
 
 		return order

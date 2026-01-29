@@ -1,3 +1,4 @@
+import { PriceCurrencyEnum } from '../enums/PriceCurrency.enum'
 import { RoleEnum } from '../enums/Role.enum'
 import type { IPayment } from './Payment.interface'
 import type { components, paths } from './api'
@@ -45,6 +46,21 @@ export type OrderDetailQuery = { as_role?: 'customer' }
 
 export type OrderDocumentUploadDto = Pick<OrderDocumentRequestDto, 'title'> & { file: File }
 
-export type OrderInvitePayload = Partial<OrderDetailRequestDto> & { driver_id?: number; token?: string }
+export type DriverPaymentMethod = 'cash' | 'bank_transfer' | 'both'
+
+export type OrderInvitePayload = Partial<OrderDetailRequestDto> & {
+	driver_id?: number
+	token?: string
+	driver_price?: string | number
+	driver_currency?: PriceCurrencyEnum
+	driver_payment_method?: DriverPaymentMethod
+}
+
+export type OrderAcceptInviteResponse = {
+	detail: string
+	order_id: number
+	driver_price?: string | number
+	next_action?: string
+}
 
 export type DriverStatus = IOrderDriverStatusUpdate['driver_status']

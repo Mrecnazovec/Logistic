@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
+import { removeFromStorage } from '@/services/auth/auth-token.service'
 
 interface UseGetMeOptions {
 	enabled?: boolean
@@ -46,7 +47,9 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		toast.error(message)
 		hasHandledError.current = true
 		logout('')
+		removeFromStorage()
 		router.push('/auth')
+		router.refresh()
 	}, [error, isError, router, logout, t])
 
 	return { me, isLoading, isError, error }

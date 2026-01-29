@@ -52,7 +52,7 @@ const messages: Record<string, string> = {
 	'hooks.me.patch.error': 'Profile update failed',
 
 	// queries/me/useGetMe.ts
-	'hooks.me.get.error': 'Failed to load profile',
+	'hooks.me.get.error': 'Не удалось загрузить профиль',
 
 	// queries/support/useCreateSupportTicket.ts
 	'hooks.support.create.success': 'Message sent',

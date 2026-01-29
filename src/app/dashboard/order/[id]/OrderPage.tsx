@@ -16,6 +16,7 @@ import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
+import { useGetRating } from '@/hooks/queries/ratings/useGet/useGetRating'
 import { useI18n } from '@/i18n/I18nProvider'
 import { addLocaleToPath } from '@/i18n/paths'
 import {
@@ -23,7 +24,6 @@ import {
 	formatDateTimeValue,
 	formatDateValue,
 	formatDistanceKm,
-	formatPricePerKmValue,
 	formatPriceValue,
 } from '@/lib/formatters'
 import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
@@ -99,6 +99,11 @@ export function OrderPage() {
 	const orderStatus = order?.status ?? null
 	const orderLogisticId = order?.roles?.logistic?.id ?? null
 	const isOrderLogistic = Boolean(orderLogisticId && me?.id === orderLogisticId)
+	const orderCustomerId = order?.roles?.customer?.id ?? null
+	const orderCarrierId = order?.roles?.carrier?.id ?? null
+	const isOrderCustomer = Boolean(orderCustomerId && me?.id === orderCustomerId)
+	const isOrderCarrier = Boolean(orderCarrierId && me?.id === orderCarrierId)
+	const hasLogisticRole = Boolean(order?.roles?.logistic)
 	const canInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
 
 	const documents = order?.documents ?? []
@@ -211,6 +216,9 @@ export function OrderPage() {
 		)
 	}
 
+	const carrierPriceValue = hasLogisticRole ? order.driver_price : order.price_total
+	const transportPriceValue = isOrderCarrier ? carrierPriceValue : order.price_total
+
 	const driverStatusButton = canChangeDriverStatus ? (
 		<div className='fixed md:bottom-6 bottom-20 right-6 z-50'>
 			<DropdownMenu>
@@ -312,16 +320,18 @@ export function OrderPage() {
 						<span className='text-grayscale'>{t('order.field.loadDate')}</span>
 						<span className='text-end font-medium'>{formatDateValue(order.load_date)}</span>
 					</p>
-					<p className='flex justify-between gap-3'>
-						<span className='text-success-500'>{t('order.field.loaded')}</span>
-						{renderDocumentAction(
-							hasLoadingDocument,
-							firstLoadingDocumentDate,
-							`${docsBasePath}/loading`,
-							t('order.actions.uploadDocument'),
-							isCarrier,
-						)}
-					</p>
+					{hasLoadingDocument && (
+						<p className='flex justify-between gap-3'>
+							<span className='text-success-500'>{t('order.field.loaded')}</span>
+							{renderDocumentAction(
+								hasLoadingDocument,
+								firstLoadingDocumentDate,
+								`${docsBasePath}/loading`,
+								t('order.actions.uploadDocument'),
+								isCarrier,
+							)}
+						</p>
+					)}
 				</div>
 
 				<div className='space-y-3'>
@@ -338,16 +348,18 @@ export function OrderPage() {
 						<span className='text-grayscale'>{t('order.field.unloadDate')}</span>
 						<span className='text-end font-medium'>{formatDateValue(order.delivery_date)}</span>
 					</p>
-					<p className='flex justify-between gap-3'>
-						<span className='text-success-500'>{t('order.field.unloaded')}</span>
-						{renderDocumentAction(
-							hasUnloadingDocument,
-							firstUnloadingDocumentDate,
-							`${docsBasePath}/unloading`,
-							t('order.actions.uploadDocument'),
-							isCarrier,
-						)}
-					</p>
+					{hasUnloadingDocument && (
+						<p className='flex justify-between gap-3'>
+							<span className='text-success-500'>{t('order.field.unloaded')}</span>
+							{renderDocumentAction(
+								hasUnloadingDocument,
+								firstUnloadingDocumentDate,
+								`${docsBasePath}/unloading`,
+								t('order.actions.uploadDocument'),
+								isCarrier,
+							)}
+						</p>
+					)}
 				</div>
 
 				<div className='space-y-3'>
@@ -358,7 +370,7 @@ export function OrderPage() {
 					</p>
 					<p className='flex justify-between gap-3'>
 						<span className='text-grayscale'>{t('order.field.price')}</span>
-						<span className='text-end font-medium'>{formatPriceValue(order.price_total, order.currency)}</span>
+						<span className='text-end font-medium'>{formatPriceValue(transportPriceValue, order.currency)}</span>
 					</p>
 					<p className='flex items-center justify-between gap-3'>
 						<span className='text-grayscale'>{t('order.field.driverStatus')}</span>
@@ -376,14 +388,34 @@ export function OrderPage() {
 			<div className='grid gap-15 lg:grid-cols-3'>
 				<div className='space-y-3'>
 					<p className='font-medium text-brand'>{t('order.section.finance')}</p>
-					<p className='flex justify-between gap-3 text-error-500'>
-						<span className='text-grayscale'>{t('order.field.price')}</span>
-						<span className='font-medium'>{formatPriceValue(order.price_total, order.currency)}</span>
-					</p>
-					<p className='flex justify-between gap-3 text-success-500'>
-						<span className='text-grayscale'>{t('order.field.pricePerKm')}</span>
-						<span className='font-medium'>{formatPricePerKmValue(order.price_per_km, order.currency)}</span>
-					</p>
+					{isOrderCustomer && (
+						<p className='flex justify-between gap-3 text-error-500'>
+							<span className='text-grayscale'>{t('order.finance.customerPay')}</span>
+							<span className='font-medium'>{formatPriceValue(order.price_total, order.currency)}</span>
+						</p>
+					)}
+					{isOrderLogistic && (
+						<>
+							<p className='flex justify-between gap-3 text-success-500'>
+								<span className='text-grayscale'>{t('order.finance.receive')}</span>
+								<span className='font-medium'>{formatPriceValue(order.price_total, order.currency)}</span>
+							</p>
+							<p className='flex justify-between gap-3 text-error-500'>
+								<span className='text-grayscale'>{t('order.finance.pay')}</span>
+								<span className='font-medium'>{formatPriceValue(order.driver_price, order.currency)}</span>
+							</p>
+							<p className='flex justify-between gap-3'>
+								<span className='text-grayscale'>{t('order.finance.margin')}</span>
+								<span className='font-medium'>{formatPriceValue(order.logistic_margin, order.currency)}</span>
+							</p>
+						</>
+					)}
+					{isOrderCarrier && (
+						<p className='flex justify-between gap-3 text-success-500'>
+							<span className='text-grayscale'>{t('order.finance.receive')}</span>
+							<span className='font-medium'>{formatPriceValue(carrierPriceValue, order.currency)}</span>
+						</p>
+					)}
 				</div>
 			</div>
 

@@ -73,7 +73,7 @@ export function CabinetEmailModal({
 								placeholder={t('cabinet.profile.emailPlaceholder')}
 								aria-invalid={isEmailInvalid}
 							/>
-							{!isEmailVerified ? <p className='text-xs text-warning-600'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
+							{!isEmailVerified ? <p className='text-xs text-error-500'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
 							{isEmailInvalid ? <p className='text-xs text-destructive'>{t('cabinet.profile.emailRequired')}</p> : null}
 						</div>
 						<div className='flex justify-end flex-wrap gap-2'>

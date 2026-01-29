@@ -36,6 +36,7 @@ const messages: Record<string, string> = {
 	// enums/PaymentMethod.enum.ts
 	'shared.payment.cash': 'Наличные',
 	'shared.payment.cashless': 'Безналичный расчет',
+	'shared.payment.bankTransfer': 'Перечисление',
 	'shared.payment.both': 'Оба',
 
 	// enums/OrderStatus.enum.ts

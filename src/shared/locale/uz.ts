@@ -36,6 +36,7 @@ const messages: Record<string, string> = {
 	// enums/PaymentMethod.enum.ts
 	'shared.payment.cash': 'Naqd',
 	'shared.payment.cashless': 'Naqd pulsiz',
+	'shared.payment.bankTransfer': "Bank o'tkazmasi",
 	'shared.payment.both': 'Naqd va naqd pulsiz',
 
 	// enums/OrderStatus.enum.ts

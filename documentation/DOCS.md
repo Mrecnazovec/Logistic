@@ -93,7 +93,7 @@ useGetOrders - loads orders list with filters via ordersService.getOrders.
 useGenerateOrderInvite - posts invite generation for an order via ordersService.generateOrderInvite.
 useInviteOrderById - sends an order invite to a specific user id via ordersService.inviteOrderById.
 useAcceptOrderInvite - accepts an order invite via ordersService.acceptOrderInvite.
-useConfirmOrderTerms - confirms accepted order terms via ordersService.confirmOrderTerms.
+useConfirmOrderTerms - confirms order terms by order id via ordersService.confirmOrderTerms.
 useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
 useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
@@ -208,7 +208,7 @@ Me.interface.ts - profile/update/role change and email verification types.
 Notification.interface.ts - INotification and IPaginatedNotificationList.
 Notifications.api.ts - query/response types for notifications.
 Offer.interface.ts - offer types for create/detail/invite/counter/reject responses and status logs; IOfferShort includes invite_token and invite_offer.
-Order.interface.ts - order types with address fields, documents, status history, and upload DTO.
+Order.interface.ts - order types with address fields, documents, status history, upload DTO, invite payload fields, driver payment method type, and accept invite response.
 PaginatedList.interface.ts - paginated lists for agreements, cargos, offers, offer status logs, orders, ratings.
 Payment.interface.ts - payment schemas (payment and patched update) with method/status helpers.
 Rating.interface.ts - rating types with enriched rating user list (nullable stats, distance, geo, orders) and rating users query params.
@@ -295,6 +295,7 @@ UuidCopy - copy UUID to clipboard with tooltip.
 CounterOfferModal - modal to send counter offer.
 DeskInviteModal - modal with offer details and actions.
 DeskOffersModal - modal with offers list for cargo/order.
+ConfirmIrreversibleActionModal - reusable confirmation modal for irreversible actions (title/description/cancel/confirm).
 OfferDecisionModal - modal to accept/reject offer invitation.
 OfferModal - modal to create offer for cargo.
 CardPagination - hook useCardPagination and pagination controls for cards.

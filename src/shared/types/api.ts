@@ -1661,7 +1661,7 @@ export interface components {
              */
             readonly username: string;
             /** Format: email */
-            readonly email: string;
+            readonly email: string | null;
             /** Имя */
             first_name?: string;
             phone?: string | null;
@@ -1679,6 +1679,7 @@ export interface components {
             readonly rating_as_customer: number;
             /** Format: double */
             readonly rating_as_carrier: number;
+            is_phone_verified?: boolean;
             readonly is_email_verified: boolean;
             /**
              * Дата регистрации
@@ -2061,6 +2062,7 @@ export interface components {
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
+            readonly rated: string;
             /** Format: date-time */
             readonly created_at: string;
             /**
@@ -2074,6 +2076,9 @@ export interface components {
             unloading_datetime?: string | null;
             readonly documents: components["schemas"]["OrderDocument"][];
             readonly payment: string;
+            /** Format: decimal */
+            readonly driver_price: string;
+            readonly logistic_margin: string;
         };
         OrderDetailRequest: {
             cargo: number;
@@ -2205,6 +2210,7 @@ export interface components {
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
+            readonly rated: string;
             /** Format: date-time */
             readonly created_at: string;
             /**
@@ -2607,7 +2613,7 @@ export interface components {
              */
             username: string;
             /** Format: email */
-            email: string;
+            email?: string | null;
             password: string;
             password2: string;
             /** Имя */

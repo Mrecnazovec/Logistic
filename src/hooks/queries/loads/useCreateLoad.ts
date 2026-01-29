@@ -20,6 +20,7 @@ export const useCreateLoad = () => {
 		mutationFn: (data: CargoPublishRequestDto) => loadsService.createLoad(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
+			queryClient.invalidateQueries({ queryKey: ['get loads', 'board'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success(t('hooks.loads.create.success'))
 			router.push(DASHBOARD_URL.announcements())

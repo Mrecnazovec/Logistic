@@ -52,7 +52,7 @@ const messages: Record<string, string> = {
 	'hooks.me.patch.error': 'Profilni yangilab bo\'lmadi',
 
 	// queries/me/useGetMe.ts
-	'hooks.me.get.error': 'Profilni yuklab bo\'lmadi',
+	'hooks.me.get.error': 'Не удалось загрузить профиль',
 
 	// queries/support/useCreateSupportTicket.ts
 	'hooks.support.create.success': 'Xabar yuborildi',
