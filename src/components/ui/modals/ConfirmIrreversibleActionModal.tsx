@@ -9,6 +9,10 @@ type ConfirmIrreversibleActionModalProps = {
 	onOpenChange: (open: boolean) => void
 	onConfirm: () => void
 	isConfirmLoading?: boolean
+	titleKey?: string
+	descriptionKey?: string
+	cancelKey?: string
+	confirmKey?: string
 }
 
 export function ConfirmIrreversibleActionModal({
@@ -16,20 +20,24 @@ export function ConfirmIrreversibleActionModal({
 	onOpenChange,
 	onConfirm,
 	isConfirmLoading = false,
+	titleKey = 'components.cargoActions.deleteConfirmTitle',
+	descriptionKey = 'components.cargoActions.deleteConfirmDescription',
+	cancelKey = 'components.cargoActions.deleteConfirmCancel',
+	confirmKey = 'components.cargoActions.deleteConfirmConfirm',
 }: ConfirmIrreversibleActionModalProps) {
 	const { t } = useI18n()
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
-				<DialogTitle>{t('components.cargoActions.deleteConfirmTitle')}</DialogTitle>
-				<DialogDescription>{t('components.cargoActions.deleteConfirmDescription')}</DialogDescription>
+				<DialogTitle>{t(titleKey)}</DialogTitle>
+				<DialogDescription>{t(descriptionKey)}</DialogDescription>
 				<DialogFooter>
 					<Button variant='outline' onClick={() => onOpenChange(false)} disabled={isConfirmLoading}>
-						{t('components.cargoActions.deleteConfirmCancel')}
+						{t(cancelKey)}
 					</Button>
 					<Button className='bg-error-500 hover:bg-error-400' onClick={onConfirm} disabled={isConfirmLoading}>
-						{t('components.cargoActions.deleteConfirmConfirm')}
+						{t(confirmKey)}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

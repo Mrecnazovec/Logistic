@@ -45,6 +45,11 @@ const messages: Record<string, string> = {
 	'order.actions.share': "Ulashish",
 	'order.actions.shareSuccess': "Havola buferga nusxalandi",
 	'order.actions.shareError': "Havolani nusxalab bo'lmadi",
+	'order.actions.cancel': 'Buyurtmani bekor qilish',
+	'order.actions.cancelConfirmTitle': 'Buyurtmani bekor qilmoqchimisiz?',
+	'order.actions.cancelConfirmDescription': "Ushbu buyurtma siz tomonidan bekor qilingan deb belgilanadi va barcha ishtirokchilarga ko'rinadi.",
+	'order.actions.cancelConfirmCancel': 'Buyurtmani qoldirish',
+	'order.actions.cancelConfirmConfirm': 'Buyurtmani bekor qilish',
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx

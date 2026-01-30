@@ -45,6 +45,11 @@ const messages: Record<string, string> = {
 	'order.actions.share': 'Share',
 	'order.actions.shareSuccess': 'Link copied to clipboard',
 	'order.actions.shareError': 'Failed to copy link',
+	'order.actions.cancel': 'Cancel order',
+	'order.actions.cancelConfirmTitle': 'Cancel this order?',
+	'order.actions.cancelConfirmDescription': 'This order will be marked as cancelled by you and visible to all participants.',
+	'order.actions.cancelConfirmCancel': 'Keep order',
+	'order.actions.cancelConfirmConfirm': 'Cancel order',
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx

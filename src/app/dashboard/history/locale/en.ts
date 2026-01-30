@@ -8,6 +8,11 @@ const messages: Record<string, string> = {
 	'history.status.no_driver': 'No driver',
 	'history.status.paid': 'Paid',
 	'history.status.pending': 'Pending',
+	'history.status.canceled': 'Cancelled',
+
+	// HistoryPage.tsx
+	'history.tabs.paid': 'Completed',
+	'history.tabs.canceled': 'Cancelled',
 
 	// HistoryColumns.tsx
 	'history.table.customer': 'Customer',

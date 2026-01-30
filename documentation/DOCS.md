@@ -96,6 +96,7 @@ useInviteOrderById - sends an order invite to a specific user id via ordersServi
 useAcceptOrderInvite - accepts an order invite via ordersService.acceptOrderInvite.
 useDeclineOrderInvite - declines an order invite via ordersService.declineOrderInvite.
 useConfirmOrderTerms - confirms order terms by order id via ordersService.confirmOrderTerms.
+useCancelOrder - cancels order by id via ordersService.cancelOrder.
 useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
 useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
@@ -172,7 +173,7 @@ loadsService - load CRUD, invites, visibility management via /loads API.
 meService - fetch/update profile and analytics.
 notificationsService - load notifications and mark as read.
 offersService - offer CRUD, actions (accept/reject/invite/counter), and status logs.
-ordersService - order CRUD, invites, status updates, document upload, and public order fetch by share token.
+ordersService - order CRUD, cancel, invites, status updates, document upload, and public order fetch by share token.
 paymentsService - fetches payment by id and confirms payments for customer/carrier/logistic endpoints.
 ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.

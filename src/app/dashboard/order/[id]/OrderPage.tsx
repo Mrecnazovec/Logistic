@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
@@ -11,12 +11,13 @@ import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu'
+import { ConfirmIrreversibleActionModal } from '@/components/ui/modals/ConfirmIrreversibleActionModal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
+import { useCancelOrder } from '@/hooks/queries/orders/useCancelOrder'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
-import { useGetRating } from '@/hooks/queries/ratings/useGet/useGetRating'
 import { useI18n } from '@/i18n/I18nProvider'
 import { addLocaleToPath } from '@/i18n/paths'
 import {
@@ -72,7 +73,9 @@ export function OrderPage() {
 	const { role } = useRoleStore()
 	const { me } = useGetMe()
 	const { updateOrderStatus, isLoadingUpdateStatus } = useUpdateOrderStatus()
+	const { cancelOrder, isLoadingCancel } = useCancelOrder()
 	const searchParams = useSearchParams()
+	const [cancelOpen, setCancelOpen] = useState(false)
 
 	const driverStatusBadgeMap = useMemo<Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }>>(
 		() => ({
@@ -105,6 +108,9 @@ export function OrderPage() {
 	const isOrderCarrier = Boolean(orderCarrierId && me?.id === orderCarrierId)
 	const hasLogisticRole = Boolean(order?.roles?.logistic)
 	const canInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
+	const canCancelOrder = Boolean(
+		order && (orderStatus === OrderStatusEnum.PENDING || orderStatus === OrderStatusEnum.NODRIVER),
+	)
 
 	const documents = order?.documents ?? []
 	const firstOtherDocument = getFirstDocumentByCategory(documents, 'other')
@@ -150,7 +156,7 @@ export function OrderPage() {
 		isButton?: boolean,
 	) => {
 		if (hasDocument && !isButton) return <span className='font-medium text-end'>{documentDate}</span>
-		if (!allowUpload) return <span className='font-medium text-end text-muted-foreground'>{DEFAULT_PLACEHOLDER}</span>
+		if (!allowUpload) return null
 		if (hasDocument && isButton) return null
 		if (isButton) {
 			return (
@@ -199,6 +205,13 @@ export function OrderPage() {
 	const handleDriverStatusSelect = (nextStatus: OrderDriverStatusEnum) => {
 		if (!orderId || nextStatus === currentDriverStatus) return
 		updateOrderStatus({ id: orderId, data: { driver_status: nextStatus } })
+	}
+
+	const handleCancelConfirm = () => {
+		if (!orderId) return
+		cancelOrder(orderId, {
+			onSuccess: () => setCancelOpen(false),
+		})
 	}
 
 	const orderStatusBadge = orderStatus ? (
@@ -423,18 +436,39 @@ export function OrderPage() {
 				<Button type='button' variant='outline' onClick={handleShare}>
 					{t('order.actions.share')}
 				</Button>
+				{canCancelOrder && (
+					<Button
+						type='button'
+						onClick={() => setCancelOpen(true)}
+						disabled={isLoadingCancel}
+						className='bg-error-500 text-white hover:bg-error-400'
+					>
+						{t('order.actions.cancel')}
+					</Button>
+				)}
 				{role === RoleEnum.CARRIER &&
 					renderDocumentAction(
 						currentDocumentAction.hasDocument,
 						currentDocumentAction.documentDate,
 						currentDocumentAction.href,
 						t('order.actions.uploadFile'),
-						true,
+						orderStatus !== OrderStatusEnum.CANCELED,
 						true,
 					)}
 				{canInviteDriver && order && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
 				{canRateParticipants && order && <OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />}
 			</div>
+
+			<ConfirmIrreversibleActionModal
+				open={cancelOpen}
+				onOpenChange={setCancelOpen}
+				onConfirm={handleCancelConfirm}
+				isConfirmLoading={isLoadingCancel}
+				titleKey='order.actions.cancelConfirmTitle'
+				descriptionKey='order.actions.cancelConfirmDescription'
+				cancelKey='order.actions.cancelConfirmCancel'
+				confirmKey='order.actions.cancelConfirmConfirm'
+			/>
 
 			{driverStatusButton}
 		</div>

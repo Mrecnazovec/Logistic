@@ -152,6 +152,10 @@ const messages: Record<string, string> = {
 	'hooks.orders.confirmTerms.success': 'Order terms confirmed',
 	'hooks.orders.confirmTerms.error': 'Failed to confirm order terms',
 
+	// queries/orders/useCancelOrder.ts
+	'hooks.orders.cancel.success': 'Order cancelled',
+	'hooks.orders.cancel.error': 'Failed to cancel order',
+
 	// queries/orders/useUploadOrderDocument.ts
 	'hooks.orders.uploadDocument.success': 'Document uploaded',
 	'hooks.orders.uploadDocument.error': 'Failed to upload document',

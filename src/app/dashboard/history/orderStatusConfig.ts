@@ -1,6 +1,7 @@
+import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import type { IOrderList } from '@/shared/types/Order.interface'
 
-type OrderStatus = NonNullable<IOrderList['status']>
+type OrderStatus = OrderStatusEnum
 type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'destructive' | 'outline'
 type Translator = (key: string) => string
 
@@ -10,6 +11,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 	no_driver: 'Без водителя',
 	paid: 'Оплачено',
 	pending: 'В ожидании',
+	canceled: 'Отменено',
 }
 
 const ORDER_STATUS_BADGE_VARIANTS: Record<OrderStatus, BadgeVariant> = {
@@ -18,6 +20,7 @@ const ORDER_STATUS_BADGE_VARIANTS: Record<OrderStatus, BadgeVariant> = {
 	no_driver: 'danger',
 	paid: 'success',
 	pending: 'warning',
+	canceled: 'danger',
 }
 
 export const getOrderStatusLabel = (status: OrderStatus, t?: Translator) => {

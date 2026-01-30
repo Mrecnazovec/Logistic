@@ -45,6 +45,11 @@
 	'order.actions.share': 'Поделиться',
 	'order.actions.shareSuccess': 'Ссылка скопирована в буфер обмена',
 	'order.actions.shareError': 'Не удалось скопировать ссылку',
+	'order.actions.cancel': 'Отменить заказ',
+	'order.actions.cancelConfirmTitle': 'Отменить этот заказ?',
+	'order.actions.cancelConfirmDescription': 'Эта заявка будет отмечена как отменённая вами и будет видна всем участникам.',
+	'order.actions.cancelConfirmCancel': 'Оставить заказ',
+	'order.actions.cancelConfirmConfirm': 'Отменить заказ',
 	'order.unit.km': 'км',
 
 	// invite/[token]/page.tsx

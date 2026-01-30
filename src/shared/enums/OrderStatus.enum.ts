@@ -6,6 +6,7 @@ export const OrderStatusEnum = {
 	DELIVERED: 'delivered',
 	NODRIVER: 'no_driver',
 	PAID: 'paid',
+	CANCELED: 'canceled',
 } as const
 
 export type OrderStatusEnum = (typeof OrderStatusEnum)[keyof typeof OrderStatusEnum]

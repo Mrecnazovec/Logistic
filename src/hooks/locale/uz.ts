@@ -152,6 +152,10 @@ const messages: Record<string, string> = {
 	'hooks.orders.confirmTerms.success': 'Buyurtma shartlari tasdiqlandi',
 	'hooks.orders.confirmTerms.error': 'Buyurtma shartlarini tasdiqlab bo\'lmadi',
 
+	// queries/orders/useCancelOrder.ts
+	'hooks.orders.cancel.success': 'Buyurtma bekor qilindi',
+	'hooks.orders.cancel.error': 'Buyurtmani bekor qilib bo\'lmadi',
+
 	// queries/orders/useUploadOrderDocument.ts
 	'hooks.orders.uploadDocument.success': 'Hujjat yuklandi',
 	'hooks.orders.uploadDocument.error': 'Hujjatni yuklab bo\'lmadi',

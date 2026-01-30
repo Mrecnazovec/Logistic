@@ -26,6 +26,7 @@ export const useGetOrders = (
 			OrderStatusEnum.IN_PROCESS,
 			OrderStatusEnum.DELIVERED,
 			OrderStatusEnum.PAID,
+			OrderStatusEnum.CANCELED,
 		])
 
 		if (!merged.status || !allowedStatuses.has(merged.status as OrderStatusEnum)) {

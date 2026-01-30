@@ -8,6 +8,11 @@ const messages: Record<string, string> = {
 	'history.status.no_driver': "Haydovchi yo'q",
 	'history.status.paid': "To'langan",
 	'history.status.pending': 'Kutilmoqda',
+	'history.status.canceled': 'Bekor qilingan',
+
+	// HistoryPage.tsx
+	'history.tabs.paid': 'Yakunlangan',
+	'history.tabs.canceled': 'Bekor qilingan',
 
 	// HistoryColumns.tsx
 	'history.table.customer': 'Mijoz',

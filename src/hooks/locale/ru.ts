@@ -152,6 +152,10 @@
 	'hooks.orders.confirmTerms.success': 'Условия заказа подтверждены',
 	'hooks.orders.confirmTerms.error': 'Не удалось подтвердить условия заказа',
 
+	// queries/orders/useCancelOrder.ts
+	'hooks.orders.cancel.success': 'Заказ отменен',
+	'hooks.orders.cancel.error': 'Не удалось отменить заказ',
+
 	// queries/orders/useUploadOrderDocument.ts
 	'hooks.orders.uploadDocument.success': 'Документ загружен',
 	'hooks.orders.uploadDocument.error': 'Не удалось загрузить документ',

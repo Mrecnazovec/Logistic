@@ -858,6 +858,22 @@ export interface paths {
         patch: operations["orders_partial_update"];
         trace?: never;
     };
+    "/api/orders/{id}/cancel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_cancel_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/{id}/confirm-terms/": {
         parameters: {
             query?: never;
@@ -2567,10 +2583,6 @@ export interface components {
             is_accept_policy?: boolean;
         };
         PatchedUserRatingRequest: {
-            /** Оцениваемый пользователь */
-            rated_user?: number;
-            /** Заказ */
-            order?: number;
             /** Оценка (1–5) */
             score?: number;
             /** Комментарий */
@@ -2755,10 +2767,10 @@ export interface components {
         UserRating: {
             readonly id: number;
             /** Оцениваемый пользователь */
-            rated_user: number;
+            readonly rated_user: number;
             readonly rated_by: string;
             /** Заказ */
-            order: number;
+            readonly order: number;
             /** Оценка (1–5) */
             score: number;
             /** Комментарий */
@@ -2767,10 +2779,6 @@ export interface components {
             readonly created_at: string;
         };
         UserRatingRequest: {
-            /** Оцениваемый пользователь */
-            rated_user: number;
-            /** Заказ */
-            order: number;
             /** Оценка (1–5) */
             score: number;
             /** Комментарий */
@@ -4269,6 +4277,34 @@ export interface operations {
                 "application/json": components["schemas"]["PatchedOrderDetailRequest"];
                 "multipart/form-data": components["schemas"]["PatchedOrderDetailRequest"];
                 "application/x-www-form-urlencoded": components["schemas"]["PatchedOrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_cancel_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
             };
         };
         responses: {
