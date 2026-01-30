@@ -141,6 +141,8 @@ export function OrderRatingModal({ order, currentRole: _currentRole, disabled }:
 		}
 
 		const payload: UserRatingRequestDto = {
+			rated_user: participant.id,
+			order: order.id,
 			score: entry.score,
 			comment: entry.comment || undefined,
 		}

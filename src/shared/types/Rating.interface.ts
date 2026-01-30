@@ -1,7 +1,10 @@
 import type { components, paths } from './api'
 
 export type IUserRating = components['schemas']['UserRating']
-export type UserRatingRequestDto = components['schemas']['UserRatingRequest']
+export type UserRatingRequestDto = components['schemas']['UserRatingRequest'] & {
+	rated_user: number
+	order: number
+}
 export type PatchedUserRatingRequestDto = components['schemas']['PatchedUserRatingRequest']
 
 export type RatingUserPieChart = {
