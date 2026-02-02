@@ -10,6 +10,7 @@ import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { usePatchMe } from '@/hooks/queries/me/usePatchMe'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
+import { useNotificationsRealtime } from '@/hooks/queries/notifications/useNotificationsRealtime'
 import { useI18n } from '@/i18n/I18nProvider'
 import { stripLocaleFromPath } from '@/i18n/paths'
 import { cn } from '@/lib/utils'
@@ -62,6 +63,7 @@ export function Header() {
 		isMarkingAllRead,
 		isNotificationsEnabled,
 	} = useNotifications(true)
+	useNotificationsRealtime(isNotificationsEnabled)
 	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)

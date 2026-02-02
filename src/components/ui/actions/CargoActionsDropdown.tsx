@@ -117,7 +117,7 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 							setOpen(false)
 							setDeleteOpen(true)
 						}}
-						className='flex items-center gap-2 cursor-pointer text-error-500 bg-red-200 hover:bg-red-100 hover:text-error-400'
+						className='flex items-center gap-2 cursor-pointer text-error-500 bg-red-200 hover:bg-red-100 focus:text-error-500'
 						disabled={isLoadingCancel}
 					>
 						<Trash2 className='size-4 text-error-500' />

@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { notificationTypeSamples } from '@/app/dashboard/notifications/notificationTypes'
 import { NotificationDetails } from '@/app/dashboard/notifications/NotificationDetails'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
+import { useNotificationsRealtime } from '@/hooks/queries/notifications/useNotificationsRealtime'
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { formatDateTimeValue } from '@/lib/formatters'
@@ -32,6 +33,7 @@ export function Notifications() {
 		isMarkingAllRead,
 		isNotificationsEnabled,
 	} = useNotifications(true)
+	useNotificationsRealtime(isNotificationsEnabled)
 
 	const { t } = useI18n()
 	const searchParams = useSearchParams()

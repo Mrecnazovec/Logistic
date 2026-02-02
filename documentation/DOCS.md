@@ -22,6 +22,7 @@ useVerifyEmailFromProfile - verifies email via meService.verifyEmailFromProfile 
 - ## Notifications
 
 useNotifications - loads notifications with pagination via notificationsService.getNotifications and exposes firstPageNotifications.
+useNotificationsRealtime - subscribes to notifications WS events and invalidates notifications queries.
 getNotificationDetailsText - returns details text for a notification using message or localized templates.
 getNotificationTypeLabel - returns a localized label for a notification type.
 getNotificationOrderId - extracts order_id from notification payload for routing.

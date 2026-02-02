@@ -18,6 +18,8 @@ export const useCancelLoad = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'all'] })
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
+			queryClient.invalidateQueries({ queryKey: ['get loads', 'board'] })
+			queryClient.invalidateQueries({ queryKey: ['get loads', 'mine'] })
 			toast.success(t('hooks.loads.cancel.success'))
 		},
 		onError(error) {

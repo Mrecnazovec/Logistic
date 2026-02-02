@@ -2,8 +2,11 @@ import { useEffect } from 'react'
 
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { WSClient } from '@/services/ws.service'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const useLoadsPublicRealtime = () => {
+	const queryClient = useQueryClient()
+
 	useEffect(() => {
 		const token = getAccessToken()
 		if (!token) return
@@ -17,9 +20,13 @@ export const useLoadsPublicRealtime = () => {
 
 		client.connect()
 
-		const offCreated = client.on('loads.created', (payload) => console.log('loads.created', payload))
-		const offUpdated = client.on('loads.updated', (payload) => console.log('loads.updated', payload))
-		const offDeleted = client.on('loads.deleted', (payload) => console.log('loads.deleted', payload))
+		const invalidateLoads = () => {
+			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
+		}
+
+		const offCreated = client.on('loads.created', invalidateLoads)
+		const offUpdated = client.on('loads.updated', invalidateLoads)
+		const offDeleted = client.on('loads.deleted', invalidateLoads)
 
 		return () => {
 			offCreated()
@@ -27,5 +34,5 @@ export const useLoadsPublicRealtime = () => {
 			offDeleted()
 			client.disconnect()
 		}
-	}, [])
+	}, [queryClient])
 }
