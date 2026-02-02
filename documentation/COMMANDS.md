@@ -51,7 +51,7 @@ Where `<description>` is the user-provided commit message.
 - If provided -> the agent refactors only that specific file or directory.
 - If not provided -> the agent refactors the entire project.
 
-### Refactoring Rules (SKILL.md + current constraints)
+### Refactoring Rules (AGENTS.md + current constraints)
 
 1. Goal: make code shorter and simpler without changing behavior - minimal layers, straightforward JSX, keep type safety.
 2. No more than two local helper functions per component. If you need more, move logic into child components/`lib`/`hooks`/`services` as appropriate.

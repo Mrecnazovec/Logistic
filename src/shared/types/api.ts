@@ -2583,6 +2583,10 @@ export interface components {
             is_accept_policy?: boolean;
         };
         PatchedUserRatingRequest: {
+            /** Оцениваемый пользователь */
+            rated_user?: number;
+            /** Заказ */
+            order?: number;
             /** Оценка (1–5) */
             score?: number;
             /** Комментарий */
@@ -2767,10 +2771,10 @@ export interface components {
         UserRating: {
             readonly id: number;
             /** Оцениваемый пользователь */
-            readonly rated_user: number;
+            rated_user: number;
             readonly rated_by: string;
             /** Заказ */
-            readonly order: number;
+            order: number;
             /** Оценка (1–5) */
             score: number;
             /** Комментарий */
@@ -2779,6 +2783,10 @@ export interface components {
             readonly created_at: string;
         };
         UserRatingRequest: {
+            /** Оцениваемый пользователь */
+            rated_user: number;
+            /** Заказ */
+            order: number;
             /** Оценка (1–5) */
             score: number;
             /** Комментарий */

@@ -5,25 +5,21 @@ import { useGetSharedOrder } from '@/hooks/queries/orders/useGet/useGetSharedOrd
 import { useI18n } from '@/i18n/I18nProvider'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 
 export function DocsPage() {
 	const { t, locale } = useI18n()
 	const { order, isLoading } = useGetSharedOrder()
 	const params = useParams<{ share_token: string }>()
-	const documents = useMemo(() => order?.documents ?? [], [order?.documents])
+	const documents = order?.documents ?? []
 
-	const folderStructure = useMemo(
-		() => [
-			{ title: t('order.docs.folder.licenses'), folder: 'licenses' },
-			{ title: t('order.docs.folder.contracts'), folder: 'contracts' },
-			{ title: t('order.docs.folder.loading'), folder: 'loading' },
-			{ title: t('order.docs.folder.unloading'), folder: 'unloading' },
-			{ title: t('order.docs.folder.other'), folder: 'others' },
-		],
-		[t]
-	)
+	const folderStructure = [
+		{ title: t('order.docs.folder.licenses'), folder: 'licenses' },
+		{ title: t('order.docs.folder.contracts'), folder: 'contracts' },
+		{ title: t('order.docs.folder.loading'), folder: 'loading' },
+		{ title: t('order.docs.folder.unloading'), folder: 'unloading' },
+		{ title: t('order.docs.folder.other'), folder: 'others' },
+	]
 
 	const formatFileCount = (count: number) => {
 		if (locale === 'ru') {
@@ -38,22 +34,18 @@ export function DocsPage() {
 		return `${count} ${count === 1 ? t('order.docs.files.one') : t('order.docs.files.many')}`
 	}
 
-	const folderCounts = useMemo(
-		() =>
-			folderStructure.reduce<Record<string, number>>((acc, item) => {
-				const normalizedFolder = item.folder.toLowerCase()
-				const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
+	const folderCounts = folderStructure.reduce<Record<string, number>>((acc, item) => {
+		const normalizedFolder = item.folder.toLowerCase()
+		const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
 
-				acc[item.folder] = documents.filter((document) => {
-					const category = (document.category ?? '').toLowerCase()
-					const title = (document.title ?? '').toLowerCase()
-					return category === normalizedCategory || title === normalizedFolder
-				}).length
+		acc[item.folder] = documents.filter((document) => {
+			const category = (document.category ?? '').toLowerCase()
+			const title = (document.title ?? '').toLowerCase()
+			return category === normalizedCategory || title === normalizedFolder
+		}).length
 
-				return acc
-			}, {}),
-		[documents, folderStructure]
-	)
+		return acc
+	}, {})
 
 	const shareToken = params.share_token
 

@@ -4,7 +4,6 @@ import { format } from 'date-fns'
 import { enUS, ru } from 'date-fns/locale'
 import { Download, FileText, FileType, Image as ImageIcon, Presentation, type LucideIcon } from 'lucide-react'
 import { useParams } from 'next/navigation'
-import { useMemo } from 'react'
 
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -47,7 +46,7 @@ export function SharedFolderPage() {
 	const folderLabel = t(`order.docs.folder.${folderKey}` as string, {})
 	const resolvedFolderLabel = folderLabel.includes('order.docs.folder.') ? t('order.docs.section.documents') : folderLabel
 
-	const documentsForFolder = useMemo(() => {
+	const documentsForFolder = (() => {
 		const docs = order?.documents ?? []
 		const filtered = docs.filter((document) => {
 			const title = (document.title ?? '').toLowerCase()
@@ -60,11 +59,11 @@ export function SharedFolderPage() {
 			const second = b.created_at ? new Date(b.created_at).getTime() : 0
 			return second - first
 		})
-	}, [normalizedCategory, normalizedFolder, order?.documents])
+	})()
 
 	const dateLocale = locale === 'en' ? enUS : ru
 
-	const documentsCountLabel = useMemo(() => {
+	const documentsCountLabel = (() => {
 		const count = documentsForFolder.length
 		if (locale === 'ru') {
 			const normalizedCount = Math.abs(count)
@@ -76,7 +75,7 @@ export function SharedFolderPage() {
 			return `${count} ${t('order.docs.files.many')}`
 		}
 		return `${count} ${count === 1 ? t('order.docs.files.one') : t('order.docs.files.many')}`
-	}, [documentsForFolder.length, locale, t])
+	})()
 
 	if (!order && !isLoading) {
 		return (

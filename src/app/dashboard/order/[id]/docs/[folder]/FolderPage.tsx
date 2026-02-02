@@ -17,7 +17,7 @@ import {
 	type LucideIcon,
 } from 'lucide-react'
 import { useParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { Badge } from '@/components/ui/Badge'
@@ -123,12 +123,11 @@ export function FolderPage() {
 
 	const { uploadOrderDocumentAsync } = useUploadOrderDocument()
 
-	const documentsForFolder = useMemo(() => {
+	const documentsForFolder = (() => {
 		const docs = Array.isArray(orderDocuments) ? orderDocuments : orderDocuments?.documents ?? []
 		const filtered = docs.filter((document) => {
 			const title = (document.title ?? '').toLowerCase()
 			const category = (document.category ?? '').toLowerCase()
-
 			return category === normalizedCategory || title === normalizedFolder
 		})
 
@@ -137,86 +136,83 @@ export function FolderPage() {
 			const second = b.created_at ? new Date(b.created_at).getTime() : 0
 			return second - first
 		})
-	}, [orderDocuments, normalizedCategory, normalizedFolder])
+	})()
 
-	const clearUploadTimer = useCallback((uploadId: string) => {
+	const clearUploadTimer = (uploadId: string) => {
 		const timerId = uploadTimersRef.current[uploadId]
 		if (timerId) {
 			window.clearInterval(timerId)
 			delete uploadTimersRef.current[uploadId]
 		}
-	}, [])
+	}
 
-	const formatFileSize = useCallback((bytes?: number | null) => formatFileSizeHelper(bytes, '-'), [])
+	const formatFileSize = (bytes?: number | null) => formatFileSizeHelper(bytes, '-')
 
-	const beginUpload = useCallback(
-		(item: UploadQueueItem) => {
-			if (!orderId) {
-				toast.error(t('order.docs.upload.errors.orderMissing'))
-				return
-			}
+	const beginUpload = (item: UploadQueueItem) => {
+		if (!orderId) {
+			toast.error(t('order.docs.upload.errors.orderMissing'))
+			return
+		}
 
-			setUploadQueue((current) =>
-				current.map((queueItem) =>
-					queueItem.id === item.id
-						? { ...queueItem, status: 'uploading', progress: Math.max(queueItem.progress, 12) }
-						: queueItem
-				)
+		setUploadQueue((current) =>
+			current.map((queueItem) =>
+				queueItem.id === item.id
+					? { ...queueItem, status: 'uploading', progress: Math.max(queueItem.progress, 12) }
+					: queueItem
 			)
+		)
 
-			const timerId = window.setInterval(() => {
+		const timerId = window.setInterval(() => {
+			setUploadQueue((current) =>
+				current.map((queueItem) => {
+					if (queueItem.id !== item.id || queueItem.status !== 'uploading') {
+						return queueItem
+					}
+
+					const nextProgress = Math.min(queueItem.progress + 8 + Math.random() * 10, 95)
+					return { ...queueItem, progress: nextProgress }
+				})
+			)
+		}, 450)
+
+		uploadTimersRef.current[item.id] = timerId
+
+		uploadOrderDocumentAsync({
+			id: orderId,
+			data: {
+				title: normalizedFolder,
+				file: item.file,
+			},
+			category: normalizedCategory,
+		})
+			.then(() => {
+				clearUploadTimer(item.id)
 				setUploadQueue((current) =>
-					current.map((queueItem) => {
-						if (queueItem.id !== item.id || queueItem.status !== 'uploading') {
-							return queueItem
-						}
-
-						const nextProgress = Math.min(queueItem.progress + 8 + Math.random() * 10, 95)
-						return { ...queueItem, progress: nextProgress }
-					})
+					current.map((queueItem) =>
+						queueItem.id === item.id ? { ...queueItem, status: 'success', progress: 100 } : queueItem
+					)
 				)
-			}, 450)
 
-			uploadTimersRef.current[item.id] = timerId
-
-			uploadOrderDocumentAsync({
-				id: orderId,
-				data: {
-					title: normalizedFolder,
-					file: item.file,
-				},
-				category: normalizedCategory,
+				removalTimersRef.current[item.id] = window.setTimeout(() => {
+					setUploadQueue((current) => current.filter((queueItem) => queueItem.id !== item.id))
+					delete removalTimersRef.current[item.id]
+				}, 1500)
 			})
-				.then(() => {
-					clearUploadTimer(item.id)
-					setUploadQueue((current) =>
-						current.map((queueItem) =>
-							queueItem.id === item.id ? { ...queueItem, status: 'success', progress: 100 } : queueItem
-						)
+			.catch(() => {
+				clearUploadTimer(item.id)
+				setUploadQueue((current) =>
+					current.map((queueItem) =>
+						queueItem.id === item.id
+							? {
+								...queueItem,
+								status: 'error',
+								error: t('order.docs.upload.errors.uploadFailed'),
+							}
+							: queueItem
 					)
-
-					removalTimersRef.current[item.id] = window.setTimeout(() => {
-						setUploadQueue((current) => current.filter((queueItem) => queueItem.id !== item.id))
-						delete removalTimersRef.current[item.id]
-					}, 1500)
-				})
-				.catch(() => {
-					clearUploadTimer(item.id)
-					setUploadQueue((current) =>
-						current.map((queueItem) =>
-							queueItem.id === item.id
-								? {
-									...queueItem,
-									status: 'error',
-									error: t('order.docs.upload.errors.uploadFailed'),
-								}
-								: queueItem
-						)
-					)
-				})
-		},
-		[clearUploadTimer, normalizedCategory, normalizedFolder, orderId, t, uploadOrderDocumentAsync]
-	)
+				)
+			})
+	}
 
 	useEffect(() => {
 		const uploadTimers = uploadTimersRef.current
@@ -228,83 +224,71 @@ export function FolderPage() {
 		}
 	}, [])
 
-	const handleFiles = useCallback(
-		(files: FileList | File[] | null) => {
-			const parsedFiles = files ? Array.from(files) : []
-			if (!parsedFiles.length) return
+	const handleFiles = (files: FileList | File[] | null) => {
+		const parsedFiles = files ? Array.from(files) : []
+		if (!parsedFiles.length) return
 
-			const newQueueItems: UploadQueueItem[] = []
+		const newQueueItems: UploadQueueItem[] = []
 
-			parsedFiles.forEach((file) => {
-				const validationError = validateFile(file, t)
-				if (validationError) {
-					toast.error(`${file.name}: ${validationError}`)
-					return
-				}
+		parsedFiles.forEach((file) => {
+			const validationError = validateFile(file, t)
+			if (validationError) {
+				toast.error(`${file.name}: ${validationError}`)
+				return
+			}
 
-				const uploadId =
-					typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-						? crypto.randomUUID()
-						: `${file.name}-${Date.now()}-${Math.random() * 1000}`
+			const uploadId =
+				typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+					? crypto.randomUUID()
+					: `${file.name}-${Date.now()}-${Math.random() * 1000}`
 
-				newQueueItems.push({
-					id: uploadId,
-					file,
-					progress: 0,
-					status: 'pending',
-				})
+			newQueueItems.push({
+				id: uploadId,
+				file,
+				progress: 0,
+				status: 'pending',
 			})
+		})
 
-			if (!newQueueItems.length) return
+		if (!newQueueItems.length) return
 
-			setUploadQueue((current) => [...current, ...newQueueItems])
-			newQueueItems.forEach(beginUpload)
-		},
-		[beginUpload, t]
-	)
+		setUploadQueue((current) => [...current, ...newQueueItems])
+		newQueueItems.forEach(beginUpload)
+	}
 
-	const handleInputChange = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			handleFiles(event.target.files)
-			event.target.value = ''
-		},
-		[handleFiles]
-	)
+	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		handleFiles(event.target.files)
+		event.target.value = ''
+	}
 
-	const handleDrop = useCallback(
-		(event: React.DragEvent<HTMLDivElement>) => {
-			event.preventDefault()
-			setIsDragActive(false)
-			handleFiles(event.dataTransfer.files)
-		},
-		[handleFiles]
-	)
+	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault()
+		setIsDragActive(false)
+		handleFiles(event.dataTransfer.files)
+	}
 
-	const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault()
 			fileInputRef.current?.click()
 		}
-	}, [])
+	}
 
-	const handleRemoveFromQueue = useCallback(
-		(uploadId: string) => {
-			clearUploadTimer(uploadId)
-			const timeoutId = removalTimersRef.current[uploadId]
-			if (timeoutId) {
-				window.clearTimeout(timeoutId)
-				delete removalTimersRef.current[uploadId]
-			}
+	const handleRemoveFromQueue = (uploadId: string) => {
+		clearUploadTimer(uploadId)
+		const timeoutId = removalTimersRef.current[uploadId]
+		if (timeoutId) {
+			window.clearTimeout(timeoutId)
+			delete removalTimersRef.current[uploadId]
+		}
 
-			setUploadQueue((current) => current.filter((item) => item.id !== uploadId))
-		},
-		[clearUploadTimer]
-	)
+		setUploadQueue((current) => current.filter((item) => item.id !== uploadId))
+	}
 
 	const hasNoContent = !isLoading && !uploadQueue.length && !documentsForFolder.length
 	const dateLocale = locale === 'en' ? enUS : ru
 
-	const documentsCountLabel = useMemo(() => {
+	const documentsCountLabel = (() => {
 		const count = documentsForFolder.length
 		if (locale === 'ru') {
 			const normalizedCount = Math.abs(count)
@@ -316,7 +300,7 @@ export function FolderPage() {
 			return `${count} ${t('order.docs.files.many')}`
 		}
 		return `${count} ${count === 1 ? t('order.docs.files.one') : t('order.docs.files.many')}`
-	}, [documentsForFolder.length, locale, t])
+	})()
 
 	return (
 		<>
@@ -498,6 +482,14 @@ function DocumentListItem({ document, formatFileSize, dateLocale, downloadLabel,
 	const extension = getExtension(document.file_name ?? document.title ?? '')
 	const variant = BADGE_VARIANT_BY_EXTENSION[extension] ?? 'secondary'
 	const displayName = document.file_name ?? document.title ?? fileLabel
+	const formattedDate = (() => {
+		if (!document.created_at) return '-'
+		try {
+			return format(new Date(document.created_at), 'dd MMM yyyy, HH:mm', { locale: dateLocale })
+		} catch {
+			return document.created_at
+		}
+	})()
 
 	return (
 		<div className='rounded-2xl border px-5 py-4 bg-card/40 flex flex-col gap-3 md:flex-row md:items-center'>
@@ -517,7 +509,7 @@ function DocumentListItem({ document, formatFileSize, dateLocale, downloadLabel,
 			</div>
 
 			<div className='flex items-center gap-3 md:ml-auto'>
-				<p className='text-sm text-muted-foreground'>{document.created_at ? formatDate(document.created_at, dateLocale) : '-'}</p>
+				<p className='text-sm text-muted-foreground'>{formattedDate}</p>
 				<Button asChild variant='ghost' size='sm' className='gap-2'>
 					<a href={document.file} download target='_blank' rel='noreferrer'>
 						<Download className='size-4' />
@@ -601,14 +593,6 @@ function EmptyState({ title, description }: { title: string; description: string
 			<p className='text-sm'>{description}</p>
 		</div>
 	)
-}
-
-function formatDate(value: string, dateLocale: Locale) {
-	try {
-		return format(new Date(value), 'dd MMM yyyy, HH:mm', { locale: dateLocale })
-	} catch {
-		return value
-	}
 }
 
 function getExtension(fileName?: string) {

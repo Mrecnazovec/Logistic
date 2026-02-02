@@ -79,6 +79,7 @@ useRejectAgreement - rejects agreement by id via agreementsService.rejectAgreeme
 
 useCreateSupportTicket - sends support message via supportService.createSupportTicket.
 useCreateConsultation - sends a consultation request via supportService.createConsultation. 
+useLoadsPublicRealtime - subscribes to loads WS events and invalidates public loads queries for announcements board.
 
 - ## Orders
 
@@ -179,6 +180,7 @@ ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.
 nominatimService - OpenStreetMap Nominatim lookup for city coordinates.
 supportService - submits support tickets via /support endpoint.
+WSClient - reusable WebSocket client with auth, subscriptions, event listeners, reconnect, and queue.
 
 ## Shared enums
 

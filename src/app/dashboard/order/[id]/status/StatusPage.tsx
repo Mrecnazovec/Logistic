@@ -6,7 +6,6 @@ import { useGetOrderStatusHistory } from '@/hooks/queries/orders/useGet/useGetOr
 import { useI18n } from '@/i18n/I18nProvider'
 import type { IOrderStatusHistory } from '@/shared/types/Order.interface'
 import { getOrderDriverStatusName, type OrderDriverStatusEnum } from '@/shared/enums/OrderStatus.enum'
-import { useMemo } from 'react'
 
 type TimelineEvent = {
 	id: string
@@ -26,23 +25,15 @@ export function StatusPage() {
 	const { t, locale } = useI18n()
 	const { orderStatusHistory, isLoading } = useGetOrderStatusHistory()
 
-	const dateFormatter = useMemo(
-		() =>
-			new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric',
-			}),
-		[locale],
-	)
-	const timeFormatter = useMemo(
-		() =>
-			new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
-				hour: '2-digit',
-				minute: '2-digit',
-			}),
-		[locale],
-	)
+	const dateFormatter = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	})
+	const timeFormatter = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
+		hour: '2-digit',
+		minute: '2-digit',
+	})
 
 	const timelineSections = buildTimelineSections(orderStatusHistory, {
 		t,
@@ -99,8 +90,8 @@ export function StatusPage() {
 
 														<p className='text-sm text-muted-foreground'>
 															{t('order.status.timeline.changed', {
-																from: getStatusName(event.statusFrom, t),
-																to: getStatusName(event.statusTo, t),
+																from: event.statusFrom,
+																to: event.statusTo,
 															})}
 														</p>
 													</div>
@@ -134,6 +125,31 @@ const buildTimelineSections = (
 
 	const { t, dateFormatter, timeFormatter } = options
 
+	const parseDate = (value?: string | null) => {
+		if (!value) return null
+		const parsed = new Date(value)
+		return Number.isNaN(parsed.getTime()) ? null : parsed
+	}
+
+	const formatSectionTitle = (date: Date | null) => {
+		if (!date) return t('order.status.timeline.unknownDate')
+		return dateFormatter.format(date)
+	}
+
+	const formatTimeLabel = (date: Date | null) => {
+		if (!date) return t('order.status.timeline.unknownTime')
+		return timeFormatter.format(date)
+	}
+
+	const normalizeStatusLabel = (value: string | null | undefined) => {
+		return value?.trim() || t('order.status.timeline.notSpecified')
+	}
+
+	const getStatusName = (value: string) => {
+		const name = getOrderDriverStatusName(t, value as OrderDriverStatusEnum)
+		return name || value || t('order.status.timeline.notSpecified')
+	}
+
 	const sortedHistory = [...history].sort((first, second) => {
 		const firstTimestamp = parseDate(first.created_at)?.getTime() ?? 0
 		const secondTimestamp = parseDate(second.created_at)?.getTime() ?? 0
@@ -148,10 +164,10 @@ const buildTimelineSections = (
 		const sectionKey = eventDate ? eventDate.toISOString().slice(0, 10) : `unknown-${item.id}`
 		const event: TimelineEvent = {
 			id: String(item.id),
-			timeLabel: formatTimeLabel(eventDate, timeFormatter, t),
+			timeLabel: formatTimeLabel(eventDate),
 			author: item.user_name?.trim() || t('order.status.timeline.system'),
-			statusFrom: normalizeStatusLabel(item.old_status_label, t),
-			statusTo: normalizeStatusLabel(item.new_status_label, t),
+			statusFrom: normalizeStatusLabel(item.old_status_label),
+			statusTo: normalizeStatusLabel(item.new_status_label),
 		}
 
 		const existingSectionIndex = sectionIndexMap.get(sectionKey)
@@ -160,7 +176,7 @@ const buildTimelineSections = (
 			sectionIndexMap.set(sectionKey, sections.length)
 			sections.push({
 				id: sectionKey,
-				title: formatSectionTitle(eventDate, dateFormatter, t),
+				title: formatSectionTitle(eventDate),
 				events: [event],
 			})
 		} else {
@@ -168,32 +184,14 @@ const buildTimelineSections = (
 		}
 	}
 
-	return sections
-}
-
-const parseDate = (value?: string | null) => {
-	if (!value) return null
-	const parsed = new Date(value)
-	return Number.isNaN(parsed.getTime()) ? null : parsed
-}
-
-const formatSectionTitle = (date: Date | null, formatter: Intl.DateTimeFormat, t: (key: string) => string) => {
-	if (!date) return t('order.status.timeline.unknownDate')
-	return formatter.format(date)
-}
-
-const formatTimeLabel = (date: Date | null, formatter: Intl.DateTimeFormat, t: (key: string) => string) => {
-	if (!date) return t('order.status.timeline.unknownTime')
-	return formatter.format(date)
-}
-
-const normalizeStatusLabel = (value: string | null | undefined, t: (key: string) => string) => {
-	return value?.trim() || t('order.status.timeline.notSpecified')
-}
-
-const getStatusName = (value: string, t: (key: string) => string) => {
-	const name = getOrderDriverStatusName(t, value as OrderDriverStatusEnum)
-	return name || value || t('order.status.timeline.notSpecified')
+	return sections.map((section) => ({
+		...section,
+		events: section.events.map((event) => ({
+			...event,
+			statusFrom: getStatusName(event.statusFrom),
+			statusTo: getStatusName(event.statusTo),
+		})),
+	}))
 }
 
 function StatusTimelineSkeleton() {

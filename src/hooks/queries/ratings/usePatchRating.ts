@@ -1,4 +1,4 @@
-import type { UserRatingRequestDto } from '@/shared/types/Rating.interface'
+import type { PatchedUserRatingRequestDto } from '@/shared/types/Rating.interface'
 import { ratingsService } from '@/services/ratings.service'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 
 type PatchRatingPayload = {
 	id: string
-	data: UserRatingRequestDto
+	data: PatchedUserRatingRequestDto
 }
 
 export const usePatchRating = () => {

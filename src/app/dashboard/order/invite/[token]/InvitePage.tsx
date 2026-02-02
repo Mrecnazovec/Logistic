@@ -3,7 +3,7 @@
 import { ArrowRight, ShieldX } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import toast from 'react-hot-toast'
 
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
@@ -55,12 +55,10 @@ function InvitePageContent() {
 	const { declineOrderInvite, isLoadingDecline } = useDeclineOrderInvite()
 	const { confirmOrderTerms, isLoadingConfirmTerms } = useConfirmOrderTerms()
 	const { invitePreview, isLoading: isLoadingInvitePreview } = useGetInvitePreview(accessToken ? trimmedToken : '')
-	const returnPath = useMemo(() => {
-		const query = searchParams.toString()
-		const basePath = token ? DASHBOARD_URL.order(`invite/${token}`) : pathname
-		return query ? `${basePath}?${query}` : basePath
-	}, [pathname, searchParams, token])
-	const authHref = useMemo(() => `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`, [returnPath])
+	const query = searchParams.toString()
+	const basePath = token ? DASHBOARD_URL.order(`invite/${token}`) : pathname
+	const returnPath = query ? `${basePath}?${query}` : basePath
+	const authHref = `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`
 
 	useEffect(() => {
 		if (!accessToken) {

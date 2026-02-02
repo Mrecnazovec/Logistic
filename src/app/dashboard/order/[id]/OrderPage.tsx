@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
@@ -59,13 +59,6 @@ const getFirstDocumentByCategory = <T extends { category?: string | null; create
 	)
 }
 
-const getDocumentAction = (status: OrderStatusEnum | null, actions: Record<string, { hasDocument: boolean; documentDate: string; href: string }>) => {
-	if (!status) return actions.loading
-	if (status === OrderStatusEnum.IN_PROCESS) return actions.unloading
-	if (status === OrderStatusEnum.DELIVERED || status === OrderStatusEnum.PAID) return actions.other
-	return actions.loading
-}
-
 export function OrderPage() {
 	const { t, locale } = useI18n()
 	const { order, isLoading } = useGetOrder()
@@ -77,19 +70,17 @@ export function OrderPage() {
 	const searchParams = useSearchParams()
 	const [cancelOpen, setCancelOpen] = useState(false)
 
-	const driverStatusBadgeMap = useMemo<Record<DriverStatus, { label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }>>(
-		() => ({
-			en_route: { label: t('order.driverStatus.enRoute'), variant: 'info' },
-			stopped: { label: t('order.driverStatus.stopped'), variant: 'warning' },
-			problem: { label: t('order.driverStatus.problem'), variant: 'danger' },
-		}),
-		[t],
-	)
-
-	const driverStatusEntries = useMemo(
-		() => Object.entries(driverStatusBadgeMap) as Array<[DriverStatus, (typeof driverStatusBadgeMap)[DriverStatus]]>,
-		[driverStatusBadgeMap],
-	)
+	const driverStatusBadgeMap: Record<
+		DriverStatus,
+		{ label: string; variant: 'success' | 'warning' | 'info' | 'danger' | 'secondary' }
+	> = {
+		en_route: { label: t('order.driverStatus.enRoute'), variant: 'info' },
+		stopped: { label: t('order.driverStatus.stopped'), variant: 'warning' },
+		problem: { label: t('order.driverStatus.problem'), variant: 'danger' },
+	}
+	const driverStatusEntries = Object.entries(driverStatusBadgeMap) as Array<
+		[DriverStatus, (typeof driverStatusBadgeMap)[DriverStatus]]
+	>
 
 	const statusFromQuery = searchParams.get('driver_status') as DriverStatus | null
 	const currentDriverStatus = order?.driver_status ?? statusFromQuery ?? null
@@ -122,19 +113,39 @@ export function OrderPage() {
 	const firstUnloadingDocumentDate = formatDateTimeValue(order?.unloading_datetime, DEFAULT_PLACEHOLDER)
 	const firstOtherDocumentDate = formatDateTimeValue(firstOtherDocument?.created_at, DEFAULT_PLACEHOLDER)
 	const docsBasePath = orderId ? `/dashboard/order/${orderId}/docs` : ''
-	const currentDocumentAction = getDocumentAction(orderStatus, {
-		loading: { hasDocument: hasLoadingDocument, documentDate: firstLoadingDocumentDate, href: `${docsBasePath}/loading` },
-		unloading: { hasDocument: hasUnloadingDocument, documentDate: firstUnloadingDocumentDate, href: `${docsBasePath}/unloading` },
-		other: { hasDocument: hasOtherDocument, documentDate: firstOtherDocumentDate, href: `${docsBasePath}/other` },
-	})
+	const documentActions = {
+		loading: {
+			hasDocument: hasLoadingDocument,
+			documentDate: firstLoadingDocumentDate,
+			href: `${docsBasePath}/loading`,
+		},
+		unloading: {
+			hasDocument: hasUnloadingDocument,
+			documentDate: firstUnloadingDocumentDate,
+			href: `${docsBasePath}/unloading`,
+		},
+		other: {
+			hasDocument: hasOtherDocument,
+			documentDate: firstOtherDocumentDate,
+			href: `${docsBasePath}/other`,
+		},
+	}
+	const currentDocumentAction = !orderStatus
+		? documentActions.loading
+		: orderStatus === OrderStatusEnum.IN_PROCESS
+			? documentActions.unloading
+			: orderStatus === OrderStatusEnum.DELIVERED || orderStatus === OrderStatusEnum.PAID
+				? documentActions.other
+				: documentActions.loading
 
 	const handleShare = async () => {
 		const sharePath = order?.share_token ? addLocaleToPath(`/dashboard/order/shared/${order.share_token}`, locale) : ''
-		const link = typeof window !== 'undefined'
-			? sharePath
-				? `${window.location.origin}${sharePath}`
-				: window.location.href
-			: ''
+		const link =
+			typeof window !== 'undefined'
+				? sharePath
+					? `${window.location.origin}${sharePath}`
+					: window.location.href
+				: ''
 
 		try {
 			if (!link || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
