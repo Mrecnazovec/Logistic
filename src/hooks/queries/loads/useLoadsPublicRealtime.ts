@@ -24,14 +24,13 @@ export const useLoadsPublicRealtime = () => {
 			queryClient.invalidateQueries({ queryKey: ['get loads', 'public'] })
 		}
 
-		const offCreated = client.on('loads.created', invalidateLoads)
-		const offUpdated = client.on('loads.updated', invalidateLoads)
-		const offDeleted = client.on('loads.deleted', invalidateLoads)
+		const offAny = client.onAny((eventName, payload) => {
+			console.log(eventName, payload)
+			invalidateLoads()
+		})
 
 		return () => {
-			offCreated()
-			offUpdated()
-			offDeleted()
+			offAny()
 			client.disconnect()
 		}
 	}, [queryClient])

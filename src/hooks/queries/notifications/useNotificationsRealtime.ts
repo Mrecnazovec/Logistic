@@ -4,8 +4,13 @@ import { getAccessToken } from '@/services/auth/auth-token.service'
 import { WSClient } from '@/services/ws.service'
 import { useQueryClient } from '@tanstack/react-query'
 
-export const useNotificationsRealtime = (enabled: boolean) => {
+type UseNotificationsRealtimeOptions = {
+	onEvent?: () => void
+}
+
+export const useNotificationsRealtime = (enabled: boolean, options?: UseNotificationsRealtimeOptions) => {
 	const queryClient = useQueryClient()
+	const onEvent = options?.onEvent
 
 	useEffect(() => {
 		if (!enabled) return
@@ -18,6 +23,7 @@ export const useNotificationsRealtime = (enabled: boolean) => {
 		client.connect()
 
 		const invalidateNotifications = () => {
+			onEvent?.()
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 		}
 
@@ -31,5 +37,5 @@ export const useNotificationsRealtime = (enabled: boolean) => {
 			offDeleted()
 			client.disconnect()
 		}
-	}, [enabled, queryClient])
+	}, [enabled, onEvent, queryClient])
 }

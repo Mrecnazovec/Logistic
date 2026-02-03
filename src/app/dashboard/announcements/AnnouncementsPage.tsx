@@ -15,7 +15,6 @@ import { getCargoColumns } from './table/CargoColumns'
 import { ExpandedCargoRow } from './table/ExpandedCargoRow'
 import { useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useLoadsPublicRealtime } from '@/hooks/queries/loads/useLoadsPublicRealtime'
 
 export function AnnouncementsPage() {
 	const { t, locale } = useI18n()
@@ -31,7 +30,6 @@ export function AnnouncementsPage() {
 		[t, locale, showOriginRadius, showDestinationRadius]
 	)
 
-	useLoadsPublicRealtime()
 
 	const results = data?.results ?? []
 	const hasResults = results.length > 0

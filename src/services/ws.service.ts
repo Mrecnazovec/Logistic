@@ -16,6 +16,7 @@ type WSClientOptions = {
 }
 
 type Listener = (payload: unknown) => void
+type AnyListener = (eventName: string, payload: unknown) => void
 
 export class WSClient {
 	private ws: WebSocket | null = null
@@ -24,6 +25,7 @@ export class WSClient {
 	private reconnectAttempts = 0
 	private channels = new Set<string>()
 	private listeners = new Map<string, Set<Listener>>()
+	private anyListeners = new Set<AnyListener>()
 	private queue: string[] = []
 	private pingTimerId: number | null = null
 	private reconnectTimerId: number | null = null
@@ -77,6 +79,7 @@ export class WSClient {
 			}
 
 			if (msg.type === 'event') {
+				for (const cb of this.anyListeners) cb(msg.name, msg.payload)
 				const set = this.listeners.get(msg.name)
 				if (!set) return
 				for (const cb of set) cb(msg.payload)
@@ -124,11 +127,20 @@ export class WSClient {
 		return () => this.off(eventName, cb)
 	}
 
+	onAny(cb: AnyListener) {
+		this.anyListeners.add(cb)
+		return () => this.offAny(cb)
+	}
+
 	off(eventName: string, cb: Listener) {
 		this.listeners.get(eventName)?.delete(cb)
 		if (this.listeners.get(eventName)?.size === 0) {
 			this.listeners.delete(eventName)
 		}
+	}
+
+	offAny(cb: AnyListener) {
+		this.anyListeners.delete(cb)
 	}
 
 	send(message: WSMessage) {

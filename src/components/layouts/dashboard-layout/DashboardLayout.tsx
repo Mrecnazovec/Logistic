@@ -1,10 +1,14 @@
+'use client'
+
 import { PropsWithChildren, Suspense } from 'react'
 import { Header } from './Header'
 import { MobileNav } from './MobileNav'
 import { Sidebar } from './Sidebar'
+import { useLoadsPublicRealtime } from '@/hooks/queries/loads/useLoadsPublicRealtime'
 
 export default function DashboardLayout({ children }: PropsWithChildren) {
 
+	useLoadsPublicRealtime()
 
 	return (
 		<Suspense>

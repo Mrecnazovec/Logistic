@@ -63,7 +63,12 @@ export function Header() {
 		isMarkingAllRead,
 		isNotificationsEnabled,
 	} = useNotifications(true)
-	useNotificationsRealtime(isNotificationsEnabled)
+	useNotificationsRealtime(isNotificationsEnabled, {
+		onEvent: () => {
+			refetchNotifications()
+			audioRef.current?.play().catch(() => undefined)
+		},
+	})
 	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
@@ -80,25 +85,13 @@ export function Header() {
 		}
 	}, [isNotificationsEnabled, isNotificationsOpen, refetchNotifications])
 
-	useEffect(() => {
-		if (!isNotificationsEnabled) return
-		const interval = setInterval(() => {
-			refetchNotifications()
-		}, 300000)
-		return () => clearInterval(interval)
-	}, [isNotificationsEnabled, refetchNotifications])
-
 	const allNotifications = firstPageNotifications
 	const importantNotifications = allNotifications.filter((item) => IMPORTANT_NOTIFICATION_TYPES.has(item.type))
 	const activeNotifications = notificationsTab === 'all' ? allNotifications : importantNotifications
 	const unreadCount = allNotifications.filter((item) => !item.is_read).length
 
 	useEffect(() => {
-		const currentUnread = unreadCount
-		if (audioRef.current && currentUnread > lastUnreadRef.current) {
-			audioRef.current.play().catch(() => undefined)
-		}
-		lastUnreadRef.current = currentUnread
+		lastUnreadRef.current = unreadCount
 	}, [unreadCount])
 
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
