@@ -8,7 +8,9 @@ import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-import { removeFromStorage } from '@/services/auth/auth-token.service'
+import { getAccessToken, getRefreshToken, removeFromStorage } from '@/services/auth/auth-token.service'
+import { authService } from '@/services/auth/auth.service'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface UseGetMeOptions {
 	enabled?: boolean
@@ -26,11 +28,30 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		queryFn: () => meService.getMe(),
 		enabled: options?.enabled ?? true,
 	})
+	const queryClient = useQueryClient()
 	const setRole = useRoleStore((state) => state.setRole)
 	const router = useRouter()
 	const { logout } = useLogout()
 	const lastErrorMessage = useRef<string | null>(null)
 	const hasHandledError = useRef(false)
+	const refreshAttempted = useRef(false)
+
+	useEffect(() => {
+		if (!(options?.enabled ?? true)) return
+		const refreshToken = getRefreshToken()
+		if (!refreshToken) return
+
+		refreshAttempted.current = true
+		authService
+			.getNewTokens({ refresh: refreshToken })
+			.then(() => {
+				hasHandledError.current = false
+				queryClient.invalidateQueries({ queryKey: ['get profile'] })
+			})
+			.catch(() => {
+				hasHandledError.current = false
+			})
+	}, [options?.enabled, queryClient])
 
 	useEffect(() => {
 		setRole(me?.role)
@@ -40,17 +61,30 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		if (!isError) return
 		if (hasHandledError.current) return
 
+		const refreshToken = getRefreshToken()
+		if (refreshToken && !refreshAttempted.current) {
+			refreshAttempted.current = true
+			authService
+				.getNewTokens({ refresh: refreshToken })
+				.then(() => {
+					hasHandledError.current = false
+					queryClient.invalidateQueries({ queryKey: ['get profile'] })
+				})
+				.catch(() => {
+					hasHandledError.current = false
+				})
+			return
+		}
+
 		const message = getErrorMessage(error) ?? t('hooks.me.get.error')
 		if (message === lastErrorMessage.current) return
 
 		lastErrorMessage.current = message
 		toast.error(message)
 		hasHandledError.current = true
-		logout('')
-		removeFromStorage()
 		router.push('/auth')
 		router.refresh()
-	}, [error, isError, router, logout, t])
+	}, [error, isError, queryClient, router, logout, t])
 
 	return { me, isLoading, isError, error }
 }

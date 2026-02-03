@@ -28,7 +28,7 @@ const getLocaleFromHeader = (request: NextRequest): Locale | undefined => {
 }
 
 export async function proxy(request: NextRequest) {
-	const accessToken = request.cookies.get(Tokens.ACCESS_TOKEN)?.value
+	const refreshToken = request.cookies.get(Tokens.REFRESH_TOKEN)?.value
 	const { pathname } = request.nextUrl
 
 	if (pathname.startsWith('/_next') || pathname.startsWith('/api') || PUBLIC_FILE.test(pathname)) {
@@ -50,7 +50,7 @@ export async function proxy(request: NextRequest) {
 	const isAuthPage = normalizedPath.startsWith('/auth')
 	const isDashboard = normalizedPath.startsWith('/dashboard')
 
-	if (isAuthPage && accessToken) {
+	if (isAuthPage && refreshToken) {
 		const redirectUrl = request.nextUrl.clone()
 		redirectUrl.pathname = addLocaleToPath(DASHBOARD_URL.home(), activeLocale)
 		const response = NextResponse.redirect(redirectUrl)
@@ -58,7 +58,7 @@ export async function proxy(request: NextRequest) {
 		return response
 	}
 
-	if (isDashboard && !accessToken) {
+	if (isDashboard && !refreshToken) {
 		const redirectUrl = request.nextUrl.clone()
 		redirectUrl.pathname = addLocaleToPath(PUBLIC_URL.auth(), activeLocale)
 		const response = NextResponse.redirect(redirectUrl)

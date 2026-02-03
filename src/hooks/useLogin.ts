@@ -5,13 +5,17 @@ import type { ILogin } from '@/shared/types/Login.interface'
 import { authService } from '@/services/auth/auth.service'
 import { useI18n } from '@/i18n/I18nProvider'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { saveRefreshTokenStorage } from '@/services/auth/auth-token.service'
 
 export const useLogin = () => {
 	const { t } = useI18n()
 	const { mutate: login, isPending: isLoading } = useMutation({
 		mutationKey: ['auth', 'login'],
 		mutationFn: (data: ILogin) => authService.login(data),
-		onSuccess() {
+		onSuccess(result) {
+			if (result.refresh) {
+				saveRefreshTokenStorage(result.refresh)
+			}
 			toast.success(t('hooks.auth.login.success'))
 		},
 		onError(error) {

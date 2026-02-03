@@ -11,6 +11,10 @@ export const getAccessToken = () => {
 	return Cookies.get(Tokens.ACCESS_TOKEN) || null
 }
 
+export const getRefreshToken = () => {
+	return Cookies.get(Tokens.REFRESH_TOKEN) || null
+}
+
 const sanitizeDomain = (domain?: string | null) => {
 	if (!domain) return undefined
 
@@ -40,6 +44,10 @@ const removalOptions: CookieAttributes | undefined = cookieDomain ? { domain: co
 
 export const saveTokenStorage = (accessToken: string) => {
 	Cookies.set(Tokens.ACCESS_TOKEN, accessToken, baseCookieOptions)
+}
+
+export const saveRefreshTokenStorage = (refreshToken: string) => {
+	Cookies.set(Tokens.REFRESH_TOKEN, refreshToken, baseCookieOptions)
 }
 
 export const removeFromStorage = () => {

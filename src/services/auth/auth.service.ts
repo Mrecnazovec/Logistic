@@ -10,7 +10,7 @@ import {
 	IChangePassword,
 	IChangePasswordResponse,
 } from '@/shared/types/Login.interface'
-import { removeFromStorage, saveTokenStorage } from './auth-token.service'
+import { removeFromStorage, saveRefreshTokenStorage, saveTokenStorage } from './auth-token.service'
 import { IRoleChangeResponse, RoleChangeDto } from '@/shared/types/Me.interface'
 import type { IDashboardStats } from '@/shared/types/DashboardStats.interface'
 import { ILogoutResponse } from '@/shared/types/Logout.interface'
@@ -38,6 +38,7 @@ class AuthService {
 		})
 
 		if (result.access) saveTokenStorage(result.access)
+		if (result.refresh) saveRefreshTokenStorage(result.refresh)
 
 		return result
 	}
@@ -74,6 +75,9 @@ class AuthService {
 
 		if (result.access) {
 			saveTokenStorage(result.access)
+		}
+		if (result.refresh) {
+			saveRefreshTokenStorage(result.refresh)
 		}
 
 		return result
@@ -137,6 +141,7 @@ class AuthService {
 		})
 
 		if (result.access) saveTokenStorage(result.access)
+		if (result.refresh) saveRefreshTokenStorage(result.refresh)
 		return result
 	}
 
