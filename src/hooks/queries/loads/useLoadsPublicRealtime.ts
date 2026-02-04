@@ -21,11 +21,11 @@ export const useLoadsPublicRealtime = () => {
 
 		const wsUrl = `wss://kad-one.com/ws/loads/?token=${token}`
 		const client = new WSClient(wsUrl, {
-			onOpen: () => console.log('WebSocket loads connected'),
-			onError: () => console.log('WebSocket loads error'),
-			onClose: () => console.log('WebSocket loads closed'),
+			// onOpen: () => console.log('WebSocket loads connected'),
+			// onError: () => console.log('WebSocket loads error'),
+			// onClose: () => console.log('WebSocket loads closed'),
 			onMessage: (direction, message) => {
-				console.log(`[loads ws][${direction}]`, message)
+				// console.log(`[loads ws][${direction}]`, message)
 				if (direction !== 'in') return
 				const data = message as LoadsActionPayload
 				if (!data.action || !LOADS_ACTIONS.has(data.action) || !data.event || !OFFERS_ACTIONS.has(data.event)) return

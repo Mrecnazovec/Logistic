@@ -39,7 +39,7 @@ export const useNotificationsRealtime = (enabled: boolean, options?: UseNotifica
 			// onError: () => console.log('WebSocket notifications error'),
 			// onClose: () => console.log('WebSocket notifications closed'),
 			onMessage: (direction, message) => {
-				console.log(`[notifications ws][${direction}]`, message)
+				// console.log(`[notifications ws][${direction}]`, message)
 				if (direction !== 'in') return
 				const data = message as NotificationsRealtimePayload
 				if (!hasEventOrAction(data)) return
