@@ -66,7 +66,9 @@ export function Header() {
 	useNotificationsRealtime(isNotificationsEnabled, {
 		onEvent: () => {
 			refetchNotifications()
-			audioRef.current?.play().catch(() => undefined)
+			if (!audioRef.current) return
+			audioRef.current.currentTime = 0
+			audioRef.current.play().catch(() => undefined)
 		},
 	})
 	const audioRef = useRef<HTMLAudioElement | null>(null)

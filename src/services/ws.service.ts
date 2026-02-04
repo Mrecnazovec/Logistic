@@ -4,19 +4,20 @@ export type WSMessage =
 	| { type: 'unsubscribe'; channel: string }
 	| { type: 'ping' }
 	| { type: 'event'; name: string; payload: unknown }
+	| { action: string }
 
 type WSClientOptions = {
 	pingIntervalMs?: number
 	reconnectBaseMs?: number
 	reconnectMaxMs?: number
 	queueLimit?: number
+	onMessage?: (direction: 'in' | 'out', message: unknown) => void
 	onOpen?: () => void
 	onClose?: () => void
 	onError?: () => void
 }
 
 type Listener = (payload: unknown) => void
-type AnyListener = (eventName: string, payload: unknown) => void
 
 export class WSClient {
 	private ws: WebSocket | null = null
@@ -25,7 +26,6 @@ export class WSClient {
 	private reconnectAttempts = 0
 	private channels = new Set<string>()
 	private listeners = new Map<string, Set<Listener>>()
-	private anyListeners = new Set<AnyListener>()
 	private queue: string[] = []
 	private pingTimerId: number | null = null
 	private reconnectTimerId: number | null = null
@@ -39,6 +39,7 @@ export class WSClient {
 			reconnectBaseMs: options.reconnectBaseMs ?? 500,
 			reconnectMaxMs: options.reconnectMaxMs ?? 10000,
 			queueLimit: options.queueLimit ?? 200,
+			onMessage: options.onMessage ?? (() => {}),
 			onOpen: options.onOpen ?? (() => {}),
 			onClose: options.onClose ?? (() => {}),
 			onError: options.onError ?? (() => {}),
@@ -77,12 +78,15 @@ export class WSClient {
 			} catch {
 				return
 			}
+			this.options.onMessage('in', msg)
 
-			if (msg.type === 'event') {
-				for (const cb of this.anyListeners) cb(msg.name, msg.payload)
-				const set = this.listeners.get(msg.name)
-				if (!set) return
-				for (const cb of set) cb(msg.payload)
+			if ('type' in msg && msg.type === 'event') {
+				this.emit(msg.name, msg.payload)
+				return
+			}
+
+			if ('action' in msg && typeof msg.action === 'string') {
+				this.emit(msg.action, msg)
 			}
 		}
 
@@ -127,11 +131,6 @@ export class WSClient {
 		return () => this.off(eventName, cb)
 	}
 
-	onAny(cb: AnyListener) {
-		this.anyListeners.add(cb)
-		return () => this.offAny(cb)
-	}
-
 	off(eventName: string, cb: Listener) {
 		this.listeners.get(eventName)?.delete(cb)
 		if (this.listeners.get(eventName)?.size === 0) {
@@ -139,12 +138,15 @@ export class WSClient {
 		}
 	}
 
-	offAny(cb: AnyListener) {
-		this.anyListeners.delete(cb)
+	private emit(eventName: string, payload: unknown) {
+		const set = this.listeners.get(eventName)
+		if (!set) return
+		for (const cb of set) cb(payload)
 	}
 
 	send(message: WSMessage) {
 		const data = JSON.stringify(message)
+		this.options.onMessage('out', message)
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this.ws.send(data)
 			return

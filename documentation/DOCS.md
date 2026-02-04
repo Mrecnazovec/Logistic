@@ -22,7 +22,7 @@ useVerifyEmailFromProfile - verifies email via meService.verifyEmailFromProfile 
 - ## Notifications
 
 useNotifications - loads notifications with pagination via notificationsService.getNotifications and exposes firstPageNotifications.
-useNotificationsRealtime - subscribes to notifications WS events and invalidates notifications queries.
+useNotificationsRealtime - subscribes to notifications WS, logs all in/out messages, and invalidates notifications queries when incoming data has event/action (including type:event messages).
 getNotificationDetailsText - returns details text for a notification using message or localized templates.
 getNotificationTypeLabel - returns a localized label for a notification type.
 getNotificationOrderId - extracts order_id from notification payload for routing.
@@ -80,7 +80,7 @@ useRejectAgreement - rejects agreement by id via agreementsService.rejectAgreeme
 
 useCreateSupportTicket - sends support message via supportService.createSupportTicket.
 useCreateConsultation - sends a consultation request via supportService.createConsultation. 
-useLoadsPublicRealtime - subscribes to loads WS events and invalidates public loads queries for announcements board.
+useLoadsPublicRealtime - subscribes to loads WS events, logs all in/out messages, and invalidates public loads queries on create/update/remove actions.
 
 - ## Orders
 
@@ -181,7 +181,7 @@ ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.
 nominatimService - OpenStreetMap Nominatim lookup for city coordinates.
 supportService - submits support tickets via /support endpoint.
-WSClient - reusable WebSocket client with auth, subscriptions, event listeners, reconnect, and queue.
+WSClient - reusable WebSocket client with auth, subscriptions, named event listeners, reconnect, queue, and optional in/out message logging callback.
 
 ## Shared enums
 
