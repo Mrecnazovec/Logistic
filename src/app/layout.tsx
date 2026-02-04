@@ -49,6 +49,7 @@ export default async function RootLayout({
 	return (
 		<html lang={locale}>
 			<head>
+				<meta name='yandex-verification' content='e83b06fca27bc573' />
 				<Script id="yandex-metrika">
 					{`(function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
