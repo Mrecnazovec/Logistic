@@ -12,6 +12,7 @@ Frontend приложение для платформы логистики: ка
 - Уведомления и аналитика профиля.
 - Гео подсказки городов и стран.
 - Мультиязычность через i18n.
+- Realtime обновления через WebSocket (грузы и уведомления).
 
 ## Технологии
 
@@ -72,6 +73,18 @@ Frontend приложение для платформы логистики: ка
 - `src/store` - Zustand хранилища.
 - `src/config` - конфигурация приложения.
 - `src/api` - API helpers и прокси.
+
+## Realtime (WebSocket)
+
+- Базовый WS-клиент: `src/services/ws.service.ts`.
+- Хук грузов: `src/hooks/queries/loads/useLoadsPublicRealtime.ts`.
+  - Логирует все входящие/исходящие сообщения (`[loads ws][in|out]`).
+  - При входящем `action` из набора `create | update | remove` инвалидирует запросы грузов.
+- Хук уведомлений: `src/hooks/queries/notifications/useNotificationsRealtime.ts`.
+  - Логирует все входящие/исходящие сообщения (`[notifications ws][in|out]`).
+  - При входящем `event` или `action` (включая `type: "event"` форматы) инвалидирует `['notifications']`.
+- Хедер: `src/components/layouts/dashboard-layout/Header.tsx`.
+  - На realtime событие уведомлений обновляет список/счетчик и проигрывает звук `public/sounds/notification.mp3`.
 
 ## Документация
 

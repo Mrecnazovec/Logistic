@@ -109,8 +109,9 @@ export function AgreementPage() {
 		cancelled: { label: t('order.agreement.status.cancelled'), className: 'bg-error-100 text-error-700 border border-error-200' },
 	}
 	const status = statusMeta[agreement.status] ?? statusMeta.pending
-	const totalDistance = agreement.total_distance_km
-		? `${agreement.total_distance_km} ${t('order.unit.km')}`
+	const totalDistanceValue = Number(agreement.total_distance_km)
+	const totalDistance = Number.isFinite(totalDistanceValue)
+		? `${totalDistanceValue.toFixed(2)} ${t('order.unit.km')}`
 		: EMPTY_VALUE
 	const travelTime = withFallback(agreement.travel_time)
 
