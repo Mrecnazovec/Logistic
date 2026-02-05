@@ -14,7 +14,8 @@ import { useAcceptAgreement } from '@/hooks/queries/agreements/useAcceptAgreemen
 import { useGetAgreement } from '@/hooks/queries/agreements/useGetAgreement'
 import { useRejectAgreement } from '@/hooks/queries/agreements/useRejectAgreement'
 import { useI18n } from '@/i18n/I18nProvider'
-import { formatDateValue } from '@/lib/formatters'
+import { formatDateValue, formatPriceValue } from '@/lib/formatters'
+import { PaymentMethodSelector } from '@/shared/enums/PaymentMethod.enum'
 import type { IAgreementDetail } from '@/shared/types/Agreement.interface'
 
 const EMPTY_VALUE = '-'
@@ -114,6 +115,10 @@ export function AgreementPage() {
 		? `${totalDistanceValue.toFixed(2)} ${t('order.unit.km')}`
 		: EMPTY_VALUE
 	const travelTime = withFallback(agreement.travel_time)
+	const paymentMethodLabel = agreement.payment_method
+		? PaymentMethodSelector.find((method) => method.type === agreement.payment_method)?.nameKey
+		: undefined
+	const paymentMethod = paymentMethodLabel ? t(paymentMethodLabel) : EMPTY_VALUE
 
 	return (
 		<div className='w-full h-full rounded-4xl bg-background md:p-8 p-4 space-y-10'>
@@ -282,6 +287,14 @@ export function AgreementPage() {
 							<p className='flex items-center justify-between gap-6'>
 								<span className='text-muted-foreground'>{t('order.agreement.field.travelTime')}</span>
 								<span className='text-end font-medium'>{travelTime}</span>
+							</p>
+							<p className='flex items-center justify-between gap-6'>
+								<span className='text-muted-foreground'>{t('order.agreement.field.price')}</span>
+								<span className='text-end font-medium'>{formatPriceValue(agreement.price_value, agreement.price_currency)}</span>
+							</p>
+							<p className='flex items-center justify-between gap-6'>
+								<span className='text-muted-foreground'>{t('order.agreement.field.priceMethod')}</span>
+								<span className='text-end font-medium'>{paymentMethod}</span>
 							</p>
 						</div>
 					</div>

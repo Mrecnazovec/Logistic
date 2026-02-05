@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -17,6 +17,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IAgreement } from '@/shared/types/Agreement.interface'
 import { IOrderList } from '@/shared/types/Order.interface'
+import { useAgreementRealtimeStore } from '@/store/useAgreementRealtimeStore'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { AgreementsCardList } from './components/AgreementsCardList'
@@ -33,7 +34,7 @@ export function TransportationPage() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const status = searchParams.get('status') ?? 'agreements'
+	const status = searchParams.get('status') ?? 'agreements'
     const tableType = useTableTypeStore((state) => state.tableType)
     const { t } = useI18n()
     const agreementsTab = { value: 'agreements', label: t('transportation.tabs.agreements') } as const
@@ -50,8 +51,10 @@ export function TransportationPage() {
     const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
     const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { as_role: ordersRoleParam } : undefined)
 
-    const agreements = agreementsData?.results ?? []
-    const orders = data?.results ?? []
+	const agreements = agreementsData?.results ?? []
+	const orders = data?.results ?? []
+	const hasAgreementUpdates = useAgreementRealtimeStore((state) => state.hasAgreementUpdates)
+	const clearAgreementUpdate = useAgreementRealtimeStore((state) => state.clearAgreementUpdate)
     const { statusCounts } = useTransportationStatusCounts(
         statusTabs,
         searchParams,
@@ -63,9 +66,15 @@ export function TransportationPage() {
         ? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: orders.length }
         : undefined
 
-    const agreementPaginationMeta = agreements.length
-        ? { next: agreementsData?.next, previous: agreementsData?.previous, totalCount: agreementsData?.count, pageSize: agreements.length }
-        : undefined
+	const agreementPaginationMeta = agreements.length
+		? { next: agreementsData?.next, previous: agreementsData?.previous, totalCount: agreementsData?.count, pageSize: agreements.length }
+		: undefined
+
+	useEffect(() => {
+		if (status === agreementsTab.value && hasAgreementUpdates) {
+			clearAgreementUpdate()
+		}
+	}, [agreementsTab.value, clearAgreementUpdate, hasAgreementUpdates, status])
 
     const handleStatusChange = (nextStatus: string) => {
         if (nextStatus === status) return
@@ -134,12 +143,15 @@ export function TransportationPage() {
                                     className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
                                     value={tab.value}
                                 >
-                                    <span className='inline-flex items-center gap-2'>
-                                        <span>{tab.label}</span>
-                                        {tab.value === agreementsTab.value ? (
-                                            typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
-                                        ) : typeof statusCounts[tab.value] === 'number' ? (
-                                            <span>({statusCounts[tab.value]})</span>
+									<span className='inline-flex items-center gap-2'>
+										<span>{tab.label}</span>
+										{tab.value === agreementsTab.value && hasAgreementUpdates ? (
+											<span className='size-2 rounded-full bg-error-500' />
+										) : null}
+										{tab.value === agreementsTab.value ? (
+											typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
+										) : typeof statusCounts[tab.value] === 'number' ? (
+											<span>({statusCounts[tab.value]})</span>
                                         ) : null}
                                     </span>
                                 </TabsTrigger>
@@ -165,12 +177,15 @@ export function TransportationPage() {
                                 className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
                                 value={tab.value}
                             >
-                                <span className='inline-flex items-center gap-2'>
-                                    <span>{tab.label}</span>
-                                    {tab.value === agreementsTab.value ? (
-                                        typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
-                                    ) : typeof statusCounts[tab.value] === 'number' ? (
-                                        <span>({statusCounts[tab.value]})</span>
+								<span className='inline-flex items-center gap-2'>
+									<span>{tab.label}</span>
+									{tab.value === agreementsTab.value && hasAgreementUpdates ? (
+										<span className='size-2 rounded-full bg-error-500' />
+									) : null}
+									{tab.value === agreementsTab.value ? (
+										typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
+									) : typeof statusCounts[tab.value] === 'number' ? (
+										<span>({statusCounts[tab.value]})</span>
                                     ) : null}
                                 </span>
                             </TabsTrigger>

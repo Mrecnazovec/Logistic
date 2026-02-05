@@ -1294,6 +1294,9 @@ export interface components {
             /** Format: double */
             readonly total_distance_km: number | null;
             readonly travel_time: string;
+            readonly price_currency: string;
+            readonly price_value: string;
+            readonly payment_method: string;
         };
         AgreementList: {
             readonly id: number;

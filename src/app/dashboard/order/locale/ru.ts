@@ -109,6 +109,8 @@
 	'order.agreement.field.date': 'Дата',
 	'order.agreement.field.totalDistance': 'Общий путь',
 	'order.agreement.field.travelTime': 'Время поездки',
+	'order.agreement.field.price': 'Цена',
+	'order.agreement.field.priceMethod': 'Метод оплаты',
 	'order.agreement.terms.text': 'Я ознакомился и согласен с',
 	'order.agreement.terms.link': 'условиями пользования',
 	'order.agreement.terms.title': 'Условия сотрудничества',

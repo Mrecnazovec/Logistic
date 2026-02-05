@@ -12,6 +12,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import { useI18n } from '@/i18n/I18nProvider'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
@@ -29,7 +30,12 @@ export function DeskPage() {
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
 	const tabs = useMemo(() => [{ value: 'desk', label: t('desk.tabs.requests') }], [t])
+	const unreadCargoIds = useMemo(
+		() => new Set(unreadOffers.filter((item) => item.target === 'desk').map((item) => item.cargoId)),
+		[unreadOffers],
+	)
 	const columns = useMemo(() => getDeskColumns(t, locale), [t, locale])
 
 	useEffect(() => {
@@ -57,7 +63,7 @@ export function DeskPage() {
 	) : !hasCargos ? (
 		<EmptyTableState />
 	) : isCardView ? (
-		<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />
+		<DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} unreadCargoIds={unreadCargoIds} />
 	) : (
 		<DataTable
 			columns={columns}
@@ -115,7 +121,7 @@ export function DeskPage() {
 				</div>
 
 				<TabsContent value='desk'>
-					{isDesktop ? desktopContent : <DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} />}
+					{isDesktop ? desktopContent : <DeskCardList cargos={cargos} serverPagination={serverPaginationMeta} unreadCargoIds={unreadCargoIds} />}
 				</TabsContent>
 			</Tabs>
 		</div>

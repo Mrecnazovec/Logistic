@@ -21,9 +21,10 @@ type DeskMyCardListProps = {
 	serverPagination?: ServerPaginationMeta
 	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
+	unreadOfferIds?: Set<number>
 }
 
-export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role }: DeskMyCardListProps) {
+export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role, unreadOfferIds }: DeskMyCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 	if (!cargos.length) return null
 
@@ -32,7 +33,7 @@ export function DeskMyCardList({ cargos, serverPagination, onOpenDecision, role 
 			items={cargos}
 			getKey={(cargo) => String(cargo.id)}
 			renderItem={(cargo, index) => (
-				<DeskDriverCard cargo={cargo} index={index} onOpenDecision={onOpenDecision} role={role} />
+				<DeskDriverCard cargo={cargo} index={index} onOpenDecision={onOpenDecision} role={role} isUnread={Boolean(unreadOfferIds?.has(cargo.id))} />
 			)}
 			pagination={pagination}
 		/>
@@ -44,9 +45,10 @@ type DeskDriverCardProps = {
 	index: number
 	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
 	role?: RoleEnum
+	isUnread?: boolean
 }
 
-function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
+function DeskDriverCard({ cargo, onOpenDecision, role, isUnread }: DeskDriverCardProps) {
 	const { t } = useI18n()
 	const transportName = getTransportSymbol(t, cargo.transport_type as TransportTypeEnum) || cargo.transport_type
 	const { variant, label } = getOfferStatusMeta(cargo, role, t)
@@ -99,7 +101,10 @@ function DeskDriverCard({ cargo, onOpenDecision, role }: DeskDriverCardProps) {
 		<Card className='h-full rounded-3xl border-0 xs:bg-neutral-500'>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex flex-wrap items-center justify-between gap-3'>
-					<Badge variant={variant}>{label}</Badge>
+					<div className='relative'>
+						<Badge variant={variant}>{label}</Badge>
+						{isUnread ? <span className='absolute -top-1 -right-1 size-2 rounded-full bg-error-500' /> : null}
+					</div>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						{cargo.customer_full_name || '—'}
 					</CardTitle>

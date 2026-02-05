@@ -1,3 +1,4 @@
+import type { PriceCurrencyCode } from '@/lib/currency'
 import type { components, paths } from './api'
 
 export type AgreementStatus = 'pending' | 'accepted' | 'expired' | 'cancelled'
@@ -35,7 +36,9 @@ export type IPaginatedAgreementList = {
 	results: IAgreement[]
 }
 
-export type IAgreementDetail = components['schemas']['AgreementDetail']
+export type IAgreementDetail = components['schemas']['AgreementDetail'] & {
+	price_currency: PriceCurrencyCode
+}
 
 export type AgreementsListQuery = paths['/api/agreements/agreements/']['get'] extends {
   parameters: { query?: infer Q }

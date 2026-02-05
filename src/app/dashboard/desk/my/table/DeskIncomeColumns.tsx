@@ -20,11 +20,19 @@ type Translator = (key: string, params?: Record<string, string | number>) => str
 export const getDeskIncomeColumns = (
 	t: Translator,
 	onOpenDecision?: (offer: IOfferShort, options?: { forceFull?: boolean }) => void,
+	unreadOfferIds?: Set<number>,
 ): ColumnDef<IOfferShort>[] => [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
-		cell: ({ row }) => <UuidCopy uuid={row.original.cargo_uuid} />,
+		cell: ({ row }) => (
+			<span className='relative inline-flex'>
+				<UuidCopy uuid={row.original.cargo_uuid} />
+				{unreadOfferIds?.has(row.original.id) ? (
+					<span className='absolute -top-1 -right-1 size-2 rounded-full bg-error-500' />
+				) : null}
+			</span>
+		),
 	},
 	{
 		accessorKey: 'customer_company',

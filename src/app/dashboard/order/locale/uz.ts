@@ -109,6 +109,8 @@ const messages: Record<string, string> = {
 	'order.agreement.field.date': 'Sana',
 	'order.agreement.field.totalDistance': 'Umumiy masofa',
 	'order.agreement.field.travelTime': 'Safar vaqti',
+	'order.agreement.field.price': 'Narxi',
+	'order.agreement.field.priceMethod': "To'lov usuli",
 	'order.agreement.terms.text': "Men o'qib chiqdim va roziman",
 	'order.agreement.terms.link': 'foydalanish shartlari',
 	'order.agreement.terms.title': 'Hamkorlik shartlari',

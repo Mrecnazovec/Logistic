@@ -10,7 +10,7 @@ import { formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValu
 import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
-import { useGetOffers } from '@/hooks/queries/offers/useGet/useGetOffers'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import type { ColumnDef } from '@tanstack/react-table'
 import { CircleCheck, Minus } from 'lucide-react'
 import dynamic from 'next/dynamic'
@@ -29,7 +29,10 @@ export const getDeskRowClassName = (cargo: ICargoList) => {
 
 type Translator = (key: string) => string
 
-export const getDeskColumns = (t: Translator, locale: Locale): ColumnDef<ICargoList>[] => [
+export const getDeskColumns = (
+	t: Translator,
+	locale: Locale,
+): ColumnDef<ICargoList>[] => [
 	{
 		accessorKey: 'uuid',
 		header: 'ID',
@@ -38,6 +41,7 @@ export const getDeskColumns = (t: Translator, locale: Locale): ColumnDef<ICargoL
 	{
 		accessorKey: 'product',
 		header: t('desk.table.product'),
+		cell: ({ row }) => <DeskProductCell cargo={row.original} />,
 	},
 	{
 		accessorKey: 'created_at',
@@ -121,12 +125,9 @@ export const getDeskColumns = (t: Translator, locale: Locale): ColumnDef<ICargoL
 ]
 
 function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
+	const clearCargo = useOfferRealtimeStore((state) => state.clearCargo)
 	const [open, setOpen] = useState(false)
-	const { data, isLoading } = useGetOffers(
-		cargo.uuid ? { cargo_uuid: cargo.uuid } : undefined,
-		{ enabled: Boolean(cargo.uuid) }
-	)
-	const hasOffers = (data?.results?.length ?? 0) > 0
+	const hasOffers = Boolean(cargo.has_offers)
 
 	return (
 		<>
@@ -134,8 +135,13 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				type='button'
 				variant='link'
 				className='h-auto px-0 font-medium disabled:text-muted-foreground'
-				onClick={() => setOpen(true)}
-				disabled={isLoading || !hasOffers}
+				onClick={(event) => {
+					event.stopPropagation()
+					if (!hasOffers) return
+					clearCargo(cargo.id)
+					setOpen(true)
+				}}
+				disabled={!hasOffers}
 			>
 				{hasOffers ? <CircleCheck className='size-5 text-success-400' /> : <Minus className='size-5 text-neutral-400' />}
 			</Button>
@@ -147,5 +153,18 @@ function DeskOffersCell({ cargo }: { cargo: ICargoList }) {
 				initialPrice={formatCurrencyValue(cargo.price_value, cargo.price_currency)}
 			/>
 		</>
+	)
+}
+
+function DeskProductCell({ cargo }: { cargo: ICargoList }) {
+	const hasUnread = useOfferRealtimeStore((state) =>
+		state.unreadOffers.some((entry) => entry.target === 'desk' && entry.cargoId === cargo.id),
+	)
+
+	return (
+		<span className='relative inline-flex'>
+			{cargo.product}
+			{hasUnread ? <span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' /> : null}
+		</span>
 	)
 }

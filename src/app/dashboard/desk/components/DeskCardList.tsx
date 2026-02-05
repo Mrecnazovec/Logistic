@@ -18,6 +18,7 @@ import { formatPlace, formatPriceValue } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import { CircleCheck, Eye, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Wallet } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -29,9 +30,10 @@ const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersM
 type DeskCardListProps = {
 	cargos: ICargoList[]
 	serverPagination?: ServerPaginationMeta
+	unreadCargoIds?: Set<number>
 }
 
-export function DeskCardList({ cargos, serverPagination }: DeskCardListProps) {
+export function DeskCardList({ cargos, serverPagination, unreadCargoIds }: DeskCardListProps) {
 	const pagination = useCardPagination(serverPagination)
 	if (!cargos.length) return null
 
@@ -39,7 +41,7 @@ export function DeskCardList({ cargos, serverPagination }: DeskCardListProps) {
 		<CardListLayout
 			items={cargos}
 			getKey={(cargo) => cargo.uuid}
-			renderItem={(cargo) => <DeskCard cargo={cargo} />}
+			renderItem={(cargo) => <DeskCard cargo={cargo} isUnread={Boolean(unreadCargoIds?.has(cargo.id))} />}
 			pagination={pagination}
 		/>
 	)
@@ -47,14 +49,16 @@ export function DeskCardList({ cargos, serverPagination }: DeskCardListProps) {
 
 type DeskCardProps = {
 	cargo: ICargoList
+	isUnread?: boolean
 }
 
-function DeskCard({ cargo }: DeskCardProps) {
+function DeskCard({ cargo, isUnread }: DeskCardProps) {
 	const { t } = useI18n()
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || '-'
 	const { toggleLoadVisibility, isLoadingToggle } = useToggleLoadVisibility()
 	const { refreshLoad } = useRefreshLoad()
 	const { cancelLoad, isLoadingCancel } = useCancelLoad()
+	const clearCargo = useOfferRealtimeStore((state) => state.clearCargo)
 	const [offerOpen, setOfferOpen] = useState(false)
 	const [deleteOpen, setDeleteOpen] = useState(false)
 	const canShowPhone = cargo.contact_pref === 'phone' || cargo.contact_pref === 'both'
@@ -95,9 +99,12 @@ function DeskCard({ cargo }: DeskCardProps) {
 		<Card className={cn('rounded-3xl border-0 xs:bg-neutral-500', cargo.moderation_status === 'pending' && 'xs:bg-purple-50 bg-purple-50', cargo.moderation_status === 'rejected' && 'xs:bg-purple-50 bg-red-50', cargo.is_hidden && 'opacity-60')}>
 			<CardHeader className='gap-4 border-b pb-4'>
 				<div className='flex items-center justify-between gap-1'>
-					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
-						{cargo.product ?? '-'}
-					</CardTitle>
+					<div className='relative'>
+						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
+							{cargo.product ?? '-'}
+						</CardTitle>
+						{isUnread ? <span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' /> : null}
+					</div>
 					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
 						<span className='font-semibold text-foreground'>ID:</span>
 						<UuidCopy uuid={cargo.uuid} />
@@ -137,7 +144,10 @@ function DeskCard({ cargo }: DeskCardProps) {
 				</Button>
 				<Button
 					variant='outline'
-					onClick={() => setOfferOpen(true)}
+					onClick={() => {
+						clearCargo(cargo.id)
+						setOfferOpen(true)
+					}}
 					className='min-w-[240px] flex flex-1 items-center gap-2 bg-brand text-white hover:bg-brand/80 hover:text-white'
 				>
 					<Handshake className='size-4' />
@@ -167,6 +177,7 @@ function DeskCard({ cargo }: DeskCardProps) {
 
 function HasOffersField({ cargo }: { cargo: ICargoList }) {
 	const { t } = useI18n()
+	const clearCargo = useOfferRealtimeStore((state) => state.clearCargo)
 	const [open, setOpen] = useState(false)
 	const { data, isLoading } = useGetOffers(
 		cargo.uuid ? { cargo_uuid: cargo.uuid } : undefined,
@@ -180,7 +191,10 @@ function HasOffersField({ cargo }: { cargo: ICargoList }) {
 				type='button'
 				variant='outline'
 				className='flex items-center gap-2 border-0 p-0 text-sm font-semibold text-foreground shadow-none disabled:text-muted-foreground'
-				onClick={() => setOpen(true)}
+				onClick={() => {
+					clearCargo(cargo.id)
+					setOpen(true)
+				}}
 				disabled={isLoading || !hasOffers}
 			>
 				{hasOffers ? (

@@ -119,11 +119,11 @@ export function Dashboard() {
 				</div>
 
 			</section>
-			<section className="lg:px-12 sm:px-6 px-4">
+			{/* <section className="lg:px-12 sm:px-6 px-4">
 				<div className="aspect-[1123/401] rounded-3xl bg-accent flex items-center justify-center px-2">
 					<p className="text-center max-xs:text-xs">{t('dashboard.cta.text')}</p>
 				</div>
-			</section>
+			</section> */}
 			<section className="lg:px-12 sm:px-6 px-4">
 				{roleSection ? (
 					<div className="space-y-6">

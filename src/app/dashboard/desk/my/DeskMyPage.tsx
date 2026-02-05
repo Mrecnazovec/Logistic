@@ -18,6 +18,7 @@ import { RoleEnum } from '@/shared/enums/Role.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import dynamic from 'next/dynamic'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useSearchForm } from './Searching/useSearchForm'
@@ -76,6 +77,8 @@ export function DeskMyPage() {
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
+	const clearOffer = useOfferRealtimeStore((state) => state.clearOffer)
 	const {
 		selectedOffer,
 		isDecisionModalOpen,
@@ -98,11 +101,19 @@ export function DeskMyPage() {
 				],
 		[role, t],
 	)
-	const deskColumns = useMemo(() => getDeskMyColumns(t, openDecisionModal), [openDecisionModal, t])
-	const incomeColumns = useMemo(() => getDeskIncomeColumns(t, openDecisionModal), [openDecisionModal, t])
+	const unreadOfferIds = useMemo(() => new Set(unreadOffers.map((item) => item.offerId)), [unreadOffers])
+	const deskColumns = useMemo(() => getDeskMyColumns(t, openDecisionModal, unreadOfferIds), [openDecisionModal, t, unreadOfferIds])
+	const incomeColumns = useMemo(() => getDeskIncomeColumns(t, openDecisionModal, unreadOfferIds), [openDecisionModal, t, unreadOfferIds])
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []
+	const hasUnreadDesk = deskResults.some((offer) => unreadOfferIds.has(offer.id))
+	const hasUnreadMy = myResults.some((offer) => unreadOfferIds.has(offer.id))
+
+	const handleOpenDecision = (offer: IOfferShort, options?: { forceFull?: boolean }) => {
+		clearOffer(offer.id)
+		openDecisionModal(offer, options)
+	}
 
 	const deskPagination = deskResults.length
 		? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: deskResults.length }
@@ -116,13 +127,13 @@ export function DeskMyPage() {
 	) : !myResults.length ? (
 		<EmptyTableState />
 	) : tableType === 'card' ? (
-		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
+		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
 	) : (
 		<DataTable
 			columns={deskColumns}
 			data={myResults}
 			serverPagination={{ next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count }}
-			onRowClick={openDecisionModal}
+			onRowClick={handleOpenDecision}
 		/>
 	)
 
@@ -131,13 +142,13 @@ export function DeskMyPage() {
 	) : !deskResults.length ? (
 		<EmptyTableState />
 	) : tableType === 'card' ? (
-		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={openDecisionModal} role={role} />
+		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
 	) : (
 		<DataTable
 			columns={incomeColumns}
 			data={deskResults}
 			serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
-			onRowClick={openDecisionModal}
+			onRowClick={handleOpenDecision}
 		/>
 	)
 
@@ -171,15 +182,20 @@ export function DeskMyPage() {
 			>
 				<div className='flex items-end justify-between'>
 					<TabsList className='-mb-2 bg-transparent'>
-						{tabs.map((tab) => (
+						{tabs.map((tab) => {
+							const showDot = tab.value === 'desk' ? hasUnreadMy : hasUnreadDesk
+							return (
 							<TabsTrigger
 								key={tab.value}
 								value={tab.value}
 								className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
 							>
-								{tab.label}
+								<span className='relative'>
+									{tab.label}
+									{showDot ? <span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' /> : null}
+								</span>
 							</TabsTrigger>
-						))}
+						)})}
 					</TabsList>
 					{isDesktop && (
 						<div className='ml-auto'>
@@ -192,7 +208,7 @@ export function DeskMyPage() {
 					{isDesktop ? (
 						myDesktopContent
 					) : (
-						<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={openDecisionModal} role={role} />
+						<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
 					)}
 				</TabsContent>
 				<TabsContent value='drivers'>
@@ -201,7 +217,7 @@ export function DeskMyPage() {
 					) : isLoading ? (
 						<LoaderTable />
 					) : deskResults.length ? (
-						<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={openDecisionModal} role={role} />
+						<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
 					) : (
 						<EmptyTableState />
 					)}

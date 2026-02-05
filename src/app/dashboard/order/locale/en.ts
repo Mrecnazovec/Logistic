@@ -109,6 +109,8 @@ const messages: Record<string, string> = {
 	'order.agreement.field.date': 'Date',
 	'order.agreement.field.totalDistance': 'Total distance',
 	'order.agreement.field.travelTime': 'Travel time',
+	'order.agreement.field.price': 'Price',
+	'order.agreement.field.priceMethod': 'Price method',
 	'order.agreement.terms.text': 'I have read and agree with',
 	'order.agreement.terms.link': 'the terms of use',
 	'order.agreement.terms.title': 'Cooperation terms',

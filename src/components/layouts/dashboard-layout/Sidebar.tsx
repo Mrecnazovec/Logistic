@@ -4,9 +4,12 @@ import { Button } from '@/components/ui/Button'
 import { Logo } from '@/components/ui/Logo'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 import { cn } from '@/lib/utils'
+import { useAgreementRealtimeStore } from '@/store/useAgreementRealtimeStore'
 import { useRoleStore } from '@/store/useRoleStore'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useMemo } from 'react'
 import { getNavItems, type NavItem } from './NavItems'
 import { useI18n } from '@/i18n/I18nProvider'
 import { PUBLIC_URL } from '@/config/url.config'
@@ -16,6 +19,8 @@ export function Sidebar() {
 	const normalizedPathname = pathname.endsWith('/') ? pathname : `${pathname}/`
 	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
+	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
+	const hasAgreementUpdates = useAgreementRealtimeStore((state) => state.hasAgreementUpdates)
 	const navItems = getNavItems(role, locale)
 	const homeHref = navItems[0]?.items[0]?.href
 
@@ -35,6 +40,22 @@ export function Sidebar() {
 		}))
 		.filter((group) => group.items.length > 0)
 
+	const hasDeskUnread = useMemo(() => unreadOffers.length > 0, [unreadOffers.length])
+
+	const activeSection = useMemo(() => {
+		for (const group of visibleNavGroups) {
+			for (const item of group.items) {
+				const normalizedHref = item.href.endsWith('/') ? item.href : `${item.href}/`
+				const isHome = homeHref === item.href
+				const isActive = isHome
+					? normalizedPathname === normalizedHref
+					: normalizedPathname.startsWith(normalizedHref)
+				if (isActive) return item.labelKey
+			}
+		}
+		return undefined
+	}, [homeHref, normalizedPathname, visibleNavGroups])
+
 	return (
 		<aside className='w-[8vw] max-w-32 pt-8 bg-brand-900 text-white md:flex hidden flex-col rounded-tr-[42px] rounded-br-xl flex-shrink-0 md:sticky md:top-0 md:h-screen md:z-20'>
 			<Logo href={PUBLIC_URL.home()} />
@@ -49,6 +70,9 @@ export function Sidebar() {
 							const isActive = isHome
 								? normalizedPathname === normalizedHref
 								: normalizedPathname.startsWith(normalizedHref)
+							const showDeskBadge = item.labelKey === 'components.dashboard.nav.desk' && hasDeskUnread
+							const showTransportationBadge =
+								item.labelKey === 'components.dashboard.nav.transportation' && hasAgreementUpdates
 							return (
 								<Tooltip key={i}>
 									<TooltipTrigger asChild>
@@ -61,7 +85,12 @@ export function Sidebar() {
 													isActive && 'bg-white/20'
 												)}
 											>
-												<Icon className='size-5' />
+												<span className='relative'>
+													<Icon className='size-5' />
+													{showDeskBadge || showTransportationBadge ? (
+														<span className='absolute -top-1 -right-1 size-2 rounded-full bg-error-500' />
+													) : null}
+												</span>
 											</Button>
 										</Link>
 									</TooltipTrigger>

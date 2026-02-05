@@ -16,6 +16,7 @@ import { stripLocaleFromPath } from '@/i18n/paths'
 import { cn } from '@/lib/utils'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import type { INotification } from '@/shared/types/Notification.interface'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useSearchDrawerStore } from '@/store/useSearchDrawerStore'
 import { format } from 'date-fns'
@@ -23,7 +24,7 @@ import { Bell, CheckCheck, ChevronLeft, Loader2, Search, Star } from 'lucide-rea
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { resolveHeaderNavItems } from './HeaderNavConfig'
 
 const SEARCH_ENABLED_ROUTES = [
@@ -74,6 +75,7 @@ export function Header() {
 	const audioRef = useRef<HTMLAudioElement | null>(null)
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
+	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
 
 	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => normalizedPathname?.startsWith(route))
 
@@ -97,6 +99,16 @@ export function Header() {
 	}, [unreadCount])
 
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
+	const { hasDeskUnread, hasMyOffersUnread } = useMemo(() => {
+		let desk = false
+		let myOffers = false
+		for (const item of unreadOffers) {
+			if (item.target === 'desk') desk = true
+			if (item.target === 'myOffers') myOffers = true
+			if (desk && myOffers) break
+		}
+		return { hasDeskUnread: desk, hasMyOffersUnread: myOffers }
+	}, [unreadOffers])
 
 	const handlePolicySubmit = () => {
 		if (!policyAccepted || isLoadingPatchMe) return
@@ -171,7 +183,7 @@ export function Header() {
 						</button>
 					)}
 					{visibleNavItems.length > 0 && (
-						<nav className='flex self-start gap-4 sm:gap-6 font-medium text-gray-700 overflow-x-auto max-w-full whitespace-nowrap'>
+						<nav className='flex self-start gap-4 sm:gap-6 font-medium text-gray-700 overflow-x-auto max-w-full whitespace-nowrap px-2 pt-2'>
 							{visibleNavItems.map((item) => (
 								<Link
 									key={item.href}
@@ -183,7 +195,15 @@ export function Header() {
 											: 'border-b-transparent hover:text-brand/70',
 									)}
 								>
-									{t(item.labelKey)}
+									<span className='relative'>
+										{t(item.labelKey)}
+										{item.labelKey === 'components.dashboard.headerNav.desk' && hasDeskUnread ? (
+											<span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' />
+										) : null}
+										{item.labelKey === 'components.dashboard.headerNav.desk.myOffers' && hasMyOffersUnread ? (
+											<span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' />
+										) : null}
+									</span>
 								</Link>
 							))}
 						</nav>
