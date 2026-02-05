@@ -48,6 +48,15 @@ export function OfferModal({
 	title,
 }: OfferModalProps) {
 	const { t } = useI18n()
+	const [internalOpen, setInternalOpen] = useState(false)
+	const isControlled = typeof open === 'boolean'
+	const resolvedOpen = isControlled ? open : internalOpen
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (!isControlled) {
+			setInternalOpen(nextOpen)
+		}
+		onOpenChange?.(nextOpen)
+	}
 	const resolvedTitle = title ?? t('components.offerModal.title')
 	const { createOffer, isLoadingCreateOffer } = useCreateOffer()
 	const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({})
@@ -80,13 +89,13 @@ export function OfferModal({
 				payment_method: paymentMethod as PaymentMethodEnum,
 			},
 			{
-				onSuccess: () => onOpenChange?.(false),
+				onSuccess: () => handleOpenChange(false),
 			},
 		)
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog open={resolvedOpen} onOpenChange={handleOpenChange}>
 			{!isAction && (
 				<DialogTrigger asChild>
 					<Button className={cn('bg-brand text-white', className)} disabled={!selectedRow}>

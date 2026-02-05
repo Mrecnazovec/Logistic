@@ -272,7 +272,7 @@
 	'components.inviteDriver.copySuccess': 'Ссылка скопирована.',
 	'components.inviteDriver.copyError': 'Не удалось скопировать ссылку.',
 	'components.inviteDriver.price': 'Стоимость',
-	'components.inviteDriver.driverPriceLabel': 'Цена водителя (макс: {maxPrice})',
+	'components.inviteDriver.driverPriceLabel': 'Оплата перевозки. Цена от заказчика {maxPrice}',
 	'components.inviteDriver.driverPricePlaceholder': 'Введите цену водителя',
 	'components.inviteDriver.driverPriceRequired': 'Укажите цену водителя.',
 	'components.inviteDriver.driverCurrencyRequired': 'Выберите валюту.',

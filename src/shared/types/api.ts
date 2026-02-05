@@ -111,10 +111,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Возвращает статистику:
-         *     - total_users: общее количество пользователей
-         *     - online_users: пользователи с last_login в последние 5 минут
-         *     - total_cargos: общее количество заявок */
         get: operations["auth_dashboard_stats_retrieve"];
         put?: never;
         post?: never;

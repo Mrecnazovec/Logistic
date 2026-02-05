@@ -271,13 +271,15 @@ export function OfferDecisionModal({ offer, open, onOpenChange, statusNote, allo
 										</div>
 
 										<div className='flex max-sm:flex-col justify-end gap-3'>
-											<Button
-												onClick={handleAccept}
-												disabled={isLoadingAcceptOffer || !offer}
-												className='rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60'
-											>
-												{t('components.offerDecision.accept')}
-											</Button>
+											{!isCounterMode ? (
+												<Button
+													onClick={handleAccept}
+													disabled={isLoadingAcceptOffer || !offer}
+													className='rounded-full bg-success-400 text-white hover:bg-success-500 disabled:opacity-60'
+												>
+													{t('components.offerDecision.accept')}
+												</Button>
+											) : null}
 											<Button
 												onClick={handleCounter}
 												disabled={isCounterMode && isCounterDisabled}

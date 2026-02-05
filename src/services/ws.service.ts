@@ -35,7 +35,7 @@ export class WSClient {
 	constructor(url: string, options: WSClientOptions = {}) {
 		this.url = url
 		this.options = {
-			pingIntervalMs: options.pingIntervalMs ?? 25000,
+			pingIntervalMs: options.pingIntervalMs ?? 60000,
 			reconnectBaseMs: options.reconnectBaseMs ?? 500,
 			reconnectMaxMs: options.reconnectMaxMs ?? 10000,
 			queueLimit: options.queueLimit ?? 200,

@@ -137,6 +137,7 @@ export function OrderPage() {
 			: orderStatus === OrderStatusEnum.DELIVERED || orderStatus === OrderStatusEnum.PAID
 				? documentActions.other
 				: documentActions.loading
+	const uploadDocumentLabel = hasLoadingDocument ? t('order.field.unloaded') : t('order.field.loaded')
 
 	const handleShare = async () => {
 		const sharePath = order?.share_token ? addLocaleToPath(`/dashboard/order/shared/${order.share_token}`, locale) : ''
@@ -444,9 +445,11 @@ export function OrderPage() {
 			</div>
 
 			<div className='flex flex-wrap items-center justify-end gap-3'>
-				<Button type='button' variant='outline' onClick={handleShare}>
-					{t('order.actions.share')}
-				</Button>
+				{!isCarrier && (
+					<Button type='button' variant='outline' onClick={handleShare}>
+						{t('order.actions.share')}
+					</Button>
+				)}
 				{canCancelOrder && (
 					<Button
 						type='button'
@@ -462,8 +465,8 @@ export function OrderPage() {
 						currentDocumentAction.hasDocument,
 						currentDocumentAction.documentDate,
 						currentDocumentAction.href,
-						t('order.actions.uploadFile'),
-						orderStatus !== OrderStatusEnum.CANCELED,
+						uploadDocumentLabel,
+						orderStatus !== OrderStatusEnum.CANCELED && orderStatus !== OrderStatusEnum.DELIVERED,
 						true,
 					)}
 				{canInviteDriver && order && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
