@@ -654,7 +654,7 @@ export interface paths {
          *       GET    /api/offers/{id}/             — детали
          *       POST   /api/offers/{id}/accept/      — принять
          *       POST   /api/offers/{id}/reject/      — отклонить
-         *       POST   /api/offers/{id}/counter/     — контр-предложение
+         *       POST   /api/offers/{id}/bids/     — контр-предложение
          *       POST   /api/offers/invite/           — инвайт (Заказчик → Перевозчик) */
         put: operations["offers_update"];
         post?: never;
@@ -666,7 +666,7 @@ export interface paths {
          *       GET    /api/offers/{id}/             — детали
          *       POST   /api/offers/{id}/accept/      — принять
          *       POST   /api/offers/{id}/reject/      — отклонить
-         *       POST   /api/offers/{id}/counter/     — контр-предложение
+         *       POST   /api/offers/{id}/bids/     — контр-предложение
          *       POST   /api/offers/invite/           — инвайт (Заказчик → Перевозчик) */
         delete: operations["offers_destroy"];
         options?: never;
@@ -679,7 +679,7 @@ export interface paths {
          *       GET    /api/offers/{id}/             — детали
          *       POST   /api/offers/{id}/accept/      — принять
          *       POST   /api/offers/{id}/reject/      — отклонить
-         *       POST   /api/offers/{id}/counter/     — контр-предложение
+         *       POST   /api/offers/{id}/bids/     — контр-предложение
          *       POST   /api/offers/invite/           — инвайт (Заказчик → Перевозчик) */
         patch: operations["offers_partial_update"];
         trace?: never;
@@ -704,7 +704,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/offers/{id}/counter/": {
+    "/api/offers/{id}/bids/": {
         parameters: {
             query?: never;
             header?: never;
@@ -717,7 +717,7 @@ export interface paths {
          * Контр-предложение
          * @description Создать контр-предложение. Разрешено владельцу груза или перевозчику этого оффера.
          */
-        post: operations["offers_counter_create"];
+        post: operations["offers_bids_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3994,7 +3994,7 @@ export interface operations {
             };
         };
     };
-    offers_counter_create: {
+    offers_bids_create: {
         parameters: {
             query?: never;
             header?: never;

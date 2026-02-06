@@ -91,7 +91,7 @@ class OffersService {
 
 	async counterOffer(id: string, data: IOfferCounter) {
 		const { data: counterOffer } = await axiosWithAuth<IOfferAcceptResponse>({
-			url: API_URL.offers(`${id}/counter/`),
+			url: API_URL.offers(`${id}/bids/`),
 			method: 'POST',
 			data,
 		})
