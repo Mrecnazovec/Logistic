@@ -15,13 +15,13 @@ import { getNavItems, type NavItem } from './NavItems'
 
 export function MobileNav() {
 	const pathname = usePathname()
-	const filteredPathname = `${pathname}/`
 	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
 	const [isMoreOpen, setIsMoreOpen] = useState(false)
 	const { notifications } = useNotifications(true)
 	const navItems = useMemo(() => getNavItems(role, locale), [role, locale])
 	const deskHref = withLocale(role === RoleEnum.CARRIER ? DASHBOARD_URL.desk('my') : DASHBOARD_URL.desk(), locale)
+	const homeHref = withLocale(DASHBOARD_URL.home(''), locale)
 
 	const unreadCount = useMemo(
 		() => notifications.filter((item) => !item.is_read).length,
@@ -29,6 +29,16 @@ export function MobileNav() {
 	)
 
 	const normalizeHref = (href: string) => (href.endsWith('/') ? href : `${href}/`)
+	const normalizedPathname = normalizeHref(pathname)
+	const normalizedHomeHref = normalizeHref(homeHref)
+	const isItemActive = (href: string) => {
+		const normalizedHref = normalizeHref(href)
+		if (normalizedHref === normalizedHomeHref) {
+			return normalizedPathname === normalizedHomeHref
+		}
+
+		return normalizedPathname.startsWith(normalizedHref)
+	}
 
 	const isAllowed = useMemo(
 		() => (roles?: NavItem['roles']) => {
@@ -74,14 +84,14 @@ export function MobileNav() {
 	const mainNavItems = [...prioritizedItems, ...fallbackItems].slice(0, 3)
 	const usedHrefs = new Set(mainNavItems.map((item) => item.href))
 	const additionalItems = allItems.filter((item) => !usedHrefs.has(item.href))
-	const isMoreActive = additionalItems.some((item) => filteredPathname.startsWith(normalizeHref(item.href)))
-	const isNotificationsActive = filteredPathname.startsWith(
+	const isMoreActive = additionalItems.some((item) => isItemActive(item.href))
+	const isNotificationsActive = normalizedPathname.startsWith(
 		normalizeHref(withLocale(DASHBOARD_URL.notifications(), locale)),
 	)
 
 	const renderNavButton = (item: (typeof mainNavItems)[number]) => {
 		const Icon = item.icon
-		const isActive = filteredPathname.startsWith(normalizeHref(item.href))
+		const isActive = isItemActive(item.href)
 
 		return (
 			<Link
@@ -208,7 +218,7 @@ export function MobileNav() {
 							) : (
 								additionalItems.map((item) => {
 									const Icon = item.icon
-									const isActive = filteredPathname.startsWith(normalizeHref(item.href))
+									const isActive = isItemActive(item.href)
 
 									return (
 										<Link
