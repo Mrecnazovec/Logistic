@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
-import { CircleCheck, Eye, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Wallet } from 'lucide-react'
+import { CircleCheck, Eye, EyeOff, Handshake, MapPin, Minus, Pen, RefreshCcw, Trash, Wallet } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -102,12 +102,25 @@ function DeskCard({ cargo, isUnread }: DeskCardProps) {
 					<div className='relative'>
 						<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 							{cargo.product ?? '-'}
+							<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+								<span className='font-semibold text-foreground'>ID:</span>
+								<UuidCopy uuid={cargo.uuid} />
+							</div>
 						</CardTitle>
 						{isUnread ? <span className='absolute -top-1 -right-2 size-2 rounded-full bg-error-500' /> : null}
 					</div>
-					<div className='flex items-center gap-2 text-sm text-muted-foreground'>
-						<span className='font-semibold text-foreground'>ID:</span>
-						<UuidCopy uuid={cargo.uuid} />
+					<div>
+
+						<Button
+							variant='outline'
+							className=' bg-error-500 text-white hover:bg-error-400 hover:text-white'
+							onClick={() => setDeleteOpen(true)}
+							disabled={isLoadingCancel}
+							size={'icon'}
+						>
+							{/* {t('components.cargoActions.delete')} */}
+							<Trash />
+						</Button>
 					</div>
 				</div>
 			</CardHeader>
@@ -135,7 +148,7 @@ function DeskCard({ cargo, isUnread }: DeskCardProps) {
 				</Link>
 				<Button
 					variant='outline'
-					className='min-w-[140px] flex-1 bg-error-500 text-white hover:bg-error-400 hover:text-white'
+					className='min-w-[140px] flex-1 bg-grayscale text-white hover:bg-grayscale/90 hover:text-white'
 					onClick={() => toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })}
 					disabled={isLoadingToggle}
 				>
@@ -153,14 +166,7 @@ function DeskCard({ cargo, isUnread }: DeskCardProps) {
 					<Handshake className='size-4' />
 					{t('desk.card.offer')}
 				</Button>
-				<Button
-					variant='outline'
-					className='min-w-[140px] flex-1 bg-error-500 text-white hover:bg-error-400 hover:text-white'
-					onClick={() => setDeleteOpen(true)}
-					disabled={isLoadingCancel}
-				>
-					{t('components.cargoActions.delete')}
-				</Button>
+
 			</CardFooter>
 
 			<DeskInviteModal open={offerOpen} onOpenChange={setOfferOpen} selectedRow={cargo} />
