@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { DeskMyPage } from './DeskMyPage'
+import { DeskMyPage } from './(DeskMyPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 

@@ -1,4 +1,4 @@
-import { AgreementPage } from './AgreementPage'
+import { AgreementPage } from './(AgreementPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'

@@ -1,4 +1,4 @@
-import { StatusPage } from './StatusPage'
+import { StatusPage } from './(StatusPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'

@@ -1,4 +1,4 @@
-import { PaymentPage } from './PaymentPage'
+import { PaymentPage } from './(PaymentPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'

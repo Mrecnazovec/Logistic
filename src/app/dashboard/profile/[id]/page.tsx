@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import { LoaderTable } from '@/components/ui/table/TableStates'
-import { IdProfile } from './IdProfile'
+import { IdProfile } from './(IdProfile)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'

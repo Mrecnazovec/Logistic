@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { Notifications } from './Notifications'
+import { Notifications } from './(Notifications)'
 import { LoaderTable } from '@/components/ui/table/TableStates'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'

@@ -129,6 +129,15 @@ useMediaQuery - subscribes to matchMedia for a media query string, returns boole
 useI18n - provides access to locale and t() from I18nProvider.
 useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
 useIsMobile - tracks viewport width and returns true when below the mobile breakpoint.
+useCabinetPage - composes cabinet page state, analytics/profile data mapping, and email/phone verification actions.
+useDeskMyPage - composes desk my-offers page state, tabs, unread indicators, table/card data, and decision modal state.
+useEditForm - manages desk edit form state and submits patchLoad by uuid (data: CargoPublishRequestDto).
+useEditPage - composes desk edit page state, load-to-form reset, and selected city labels for selectors.
+useInvitePage - composes invite page auth/invite states, formatted cargo values, and accept/counter/reject actions.
+useNotificationsPage - composes notifications page state, selected notification sync, infinite loading, and read actions.
+useIdProfilePage - composes profile-by-id page data, chart stats, locale formatting, and transport dialog state.
+usePostForm - manages announcements posting form defaults and submits createLoad payload (data: CargoPublishRequestDto).
+usePostingPage - composes posting page state (form, loading, country watchers, and email-contact availability).
 /i18n - translation keys and locale messages directory.
 config.ts - locales list, Locale type, defaultLocale, localeCookie.
 getLocale - reads locale from cookie (server) with fallback to default.
@@ -156,6 +165,17 @@ parseDateToTimestamp - parses date to timestamp for sorting.
 formatDurationFromMinutes - formats total minutes to "X h Y min".
 formatAgeFromMinutes - human-readable age from minutes ("min/h/day ago").
 handleNumericInput - normalizes numeric input (comma to dot) and applies regex.
+getLocaleTag - maps app locale code to Intl locale tag for numeric/date formatting.
+formatTrend - formats percent trend text with sign and locale-aware decimals.
+formatCityLabel - builds city display label from city and country fields (city: City | null).
+createCityFromValues - creates a City object from name/country form values (name?: string, country?: string).
+clampAxlesValue - clamps axles input string to max numeric value (value: string, max?: number).
+shouldDisableEmailContact - returns whether email contact options should be disabled (email?: string | null).
+isValueMissing - checks whether a string-like value is empty after trimming.
+parseNumber - parses number-like values and returns finite numbers or null.
+getDaysSince - returns full days passed since a date string (dateValue?: string | null).
+parsePieChart - parses profile pie_chart payload from object or JSON string into normalized chart fields.
+formatPlural - returns locale-aware pluralized count string for ru/en forms.
 InputOTP - OTP code input built on input-otp.
 transliterate - transliterates between Cyrillic and Latin characters.
 cn - merges className strings via clsx and tailwind-merge.
@@ -328,12 +348,48 @@ InviteDriverModal - modal to invite driver to order by id or link and allow acce
 ConsultationModal - modal with email input and actions for free consultation.
 CabinetEmailModal - modal for updating email and verifying via OTP code.
 PolicyAgreementModal - modal to accept policy agreement with checkbox and submit action.
+PostingPage - announcements posting page composer that wires section UI blocks with form submit state.
+OriginSection - presentational origin block for city/address/load date fields in posting form.
+DestinationSection - presentational destination block for city/address/delivery date fields in posting form.
+ShippingSection - presentational shipping block for price/volume/axles/contact/payment/visibility fields.
+EquipmentSection - presentational equipment block for product/transport/weight/description fields.
+PostingActions - submit and cancel dialog action block for posting form.
+Cabinet - cabinet page composer that combines profile and analytics panels with contact verification modals.
+ProfilePanel - presentational cabinet profile panel with identity, readonly fields, and email/phone actions.
+AnalyticsPanel - presentational cabinet analytics panel with detail cards and revenue/transport dialogs.
+AnalyticsDetailCard - presentational analytics card for a single cabinet KPI item with loading and trend state.
+DeskMyPage - desk/my page composer that wires tabs, table/card views, and offer decision modal.
+DeskMyView - presentational desk/my view with search form, tabs, and responsive card/table content.
+EditPage - desk/edit page composer that wires edit form orchestration to the form UI.
+EditFormContent - presentational desk edit form UI for origin/destination/shipping/equipment blocks and actions.
+InvitePage - desk invite page composer with hydration fallback and invite content suspense boundary.
+InviteView - presentational invite page UI that renders auth/error/content states and response actions.
+Notifications - notifications page composer that wires header/list/details panels with notifications state.
+NotificationsHeader - notifications header with unread badge, refresh, and mark-all-read actions.
+NotificationsListPanel - notifications list panel with tabs, infinite-scroll sentinel, and item selection.
+NotificationsDetailsPanel - details panel wrapper that renders selected notification details or empty/loading state.
+AgreementPageView - presentational agreement detail and accept/reject UI for order agreement route.
+InvitePageView - presentational order invite preview and decision workflow UI.
+SharedOrderPageView - presentational shared order overview UI with statuses and participants.
+OrderPageView - presentational order detail workspace UI with actions and status transitions.
+FolderPageView - presentational order documents folder UI with upload/list controls and role-aware access.
+PaymentPageView - presentational payment summary and confirmation UI for order payments.
+StatusPageView - presentational order status history timeline UI.
+IdProfile - profile-by-id page composer that wires derived state to profile view UI.
+IdProfileView - presentational profile-by-id layout with profile fields, analytics dialog, and stat cards.
+DeskInviteModalView - presentational desk invite modal UI extracted behind a thin DeskInviteModal composer.
+InviteDriverModalView - presentational invite-driver modal UI extracted behind a thin InviteDriverModal composer.
+OfferDecisionModalView - presentational offer decision modal UI extracted behind a thin OfferDecisionModal composer.
+OrderRatingModalView - presentational order rating modal UI extracted behind a thin OrderRatingModal composer.
+DeskOffersModalView - presentational desk offers modal UI extracted behind a thin DeskOffersModal composer.
 
 ## Stores
 
 useRoleStore - Zustand store for user role with setRole.
 useTableTypeStore - Zustand store for current view mode (card/table) with setTableType.
 useSearchDrawerStore - Zustand store for opening/closing the shared search drawer.
+useOfferRealtimeStore - Zustand persisted store for unread offers with add/clear by offer or cargo and reset on logout.
+useAgreementRealtimeStore - Zustand persisted store for agreement update flag with mark/clear and reset on logout.
 
 
 
