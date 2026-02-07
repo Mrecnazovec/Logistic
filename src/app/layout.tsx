@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Raleway, Manrope, Inter, Urbanist } from 'next/font/google'
 import './globals.css'
-import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME } from '@/constants/seo.constants'
+import { SITE_AUTHOR, SITE_NAME, SITE_URL, getLocalizedSeo } from '@/constants/seo.constants'
 import { Providers } from './provider'
 import { I18nProvider } from '@/i18n/I18nProvider'
 import { getMessages } from '@/i18n/messages'
@@ -28,14 +28,36 @@ const urbanist = Urbanist({
 	subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-	title: {
-		absolute: SITE_NAME,
-		template: `%s | ${SITE_NAME}`,
-	},
-	description: SITE_DESCRIPTION,
-	authors: SITE_AUTHOR,
-	keywords: SITE_KEYWORDS,
+export const generateMetadata = async (): Promise<Metadata> => {
+	const locale = await getLocale()
+	const seo = getLocalizedSeo(locale)
+
+	return {
+		metadataBase: new URL(SITE_URL),
+		title: {
+			absolute: SITE_NAME,
+			template: `%s | ${SITE_NAME}`,
+		},
+		description: seo.description,
+		authors: SITE_AUTHOR,
+		keywords: seo.keywords,
+		alternates: {
+			canonical: SITE_URL,
+		},
+		openGraph: {
+			type: 'website',
+			siteName: SITE_NAME,
+			url: SITE_URL,
+			title: SITE_NAME,
+			description: seo.description,
+			locale: seo.ogLocale,
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title: SITE_NAME,
+			description: seo.description,
+		},
+	}
 }
 
 export default async function RootLayout({
