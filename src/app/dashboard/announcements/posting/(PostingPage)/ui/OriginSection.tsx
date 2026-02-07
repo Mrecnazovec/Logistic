@@ -8,15 +8,23 @@ import { Home } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { useI18n } from '@/i18n/I18nProvider'
 import { POSTING_SECTION_CLASS } from '../constants/postingLayout'
+import { LocationMapPicker } from './LocationMapPicker'
+import { useState } from 'react'
+import { CityCoordinates } from '@/shared/types/Nominatim.interface'
 
 type OriginSectionProps = {
 	form: UseFormReturn<CargoPublishRequestDto>
 	isLoadingCreate: boolean
 	originCountryValue?: string
+	yandexApiKey?: string
 }
 
-export function OriginSection({ form, isLoadingCreate, originCountryValue }: OriginSectionProps) {
+export function OriginSection({ form, isLoadingCreate, originCountryValue, yandexApiKey }: OriginSectionProps) {
 	const { t } = useI18n()
+	const [cityCoordinates, setCityCoordinates] = useState<CityCoordinates | null>(null)
+	const [exactCoordinates, setExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
+	const originCity = form.watch('origin_city')
+	const originAddress = form.watch('origin_address')
 
 	return (
 		<div className={POSTING_SECTION_CLASS}>
@@ -36,12 +44,40 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue }: Ori
 								onChange={(val, city) => {
 									field.onChange(val)
 									form.setValue('origin_country', city?.country ?? '')
+									form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
+									setExactCoordinates(null)
+								}}
+								onCoordinates={(coordinates) => {
+									setCityCoordinates(coordinates)
 								}}
 								countryCode={undefined}
 								placeholder={t('announcements.posting.origin.cityPlaceholder')}
 								disabled={isLoadingCreate}
 							/>
 						</FormControl>
+						<LocationMapPicker
+							type='origin'
+							apiKey={yandexApiKey}
+							city={originCity}
+							country={originCountryValue}
+							address={originAddress}
+							fallbackPoint={
+								cityCoordinates
+									? {
+											lat: Number(cityCoordinates.lat),
+											lng: Number(cityCoordinates.lon),
+										}
+									: null
+							}
+							value={exactCoordinates}
+							onSelect={(selection) => {
+								setExactCoordinates({ lat: selection.lat, lng: selection.lng })
+								if (selection.address) {
+									form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+								}
+							}}
+							disabled={isLoadingCreate}
+						/>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -50,7 +86,6 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue }: Ori
 			<FormField
 				control={form.control}
 				name='origin_address'
-				rules={{ required: t('announcements.posting.origin.addressRequired') }}
 				render={({ field }) => (
 					<FormItem className='w-full'>
 						<FormControl>
@@ -59,7 +94,7 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue }: Ori
 									placeholder={t('announcements.posting.origin.addressPlaceholder')}
 									{...field}
 									value={field.value ?? ''}
-									disabled={isLoadingCreate}
+									disabled
 								/>
 								<InputGroupAddon className='pr-2'>
 									<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />

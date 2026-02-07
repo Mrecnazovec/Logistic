@@ -8,7 +8,11 @@ import { PostingActions } from './ui/PostingActions'
 import { ShippingSection } from './ui/ShippingSection'
 import { usePostingPage } from './hooks/usePostingPage'
 
-export function PostingPage() {
+type PostingPageProps = {
+	yandexApiKey?: string
+}
+
+export function PostingPage({ yandexApiKey }: PostingPageProps) {
 	const { form, isLoadingCreate, onSubmit, originCountryValue, destinationCountryValue, disableEmailContact } =
 		usePostingPage()
 
@@ -16,11 +20,17 @@ export function PostingPage() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<div className='grid lg:grid-cols-2 gap-x-6 gap-y-4'>
-					<OriginSection form={form} isLoadingCreate={isLoadingCreate} originCountryValue={originCountryValue} />
+					<OriginSection
+						form={form}
+						isLoadingCreate={isLoadingCreate}
+						originCountryValue={originCountryValue}
+						yandexApiKey={yandexApiKey}
+					/>
 					<DestinationSection
 						form={form}
 						isLoadingCreate={isLoadingCreate}
 						destinationCountryValue={destinationCountryValue}
+						yandexApiKey={yandexApiKey}
 					/>
 					<ShippingSection
 						form={form}

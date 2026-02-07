@@ -13,9 +13,11 @@ export const generateMetadata = async (): Promise<Metadata> => {
 }
 
 export default function page() {
+	const yandexApiKey = process.env.YANDEX_SECRET_KEY
+
 	return (
 		<Suspense fallback={null}>
-			<PostingPage />
+			<PostingPage yandexApiKey={yandexApiKey} />
 		</Suspense>
 	)
 }

@@ -17,6 +17,7 @@ ENV PORT=3002
 ENV APP_URL=https://kad-one.com
 ENV APP_DOMAIN=kad-one.com
 ENV SERVER_URL=https://kad-one.com/api
+ENV YANDEX_SECRET_KEY=9c3057fe-ba49-4897-b3c0-a6370c21e656
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev && npm i typescript
 COPY --from=builder /app/.next ./.next
