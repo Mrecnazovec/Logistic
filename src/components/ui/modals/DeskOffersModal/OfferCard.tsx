@@ -172,13 +172,15 @@ export function OfferCard({
           </>
         ) : (
           <>
-            <Button
-              className="rounded-full bg-success-500 text-white hover:bg-success-400 disabled:opacity-60"
-              onClick={onAccept}
-              disabled={isLoadingAccept}
-            >
-              {t("components.offerCard.accept")}
-            </Button>
+            {!isCounterMode ? (
+              <Button
+                className="rounded-full bg-success-500 text-white hover:bg-success-400 disabled:opacity-60"
+                onClick={onAccept}
+                disabled={isLoadingAccept}
+              >
+                {t("components.offerCard.accept")}
+              </Button>
+            ) : null}
             <Button
               className="rounded-full bg-warning-500 text-white hover:bg-warning-400 disabled:opacity-60"
               onClick={handleCounterOffer}

@@ -369,13 +369,15 @@ function InviteResponseActions({
 			</div>
 
 			<div className='flex flex-wrap gap-3 justify-end pt-2'>
-				<Button
-					onClick={handleAccept}
-					disabled={isActionDisabled}
-					className='rounded-full bg-success-500 text-white hover:bg-success-600 disabled:opacity-60'
-				>
-					{isLoadingAccept ? t('desk.invite.acceptLoading') : t('desk.invite.accept')}
-				</Button>
+				{!isCounterEditing ? (
+					<Button
+						onClick={handleAccept}
+						disabled={isActionDisabled}
+						className='rounded-full bg-success-500 text-white hover:bg-success-600 disabled:opacity-60'
+					>
+						{isLoadingAccept ? t('desk.invite.acceptLoading') : t('desk.invite.accept')}
+					</Button>
+				) : null}
 				<Button
 					onClick={handleCounter}
 					disabled={isActionDisabled || (isCounterEditing && (!priceValue || !currency || !paymentMethod))}
