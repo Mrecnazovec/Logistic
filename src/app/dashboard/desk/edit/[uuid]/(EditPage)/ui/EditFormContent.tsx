@@ -20,12 +20,15 @@ import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { TransportSelector } from '@/components/ui/selectors/TransportSelector'
+import { LocationMapPicker } from '@/app/dashboard/announcements/posting/(PostingPage)/ui/LocationMapPicker'
 import { useI18n } from '@/i18n/I18nProvider'
 import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { NUMERIC_REGEX, PRODUCT_MAX_LENGTH } from '@/shared/regex/regex'
+import { CityCoordinates } from '@/shared/types/Nominatim.interface'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Banknote, Home } from 'lucide-react'
 import { EDIT_SECTION_CLASS } from '../constants/editLayout'
 
@@ -43,6 +46,7 @@ type Props = {
 	destinationCountryValue?: string
 	originCityLabel?: string
 	destinationCityLabel?: string
+	yandexApiKey?: string
 }
 
 export function EditFormContent({
@@ -55,9 +59,18 @@ export function EditFormContent({
 	destinationCountryValue,
 	originCityLabel,
 	destinationCityLabel,
+	yandexApiKey,
 }: Props) {
 	const { t } = useI18n()
 	const router = useRouter()
+	const [originCityCoordinates, setOriginCityCoordinates] = useState<CityCoordinates | null>(null)
+	const [destinationCityCoordinates, setDestinationCityCoordinates] = useState<CityCoordinates | null>(null)
+	const [originExactCoordinates, setOriginExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
+	const [destinationExactCoordinates, setDestinationExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
+	const originCity = form.watch('origin_city')
+	const originAddress = form.watch('origin_address')
+	const destinationCity = form.watch('destination_city')
+	const destinationAddress = form.watch('destination_address')
 
 	return (
 		<Form {...form}>
@@ -82,12 +95,40 @@ export function EditFormContent({
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('origin_country', city?.country ?? '')
+												form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
+												setOriginExactCoordinates(null)
+											}}
+											onCoordinates={(coordinates) => {
+												setOriginCityCoordinates(coordinates)
 											}}
 											countryCode={undefined}
 											placeholder={t('desk.edit.origin.cityPlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
+									<LocationMapPicker
+										type='origin'
+										apiKey={yandexApiKey}
+										city={originCity}
+										country={originCountryValue}
+										address={originAddress}
+										fallbackPoint={
+											originCityCoordinates
+												? {
+														lat: Number(originCityCoordinates.lat),
+														lng: Number(originCityCoordinates.lon),
+													}
+												: null
+										}
+										value={originExactCoordinates}
+										onSelect={(selection) => {
+											setOriginExactCoordinates({ lat: selection.lat, lng: selection.lng })
+											if (selection.address) {
+												form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+											}
+										}}
+										disabled={isLoadingPatch}
+									/>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -104,7 +145,7 @@ export function EditFormContent({
 												placeholder={t('desk.edit.origin.addressPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
-												disabled={isLoadingPatch}
+												disabled
 											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
@@ -151,12 +192,40 @@ export function EditFormContent({
 											onChange={(val, city) => {
 												field.onChange(val)
 												form.setValue('destination_country', city?.country ?? '')
+												form.setValue('destination_address', '', { shouldDirty: true, shouldTouch: true })
+												setDestinationExactCoordinates(null)
+											}}
+											onCoordinates={(coordinates) => {
+												setDestinationCityCoordinates(coordinates)
 											}}
 											countryCode={undefined}
 											placeholder={t('desk.edit.destination.cityPlaceholder')}
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
+									<LocationMapPicker
+										type='destination'
+										apiKey={yandexApiKey}
+										city={destinationCity}
+										country={destinationCountryValue}
+										address={destinationAddress}
+										fallbackPoint={
+											destinationCityCoordinates
+												? {
+														lat: Number(destinationCityCoordinates.lat),
+														lng: Number(destinationCityCoordinates.lon),
+													}
+												: null
+										}
+										value={destinationExactCoordinates}
+										onSelect={(selection) => {
+											setDestinationExactCoordinates({ lat: selection.lat, lng: selection.lng })
+											if (selection.address) {
+												form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+											}
+										}}
+										disabled={isLoadingPatch}
+									/>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -173,7 +242,7 @@ export function EditFormContent({
 												placeholder={t('desk.edit.destination.addressPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
-												disabled={isLoadingPatch}
+												disabled
 											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />

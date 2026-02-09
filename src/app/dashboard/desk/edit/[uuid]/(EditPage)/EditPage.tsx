@@ -3,7 +3,11 @@
 import { useEditPage } from './hooks/useEditPage'
 import { EditFormContent } from './ui/EditFormContent'
 
-export function EditPage() {
+type EditPageProps = {
+	yandexApiKey?: string
+}
+
+export function EditPage({ yandexApiKey }: EditPageProps) {
 	const state = useEditPage()
-	return <EditFormContent {...state} />
+	return <EditFormContent {...state} yandexApiKey={yandexApiKey} />
 }
