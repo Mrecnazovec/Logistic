@@ -19,7 +19,7 @@ const messages: Record<string, string> = {
 	// layouts/dashboard-layout/HeaderNavConfig.ts
 	'components.dashboard.headerNav.order.details': 'Details',
 	'components.dashboard.headerNav.order.docs': 'Documents',
-	'components.dashboard.headerNav.order.statuses': 'Statuses',
+	'components.dashboard.headerNav.order.statuses': 'Tracking',
 	'components.dashboard.headerNav.order.payment': 'Payment',
 	'components.dashboard.headerNav.announcements': 'Search for transportation',
 	'components.dashboard.headerNav.desk': 'Announcements board',

@@ -19,7 +19,7 @@ const messages: Record<string, string> = {
 	// layouts/dashboard-layout/HeaderNavConfig.ts
 	'components.dashboard.headerNav.order.details': 'Tafsilotlar',
 	'components.dashboard.headerNav.order.docs': 'Hujjatlar',
-	'components.dashboard.headerNav.order.statuses': 'Statuslar',
+	'components.dashboard.headerNav.order.statuses': 'Kuzatuv',
 	'components.dashboard.headerNav.order.payment': "To'lov",
 	'components.dashboard.headerNav.announcements': 'Yuklarni izlash',
 	'components.dashboard.headerNav.desk': "E'lonlar doskasi",

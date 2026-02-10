@@ -1,7 +1,7 @@
-import { StatusPage } from './(StatusPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
+import { StatusPage } from './StatusPage'
 
 export const generateMetadata = async (): Promise<Metadata> => {
 	const locale = await getLocale()
@@ -12,5 +12,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
 }
 
 export default function page() {
-	return <StatusPage />
+	const yandexApiKey = process.env.YANDEX_SECRET_KEY
+	return <StatusPage yandexApiKey={yandexApiKey} />
 }

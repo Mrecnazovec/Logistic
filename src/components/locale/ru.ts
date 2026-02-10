@@ -19,7 +19,7 @@
 	// layouts/dashboard-layout/HeaderNavConfig.ts
 	'components.dashboard.headerNav.order.details': 'Детали',
 	'components.dashboard.headerNav.order.docs': 'Документы',
-	'components.dashboard.headerNav.order.statuses': 'Статусы',
+	'components.dashboard.headerNav.order.statuses': 'Отслеживание',
 	'components.dashboard.headerNav.order.payment': 'Оплата',
 	'components.dashboard.headerNav.announcements': 'Поиск грузоперевозок',
 	'components.dashboard.headerNav.desk': 'Доска заявок',
