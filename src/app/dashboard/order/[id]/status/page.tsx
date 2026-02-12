@@ -1,7 +1,7 @@
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
-import { StatusPage } from './StatusPage'
+import { StatusPage } from './(StatusPage)'
 
 export const generateMetadata = async (): Promise<Metadata> => {
 	const locale = await getLocale()

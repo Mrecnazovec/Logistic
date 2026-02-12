@@ -190,7 +190,8 @@ getPageNumberFromUrl - extracts a valid positive page number from a URL search p
 buildTimelineSections - builds grouped timeline sections from order status history with localized labels and date/time formatting.
 buildPointQuery - composes geocoding query string from city/address for map routing.
 resolveYandexLang - maps app locale to Yandex Maps language code.
-loadYandexMaps - dynamically loads Yandex Maps script and returns ready ymaps3 modules.
+loadYandexMaps - dynamically loads Yandex Maps JS API v2.1 script and returns initialized ymaps instance.
+ensureYandexMultiRouterModule - ensures Yandex `multiRouter.MultiRoute` module is loaded before building road routes.
 
 ## Services
 
@@ -381,7 +382,7 @@ FolderPageView - presentational order documents folder UI with upload/list contr
 PaymentPageView - presentational payment summary and confirmation UI for order payments.
 StatusPage - order status page composer that wires status hook, skeleton state, and status view layout.
 StatusPageView - presentational order status workspace with map block, status badge, and timeline feed.
-OrderRouteMap - order status map panel with Yandex map, static truck marker, direct and road routes, and remaining distance overlay.
+OrderRouteMap - order status map panel with Yandex map, status-based truck target routing via MultiRoute, and remaining distance overlay.
 StatusPageSkeleton - skeleton layout for order status page while order/history data is loading.
 EmptyTimelineState - empty state UI for order status timeline.
 IdProfile - profile-by-id page composer that wires derived state to profile view UI.
