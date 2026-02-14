@@ -15,6 +15,7 @@ export type OrderRole = {
 	company: string
 	role: RoleEnum
 	hidden?: boolean
+	hidden_by?: boolean
 }
 
 export type IOrderListBase = components['schemas']['OrderList']

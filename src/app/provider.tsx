@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NextTopLoader from 'nextjs-toploader'
 import { PropsWithChildren, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export function Providers({ children }: PropsWithChildren) {
 	const [client] = useState(
@@ -18,6 +19,7 @@ export function Providers({ children }: PropsWithChildren) {
 
 	return (
 		<QueryClientProvider client={client}>
+			<ReactQueryDevtools initialIsOpen={false} />
 			<NextTopLoader showSpinner={false} />
 			<Toaster toastOptions={{
 				error: {

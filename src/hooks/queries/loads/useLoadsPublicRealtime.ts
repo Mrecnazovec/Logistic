@@ -62,7 +62,7 @@ export const useLoadsPublicRealtime = () => {
 				const isLoadAction = Boolean(action && LOADS_ACTIONS.has(action))
 				const isOfferEvent = Boolean(event && OFFERS_ACTIONS.has(event))
 				const isOrderEvent = Boolean(event && ORDERS_ACTIONS.has(event))
-				if (!isLoadAction && !isOfferEvent && !isOrderEvent) return
+				// if (!isLoadAction && !isOfferEvent && !isOrderEvent) return
 
 				if (isOfferEvent && 'offer' in data && data.offer) {
 					const me = queryClient.getQueryData<IMe>(['get profile'])

@@ -171,10 +171,11 @@ class OrdersService {
 		return order
 	}
 
-	async toggleOrderPrivacy(id: string | number) {
+	async toggleOrderPrivacy(id: string | number, isHidden: boolean) {
 		const { data: order } = await axiosWithAuth<IOrderDetail>({
 			url: API_URL.orders(`${id}/privacy-toggle`),
 			method: 'POST',
+			data: {hide: isHidden}
 		})
 
 		return order

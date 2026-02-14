@@ -11,7 +11,7 @@ export const useToggleOrderPrivacy = () => {
 
 	const { mutate: toggleOrderPrivacy, isPending: isLoadingToggleOrderPrivacy } = useMutation({
 		mutationKey: ['order', 'toggle-privacy'],
-		mutationFn: (id: string | number) => ordersService.toggleOrderPrivacy(id),
+		mutationFn: ({id, isHidden}:{id: string, isHidden: boolean}) => ordersService.toggleOrderPrivacy(id, isHidden),
 		onSuccess(_, id) {
 			queryClient.invalidateQueries({ queryKey: ['get order', String(id)] })
 			queryClient.invalidateQueries({ queryKey: ['get orders', 'by-user'] })

@@ -92,6 +92,7 @@ export function OrderPageView() {
 	const canRateParticipants = order?.status === OrderStatusEnum.PAID || order?.status === OrderStatusEnum.DELIVERED
 	const isCarrier = role === RoleEnum.CARRIER
 	const orderId = order ? String(order.id) : ''
+	const isHiddenContact = Boolean(order?.roles.customer.hidden)
 	const canChangeDriverStatus = Boolean(order && isCarrier)
 	const orderStatus = order?.status ?? null
 	const orderLogisticId = order?.roles?.logistic?.id ?? null
@@ -110,10 +111,11 @@ export function OrderPageView() {
 		((role === RoleEnum.LOGISTIC && isOrderLogistic) || (role === RoleEnum.CUSTOMER && isOrderCustomer))
 	const isCurrentRoleHidden =
 		role === RoleEnum.LOGISTIC
-			? Boolean(order?.roles.logistic?.hidden)
+			? Boolean(order?.roles.customer.hidden_by)
 			: role === RoleEnum.CUSTOMER
 				? Boolean(order?.roles.customer.hidden)
 				: false
+	const shouldHideCustomerContactsForCarrier = isCarrier && Boolean(order?.roles.customer.hidden)
 
 	const documents = order?.documents ?? []
 	const firstOtherDocument = getFirstDocumentByCategory(documents, 'other')
@@ -240,7 +242,7 @@ export function OrderPageView() {
 
 	const handleToggleContacts = () => {
 		if (!orderId) return
-		toggleOrderPrivacy(orderId)
+		toggleOrderPrivacy({ id: orderId, isHidden: !isHiddenContact })
 	}
 
 	const orderStatusBadge = orderStatus ? (
@@ -310,16 +312,16 @@ export function OrderPageView() {
 						rows: [
 							{
 								label: t('order.field.customer'),
-								value: withFallback(order.roles.customer.name, order.roles.customer.id, isCarrier && order.roles.customer.hidden),
+								value: withFallback(order.roles.customer.name, order.roles.customer.id, shouldHideCustomerContactsForCarrier),
 							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.customer.company) },
 							{
 								label: t('order.field.phone'),
-								value: withFallback(order.roles.customer.phone, null, isCarrier && order.roles.customer.hidden),
+								value: withFallback(order.roles.customer.phone, null, shouldHideCustomerContactsForCarrier),
 							},
 							{
 								label: t('order.field.email'),
-								value: withFallback(order.roles.customer.email, null, isCarrier && order.roles.customer.hidden),
+								value: withFallback(order.roles.customer.email, null, shouldHideCustomerContactsForCarrier),
 							},
 
 						],
@@ -329,16 +331,16 @@ export function OrderPageView() {
 						rows: [
 							{
 								label: t('order.field.logistic'),
-								value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id, isCarrier && order.roles.logistic?.hidden),
+								value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id),
 							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.logistic?.company) },
 							{
 								label: t('order.field.phone'),
-								value: withFallback(order.roles.logistic?.phone, null, isCarrier && order.roles.logistic?.hidden),
+								value: withFallback(order.roles.logistic?.phone),
 							},
 							{
 								label: t('order.field.email'),
-								value: withFallback(order.roles.logistic?.email, null, isCarrier && order.roles.logistic?.hidden),
+								value: withFallback(order.roles.logistic?.email),
 							},
 						],
 					},
@@ -348,17 +350,17 @@ export function OrderPageView() {
 							{
 								label: t('order.field.carrier'),
 								value: hasDriver
-									? withFallback(order.roles.carrier?.name, order.roles.carrier?.id, isCarrier && order.roles.carrier?.hidden)
+									? withFallback(order.roles.carrier?.name, order.roles.carrier?.id)
 									: DEFAULT_PLACEHOLDER,
 							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.carrier?.company) },
 							{
 								label: t('order.field.phone'),
-								value: withFallback(order.roles.carrier?.phone, null, isCarrier && order.roles.carrier?.hidden),
+								value: withFallback(order.roles.carrier?.phone),
 							},
 							{
 								label: t('order.field.email'),
-								value: withFallback(order.roles.carrier?.email, null, isCarrier && order.roles.carrier?.hidden),
+								value: withFallback(order.roles.carrier?.email),
 							},
 						],
 					},
@@ -518,7 +520,9 @@ export function OrderPageView() {
 						currentDocumentAction.documentDate,
 						currentDocumentAction.href,
 						uploadDocumentLabel,
-						orderStatus !== OrderStatusEnum.CANCELED && orderStatus !== OrderStatusEnum.DELIVERED,
+						orderStatus !== OrderStatusEnum.CANCELED &&
+						orderStatus !== OrderStatusEnum.DELIVERED &&
+						orderStatus !== OrderStatusEnum.PAID,
 						true,
 					)}
 				{canInviteDriver && order && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
