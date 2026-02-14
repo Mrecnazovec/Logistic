@@ -189,7 +189,7 @@ const messages: Record<string, string> = {
 	'order.payment.confirmed': "Siz to'lovni tasdiqladingiz",
 
 	// [id]/status/page.tsx
-	'order.status.meta.title': 'Status',
+	'order.status.meta.title': 'Kuzatuv',
 	// shared/[share_token]/status/page.tsx
 	'order.shared.status.meta.title': 'Buyurtma statuslarini ko\'rish',
 
