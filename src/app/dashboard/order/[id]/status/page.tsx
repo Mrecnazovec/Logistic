@@ -12,6 +12,8 @@ export const generateMetadata = async (): Promise<Metadata> => {
 }
 
 export default function page() {
-	const yandexApiKey = process.env.YANDEX_SECRET_KEY
-	return <StatusPage yandexApiKey={yandexApiKey} />
+	const isDevelopmentMapsEnabled = process.env.APP_ENV === 'development'
+	const yandexApiKey = isDevelopmentMapsEnabled ? process.env.YANDEX_SECRET_KEY : undefined
+
+	return <StatusPage yandexApiKey={yandexApiKey} showMap={isDevelopmentMapsEnabled} />
 }

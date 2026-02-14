@@ -47,6 +47,7 @@ type Props = {
 	originCityLabel?: string
 	destinationCityLabel?: string
 	yandexApiKey?: string
+	showMap?: boolean
 }
 
 export function EditFormContent({
@@ -60,6 +61,7 @@ export function EditFormContent({
 	originCityLabel,
 	destinationCityLabel,
 	yandexApiKey,
+	showMap = true,
 }: Props) {
 	const { t } = useI18n()
 	const router = useRouter()
@@ -106,29 +108,31 @@ export function EditFormContent({
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
-									<LocationMapPicker
-										type='origin'
-										apiKey={yandexApiKey}
-										city={originCity}
-										country={originCountryValue}
-										address={originAddress}
-										fallbackPoint={
-											originCityCoordinates
-												? {
-														lat: Number(originCityCoordinates.lat),
-														lng: Number(originCityCoordinates.lon),
-													}
-												: null
-										}
-										value={originExactCoordinates}
-										onSelect={(selection) => {
-											setOriginExactCoordinates({ lat: selection.lat, lng: selection.lng })
-											if (selection.address) {
-												form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+									{showMap ? (
+										<LocationMapPicker
+											type='origin'
+											apiKey={yandexApiKey}
+											city={originCity}
+											country={originCountryValue}
+											address={originAddress}
+											fallbackPoint={
+												originCityCoordinates
+													? {
+															lat: Number(originCityCoordinates.lat),
+															lng: Number(originCityCoordinates.lon),
+														}
+													: null
 											}
-										}}
-										disabled={isLoadingPatch}
-									/>
+											value={originExactCoordinates}
+											onSelect={(selection) => {
+												setOriginExactCoordinates({ lat: selection.lat, lng: selection.lng })
+												if (selection.address) {
+													form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+												}
+											}}
+											disabled={isLoadingPatch}
+										/>
+									) : null}
 									<FormMessage />
 								</FormItem>
 							)}
@@ -145,7 +149,7 @@ export function EditFormContent({
 												placeholder={t('desk.edit.origin.addressPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
-												disabled
+												disabled={isLoadingPatch || showMap}
 											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
@@ -203,29 +207,31 @@ export function EditFormContent({
 											disabled={isLoadingPatch}
 										/>
 									</FormControl>
-									<LocationMapPicker
-										type='destination'
-										apiKey={yandexApiKey}
-										city={destinationCity}
-										country={destinationCountryValue}
-										address={destinationAddress}
-										fallbackPoint={
-											destinationCityCoordinates
-												? {
-														lat: Number(destinationCityCoordinates.lat),
-														lng: Number(destinationCityCoordinates.lon),
-													}
-												: null
-										}
-										value={destinationExactCoordinates}
-										onSelect={(selection) => {
-											setDestinationExactCoordinates({ lat: selection.lat, lng: selection.lng })
-											if (selection.address) {
-												form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+									{showMap ? (
+										<LocationMapPicker
+											type='destination'
+											apiKey={yandexApiKey}
+											city={destinationCity}
+											country={destinationCountryValue}
+											address={destinationAddress}
+											fallbackPoint={
+												destinationCityCoordinates
+													? {
+															lat: Number(destinationCityCoordinates.lat),
+															lng: Number(destinationCityCoordinates.lon),
+														}
+													: null
 											}
-										}}
-										disabled={isLoadingPatch}
-									/>
+											value={destinationExactCoordinates}
+											onSelect={(selection) => {
+												setDestinationExactCoordinates({ lat: selection.lat, lng: selection.lng })
+												if (selection.address) {
+													form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+												}
+											}}
+											disabled={isLoadingPatch}
+										/>
+									) : null}
 									<FormMessage />
 								</FormItem>
 							)}
@@ -242,7 +248,7 @@ export function EditFormContent({
 												placeholder={t('desk.edit.destination.addressPlaceholder')}
 												{...field}
 												value={field.value ?? ''}
-												disabled
+												disabled={isLoadingPatch || showMap}
 											/>
 											<InputGroupAddon className='pr-2'>
 												<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />

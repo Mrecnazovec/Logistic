@@ -1,4 +1,4 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
+﻿import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
@@ -17,9 +17,10 @@ type OriginSectionProps = {
 	isLoadingCreate: boolean
 	originCountryValue?: string
 	yandexApiKey?: string
+	showMap?: boolean
 }
 
-export function OriginSection({ form, isLoadingCreate, originCountryValue, yandexApiKey }: OriginSectionProps) {
+export function OriginSection({ form, isLoadingCreate, originCountryValue, yandexApiKey, showMap = true }: OriginSectionProps) {
 	const { t } = useI18n()
 	const [cityCoordinates, setCityCoordinates] = useState<CityCoordinates | null>(null)
 	const [exactCoordinates, setExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
@@ -55,29 +56,31 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue, yande
 								disabled={isLoadingCreate}
 							/>
 						</FormControl>
-						<LocationMapPicker
-							type='origin'
-							apiKey={yandexApiKey}
-							city={originCity}
-							country={originCountryValue}
-							address={originAddress}
-							fallbackPoint={
-								cityCoordinates
-									? {
-											lat: Number(cityCoordinates.lat),
-											lng: Number(cityCoordinates.lon),
-										}
-									: null
-							}
-							value={exactCoordinates}
-							onSelect={(selection) => {
-								setExactCoordinates({ lat: selection.lat, lng: selection.lng })
-								if (selection.address) {
-									form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+						{showMap ? (
+							<LocationMapPicker
+								type='origin'
+								apiKey={yandexApiKey}
+								city={originCity}
+								country={originCountryValue}
+								address={originAddress}
+								fallbackPoint={
+									cityCoordinates
+										? {
+												lat: Number(cityCoordinates.lat),
+												lng: Number(cityCoordinates.lon),
+										  }
+										: null
 								}
-							}}
-							disabled={isLoadingCreate}
-						/>
+								value={exactCoordinates}
+								onSelect={(selection) => {
+									setExactCoordinates({ lat: selection.lat, lng: selection.lng })
+									if (selection.address) {
+										form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+									}
+								}}
+								disabled={isLoadingCreate}
+							/>
+						) : null}
 						<FormMessage />
 					</FormItem>
 				)}
@@ -94,7 +97,7 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue, yande
 									placeholder={t('announcements.posting.origin.addressPlaceholder')}
 									{...field}
 									value={field.value ?? ''}
-									disabled
+									disabled={isLoadingCreate || showMap}
 								/>
 								<InputGroupAddon className='pr-2'>
 									<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />

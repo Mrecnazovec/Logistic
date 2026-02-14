@@ -2,6 +2,7 @@
 
 export type StatusPageProps = {
 	yandexApiKey?: string
+	showMap?: boolean
 }
 
 export type TimelineEvent = {
@@ -31,6 +32,7 @@ export type StatusPageViewProps = {
 	locale: string
 	order?: IOrderDetail
 	apiKey?: string
+	showMap?: boolean
 	timelineSections: TimelineSection[]
 	hasHistory: boolean
 	orderStatusLabel: string

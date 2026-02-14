@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Star } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog'
@@ -100,6 +101,7 @@ const getRatedMeta = (order: IOrderDetail, currentRole: RoleEnum | null, targetR
 
 export function OrderRatingModalView({ order, currentRole: _currentRole, disabled }: OrderRatingModalProps) {
 	const { t } = useI18n()
+	const queryClient = useQueryClient()
 	const [open, setOpen] = useState(false)
 	const [formState, setFormState] = useState<Record<number, { score: number | ''; comment: string }>>({})
 	const [editState, setEditState] = useState<Record<number, boolean>>({})
@@ -152,22 +154,28 @@ export function OrderRatingModalView({ order, currentRole: _currentRole, disable
 			updateRating(
 				{ id: String(meta.ratingId), data: payload },
 				{
-					onSuccess: () =>
+					onSuccess: () => {
 						setFormState((prev) => ({
 							...prev,
 							[participant.id]: { score: '', comment: '' },
-						})),
+						}))
+						setEditState((prev) => ({ ...prev, [participant.id]: false }))
+						queryClient.invalidateQueries({ queryKey: ['get order', String(order.id)] })
+					},
 				},
 			)
 			return
 		}
 
 		createRating(payload, {
-			onSuccess: () =>
+			onSuccess: () => {
 				setFormState((prev) => ({
 					...prev,
 					[participant.id]: { score: '', comment: '' },
-				})),
+				}))
+				setEditState((prev) => ({ ...prev, [participant.id]: false }))
+				queryClient.invalidateQueries({ queryKey: ['get order', String(order.id)] })
+			},
 		})
 	}
 

@@ -187,6 +187,10 @@ const messages: Record<string, string> = {
 	// queries/orders/useGenerateOrderInvite.ts
 	'hooks.orders.generateInvite.success': 'Order invite updated',
 	'hooks.orders.generateInvite.error': 'Failed to create order invite',
+
+	// queries/orders/useToggleOrderPrivacy.ts
+	'hooks.orders.togglePrivacy.success': 'Contact visibility updated',
+	'hooks.orders.togglePrivacy.error': 'Failed to update contact visibility',
 }
 
 export default messages

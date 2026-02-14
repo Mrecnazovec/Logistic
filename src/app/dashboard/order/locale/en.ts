@@ -24,7 +24,8 @@ const messages: Record<string, string> = {
 	'order.field.logistic': 'Logistic',
 	'order.field.carrier': 'Carrier',
 	'order.field.company': 'Company',
-	'order.field.contacts': 'Contacts',
+	'order.field.phone': 'Phone',
+	'order.field.email': 'Email',
 	'order.field.originCity': 'Origin city',
 	'order.field.destinationCity': 'Destination city',
 	'order.field.address': 'Address',
@@ -50,6 +51,8 @@ const messages: Record<string, string> = {
 	'order.actions.cancelConfirmDescription': 'This order will be marked as cancelled by you and visible to all participants.',
 	'order.actions.cancelConfirmCancel': 'Keep order',
 	'order.actions.cancelConfirmConfirm': 'Cancel order',
+	'order.actions.hideContacts': 'Hide contacts',
+	'order.actions.showContacts': 'Show contacts',
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx

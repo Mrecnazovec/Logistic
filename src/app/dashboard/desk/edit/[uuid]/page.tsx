@@ -13,11 +13,12 @@ export const generateMetadata = async (): Promise<Metadata> => {
 }
 
 export default function page() {
-	const yandexApiKey = process.env.YANDEX_SECRET_KEY
+	const isDevelopmentMapsEnabled = process.env.APP_ENV === 'development'
+	const yandexApiKey = isDevelopmentMapsEnabled ? process.env.YANDEX_SECRET_KEY : undefined
 
 	return (
 		<Suspense fallback={null}>
-			<EditPage yandexApiKey={yandexApiKey} />
+			<EditPage yandexApiKey={yandexApiKey} showMap={isDevelopmentMapsEnabled} />
 		</Suspense>
 	)
 }

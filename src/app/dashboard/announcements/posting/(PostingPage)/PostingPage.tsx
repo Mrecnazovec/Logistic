@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { DestinationSection } from './ui/DestinationSection'
@@ -10,9 +10,10 @@ import { usePostingPage } from './hooks/usePostingPage'
 
 type PostingPageProps = {
 	yandexApiKey?: string
+	showMap?: boolean
 }
 
-export function PostingPage({ yandexApiKey }: PostingPageProps) {
+export function PostingPage({ yandexApiKey, showMap = true }: PostingPageProps) {
 	const { form, isLoadingCreate, onSubmit, originCountryValue, destinationCountryValue, disableEmailContact } =
 		usePostingPage()
 
@@ -25,12 +26,14 @@ export function PostingPage({ yandexApiKey }: PostingPageProps) {
 						isLoadingCreate={isLoadingCreate}
 						originCountryValue={originCountryValue}
 						yandexApiKey={yandexApiKey}
+						showMap={showMap}
 					/>
 					<DestinationSection
 						form={form}
 						isLoadingCreate={isLoadingCreate}
 						destinationCountryValue={destinationCountryValue}
 						yandexApiKey={yandexApiKey}
+						showMap={showMap}
 					/>
 					<ShippingSection
 						form={form}

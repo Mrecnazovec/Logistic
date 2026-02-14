@@ -938,6 +938,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/orders/{id}/gps/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_gps_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/{id}/invite-by-id/": {
         parameters: {
             query?: never;
@@ -954,6 +970,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/orders/{id}/privacy-toggle/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_privacy_toggle_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/orders/{id}/status-history/": {
         parameters: {
             query?: never;
@@ -962,6 +994,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["orders_status_history_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/tracking/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["orders_tracking_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1618,6 +1666,14 @@ export interface components {
             payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
+            /** Format: double */
+            origin_lat?: number;
+            /** Format: double */
+            origin_lng?: number;
+            /** Format: double */
+            dest_lat?: number;
+            /** Format: double */
+            dest_lng?: number;
         };
         CargoVisibilityRequestRequest: {
             is_hidden: boolean;
@@ -2506,6 +2562,14 @@ export interface components {
             payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
+            /** Format: double */
+            origin_lat?: number;
+            /** Format: double */
+            origin_lng?: number;
+            /** Format: double */
+            dest_lat?: number;
+            /** Format: double */
+            dest_lng?: number;
         };
         /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
          *     и добавляет служебные поля вроде `updated_at`. */
@@ -4481,7 +4545,63 @@ export interface operations {
             };
         };
     };
+    orders_gps_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
     orders_invite_by_id_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderDetailRequest"];
+                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_privacy_toggle_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -4527,6 +4647,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusHistory"];
+                };
+            };
+        };
+    };
+    orders_tracking_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this Заказ. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
                 };
             };
         };

@@ -11,8 +11,10 @@ export type OrderRole = {
 	name: string
 	login: string
 	phone: string
+	email?: string
 	company: string
 	role: RoleEnum
+	hidden?: boolean
 }
 
 export type IOrderListBase = components['schemas']['OrderList']

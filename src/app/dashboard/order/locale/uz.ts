@@ -24,7 +24,8 @@ const messages: Record<string, string> = {
 	'order.field.logistic': 'Logistika',
 	'order.field.carrier': 'Haydovchi',
 	'order.field.company': 'Kompaniya',
-	'order.field.contacts': 'Kontaktlar',
+	'order.field.phone': 'Telefon',
+	'order.field.email': 'Email',
 	'order.field.originCity': "Jo'nash shahri",
 	'order.field.destinationCity': 'Manzil shahri',
 	'order.field.address': 'Manzil',
@@ -50,6 +51,8 @@ const messages: Record<string, string> = {
 	'order.actions.cancelConfirmDescription': "Ushbu buyurtma siz tomonidan bekor qilingan deb belgilanadi va barcha ishtirokchilarga ko'rinadi.",
 	'order.actions.cancelConfirmCancel': 'Buyurtmani qoldirish',
 	'order.actions.cancelConfirmConfirm': 'Buyurtmani bekor qilish',
+	'order.actions.hideContacts': 'Kontaktlarni yashirish',
+	'order.actions.showContacts': 'Kontaktlarni ko\'rsatish',
 	'order.unit.km': 'km',
 
 	// invite/[token]/page.tsx

@@ -187,6 +187,10 @@
 	// queries/orders/useGenerateOrderInvite.ts
 	'hooks.orders.generateInvite.success': 'Приглашение по заказу обновлено.',
 	'hooks.orders.generateInvite.error': 'Не удалось создать приглашение для заказа.',
+
+	// queries/orders/useToggleOrderPrivacy.ts
+	'hooks.orders.togglePrivacy.success': 'Видимость контактов обновлена',
+	'hooks.orders.togglePrivacy.error': 'Не удалось обновить видимость контактов',
 }
 
 export default messages

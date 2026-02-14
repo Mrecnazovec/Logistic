@@ -1,5 +1,6 @@
 'use client'
 
+import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
@@ -13,11 +14,11 @@ import {
 	formatPricePerKmValue,
 	formatPriceValue,
 } from '@/lib/formatters'
-import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import type { DriverStatus } from '@/shared/types/Order.interface'
 
-const withFallback = (value?: string | number | null, id?: number | null) => {
+const withFallback = (value?: string | number | null, id?: number | null, shouldHide?: boolean) => {
+	if (shouldHide) return DEFAULT_PLACEHOLDER
 	if (value === null || value === undefined || value === '') return DEFAULT_PLACEHOLDER
 	if (id) return <ProfileLink name={String(value)} id={id} />
 	return String(value)
@@ -67,19 +68,25 @@ export function SharedOrderPageView() {
 			<div className='grid gap-15 lg:grid-cols-3'>
 				{[
 					{
-							title: t('order.section.customerInfo'),
+						title: t('order.section.customerInfo'),
 						rows: [
-							{ label: t('order.field.customer'), value: withFallback(order.roles.customer.name, order.roles.customer.id) },
+							{
+								label: t('order.field.customer'),
+								value: withFallback(order.roles.customer.name, order.roles.customer.id, order.roles.customer.hidden),
+							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.customer.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.customer.phone) },
+							{ label: t('order.field.phone'), value: withFallback(order.roles.customer.phone, null, order.roles.customer.hidden) },
 						],
 					},
 					{
 						title: t('order.section.logisticInfo'),
 						rows: [
-							{ label: t('order.field.logistic'), value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id ?? null) },
+							{
+								label: t('order.field.logistic'),
+								value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id ?? null, order.roles.logistic?.hidden),
+							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.logistic?.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.logistic?.phone) },
+							{ label: t('order.field.phone'), value: withFallback(order.roles.logistic?.phone, null, order.roles.logistic?.hidden) },
 						],
 					},
 					{
@@ -87,10 +94,12 @@ export function SharedOrderPageView() {
 						rows: [
 							{
 								label: t('order.field.carrier'),
-								value: hasDriver ? withFallback(order.roles.carrier?.name, order.roles.carrier?.id ?? null) : DEFAULT_PLACEHOLDER,
+								value: hasDriver
+									? withFallback(order.roles.carrier?.name, order.roles.carrier?.id ?? null, order.roles.carrier?.hidden)
+									: DEFAULT_PLACEHOLDER,
 							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.carrier?.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.carrier?.phone) },
+							{ label: t('order.field.phone'), value: withFallback(order.roles.carrier?.phone, null, order.roles.carrier?.hidden) },
 						],
 					},
 				].map((section) => (

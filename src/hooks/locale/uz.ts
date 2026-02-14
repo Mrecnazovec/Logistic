@@ -187,6 +187,10 @@ const messages: Record<string, string> = {
 	// queries/orders/useGenerateOrderInvite.ts
 	'hooks.orders.generateInvite.success': 'Buyurtma taklifnomasi yangilandi',
 	'hooks.orders.generateInvite.error': 'Buyurtma taklifnomasini yaratib bo\'lmadi',
+
+	// queries/orders/useToggleOrderPrivacy.ts
+	'hooks.orders.togglePrivacy.success': 'Kontaktlar ko\'rinishi yangilandi',
+	'hooks.orders.togglePrivacy.error': 'Kontaktlar ko\'rinishini yangilab bo\'lmadi',
 }
 
 export default messages

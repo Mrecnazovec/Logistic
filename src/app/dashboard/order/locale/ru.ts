@@ -24,7 +24,8 @@
 	'order.field.logistic': 'Логист',
 	'order.field.carrier': 'Перевозчик',
 	'order.field.company': 'Компания',
-	'order.field.contacts': 'Контакты',
+	'order.field.phone': 'Телефон',
+	'order.field.email': 'Почта',
 	'order.field.originCity': 'Город отправления',
 	'order.field.destinationCity': 'Город назначения',
 	'order.field.address': 'Адрес',
@@ -50,6 +51,8 @@
 	'order.actions.cancelConfirmDescription': 'Эта заявка будет отмечена как отменённая вами и будет видна всем участникам.',
 	'order.actions.cancelConfirmCancel': 'Оставить заказ',
 	'order.actions.cancelConfirmConfirm': 'Отменить заказ',
+	'order.actions.hideContacts': 'Скрыть контакты',
+	'order.actions.showContacts': 'Показать контакты',
 	'order.unit.km': 'км',
 
 	// invite/[token]/page.tsx

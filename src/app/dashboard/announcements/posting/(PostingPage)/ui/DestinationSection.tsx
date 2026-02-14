@@ -1,4 +1,4 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
+﻿import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
@@ -17,9 +17,16 @@ type DestinationSectionProps = {
 	isLoadingCreate: boolean
 	destinationCountryValue?: string
 	yandexApiKey?: string
+	showMap?: boolean
 }
 
-export function DestinationSection({ form, isLoadingCreate, destinationCountryValue, yandexApiKey }: DestinationSectionProps) {
+export function DestinationSection({
+	form,
+	isLoadingCreate,
+	destinationCountryValue,
+	yandexApiKey,
+	showMap = true,
+}: DestinationSectionProps) {
 	const { t } = useI18n()
 	const [cityCoordinates, setCityCoordinates] = useState<CityCoordinates | null>(null)
 	const [exactCoordinates, setExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
@@ -55,29 +62,31 @@ export function DestinationSection({ form, isLoadingCreate, destinationCountryVa
 								disabled={isLoadingCreate}
 							/>
 						</FormControl>
-						<LocationMapPicker
-							type='destination'
-							apiKey={yandexApiKey}
-							city={destinationCity}
-							country={destinationCountryValue}
-							address={destinationAddress}
-							fallbackPoint={
-								cityCoordinates
-									? {
-											lat: Number(cityCoordinates.lat),
-											lng: Number(cityCoordinates.lon),
-										}
-									: null
-							}
-							value={exactCoordinates}
-							onSelect={(selection) => {
-								setExactCoordinates({ lat: selection.lat, lng: selection.lng })
-								if (selection.address) {
-									form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+						{showMap ? (
+							<LocationMapPicker
+								type='destination'
+								apiKey={yandexApiKey}
+								city={destinationCity}
+								country={destinationCountryValue}
+								address={destinationAddress}
+								fallbackPoint={
+									cityCoordinates
+										? {
+												lat: Number(cityCoordinates.lat),
+												lng: Number(cityCoordinates.lon),
+										  }
+										: null
 								}
-							}}
-							disabled={isLoadingCreate}
-						/>
+								value={exactCoordinates}
+								onSelect={(selection) => {
+									setExactCoordinates({ lat: selection.lat, lng: selection.lng })
+									if (selection.address) {
+										form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+									}
+								}}
+								disabled={isLoadingCreate}
+							/>
+						) : null}
 						<FormMessage />
 					</FormItem>
 				)}
@@ -94,7 +103,7 @@ export function DestinationSection({ form, isLoadingCreate, destinationCountryVa
 									placeholder={t('announcements.posting.destination.addressPlaceholder')}
 									{...field}
 									value={field.value ?? ''}
-									disabled
+									disabled={isLoadingCreate || showMap}
 								/>
 								<InputGroupAddon className='pr-2'>
 									<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />

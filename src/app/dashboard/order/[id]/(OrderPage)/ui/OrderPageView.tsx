@@ -17,6 +17,7 @@ import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useCancelOrder } from '@/hooks/queries/orders/useCancelOrder'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { usePatchOrder } from '@/hooks/queries/orders/usePatchOrder'
+import { useToggleOrderPrivacy } from '@/hooks/queries/orders/useToggleOrderPrivacy'
 import { useUpdateOrderStatus } from '@/hooks/queries/orders/useUpdateOrderStatus'
 import { useI18n } from '@/i18n/I18nProvider'
 import { addLocaleToPath } from '@/i18n/paths'
@@ -40,7 +41,8 @@ const OrderRatingModal = dynamic(() =>
 	import('@/components/ui/modals/OrderRatingModal').then((mod) => mod.OrderRatingModal),
 )
 
-const withFallback = (value?: string | number | null, id?: number | null) => {
+const withFallback = (value?: string | number | null, id?: number | null, shouldHide?: boolean) => {
+	if (shouldHide) return DEFAULT_PLACEHOLDER
 	if (value === null || value === undefined || value === '') return DEFAULT_PLACEHOLDER
 	if (id) return <ProfileLink name={String(value)} id={id} />
 	return String(value)
@@ -67,6 +69,7 @@ export function OrderPageView() {
 	const { me } = useGetMe()
 	const { updateOrderStatus, isLoadingUpdateStatus } = useUpdateOrderStatus()
 	const { cancelOrder, isLoadingCancel } = useCancelOrder()
+	const { toggleOrderPrivacy, isLoadingToggleOrderPrivacy } = useToggleOrderPrivacy()
 	const searchParams = useSearchParams()
 	const [cancelOpen, setCancelOpen] = useState(false)
 
@@ -102,6 +105,15 @@ export function OrderPageView() {
 	const canCancelOrder = Boolean(
 		order && (orderStatus === OrderStatusEnum.PENDING || orderStatus === OrderStatusEnum.NODRIVER),
 	)
+	const canToggleContacts =
+		Boolean(order) &&
+		((role === RoleEnum.LOGISTIC && isOrderLogistic) || (role === RoleEnum.CUSTOMER && isOrderCustomer))
+	const isCurrentRoleHidden =
+		role === RoleEnum.LOGISTIC
+			? Boolean(order?.roles.logistic?.hidden)
+			: role === RoleEnum.CUSTOMER
+				? Boolean(order?.roles.customer.hidden)
+				: false
 
 	const documents = order?.documents ?? []
 	const firstOtherDocument = getFirstDocumentByCategory(documents, 'other')
@@ -226,6 +238,11 @@ export function OrderPageView() {
 		})
 	}
 
+	const handleToggleContacts = () => {
+		if (!orderId) return
+		toggleOrderPrivacy(orderId)
+	}
+
 	const orderStatusBadge = orderStatus ? (
 		<Badge variant={getOrderStatusVariant(orderStatus)}>{getOrderStatusLabel(orderStatus, t)}</Badge>
 	) : (
@@ -291,17 +308,38 @@ export function OrderPageView() {
 					{
 						title: t('order.section.customerInfo'),
 						rows: [
-							{ label: t('order.field.customer'), value: withFallback(order.roles.customer.name, order.roles.customer.id) },
+							{
+								label: t('order.field.customer'),
+								value: withFallback(order.roles.customer.name, order.roles.customer.id, isCarrier && order.roles.customer.hidden),
+							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.customer.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.customer.phone) },
+							{
+								label: t('order.field.phone'),
+								value: withFallback(order.roles.customer.phone, null, isCarrier && order.roles.customer.hidden),
+							},
+							{
+								label: t('order.field.email'),
+								value: withFallback(order.roles.customer.email, null, isCarrier && order.roles.customer.hidden),
+							},
+
 						],
 					},
 					{
 						title: t('order.section.logisticInfo'),
 						rows: [
-							{ label: t('order.field.logistic'), value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id) },
+							{
+								label: t('order.field.logistic'),
+								value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id, isCarrier && order.roles.logistic?.hidden),
+							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.logistic?.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.logistic?.phone) },
+							{
+								label: t('order.field.phone'),
+								value: withFallback(order.roles.logistic?.phone, null, isCarrier && order.roles.logistic?.hidden),
+							},
+							{
+								label: t('order.field.email'),
+								value: withFallback(order.roles.logistic?.email, null, isCarrier && order.roles.logistic?.hidden),
+							},
 						],
 					},
 					{
@@ -309,10 +347,19 @@ export function OrderPageView() {
 						rows: [
 							{
 								label: t('order.field.carrier'),
-								value: hasDriver ? withFallback(order.roles.carrier?.name, order.roles.carrier?.id) : DEFAULT_PLACEHOLDER,
+								value: hasDriver
+									? withFallback(order.roles.carrier?.name, order.roles.carrier?.id, isCarrier && order.roles.carrier?.hidden)
+									: DEFAULT_PLACEHOLDER,
 							},
 							{ label: t('order.field.company'), value: withFallback(order.roles.carrier?.company) },
-							{ label: t('order.field.contacts'), value: withFallback(order.roles.carrier?.phone) },
+							{
+								label: t('order.field.phone'),
+								value: withFallback(order.roles.carrier?.phone, null, isCarrier && order.roles.carrier?.hidden),
+							},
+							{
+								label: t('order.field.email'),
+								value: withFallback(order.roles.carrier?.email, null, isCarrier && order.roles.carrier?.hidden),
+							},
 						],
 					},
 				].map((section) => (
@@ -445,6 +492,11 @@ export function OrderPageView() {
 			</div>
 
 			<div className='flex flex-wrap items-center justify-end gap-3'>
+				{canToggleContacts && (
+					<Button type='button' variant='outline' onClick={handleToggleContacts} disabled={isLoadingToggleOrderPrivacy}>
+						{isCurrentRoleHidden ? t('order.actions.showContacts') : t('order.actions.hideContacts')}
+					</Button>
+				)}
 				{!isCarrier && (
 					<Button type='button' variant='outline' onClick={handleShare}>
 						{t('order.actions.share')}
