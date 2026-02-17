@@ -41,6 +41,12 @@ const IMPORTANT_NOTIFICATION_TYPES = new Set<string>(
 	notificationTypeSamples.filter((item) => item.importance).map((item) => item.type)
 )
 
+const getDeskTabTarget = (pathname: string): 'desk' | 'myOffers' | null => {
+	if (pathname.startsWith('/dashboard/desk/my')) return 'myOffers'
+	if (pathname.startsWith('/dashboard/desk')) return 'desk'
+	return null
+}
+
 export function Header() {
 	const pathname = usePathname()
 	const router = useRouter()
@@ -76,6 +82,8 @@ export function Header() {
 	const lastUnreadRef = useRef(0)
 	const openSearchDrawer = useSearchDrawerStore((state) => state.open)
 	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
+	const clearTarget = useOfferRealtimeStore((state) => state.clearTarget)
+	const previousDeskTabTargetRef = useRef<'desk' | 'myOffers' | null>(null)
 
 	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => normalizedPathname?.startsWith(route))
 
@@ -97,6 +105,17 @@ export function Header() {
 	useEffect(() => {
 		lastUnreadRef.current = unreadCount
 	}, [unreadCount])
+
+	useEffect(() => {
+		const currentDeskTabTarget = getDeskTabTarget(normalizedPathname)
+		const previousDeskTabTarget = previousDeskTabTargetRef.current
+
+		if (previousDeskTabTarget && previousDeskTabTarget !== currentDeskTabTarget) {
+			clearTarget(previousDeskTabTarget)
+		}
+
+		previousDeskTabTargetRef.current = currentDeskTabTarget
+	}, [clearTarget, normalizedPathname])
 
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
 	const { hasDeskUnread, hasMyOffersUnread } = useMemo(() => {

@@ -14,6 +14,7 @@ type OfferRealtimeStore = {
 	addOffer: (item: OfferUnreadItem) => void
 	clearOffer: (offerId: number) => void
 	clearCargo: (cargoId: number) => void
+	clearTarget: (target: OfferUnreadTarget) => void
 	resetOffers: () => void
 }
 
@@ -41,6 +42,10 @@ export const useOfferRealtimeStore = create<OfferRealtimeStore>()(
 			clearCargo: (cargoId) =>
 				set((state) => ({
 					unreadOffers: state.unreadOffers.filter((entry) => entry.cargoId !== cargoId),
+				})),
+			clearTarget: (target) =>
+				set((state) => ({
+					unreadOffers: state.unreadOffers.filter((entry) => entry.target !== target),
 				})),
 			resetOffers: () => set({ unreadOffers: [] }),
 		}),
