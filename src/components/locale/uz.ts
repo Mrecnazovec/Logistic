@@ -33,6 +33,7 @@ const messages: Record<string, string> = {
 	'components.dashboard.headerNav.back.toMyCargo': 'Yuklarimga qaytish',
 	'components.dashboard.headerNav.back.toAnnouncements': "E'lonlar ro'yxatiga qaytish",
 	'components.dashboard.headerNav.back.toDocs': 'Hujjatlarga qaytish',
+	'components.dashboard.headerNav.back': 'Qaytish',
 	'components.dashboard.headerNav.profile': 'Profil',
 	'components.dashboard.headerNav.language': 'Til',
 	'components.dashboard.headerNav.support': 'Yordam',

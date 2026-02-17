@@ -1,14 +1,14 @@
 import type { IMe } from '@/shared/types/Me.interface'
 import { meService } from '@/services/me.service'
-import { useLogout } from '@/hooks/useLogout'
 import { useRoleStore } from '@/store/useRoleStore'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useI18n } from '@/i18n/I18nProvider'
+import { PUBLIC_URL } from '@/config/url.config'
 import { useQuery } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-import { getAccessToken, getRefreshToken, removeFromStorage } from '@/services/auth/auth-token.service'
+import { getRefreshToken } from '@/services/auth/auth-token.service'
 import { authService } from '@/services/auth/auth.service'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -27,51 +27,66 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		queryKey: ['get profile'],
 		queryFn: () => meService.getMe(),
 		enabled: options?.enabled ?? true,
+		retry: 0,
 	})
 	const queryClient = useQueryClient()
 	const setRole = useRoleStore((state) => state.setRole)
 	const router = useRouter()
-	const { logout } = useLogout()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 	const lastErrorMessage = useRef<string | null>(null)
 	const hasHandledError = useRef(false)
 	const refreshAttempted = useRef(false)
+	const isRefreshing = useRef(false)
+	const refreshTokenRef = useRef<string | null>(null)
 
 	useEffect(() => {
-		if (!(options?.enabled ?? true)) return
 		const refreshToken = getRefreshToken()
-		if (!refreshToken) return
-
-		refreshAttempted.current = true
-		authService
-			.getNewTokens({ refresh: refreshToken })
-			.then(() => {
-				hasHandledError.current = false
-				queryClient.invalidateQueries({ queryKey: ['get profile'] })
-			})
-			.catch(() => {
-				hasHandledError.current = false
-			})
-	}, [options?.enabled, queryClient])
+		if (refreshToken) {
+			refreshTokenRef.current = refreshToken
+		}
+	})
 
 	useEffect(() => {
 		setRole(me?.role)
 	}, [me?.role, setRole])
 
 	useEffect(() => {
-		if (!isError) return
-		if (hasHandledError.current) return
+		if (!me) return
+		hasHandledError.current = false
+		refreshAttempted.current = false
+		lastErrorMessage.current = null
+	}, [me])
 
-		const refreshToken = getRefreshToken()
+	useEffect(() => {
+		if (!isError) return
+		if (hasHandledError.current || isRefreshing.current) return
+
+		const refreshToken = getRefreshToken() ?? refreshTokenRef.current
 		if (refreshToken && !refreshAttempted.current) {
 			refreshAttempted.current = true
+			isRefreshing.current = true
 			authService
 				.getNewTokens({ refresh: refreshToken })
 				.then(() => {
 					hasHandledError.current = false
+					lastErrorMessage.current = null
+					refreshTokenRef.current = getRefreshToken() ?? refreshTokenRef.current
 					queryClient.invalidateQueries({ queryKey: ['get profile'] })
 				})
 				.catch(() => {
-					hasHandledError.current = false
+					const message = getErrorMessage(error) ?? t('hooks.me.get.error')
+					if (message !== lastErrorMessage.current) {
+						lastErrorMessage.current = message
+						toast.error(message)
+					}
+					hasHandledError.current = true
+					const query = searchParams.toString()
+					const returnPath = query ? `${pathname}?${query}` : pathname
+					router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
+				})
+				.finally(() => {
+					isRefreshing.current = false
 				})
 			return
 		}
@@ -82,9 +97,10 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		lastErrorMessage.current = message
 		toast.error(message)
 		hasHandledError.current = true
-		router.push('/auth')
-		router.refresh()
-	}, [error, isError, queryClient, router, logout, t])
+		const query = searchParams.toString()
+		const returnPath = query ? `${pathname}?${query}` : pathname
+		router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
+	}, [error, isError, pathname, queryClient, router, searchParams, t])
 
 	return { me, isLoading, isError, error }
 }

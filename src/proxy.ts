@@ -49,6 +49,9 @@ export async function proxy(request: NextRequest) {
 
 	const isAuthPage = normalizedPath.startsWith('/auth')
 	const isDashboard = normalizedPath.startsWith('/dashboard')
+	const isPublicDashboardInvite =
+		normalizedPath.startsWith('/dashboard/desk/invite/') ||
+		normalizedPath.startsWith('/dashboard/order/invite/')
 
 	if (isAuthPage && refreshToken) {
 		const redirectUrl = request.nextUrl.clone()
@@ -58,9 +61,11 @@ export async function proxy(request: NextRequest) {
 		return response
 	}
 
-	if (isDashboard && !refreshToken) {
+	if (isDashboard && !refreshToken && !isPublicDashboardInvite) {
 		const redirectUrl = request.nextUrl.clone()
+		const nextPath = `${pathname}${request.nextUrl.search}`
 		redirectUrl.pathname = addLocaleToPath(PUBLIC_URL.auth(), activeLocale)
+		redirectUrl.searchParams.set('next', nextPath)
 		const response = NextResponse.redirect(redirectUrl)
 		response.cookies.set(localeCookie, activeLocale, { path: '/' })
 		return response

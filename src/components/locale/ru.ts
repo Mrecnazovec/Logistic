@@ -33,6 +33,7 @@
 	'components.dashboard.headerNav.back.toMyCargo': 'Назад к моим грузам',
 	'components.dashboard.headerNav.back.toAnnouncements': 'Назад к списку объявлений',
 	'components.dashboard.headerNav.back.toDocs': 'Назад к документам',
+	'components.dashboard.headerNav.back': 'Назад',
 	'components.dashboard.headerNav.profile': 'Профиль',
 	'components.dashboard.headerNav.language': 'Язык',
 	'components.dashboard.headerNav.support': 'Поддержка',

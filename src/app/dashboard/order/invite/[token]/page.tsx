@@ -6,7 +6,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { ordersService } from '@/services/orders.service'
 import { SITE_URL } from '@/constants/seo.constants'
 import type { InvitePreview } from '@/shared/types/Order.interface'
-import { formatPriceValue } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatPriceValue } from '@/lib/formatters'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import type { Metadata } from 'next'
 
@@ -55,7 +55,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 	const descriptionParts = [
 		route || null,
 		company ? `${messages['order.invite.company'] ?? 'Company'}: ${company}` : null,
-		price && price !== '—' ? `${messages['order.field.price'] ?? 'Price'}: ${price}` : null,
+		price && price !== DEFAULT_PLACEHOLDER ? `${messages['order.field.price'] ?? 'Price'}: ${price}` : null,
 	].filter(Boolean) as string[]
 	const description =
 		descriptionParts.join(' | ') ||

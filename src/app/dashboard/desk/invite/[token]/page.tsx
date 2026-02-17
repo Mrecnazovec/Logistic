@@ -7,7 +7,7 @@ import { DASHBOARD_URL } from '@/config/url.config'
 import { axiosClassic } from '@/api/api.interceptors'
 import { API_URL } from '@/config/api.config'
 import { SITE_URL } from '@/constants/seo.constants'
-import { formatPriceValue } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatPriceValue } from '@/lib/formatters'
 import type { components } from '@/shared/types/api'
 
 type PageProps = {
@@ -61,7 +61,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 	const descriptionParts = [
 		route || null,
 		company ? `${messages['desk.invite.company'] ?? 'Company'}: ${company}` : null,
-		price && price !== '—' ? `${messages['desk.invite.price'] ?? 'Price'}: ${price}` : null,
+		price && price !== DEFAULT_PLACEHOLDER ? `${messages['desk.invite.price'] ?? 'Price'}: ${price}` : null,
 	].filter(Boolean) as string[]
 	const description =
 		descriptionParts.join(' | ') ||

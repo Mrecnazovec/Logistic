@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { WSClient } from '@/services/ws.service'
+import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
+import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { IMe } from '@/shared/types/Me.interface'
 import type { Offer, Order } from '@/shared/types/RealtimeEvents.interface'
 import { useAgreementRealtimeStore } from '@/store/useAgreementRealtimeStore'
@@ -36,6 +38,15 @@ type OrdersEventPayload = {
 	event: string
 	order?: Order
 }
+
+const ORDER_STATUS_VALUES = new Set<string>(Object.values(OrderStatusEnum))
+const ORDER_DRIVER_STATUS_VALUES = new Set<string>(Object.values(OrderDriverStatusEnum))
+
+const normalizeOrderStatus = (value?: string) =>
+	value && ORDER_STATUS_VALUES.has(value) ? (value as OrderStatusEnum) : undefined
+
+const normalizeDriverStatus = (value?: string) =>
+	value && ORDER_DRIVER_STATUS_VALUES.has(value) ? (value as OrderDriverStatusEnum) : undefined
 
 export const useLoadsPublicRealtime = () => {
 	const queryClient = useQueryClient()
@@ -75,6 +86,23 @@ export const useLoadsPublicRealtime = () => {
 						const target = data.offer.customer_id === me.id ? 'desk' : 'myOffers'
 						addOffer({ offerId: data.offer.id, cargoId: data.offer.cargo, target })
 					}
+				}
+
+				if (isOrderEvent && 'order' in data && data.order?.id) {
+					const orderId = String(data.order.id)
+					const nextStatus = normalizeOrderStatus(data.order.status)
+					const nextDriverStatus = normalizeDriverStatus(data.order.driver_status)
+
+					queryClient.setQueryData<IOrderDetail | undefined>(['get order', orderId], (current) => {
+						if (!current) return current
+						return {
+							...current,
+							status: nextStatus ?? current.status,
+							driver_status: nextDriverStatus ?? current.driver_status,
+						}
+					})
+
+					queryClient.invalidateQueries({ queryKey: ['get order', orderId] })
 				}
 
 				queryClient.invalidateQueries({ queryKey: ['get loads'] })

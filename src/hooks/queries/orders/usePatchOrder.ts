@@ -16,7 +16,10 @@ export const usePatchOrder = () => {
 	const { mutate: patchOrder, isPending: isLoadingPatch } = useMutation({
 		mutationKey: ['order', 'patch'],
 		mutationFn: ({ id, data }: Payload) => ordersService.patchOrder(id, data),
-		onSuccess() {
+		onSuccess(_, variables) {
+			const orderId = String(variables.id)
+			queryClient.invalidateQueries({ queryKey: ['get order', orderId] })
+			queryClient.invalidateQueries({ queryKey: ['get order status history', orderId] })
 			queryClient.invalidateQueries({ queryKey: ['get orders', 'by-user'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 			toast.success(t('hooks.orders.patch.success'))

@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
-import { OrderPage } from './(OrderPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
+import { OrderPage } from './(OrderPage)'
 
 export const generateMetadata = async (): Promise<Metadata> => {
 	const locale = await getLocale()
@@ -19,3 +19,4 @@ export default function page() {
 		</Suspense>
 	)
 }
+

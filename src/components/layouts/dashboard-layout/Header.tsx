@@ -179,7 +179,7 @@ export function Header() {
 							className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1 cursor-pointer'
 							onClick={handleBackClick}
 						>
-							<ChevronLeft /> {t(backLink.labelKey)}
+							<ChevronLeft /> {t('components.dashboard.headerNav.back')}
 						</button>
 					)}
 					{visibleNavItems.length > 0 && (

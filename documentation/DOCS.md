@@ -142,6 +142,7 @@ useIdProfilePage - composes profile-by-id page data, chart stats, locale formatt
 usePostForm - manages announcements posting form defaults and submits createLoad payload (data: CargoPublishRequestDto).
 usePostingPage - composes posting page state (form, loading, country watchers, and email-contact availability).
 useStatusPage - composes order status page data (order, status history timeline, localized formatters, and status badge metadata).
+useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
 /i18n - translation keys and locale messages directory.
 config.ts - locales list, Locale type, defaultLocale, localeCookie.
 getLocale - reads locale from cookie (server) with fallback to default.
@@ -195,6 +196,7 @@ buildPointQuery - composes geocoding query string from city/address for map rout
 resolveYandexLang - maps app locale to Yandex Maps language code.
 loadYandexMaps - dynamically loads Yandex Maps JS API v2.1 script and returns initialized ymaps instance.
 ensureYandexMultiRouterModule - ensures Yandex `multiRouter.MultiRoute` module is loaded before building road routes.
+getFirstDocumentByCategory - returns the earliest document in a category from order documents list.
 
 ## Services
 
@@ -380,7 +382,13 @@ NotificationsDetailsPanel - details panel wrapper that renders selected notifica
 AgreementPageView - presentational agreement detail and accept/reject UI for order agreement route.
 InvitePageView - presentational order invite preview and decision workflow UI.
 SharedOrderPageView - presentational shared order overview UI with statuses and participants.
+OrderPage - order page composer that renders OrderPageView from route group.
 OrderPageView - presentational order detail workspace UI with actions and status transitions.
+OrderPageSkeleton - skeleton layout for order detail page while data is loading.
+OrderParticipantsGrid - presentational participants grid (customer/logistic/carrier) with role-based masking.
+OrderTripGrid - presentational loading/unloading/transport sections with document status display.
+OrderFinanceSection - presentational finance summary section with role-dependent amounts.
+OrderDriverStatusFloating - floating driver-status dropdown control for carrier role.
 FolderPageView - presentational order documents folder UI with upload/list controls and role-aware access.
 PaymentPageView - presentational payment summary and confirmation UI for order payments.
 StatusPage - order status page composer that wires status hook, skeleton state, and status view layout.
