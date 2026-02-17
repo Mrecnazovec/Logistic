@@ -292,7 +292,7 @@
 	'components.inviteDriver.cancel': 'Отменить',
 
 	// ui/modals/DeskInviteModal.tsx
-	'components.deskInvite.title': 'Приглашение перевозчика',
+	'components.deskInvite.title': 'Приглашение участника',
 	'components.deskInvite.empty': 'Ничего не выбрано. Выберите объявление в таблице, чтобы отправить приглашение.',
 	'components.deskInvite.km': 'км',
 	'components.deskInvite.transport': 'Тип транспорта',
@@ -301,13 +301,13 @@
 	'components.deskInvite.price': 'Стоимость',
 	'components.deskInvite.company': 'Компания',
 	'components.deskInvite.offer': 'Предложение',
-	'components.deskInvite.byId.title': 'Пригласить перевозчика по ID',
-	'components.deskInvite.byId.placeholder': 'Введите ID перевозчика',
+	'components.deskInvite.byId.title': 'Пригласить участника по ID',
+	'components.deskInvite.byId.placeholder': 'Введите ID участника',
 	'components.deskInvite.byId.loading': 'Отправка...',
 	'components.deskInvite.byId.submit': 'Пригласить',
 	'components.deskInvite.byLink.title': 'Приглашение по ссылке',
 	'components.deskInvite.byLink.description':
-		'Ссылка ведёт на страницу оффера, где перевозчик сможет откликнуться на предложение. Сгенерируйте ссылку и отправьте её партнёру или скопируйте для быстрого доступа.',
+		'Ссылка ведёт на страницу оффера, где участник сможет откликнуться на предложение. Сгенерируйте ссылку и отправьте её партнёру или скопируйте для быстрого доступа.',
 	'components.deskInvite.byLink.placeholder': 'Ссылка появится после генерации',
 	'components.deskInvite.byLink.copy': 'Скопировать ссылку',
 	'components.deskInvite.byLink.loading': 'Создаём...',
