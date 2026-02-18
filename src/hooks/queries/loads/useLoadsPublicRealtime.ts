@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { AUTH_TOKENS_REFRESHED_EVENT } from '@/constants/auth-events'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { WSClient } from '@/services/ws.service'
 import { OrderDriverStatusEnum, OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
@@ -54,83 +55,85 @@ export const useLoadsPublicRealtime = () => {
 	const markAgreementUpdate = useAgreementRealtimeStore((state) => state.markAgreementUpdate)
 
 	useEffect(() => {
-		const token = getAccessToken()
-		if (!token) return
+		let client: WSClient | null = null
 
-		const wsUrl = `wss://kad-one.com/ws/loads/?token=${token}`
-		const client = new WSClient(wsUrl, {
-			// onOpen: () => console.log('WebSocket loads connected'),
-			// onError: () => console.log('WebSocket loads error'),
-			// onClose: () => console.log('WebSocket loads closed'),
-			onMessage: (direction, message) => {
-				// console.log(`[loads ws][${direction}]`, message)
-				if (direction !== 'in') return
-				const data = message as LoadsActionPayload | OffersEventPayload | OrdersEventPayload
-				const action = 'action' in data ? data.action : undefined
-				const event = 'event' in data ? data.event : undefined
-				if (!action && !event) return
+		const handleMessage = (direction: 'in' | 'out', message: unknown) => {
+			if (direction !== 'in') return
+			const data = message as LoadsActionPayload | OffersEventPayload | OrdersEventPayload
+			const action = 'action' in data ? data.action : undefined
+			const event = 'event' in data ? data.event : undefined
+			if (!action && !event) return
 
-				const isLoadAction = Boolean(action && LOADS_ACTIONS.has(action))
-				const isOfferEvent = Boolean(event && OFFERS_ACTIONS.has(event))
-				const isOrderEvent = Boolean(event && ORDERS_ACTIONS.has(event))
-				// if (!isLoadAction && !isOfferEvent && !isOrderEvent) return
+			const isLoadAction = Boolean(action && LOADS_ACTIONS.has(action))
+			const isOfferEvent = Boolean(event && OFFERS_ACTIONS.has(event))
+			const isOrderEvent = Boolean(event && ORDERS_ACTIONS.has(event))
 
-				if (isOfferEvent && 'offer' in data && data.offer) {
-					const me = queryClient.getQueryData<IMe>(['get profile'])
-					const isAcceptedCarrierCustomer = data.offer.accepted_by_carrier && data.offer.accepted_by_customer
-					const isAcceptedCustomerLogistic = data.offer.accepted_by_customer && data.offer.accepted_by_logistic
-					if (isAcceptedCarrierCustomer || isAcceptedCustomerLogistic) {
-						markAgreementUpdate()
-					}
-					if (typeof me?.id === 'number' && typeof data.offer.customer_id === 'number') {
-						const target = data.offer.customer_id === me.id ? 'desk' : 'myOffers'
-						addOffer({ offerId: data.offer.id, cargoId: data.offer.cargo, target })
-					}
+			if (isOfferEvent && 'offer' in data && data.offer) {
+				const me = queryClient.getQueryData<IMe>(['get profile'])
+				const isAcceptedCarrierCustomer = data.offer.accepted_by_carrier && data.offer.accepted_by_customer
+				const isAcceptedCustomerLogistic = data.offer.accepted_by_customer && data.offer.accepted_by_logistic
+				if (isAcceptedCarrierCustomer || isAcceptedCustomerLogistic) {
+					markAgreementUpdate()
 				}
-
-				if (isOrderEvent && 'order' in data && data.order?.id) {
-					const orderId = String(data.order.id)
-					const nextStatus = normalizeOrderStatus(data.order.status)
-					const nextDriverStatus = normalizeDriverStatus(data.order.driver_status)
-
-					queryClient.setQueryData<IOrderDetail | undefined>(['get order', orderId], (current) => {
-						if (!current) return current
-						return {
-							...current,
-							status: nextStatus ?? current.status,
-							driver_status: nextDriverStatus ?? current.driver_status,
-						}
-					})
-
-					queryClient.invalidateQueries({ queryKey: ['get order', orderId] })
+				if (typeof me?.id === 'number' && typeof data.offer.customer_id === 'number') {
+					const target = data.offer.customer_id === me.id ? 'desk' : 'myOffers'
+					addOffer({ offerId: data.offer.id, cargoId: data.offer.cargo, target })
 				}
+			}
 
-				queryClient.invalidateQueries({ queryKey: ['get loads'] })
-				queryClient.invalidateQueries({ queryKey: ['get offers'] })
-				queryClient.invalidateQueries({ queryKey: ['get orders'] })
-				queryClient.invalidateQueries({ queryKey: ['get orders count'] })
-				queryClient.invalidateQueries({ queryKey: ['get order'] })
-				queryClient.invalidateQueries({ queryKey: ['get order documents'] })
-				queryClient.invalidateQueries({ queryKey: ['get order status history'] })
-				queryClient.invalidateQueries({ queryKey: ['get agreements'] })
-				queryClient.invalidateQueries({ queryKey: ['get shared order'] })
-				queryClient.invalidateQueries({ queryKey: ['get shared order status history'] })
-				queryClient.invalidateQueries({ queryKey: ['get agreement'] })
-				queryClient.invalidateQueries({ queryKey: ['payment'] })
-				queryClient.invalidateQueries({ queryKey: ['order'] })
-				queryClient.invalidateQueries({ queryKey: ['auth', 'dashboard-stats'] })
-				queryClient.invalidateQueries({ queryKey: ['get analytics'] })
-				queryClient.invalidateQueries({ queryKey: ['get rating'] })
-				queryClient.invalidateQueries({ queryKey: ['get ratings'] })
-				queryClient.invalidateQueries({ queryKey: ['get rating user'] })
+			if (isOrderEvent && 'order' in data && data.order?.id) {
+				const orderId = String(data.order.id)
+				const nextStatus = normalizeOrderStatus(data.order.status)
+				const nextDriverStatus = normalizeDriverStatus(data.order.driver_status)
 
-			},
-		})
+				queryClient.setQueryData<IOrderDetail | undefined>(['get order', orderId], (current) => {
+					if (!current) return current
+					return {
+						...current,
+						status: nextStatus ?? current.status,
+						driver_status: nextDriverStatus ?? current.driver_status,
+					}
+				})
 
-		client.connect()
+				queryClient.invalidateQueries({ queryKey: ['get order', orderId] })
+			}
+
+			queryClient.invalidateQueries({ queryKey: ['get loads'] })
+			queryClient.invalidateQueries({ queryKey: ['get offers'] })
+			queryClient.invalidateQueries({ queryKey: ['get orders'] })
+			queryClient.invalidateQueries({ queryKey: ['get orders count'] })
+			queryClient.invalidateQueries({ queryKey: ['get order'] })
+			queryClient.invalidateQueries({ queryKey: ['get order documents'] })
+			queryClient.invalidateQueries({ queryKey: ['get order status history'] })
+			queryClient.invalidateQueries({ queryKey: ['get agreements'] })
+			queryClient.invalidateQueries({ queryKey: ['get shared order'] })
+			queryClient.invalidateQueries({ queryKey: ['get shared order status history'] })
+			queryClient.invalidateQueries({ queryKey: ['get agreement'] })
+			queryClient.invalidateQueries({ queryKey: ['payment'] })
+			queryClient.invalidateQueries({ queryKey: ['order'] })
+			queryClient.invalidateQueries({ queryKey: ['auth', 'dashboard-stats'] })
+			queryClient.invalidateQueries({ queryKey: ['get analytics'] })
+			queryClient.invalidateQueries({ queryKey: ['get rating'] })
+			queryClient.invalidateQueries({ queryKey: ['get ratings'] })
+			queryClient.invalidateQueries({ queryKey: ['get rating user'] })
+		}
+
+		const reconnectWithLatestToken = () => {
+			const token = getAccessToken()
+			client?.disconnect()
+			client = null
+			if (!token) return
+			const wsUrl = `wss://kad-one.com/ws/loads/?token=${token}`
+			client = new WSClient(wsUrl, { onMessage: handleMessage })
+			client.connect()
+		}
+
+		reconnectWithLatestToken()
+		window.addEventListener(AUTH_TOKENS_REFRESHED_EVENT, reconnectWithLatestToken)
 
 		return () => {
-			client.disconnect()
+			window.removeEventListener(AUTH_TOKENS_REFRESHED_EVENT, reconnectWithLatestToken)
+			client?.disconnect()
 		}
 	}, [addOffer, markAgreementUpdate, queryClient])
 }

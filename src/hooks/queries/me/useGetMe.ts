@@ -4,6 +4,7 @@ import { useRoleStore } from '@/store/useRoleStore'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useI18n } from '@/i18n/I18nProvider'
 import { PUBLIC_URL } from '@/config/url.config'
+import { AUTH_TOKENS_REFRESHED_EVENT } from '@/constants/auth-events'
 import { useQuery } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
@@ -72,6 +73,9 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 					hasHandledError.current = false
 					lastErrorMessage.current = null
 					refreshTokenRef.current = getRefreshToken() ?? refreshTokenRef.current
+					if (typeof window !== 'undefined') {
+						window.dispatchEvent(new Event(AUTH_TOKENS_REFRESHED_EVENT))
+					}
 					queryClient.invalidateQueries({ queryKey: ['get profile'] })
 				})
 				.catch(() => {
@@ -101,6 +105,34 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		const returnPath = query ? `${pathname}?${query}` : pathname
 		router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
 	}, [error, isError, pathname, queryClient, router, searchParams, t])
+
+	useEffect(() => {
+		if (!(options?.enabled ?? true)) return
+
+		const intervalId = window.setInterval(() => {
+			if (isRefreshing.current) return
+			const refreshToken = getRefreshToken() ?? refreshTokenRef.current
+			if (!refreshToken) return
+
+			isRefreshing.current = true
+			authService
+				.getNewTokens({ refresh: refreshToken })
+				.then(() => {
+					refreshTokenRef.current = getRefreshToken() ?? refreshTokenRef.current
+					if (typeof window !== 'undefined') {
+						window.dispatchEvent(new Event(AUTH_TOKENS_REFRESHED_EVENT))
+					}
+				})
+				.catch(() => undefined)
+				.finally(() => {
+					isRefreshing.current = false
+				})
+		}, 55 * 60 * 1000)
+
+		return () => {
+			window.clearInterval(intervalId)
+		}
+	}, [options?.enabled])
 
 	return { me, isLoading, isError, error }
 }

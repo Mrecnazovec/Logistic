@@ -1,6 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
@@ -12,7 +13,8 @@ import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { Banknote } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { POSTING_SECTION_CLASS } from '../constants/postingLayout'
-import { clampAxlesValue } from '../lib/axles'
+
+const AXLES_OPTIONS = ['-', '3', '4', '5', '6', '7', '8', '9', '10'] as const
 
 type ShippingSectionProps = {
 	form: UseFormReturn<CargoPublishRequestDto>
@@ -46,7 +48,6 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 				<FormField
 					control={form.control}
 					name='price_value'
-					rules={{ required: t('announcements.posting.shipping.priceRequired') }}
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
 							<FormControl>
@@ -101,23 +102,24 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 					name='axles'
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
+							<FormLabel className='text-brand'>{t('announcements.posting.shipping.axlesPlaceholder')}</FormLabel>
 							<FormControl>
-								<InputGroup>
-									<InputGroupInput
-										placeholder={t('announcements.posting.shipping.axlesPlaceholder')}
-										{...field}
-										value={field.value ?? ''}
-										onChange={(event) =>
-											handleNumericInput(event, NUMERIC_REGEX, (value) =>
-												field.onChange(clampAxlesValue(value)),
-											)
-										}
-										inputMode='decimal'
-										max={10}
-										className='pl-4'
-										disabled={isLoadingCreate}
-									/>
-								</InputGroup>
+								<Select
+									value={field.value === null || field.value === undefined ? '-' : String(field.value)}
+									onValueChange={(value) => field.onChange(value === '-' ? null : Number(value))}
+									disabled={isLoadingCreate}
+								>
+									<SelectTrigger className='w-full rounded-full bg-[#F4F5F7] border-none px-4 text-grayscale h-14 shadow-none'>
+										<SelectValue placeholder={t('announcements.posting.shipping.axlesPlaceholder')} />
+									</SelectTrigger>
+									<SelectContent>
+										{AXLES_OPTIONS.map((option) => (
+											<SelectItem key={option} value={option}>
+												{option}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { AUTH_TOKENS_REFRESHED_EVENT } from '@/constants/auth-events'
 import { getAccessToken } from '@/services/auth/auth-token.service'
 import { WSClient } from '@/services/ws.service'
 import { useQueryClient } from '@tanstack/react-query'
@@ -30,28 +31,32 @@ export const useNotificationsRealtime = (enabled: boolean, options?: UseNotifica
 
 	useEffect(() => {
 		if (!enabled) return
-		const token = getAccessToken()
-		if (!token) return
+		let client: WSClient | null = null
 
-		const wsUrl = `wss://kad-one.com/ws/notifications/?token=${token}`
-		const client = new WSClient(wsUrl, {
-			// onOpen: () => console.log('WebSocket notifications connected'),
-			// onError: () => console.log('WebSocket notifications error'),
-			// onClose: () => console.log('WebSocket notifications closed'),
-			onMessage: (direction, message) => {
-				// console.log(`[notifications ws][${direction}]`, message)
-				if (direction !== 'in') return
-				const data = message as NotificationsRealtimePayload
-				if (!hasEventOrAction(data)) return
-				onEvent?.()
-				queryClient.invalidateQueries({ queryKey: ['notifications'] })
-			},
-		})
+		const handleMessage = (direction: 'in' | 'out', message: unknown) => {
+			if (direction !== 'in') return
+			const data = message as NotificationsRealtimePayload
+			if (!hasEventOrAction(data)) return
+			onEvent?.()
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
+		}
 
-		client.connect()
+		const reconnectWithLatestToken = () => {
+			const token = getAccessToken()
+			client?.disconnect()
+			client = null
+			if (!token) return
+			const wsUrl = `wss://kad-one.com/ws/notifications/?token=${token}`
+			client = new WSClient(wsUrl, { onMessage: handleMessage })
+			client.connect()
+		}
+
+		reconnectWithLatestToken()
+		window.addEventListener(AUTH_TOKENS_REFRESHED_EVENT, reconnectWithLatestToken)
 
 		return () => {
-			client.disconnect()
+			window.removeEventListener(AUTH_TOKENS_REFRESHED_EVENT, reconnectWithLatestToken)
+			client?.disconnect()
 		}
 	}, [enabled, onEvent, queryClient])
 }

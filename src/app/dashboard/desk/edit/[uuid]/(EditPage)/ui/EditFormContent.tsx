@@ -14,6 +14,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { CurrencySelector } from '@/components/ui/selectors/CurrencySelector'
@@ -31,6 +32,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Banknote, Home } from 'lucide-react'
 import { EDIT_SECTION_CLASS } from '../constants/editLayout'
+
+const AXLES_OPTIONS = ['-', '3', '4', '5', '6', '7', '8', '9', '10'] as const
 
 const RichTextEditor = dynamic(() =>
 	import('@/components/ui/form-control/RichEditor/RichTextEditor').then((m) => m.RichTextEditor),
@@ -299,7 +302,6 @@ export function EditFormContent({
 							<FormField
 								control={form.control}
 								name='price_value'
-								rules={{ required: t('desk.edit.shipping.priceRequired') }}
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
 										<FormControl>
@@ -353,28 +355,24 @@ export function EditFormContent({
 								name='axles'
 								render={({ field }) => (
 									<FormItem className='w-1/2'>
+										<FormLabel className='text-brand'>{t('desk.edit.shipping.axlesPlaceholder')}</FormLabel>
 										<FormControl>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('desk.edit.shipping.axlesPlaceholder')}
-													{...field}
-													value={field.value ?? ''}
-													onChange={(event) =>
-														handleNumericInput(event, NUMERIC_REGEX, (value) => {
-															const numericValue = Number(value)
-															if (value !== '' && Number.isFinite(numericValue) && numericValue > 10) {
-																field.onChange('10')
-																return
-															}
-															field.onChange(value)
-														})
-													}
-													inputMode='decimal'
-													max={10}
-													className='pl-4'
-													disabled={isLoadingPatch}
-												/>
-											</InputGroup>
+											<Select
+												value={field.value === null || field.value === undefined ? '-' : String(field.value)}
+												onValueChange={(value) => field.onChange(value === '-' ? null : Number(value))}
+												disabled={isLoadingPatch}
+											>
+												<SelectTrigger className='w-full rounded-full bg-[#F4F5F7] border-none px-4 text-grayscale h-14 shadow-none'>
+													<SelectValue placeholder={t('desk.edit.shipping.axlesPlaceholder')} />
+												</SelectTrigger>
+												<SelectContent>
+													{AXLES_OPTIONS.map((option) => (
+														<SelectItem key={option} value={option}>
+															{option}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
 										</FormControl>
 										<FormMessage />
 									</FormItem>

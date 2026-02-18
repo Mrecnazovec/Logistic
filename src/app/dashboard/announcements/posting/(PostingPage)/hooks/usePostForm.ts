@@ -15,10 +15,16 @@ export function usePostForm() {
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
 		const weightTons = Number(data.weight_tons ?? 0)
 		const weight_kg = (Number.isFinite(weightTons) ? weightTons * 1000 : 0).toString()
+		const rawAxles = data.axles as number | string | null | undefined
+		const rawPriceValue = data.price_value as string | null | undefined
+		const normalizedAxles = rawAxles === null || rawAxles === undefined || rawAxles === '' ? null : Number(rawAxles)
+		const normalizedPriceValue = rawPriceValue === '' || rawPriceValue === undefined ? null : rawPriceValue
 
 		createLoad({
 			...data,
 			weight_kg,
+			axles: Number.isFinite(normalizedAxles) ? normalizedAxles : null,
+			price_value: normalizedPriceValue,
 			payment_method: data.payment_method ?? 'both',
 			is_hidden: data.is_hidden ?? false,
 		})
