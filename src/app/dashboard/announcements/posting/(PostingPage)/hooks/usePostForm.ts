@@ -17,14 +17,17 @@ export function usePostForm() {
 		const weight_kg = (Number.isFinite(weightTons) ? weightTons * 1000 : 0).toString()
 		const rawAxles = data.axles as number | string | null | undefined
 		const rawPriceValue = data.price_value as string | null | undefined
+		const rawPriceCurrency = data.price_currency as string | null | undefined
 		const normalizedAxles = rawAxles === null || rawAxles === undefined || rawAxles === '' ? null : Number(rawAxles)
 		const normalizedPriceValue = rawPriceValue === '' || rawPriceValue === undefined ? null : rawPriceValue
+		const normalizedPriceCurrency = rawPriceCurrency === '' || rawPriceCurrency === undefined ? null : rawPriceCurrency
 
 		createLoad({
 			...data,
 			weight_kg,
 			axles: Number.isFinite(normalizedAxles) ? normalizedAxles : null,
 			price_value: normalizedPriceValue,
+			price_currency: normalizedPriceCurrency as CargoPublishRequestDto['price_currency'],
 			payment_method: data.payment_method ?? 'both',
 			is_hidden: data.is_hidden ?? false,
 		})

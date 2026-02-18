@@ -136,6 +136,7 @@ useCabinetPage - composes cabinet page state, analytics/profile data mapping, an
 useDeskMyPage - composes desk my-offers page state, tabs, unread indicators, table/card data, and decision modal state.
 useEditForm - manages desk edit form state and submits patchLoad by uuid (data: CargoPublishRequestDto).
 useEditPage - composes desk edit page state, load-to-form reset, and selected city labels for selectors.
+useEditFormMapState - manages local map/address state for desk edit form and watches origin/destination values.
 useInvitePage - composes invite page auth/invite states, formatted cargo values, and accept/counter/reject actions.
 useNotificationsPage - composes notifications page state, selected notification sync, infinite loading, and read actions.
 useIdProfilePage - composes profile-by-id page data, chart stats, locale formatting, and transport dialog state.
@@ -373,6 +374,11 @@ DeskMyPage - desk/my page composer that wires tabs, table/card views, and offer 
 DeskMyView - presentational desk/my view with search form, tabs, and responsive card/table content.
 EditPage - desk/edit page composer that wires edit form orchestration to the form UI.
 EditFormContent - presentational desk edit form UI for origin/destination/shipping/equipment blocks and actions.
+EditOriginSection - presentational desk edit origin block with city/address/date and optional map picker.
+EditDestinationSection - presentational desk edit destination block with city/address/date and optional map picker.
+EditShippingSection - presentational desk edit shipping block with currency/price/volume/axles/contact/payment/visibility fields.
+EditEquipmentSection - presentational desk edit equipment block with product/transport/weight/description fields.
+EditFormActions - presentational submit/cancel actions with confirm dialog for desk edit form.
 InvitePage - desk invite page composer with hydration fallback and invite content suspense boundary.
 InviteView - presentational invite page UI that renders auth/error/content states and response actions.
 Notifications - notifications page composer that wires header/list/details panels with notifications state.

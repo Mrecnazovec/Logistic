@@ -34,7 +34,7 @@ export function useEditPage() {
 			destination_address: load.destination_address ?? '',
 			load_date: load.load_date ?? '',
 			delivery_date: load.delivery_date ?? '',
-			price_currency: load.price_currency ?? 'UZS',
+			price_currency: load.price_currency ?? undefined,
 			price_value: load.price_value ?? '',
 			product: load.product ?? '',
 			transport_type: load.transport_type ?? '',

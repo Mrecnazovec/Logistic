@@ -19,8 +19,10 @@ export function useEditForm() {
 	const onSubmit: SubmitHandler<CargoPublishRequestDto> = (data) => {
 		const rawAxles = data.axles as number | string | null | undefined
 		const rawPriceValue = data.price_value as string | null | undefined
+		const rawPriceCurrency = data.price_currency as string | null | undefined
 		const normalizedAxles = rawAxles === null || rawAxles === undefined || rawAxles === '' ? null : Number(rawAxles)
 		const normalizedPriceValue = rawPriceValue === '' || rawPriceValue === undefined ? null : rawPriceValue
+		const normalizedPriceCurrency = rawPriceCurrency === '' || rawPriceCurrency === undefined ? null : rawPriceCurrency
 
 		patchLoad({
 			uuid: param.uuid,
@@ -28,6 +30,7 @@ export function useEditForm() {
 				...data,
 				axles: Number.isFinite(normalizedAxles) ? normalizedAxles : null,
 				price_value: normalizedPriceValue,
+				price_currency: normalizedPriceCurrency as CargoPublishRequestDto['price_currency'],
 				is_hidden: data.is_hidden ?? false,
 			},
 		})

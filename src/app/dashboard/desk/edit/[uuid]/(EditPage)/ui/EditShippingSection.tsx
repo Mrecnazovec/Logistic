@@ -1,3 +1,5 @@
+'use client'
+
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
@@ -9,27 +11,24 @@ import { handleNumericInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 import { NUMERIC_REGEX } from '@/shared/regex/regex'
-import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { Banknote } from 'lucide-react'
-import { UseFormReturn } from 'react-hook-form'
-import { POSTING_SECTION_CLASS } from '../constants/postingLayout'
+import { EDIT_SECTION_CLASS } from '../constants/editLayout'
+import type { EditSectionCommonProps } from '../types/EditForm.types'
 
 const AXLES_OPTIONS = ['-', '3', '4', '5', '6', '7', '8', '9', '10'] as const
 const CURRENCY_OPTIONS = ['-', ...PriceSelector.map((item) => item.type)] as const
 const DASH_LABEL = '—'
 
-type ShippingSectionProps = {
-	form: UseFormReturn<CargoPublishRequestDto>
-	isLoadingCreate: boolean
+type EditShippingSectionProps = EditSectionCommonProps & {
 	disableEmailContact: boolean
 }
 
-export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: ShippingSectionProps) {
+export function EditShippingSection({ form, isLoadingPatch, disableEmailContact }: EditShippingSectionProps) {
 	const { t } = useI18n()
 
 	return (
-		<div className={`${POSTING_SECTION_CLASS} h-full`}>
-			<p className='text-xl font-bold text-brand'>{t('announcements.posting.shipping.title')}</p>
+		<div className={`${EDIT_SECTION_CLASS} h-full`}>
+			<p className='text-xl font-bold text-brand'>{t('desk.edit.shipping.title')}</p>
 
 			<div className='flex items-end gap-6'>
 				<FormField
@@ -37,12 +36,12 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 					name='price_currency'
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
-							<FormLabel className='text-brand'>{t('announcements.posting.shipping.currencyLabel')}</FormLabel>
+							<FormLabel className='text-brand'>{t('desk.edit.shipping.currencyLabel')}</FormLabel>
 							<FormControl>
 								<Select
 									value={field.value === null || field.value === undefined ? '-' : String(field.value)}
 									onValueChange={(value) => field.onChange(value === '-' ? null : value)}
-									disabled={isLoadingCreate}
+									disabled={isLoadingPatch}
 								>
 									<SelectTrigger
 										className={cn(
@@ -50,7 +49,7 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 											field.value === null || field.value === undefined ? 'text-grayscale' : 'text-black',
 										)}
 									>
-										<SelectValue placeholder={t('announcements.posting.shipping.currencyLabel')} />
+										<SelectValue placeholder={t('desk.edit.shipping.currencyLabel')} />
 									</SelectTrigger>
 									<SelectContent>
 										{CURRENCY_OPTIONS.map((option) => (
@@ -65,7 +64,6 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 						</FormItem>
 					)}
 				/>
-
 				<FormField
 					control={form.control}
 					name='price_value'
@@ -74,12 +72,12 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 							<FormControl>
 								<InputGroup>
 									<InputGroupInput
-										placeholder={t('announcements.posting.shipping.pricePlaceholder')}
+										placeholder={t('desk.edit.shipping.pricePlaceholder')}
 										{...field}
 										value={field.value ?? ''}
 										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
 										inputMode='decimal'
-										disabled={isLoadingCreate}
+										disabled={isLoadingPatch}
 									/>
 									<InputGroupAddon className='pr-2'>
 										<Banknote className={cn('text-grayscale size-5', field.value && 'text-black')} />
@@ -96,20 +94,20 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 				<FormField
 					control={form.control}
 					name='volume_m3'
-					rules={{ required: t('announcements.posting.shipping.dimensionsRequired') }}
+					rules={{ required: t('desk.edit.shipping.dimensionsRequired') }}
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
-							<FormLabel className='text-brand'>{t('announcements.posting.shipping.dimensionsLabel')}</FormLabel>
+							<FormLabel className='text-brand'>{t('desk.edit.shipping.dimensionsLabel')}</FormLabel>
 							<FormControl>
 								<InputGroup>
 									<InputGroupInput
-										placeholder={t('announcements.posting.shipping.dimensionsPlaceholder')}
+										placeholder={t('desk.edit.shipping.dimensionsPlaceholder')}
 										{...field}
 										value={field.value ?? ''}
 										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
 										inputMode='decimal'
 										className='pl-4'
-										disabled={isLoadingCreate}
+										disabled={isLoadingPatch}
 									/>
 								</InputGroup>
 							</FormControl>
@@ -117,18 +115,17 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 						</FormItem>
 					)}
 				/>
-
 				<FormField
 					control={form.control}
 					name='axles'
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
-							<FormLabel className='text-brand'>{t('announcements.posting.shipping.axlesPlaceholder')}</FormLabel>
+							<FormLabel className='text-brand'>{t('desk.edit.shipping.axlesPlaceholder')}</FormLabel>
 							<FormControl>
 								<Select
 									value={field.value === null || field.value === undefined ? '-' : String(field.value)}
 									onValueChange={(value) => field.onChange(value === '-' ? null : Number(value))}
-									disabled={isLoadingCreate}
+									disabled={isLoadingPatch}
 								>
 									<SelectTrigger
 										className={cn(
@@ -136,7 +133,7 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 											field.value === null || field.value === undefined ? 'text-grayscale' : 'text-black',
 										)}
 									>
-										<SelectValue placeholder={t('announcements.posting.shipping.axlesPlaceholder')} />
+										<SelectValue placeholder={t('desk.edit.shipping.axlesPlaceholder')} />
 									</SelectTrigger>
 									<SelectContent>
 										{AXLES_OPTIONS.map((option) => (
@@ -156,13 +153,13 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 			<FormField
 				control={form.control}
 				name='contact_pref'
-				rules={{ required: t('announcements.posting.shipping.contactRequired') }}
+				rules={{ required: t('desk.edit.shipping.contactRequired') }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-brand'>{t('announcements.posting.shipping.contactLabel')}</FormLabel>
 						<FormControl>
 							<ContactSelector
 								onChange={field.onChange}
+								disabled={isLoadingPatch}
 								value={field.value}
 								disableEmailOptions={disableEmailContact}
 							/>
@@ -175,10 +172,10 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 			<FormField
 				control={form.control}
 				name='payment_method'
-				rules={{ required: t('announcements.posting.shipping.paymentRequired') }}
+				rules={{ required: t('desk.edit.shipping.paymentRequired') }}
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-brand'>{t('announcements.posting.shipping.paymentLabel')}</FormLabel>
+						<FormLabel className='text-brand'>{t('desk.edit.shipping.paymentLabel')}</FormLabel>
 						<FormControl>
 							<PaymentSelector onChange={field.onChange} value={field.value} />
 						</FormControl>
@@ -192,7 +189,7 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 				name='is_hidden'
 				render={({ field }) => (
 					<FormItem className='mb-6'>
-						<FormLabel className='text-brand mb-3'>{t('announcements.posting.shipping.visibilityLabel')}</FormLabel>
+						<FormLabel className='text-brand mb-3'>{t('desk.edit.shipping.visibilityLabel')}</FormLabel>
 						<FormControl>
 							<RadioGroup
 								onValueChange={(value) => field.onChange(value === 'true')}
@@ -201,15 +198,15 @@ export function ShippingSection({ form, isLoadingCreate, disableEmailContact }: 
 							>
 								<FormItem className='flex items-center gap-3'>
 									<FormControl>
-										<RadioGroupItem value='false' disabled={isLoadingCreate} />
+										<RadioGroupItem value='false' disabled={isLoadingPatch} />
 									</FormControl>
-									<FormLabel className='m-0 font-semibold'>{t('announcements.posting.shipping.visible')}</FormLabel>
+									<FormLabel className='m-0 font-semibold'>{t('desk.edit.shipping.visible')}</FormLabel>
 								</FormItem>
 								<FormItem className='flex items-center gap-3'>
 									<FormControl>
-										<RadioGroupItem value='true' disabled={isLoadingCreate} />
+										<RadioGroupItem value='true' disabled={isLoadingPatch} />
 									</FormControl>
-									<FormLabel className='m-0 font-semibold'>{t('announcements.posting.shipping.hidden')}</FormLabel>
+									<FormLabel className='m-0 font-semibold'>{t('desk.edit.shipping.hidden')}</FormLabel>
 								</FormItem>
 							</RadioGroup>
 						</FormControl>
