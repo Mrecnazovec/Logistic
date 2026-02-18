@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { Eye, MoreHorizontal, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -21,10 +20,9 @@ interface CargoActionsDropdownProps {
 
 export function OrdersActionsDropdown({ cargo }: CargoActionsDropdownProps) {
 	const { t } = useI18n()
-	const [open, setOpen] = useState(false)
 
 	return (
-		<DropdownMenu open={open} onOpenChange={setOpen}>
+		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant='ghost' className='h-8 w-8 p-0 rotate-90'>
 					<span className='sr-only'>{t('components.ordersActions.open')}</span>
@@ -33,24 +31,16 @@ export function OrdersActionsDropdown({ cargo }: CargoActionsDropdownProps) {
 			</DropdownMenuTrigger>
 
 			<DropdownMenuContent align='end'>
-				<DropdownMenuItem
-					onClick={() => setOpen(false)}
-					className='flex items-center gap-2'
-				>
-					<Eye className='size-4 text-muted-foreground' />
+				<DropdownMenuItem asChild className='flex items-center gap-2'>
 					<Link href={DASHBOARD_URL.order(`${cargo.uuid}`)}>
+						<Eye className='size-4 text-muted-foreground' />
 						{t('components.ordersActions.view')}
 					</Link>
 				</DropdownMenuItem>
 
 				<DropdownMenuSeparator />
 
-				<DropdownMenuItem
-					onClick={() => {
-						setOpen(false)
-					}}
-					className='flex items-center gap-2 text-red-500 hover:text-red-500'
-				>
+				<DropdownMenuItem className='flex items-center gap-2 text-red-500 hover:text-red-500'>
 					<Trash2 className='size-4 text-red-500' />
 					{t('components.ordersActions.delete')}
 				</DropdownMenuItem>

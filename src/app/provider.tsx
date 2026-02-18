@@ -4,9 +4,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import NextTopLoader from 'nextjs-toploader'
 import { PropsWithChildren, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import dynamic from 'next/dynamic'
+
+const ReactQueryDevtools = dynamic(
+	() => import('@tanstack/react-query-devtools').then((mod) => mod.ReactQueryDevtools),
+	{ ssr: false },
+)
 
 export function Providers({ children }: PropsWithChildren) {
+	const isDev = process.env.NODE_ENV === 'development'
 	const [client] = useState(
 		new QueryClient({
 			defaultOptions: {
@@ -19,7 +25,7 @@ export function Providers({ children }: PropsWithChildren) {
 
 	return (
 		<QueryClientProvider client={client}>
-			<ReactQueryDevtools initialIsOpen={false} />
+			{isDev ? <ReactQueryDevtools initialIsOpen={false} /> : null}
 			<NextTopLoader showSpinner={false} />
 			<Toaster toastOptions={{
 				error: {

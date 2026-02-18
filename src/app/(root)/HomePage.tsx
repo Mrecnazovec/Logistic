@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/Button"
 import { Container } from "@/components/ui/Container"
-import { ConsultationModal } from "@/components/ui/modals/ConsultationModal"
 import { useI18n } from "@/i18n/I18nProvider"
 import {
 	Archive,
@@ -18,42 +17,64 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+import { ConsultationModal } from "@/components/ui/modals/ConsultationModal"
 
+const FEATURE_CARDS = [
+	{
+		key: "planning",
+		number: "01",
+		Icon: ClipboardList,
+	},
+	{
+		key: "transparency",
+		number: "02",
+		Icon: Eye,
+	},
+	{
+		key: "reliability",
+		number: "03",
+		Icon: ShieldCheck,
+	},
+	{
+		key: "analytics",
+		number: "04",
+		Icon: BarChart3,
+	},
+	{
+		key: "preservation",
+		number: "05",
+		Icon: Archive,
+	},
+	{
+		key: "traceability",
+		number: "06",
+		Icon: Route,
+	},
+] as const
+
+const CONTACT_CARDS = [
+	{
+		key: "sales",
+		Icon: MessageCircleHeart,
+		href: "mailto:kad.noreply1@gmail.com",
+		label: "kad.noreply1@gmail.com",
+	},
+	{
+		key: "support",
+		Icon: MessageCircle,
+		href: "mailto:kad.noreply1@gmail.com",
+		label: "kad.noreply1@gmail.com",
+	},
+	{
+		key: "phone",
+		Icon: Phone,
+		href: "tel:+998701224321",
+		label: "+998 70 122 43 21",
+	},
+] as const
 
 export function HomePage() {
 	const { t } = useI18n()
-	const cards = [
-		{
-			key: "planning",
-			number: "01",
-			Icon: ClipboardList,
-		},
-		{
-			key: "transparency",
-			number: "02",
-			Icon: Eye,
-		},
-		{
-			key: "reliability",
-			number: "03",
-			Icon: ShieldCheck,
-		},
-		{
-			key: "analytics",
-			number: "04",
-			Icon: BarChart3,
-		},
-		{
-			key: "preservation",
-			number: "05",
-			Icon: Archive,
-		},
-		{
-			key: "traceability",
-			number: "06",
-			Icon: Route,
-		},
-	]
 
 	return <div className="font-urbanist">
 		<section
@@ -98,7 +119,7 @@ export function HomePage() {
 		<section className="bg-[#f6f4ef] py-24" id='info'>
 			<Container>
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{cards.map(({ key, number, Icon }) => (
+					{FEATURE_CARDS.map(({ key, number, Icon }) => (
 						<div key={`${key}-${number}`} className="group perspective-[1200px]">
 							<div
 								className="relative h-[260px] w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-within:[transform:rotateY(180deg)]"
@@ -144,42 +165,20 @@ export function HomePage() {
 					</p>
 				</div>
 				<div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<MessageCircleHeart className="size-6" />
+					{CONTACT_CARDS.map(({ key, Icon, href, label }) => (
+						<div key={key} className="rounded-3xl bg-neutral-50 p-6 space-y-4">
+							<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
+								<Icon className="size-6" />
+							</div>
+							<div className="space-y-2">
+								<p className="text-lg font-semibold">{t(`home.contacts.${key}.title`)}</p>
+								<p className="text-sm text-muted-foreground">{t(`home.contacts.${key}.description`)}</p>
+							</div>
+							<Link className="text-sm text-brand font-semibold" href={href}>
+								{label}
+							</Link>
 						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t("home.contacts.sales.title")}</p>
-							<p className="text-sm text-muted-foreground">{t("home.contacts.sales.description")}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">
-							kad.noreply1@gmail.com
-						</Link>
-					</div>
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<MessageCircle className="size-6" />
-						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t("home.contacts.support.title")}</p>
-							<p className="text-sm text-muted-foreground">{t("home.contacts.support.description")}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">
-							kad.noreply1@gmail.com
-						</Link>
-					</div>
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<Phone className="size-6" />
-						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t("home.contacts.phone.title")}</p>
-							<p className="text-sm text-muted-foreground">{t("home.contacts.phone.description")}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="tel:+998701224321">
-							+998 70 122 43 21
-						</Link>
-					</div>
+					))}
 				</div>
 			</Container>
 		</section>

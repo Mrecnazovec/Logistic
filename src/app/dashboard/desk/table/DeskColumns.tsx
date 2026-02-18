@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
-import { formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValue } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatDateValue, formatDistanceKm, formatRelativeDate, formatWeightValue } from '@/lib/formatters'
 import type { Locale } from '@/i18n/config'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { ICargoList } from '@/shared/types/CargoList.interface'
@@ -68,6 +68,7 @@ export const getDeskColumns = (
 	{
 		accessorKey: 'price_currency',
 		header: t('desk.table.currency'),
+		cell: ({row}) => row.original.price_currency ? row.original.price_currency : DEFAULT_PLACEHOLDER
 	},
 	{
 		accessorKey: 'route_km',

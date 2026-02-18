@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { AUTH_TOKENS_REFRESHED_EVENT } from '@/constants/auth-events'
 import { getAccessToken } from '@/services/auth/auth-token.service'
@@ -27,7 +27,11 @@ const hasEventOrAction = (message: NotificationsRealtimePayload) => {
 
 export const useNotificationsRealtime = (enabled: boolean, options?: UseNotificationsRealtimeOptions) => {
 	const queryClient = useQueryClient()
-	const onEvent = options?.onEvent
+	const onEventRef = useRef<UseNotificationsRealtimeOptions['onEvent']>(options?.onEvent)
+
+	useEffect(() => {
+		onEventRef.current = options?.onEvent
+	}, [options?.onEvent])
 
 	useEffect(() => {
 		if (!enabled) return
@@ -37,7 +41,7 @@ export const useNotificationsRealtime = (enabled: boolean, options?: UseNotifica
 			if (direction !== 'in') return
 			const data = message as NotificationsRealtimePayload
 			if (!hasEventOrAction(data)) return
-			onEvent?.()
+			onEventRef.current?.()
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 		}
 
@@ -58,5 +62,5 @@ export const useNotificationsRealtime = (enabled: boolean, options?: UseNotifica
 			window.removeEventListener(AUTH_TOKENS_REFRESHED_EVENT, reconnectWithLatestToken)
 			client?.disconnect()
 		}
-	}, [enabled, onEvent, queryClient])
+	}, [enabled, queryClient])
 }

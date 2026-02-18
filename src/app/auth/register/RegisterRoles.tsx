@@ -63,8 +63,8 @@ RoleDialog.displayName = 'RoleDialog'
 export const RegisterRoles = ({ roles, onSelect }: RegisterRolesProps) => {
 	return (
 		<div>
-			{roles.map(({ key, title, icon, color, description, buttonText }) => (
-				<RoleDialog key={key} role={{ key, title, icon, color, description, buttonText }} onSelect={onSelect} />
+			{roles.map((role) => (
+				<RoleDialog key={role.key} role={role} onSelect={onSelect} />
 			))}
 		</div>
 	)

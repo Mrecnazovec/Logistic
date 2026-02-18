@@ -13,11 +13,12 @@ export function useIdProfilePage() {
 	const params = useParams<{ id: string }>()
 	const { ratingUser, isLoading } = useGetRatingUser(params?.id)
 	const [isTransportOpen, setIsTransportOpen] = useState(false)
+	const localeTag = locale === 'en' ? 'en-US' : 'ru-RU'
 
-	const integerFormatter = useMemo(() => new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'ru-RU'), [locale])
+	const integerFormatter = useMemo(() => new Intl.NumberFormat(localeTag), [localeTag])
 	const dateFormatter = useMemo(
-		() => new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-		[locale],
+		() => new Intl.DateTimeFormat(localeTag, { day: 'numeric', month: 'long', year: 'numeric' }),
+		[localeTag],
 	)
 
 	const transportChartConfig = useMemo<ChartConfig>(
@@ -44,12 +45,15 @@ export function useIdProfilePage() {
 	const completed = pieChart?.successful ?? 0
 	const cancelled = pieChart?.cancelled ?? 0
 
-	const transportChartData = [
-		{ status: 'search', label: t('profile.chart.search'), value: queued, fill: 'var(--color-search)' },
-		{ status: 'progress', label: t('profile.chart.progress'), value: inProgress, fill: 'var(--color-progress)' },
-		{ status: 'success', label: t('profile.chart.success'), value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: t('profile.chart.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
-	]
+	const transportChartData = useMemo(
+		() => [
+			{ status: 'search', label: t('profile.chart.search'), value: queued, fill: 'var(--color-search)' },
+			{ status: 'progress', label: t('profile.chart.progress'), value: inProgress, fill: 'var(--color-progress)' },
+			{ status: 'success', label: t('profile.chart.success'), value: completed, fill: 'var(--color-success)' },
+			{ status: 'cancelled', label: t('profile.chart.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
+		],
+		[cancelled, completed, inProgress, queued, t],
+	)
 
 	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
 
@@ -74,46 +78,49 @@ export function useIdProfilePage() {
 				)
 			: ''
 
-	const stats = [
-		{
-			id: 'rating',
-			label: t('profile.stats.rating'),
-			value: ratingValue,
-			sub: ratingUser ? ratingSub : '',
-			icon: Star,
-			accentClass: 'text-amber-500 bg-amber-50',
-			trend: ratingUser ? '+13%' : '',
-			trendClass: 'text-emerald-600 bg-emerald-50',
-			trendLabel: ratingUser ? t('profile.stats.lastMonth') : '',
-		},
-		{
-			id: 'distance',
-			label: t('profile.stats.distance'),
-			value: distanceValue,
-			sub: dealsSub,
-			icon: Truck,
-			accentClass: 'text-blue-600 bg-blue-100',
-		},
-		{
-			id: 'registered',
-			label: t('profile.stats.registered'),
-			value: registeredAt,
-			sub: daysSub,
-			icon: CalendarDays,
-			accentClass: 'text-sky-600 bg-sky-100',
-		},
-		{
-			id: 'price-per-km',
-			label: t('profile.stats.pricePerKm'),
-			value: '-',
-			sub: '',
-			icon: ChartBar,
-			accentClass: 'text-indigo-600 bg-indigo-100',
-			trend: '',
-			trendClass: 'text-rose-500 bg-rose-50',
-			trendLabel: '',
-		},
-	]
+	const stats = useMemo(
+		() => [
+			{
+				id: 'rating',
+				label: t('profile.stats.rating'),
+				value: ratingValue,
+				sub: ratingUser ? ratingSub : '',
+				icon: Star,
+				accentClass: 'text-amber-500 bg-amber-50',
+				trend: ratingUser ? '+13%' : '',
+				trendClass: 'text-emerald-600 bg-emerald-50',
+				trendLabel: ratingUser ? t('profile.stats.lastMonth') : '',
+			},
+			{
+				id: 'distance',
+				label: t('profile.stats.distance'),
+				value: distanceValue,
+				sub: dealsSub,
+				icon: Truck,
+				accentClass: 'text-blue-600 bg-blue-100',
+			},
+			{
+				id: 'registered',
+				label: t('profile.stats.registered'),
+				value: registeredAt,
+				sub: daysSub,
+				icon: CalendarDays,
+				accentClass: 'text-sky-600 bg-sky-100',
+			},
+			{
+				id: 'price-per-km',
+				label: t('profile.stats.pricePerKm'),
+				value: '-',
+				sub: '',
+				icon: ChartBar,
+				accentClass: 'text-indigo-600 bg-indigo-100',
+				trend: '',
+				trendClass: 'text-rose-500 bg-rose-50',
+				trendLabel: '',
+			},
+		],
+		[daysSub, dealsSub, distanceValue, ratingSub, ratingUser, ratingValue, registeredAt, t],
+	)
 
 	return {
 		t,

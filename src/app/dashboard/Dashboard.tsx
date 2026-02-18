@@ -8,50 +8,78 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { useRoleStore } from '@/store/useRoleStore'
 import Link from "next/link"
+import { useMemo } from "react"
 
 export function Dashboard() {
 	const { t } = useI18n()
 	const { dashboardStats } = useGetDashboardStats()
 	const role = useRoleStore((state) => state.role)
-	const roleSections = {
-		[RoleEnum.CUSTOMER]: {
-			eyebrow: t('dashboard.roles.eyebrow'),
-			title: t('dashboard.roles.customer.title'),
-			cards: [
-				{ title: t('dashboard.roles.customer.cards.publications.title'), description: t('dashboard.roles.customer.cards.publications.description'), link: DASHBOARD_URL.posting() },
-				{ title: t('dashboard.roles.customer.cards.search.title'), description: t('dashboard.roles.customer.cards.search.description'), link: DASHBOARD_URL.announcements() },
-				{ title: t('dashboard.roles.customer.cards.open.title'), description: t('dashboard.roles.customer.cards.open.description'), link: DASHBOARD_URL.desk() },
-				{ title: t('dashboard.roles.customer.cards.active.title'), description: t('dashboard.roles.customer.cards.active.description'), link: DASHBOARD_URL.transportation() },
-				{ title: t('dashboard.roles.customer.cards.check.title'), description: t('dashboard.roles.customer.cards.check.description'), link: DASHBOARD_URL.rating() },
-				{ title: t('dashboard.roles.customer.cards.history.title'), description: t('dashboard.roles.customer.cards.history.description'), link: DASHBOARD_URL.history() },
-			],
-		},
-		[RoleEnum.LOGISTIC]: {
-			eyebrow: t('dashboard.roles.eyebrow'),
-			title: t('dashboard.roles.logistic.title'),
-			cards: [
-				{ title: t('dashboard.roles.logistic.cards.publications.title'), description: t('dashboard.roles.logistic.cards.publications.description'), link: DASHBOARD_URL.posting() },
-				{ title: t('dashboard.roles.logistic.cards.search.title'), description: t('dashboard.roles.logistic.cards.search.description'), link: DASHBOARD_URL.announcements() },
-				{ title: t('dashboard.roles.logistic.cards.trade.title'), description: t('dashboard.roles.logistic.cards.trade.description'), link: DASHBOARD_URL.desk() },
-				{ title: t('dashboard.roles.logistic.cards.active.title'), description: t('dashboard.roles.logistic.cards.active.description'), link: DASHBOARD_URL.transportation() },
-				{ title: t('dashboard.roles.logistic.cards.check.title'), description: t('dashboard.roles.logistic.cards.check.description'), link: DASHBOARD_URL.rating() },
-				{ title: t('dashboard.roles.logistic.cards.history.title'), description: t('dashboard.roles.logistic.cards.history.description'), link: DASHBOARD_URL.history() },
-			],
-		},
-		[RoleEnum.CARRIER]: {
-			eyebrow: t('dashboard.roles.eyebrow'),
-			title: t('dashboard.roles.carrier.title'),
-			cards: [
-				{ title: t('dashboard.roles.carrier.cards.search.title'), description: t('dashboard.roles.carrier.cards.search.description'), link: DASHBOARD_URL.announcements() },
-				{ title: t('dashboard.roles.carrier.cards.myOffers.title'), description: t('dashboard.roles.carrier.cards.myOffers.description'), link: DASHBOARD_URL.desk() },
-				{ title: t('dashboard.roles.carrier.cards.personal.title'), description: t('dashboard.roles.carrier.cards.personal.description'), link: DASHBOARD_URL.desk() },
-				{ title: t('dashboard.roles.carrier.cards.active.title'), description: t('dashboard.roles.carrier.cards.active.description'), link: DASHBOARD_URL.transportation() },
-				{ title: t('dashboard.roles.carrier.cards.check.title'), description: t('dashboard.roles.carrier.cards.check.description'), link: DASHBOARD_URL.rating() },
-				{ title: t('dashboard.roles.carrier.cards.history.title'), description: t('dashboard.roles.carrier.cards.history.description'), link: DASHBOARD_URL.history() },
-			],
-		},
-	} as const
+	const roleSections = useMemo(
+		() =>
+			({
+				[RoleEnum.CUSTOMER]: {
+					eyebrow: t('dashboard.roles.eyebrow'),
+					title: t('dashboard.roles.customer.title'),
+					cards: [
+						{ title: t('dashboard.roles.customer.cards.publications.title'), description: t('dashboard.roles.customer.cards.publications.description'), link: DASHBOARD_URL.posting() },
+						{ title: t('dashboard.roles.customer.cards.search.title'), description: t('dashboard.roles.customer.cards.search.description'), link: DASHBOARD_URL.announcements() },
+						{ title: t('dashboard.roles.customer.cards.open.title'), description: t('dashboard.roles.customer.cards.open.description'), link: DASHBOARD_URL.desk() },
+						{ title: t('dashboard.roles.customer.cards.active.title'), description: t('dashboard.roles.customer.cards.active.description'), link: DASHBOARD_URL.transportation() },
+						{ title: t('dashboard.roles.customer.cards.check.title'), description: t('dashboard.roles.customer.cards.check.description'), link: DASHBOARD_URL.rating() },
+						{ title: t('dashboard.roles.customer.cards.history.title'), description: t('dashboard.roles.customer.cards.history.description'), link: DASHBOARD_URL.history() },
+					],
+				},
+				[RoleEnum.LOGISTIC]: {
+					eyebrow: t('dashboard.roles.eyebrow'),
+					title: t('dashboard.roles.logistic.title'),
+					cards: [
+						{ title: t('dashboard.roles.logistic.cards.publications.title'), description: t('dashboard.roles.logistic.cards.publications.description'), link: DASHBOARD_URL.posting() },
+						{ title: t('dashboard.roles.logistic.cards.search.title'), description: t('dashboard.roles.logistic.cards.search.description'), link: DASHBOARD_URL.announcements() },
+						{ title: t('dashboard.roles.logistic.cards.trade.title'), description: t('dashboard.roles.logistic.cards.trade.description'), link: DASHBOARD_URL.desk() },
+						{ title: t('dashboard.roles.logistic.cards.active.title'), description: t('dashboard.roles.logistic.cards.active.description'), link: DASHBOARD_URL.transportation() },
+						{ title: t('dashboard.roles.logistic.cards.check.title'), description: t('dashboard.roles.logistic.cards.check.description'), link: DASHBOARD_URL.rating() },
+						{ title: t('dashboard.roles.logistic.cards.history.title'), description: t('dashboard.roles.logistic.cards.history.description'), link: DASHBOARD_URL.history() },
+					],
+				},
+				[RoleEnum.CARRIER]: {
+					eyebrow: t('dashboard.roles.eyebrow'),
+					title: t('dashboard.roles.carrier.title'),
+					cards: [
+						{ title: t('dashboard.roles.carrier.cards.search.title'), description: t('dashboard.roles.carrier.cards.search.description'), link: DASHBOARD_URL.announcements() },
+						{ title: t('dashboard.roles.carrier.cards.myOffers.title'), description: t('dashboard.roles.carrier.cards.myOffers.description'), link: DASHBOARD_URL.desk() },
+						{ title: t('dashboard.roles.carrier.cards.personal.title'), description: t('dashboard.roles.carrier.cards.personal.description'), link: DASHBOARD_URL.desk() },
+						{ title: t('dashboard.roles.carrier.cards.active.title'), description: t('dashboard.roles.carrier.cards.active.description'), link: DASHBOARD_URL.transportation() },
+						{ title: t('dashboard.roles.carrier.cards.check.title'), description: t('dashboard.roles.carrier.cards.check.description'), link: DASHBOARD_URL.rating() },
+						{ title: t('dashboard.roles.carrier.cards.history.title'), description: t('dashboard.roles.carrier.cards.history.description'), link: DASHBOARD_URL.history() },
+					],
+				},
+			}) as const,
+		[t],
+	)
 	const roleSection = role ? roleSections[role] : undefined
+	const contactCards = useMemo(
+		() => [
+			{
+				key: "sales",
+				Icon: MessageCircleHeart,
+				href: "mailto:kad.noreply1@gmail.com",
+				label: "kad.noreply1@gmail.com",
+			},
+			{
+				key: "support",
+				Icon: MessageCircle,
+				href: "mailto:kad.noreply1@gmail.com",
+				label: "kad.noreply1@gmail.com",
+			},
+			{
+				key: "phone",
+				Icon: Phone,
+				href: "tel:+998701224321",
+				label: "+998 70 122 43 21",
+			},
+		],
+		[],
+	)
 
 	return (
 		<div className="h-full bg-background rounded-4xl sm:py-12 py-4 space-y-14">
@@ -147,36 +175,18 @@ export function Dashboard() {
 					<p className="text-muted-foreground">{t('dashboard.contact.subtitle')}</p>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<MessageCircleHeart className="size-6" />
+					{contactCards.map(({ key, Icon, href, label }) => (
+						<div key={key} className="rounded-3xl bg-neutral-50 p-6 space-y-4">
+							<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
+								<Icon className="size-6" />
+							</div>
+							<div className="space-y-2">
+								<p className="text-lg font-semibold">{t(`dashboard.contact.${key}.title`)}</p>
+								<p className="text-sm text-muted-foreground">{t(`dashboard.contact.${key}.description`)}</p>
+							</div>
+							<Link className="text-sm text-brand font-semibold" href={href}>{label}</Link>
 						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t('dashboard.contact.sales.title')}</p>
-							<p className="text-sm text-muted-foreground">{t('dashboard.contact.sales.description')}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">kad.noreply1@gmail.com</Link>
-					</div>
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<MessageCircle className="size-6" />
-						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t('dashboard.contact.support.title')}</p>
-							<p className="text-sm text-muted-foreground">{t('dashboard.contact.support.description')}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="mailto:kad.noreply1@gmail.com">kad.noreply1@gmail.com</Link>
-					</div>
-					<div className="rounded-3xl bg-neutral-50 p-6 space-y-4">
-						<div className="size-12 rounded-2xl bg-brand text-white flex items-center justify-center">
-							<Phone className="size-6" />
-						</div>
-						<div className="space-y-2">
-							<p className="text-lg font-semibold">{t('dashboard.contact.phone.title')}</p>
-							<p className="text-sm text-muted-foreground">{t('dashboard.contact.phone.description')}</p>
-						</div>
-						<Link className="text-sm text-brand font-semibold" href="tel:+998701224321">+998 70 122 43 21</Link>
-					</div>
+					))}
 				</div>
 			</section>
 		</div>

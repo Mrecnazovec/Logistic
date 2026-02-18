@@ -295,6 +295,7 @@ Separator - horizontal/vertical divider component.
 Sheet - sliding panel built on Radix Sheet.
 Sidebar - responsive sidebar component with mobile sheet behavior.
 Skeleton - skeleton placeholder.
+SuspensePageSkeleton - reusable suspense fallback skeleton with dashboard/form/detail variants.
 Tabs - Radix tabs.
 Toggle - toggle button.
 Tooltip - Radix tooltip.
@@ -391,6 +392,7 @@ SharedOrderPageView - presentational shared order overview UI with statuses and 
 OrderPage - order page composer that renders OrderPageView from route group.
 OrderPageView - presentational order detail workspace UI with actions and status transitions.
 OrderPageSkeleton - skeleton layout for order detail page while data is loading.
+DocsPageSkeleton - skeleton layout for order documents folders page while documents list is loading.
 OrderParticipantsGrid - presentational participants grid (customer/logistic/carrier) with role-based masking.
 OrderTripGrid - presentational loading/unloading/transport sections with document status display.
 OrderFinanceSection - presentational finance summary section with role-dependent amounts.

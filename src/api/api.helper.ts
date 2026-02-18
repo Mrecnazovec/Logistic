@@ -1,12 +1,20 @@
-import { AxiosError } from 'axios'
+import axios from 'axios'
 
-export const getContentType = () => ({
-	'Content-type': 'application/json',
-})
+const JSON_CONTENT_TYPE = {
+	'Content-Type': 'application/json',
+} as const
+
+export const getContentType = () => JSON_CONTENT_TYPE
 
 export const errorCatch = (error: unknown): string => {
-	const err = error as AxiosError<{ message?: string | string[] }>
-	const message = err.response?.data?.message
+	if (axios.isAxiosError<{ message?: string | string[] }>(error)) {
+		const message = error.response?.data?.message
+		return message ? (Array.isArray(message) ? message[0] : message) : error.message || 'Unknown error'
+	}
 
-	return message ? (Array.isArray(message) ? message[0] : message) : err.message || 'Unknown error'
+	if (error instanceof Error) {
+		return error.message
+	}
+
+	return 'Unknown error'
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -58,7 +58,7 @@ export function useCardPagination(serverPagination?: ServerPaginationMeta): Card
 		[currentPage, effectiveTotalPages],
 	)
 
-	const goToServerPage = (page: number | null) => {
+	const goToServerPage = useCallback((page: number | null) => {
 		if (!enabled || !page || page === currentPage) return
 
 		const params = new URLSearchParams(searchParams.toString())
@@ -70,14 +70,14 @@ export function useCardPagination(serverPagination?: ServerPaginationMeta): Card
 		const queryString = params.toString()
 		const nextRoute = queryString ? `${pathname}?${queryString}` : pathname
 		router.push(nextRoute)
-	}
+	}, [currentPage, enabled, pathname, router, searchParams])
 
-	const goPrevious = () => goToServerPage(serverPreviousPage)
-	const goNext = () => goToServerPage(serverNextPage ?? currentPage + 1)
-	const selectPage = (page: number) => {
+	const goPrevious = useCallback(() => goToServerPage(serverPreviousPage), [goToServerPage, serverPreviousPage])
+	const goNext = useCallback(() => goToServerPage(serverNextPage ?? currentPage + 1), [currentPage, goToServerPage, serverNextPage])
+	const selectPage = useCallback((page: number) => {
 		if (page === currentPage) return
 		goToServerPage(page)
-	}
+	}, [currentPage, goToServerPage])
 
 	return {
 		enabled,

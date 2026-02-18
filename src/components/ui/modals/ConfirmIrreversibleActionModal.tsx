@@ -33,10 +33,10 @@ export function ConfirmIrreversibleActionModal({
 				<DialogTitle>{t(titleKey)}</DialogTitle>
 				<DialogDescription>{t(descriptionKey)}</DialogDescription>
 				<DialogFooter>
-					<Button variant='outline' onClick={() => onOpenChange(false)} disabled={isConfirmLoading}>
+					<Button type='button' variant='outline' onClick={() => onOpenChange(false)} disabled={isConfirmLoading}>
 						{t(cancelKey)}
 					</Button>
-					<Button className='bg-error-500 hover:bg-error-400' onClick={onConfirm} disabled={isConfirmLoading}>
+					<Button type='button' className='bg-error-500 hover:bg-error-400' onClick={onConfirm} disabled={isConfirmLoading}>
 						{t(confirmKey)}
 					</Button>
 				</DialogFooter>

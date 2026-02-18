@@ -19,7 +19,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import { ICargoList } from '@/shared/types/CargoList.interface'
 import { Eye, EyeOff, Handshake, MoreHorizontal, Pencil, RefreshCcw, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 interface CargoActionsDropdownProps {
 	cargo: ICargoList
@@ -40,15 +40,20 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 		: t('components.cargoActions.hide')
 	const VisibilityIcon = isHidden ? Eye : EyeOff
 
-	const handleToggleVisibility = () => {
+	const handleRefresh = useCallback(() => {
+		refreshLoad({ uuid: cargo.uuid, detail: t('components.cargoActions.refreshDetail') })
+		setOpen(false)
+	}, [cargo.uuid, refreshLoad, t])
+
+	const handleToggleVisibility = useCallback(() => {
 		toggleLoadVisibility({ uuid: cargo.uuid, isHidden: !isHidden })
 		setOpen(false)
-	}
+	}, [cargo.uuid, isHidden, toggleLoadVisibility])
 
-	const handleDeleteConfirm = () => {
+	const handleDeleteConfirm = useCallback(() => {
 		cancelLoad({ id: cargo.uuid, detail: t('components.cargoActions.deleteDetail') })
 		setDeleteOpen(false)
-	}
+	}, [cancelLoad, cargo.uuid, t])
 
 	return (
 		<>
@@ -61,25 +66,16 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 				</DropdownMenuTrigger>
 
 				<DropdownMenuContent align='end'>
-					<DropdownMenuItem
-						onClick={() => {
-							refreshLoad({ uuid: cargo.uuid, detail: t('components.cargoActions.refreshDetail') })
-							setOpen(false)
-						}}
-						className='flex items-center gap-2 cursor-pointer'
-					>
+					<DropdownMenuItem onClick={handleRefresh} className='flex items-center gap-2 cursor-pointer'>
 						<RefreshCcw className='size-4 text-muted-foreground' />
 						{t('components.cargoActions.refresh')}
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
 
-					<DropdownMenuItem
-						onClick={() => setOpen(false)}
-						className='flex items-center gap-2 cursor-pointer'
-					>
-						<Pencil className='size-4 text-muted-foreground' />
-						<Link className='w-full' href={DASHBOARD_URL.edit(cargo.uuid)}>
+					<DropdownMenuItem asChild className='flex items-center gap-2 cursor-pointer'>
+						<Link href={DASHBOARD_URL.edit(cargo.uuid)} onClick={() => setOpen(false)}>
+							<Pencil className='size-4 text-muted-foreground' />
 							{t('components.cargoActions.edit')}
 						</Link>
 					</DropdownMenuItem>
@@ -94,8 +90,6 @@ export function CargoActionsDropdown({ cargo, isOffer = false }: CargoActionsDro
 						<VisibilityIcon className='size-4 text-muted-foreground' />
 						{visibilityActionLabel}
 					</DropdownMenuItem>
-
-
 
 					<DropdownMenuSeparator />
 

@@ -53,7 +53,7 @@ export function SettingPage() {
         })
     }, [me, reset])
 
-    const onSubmit = handleSubmit(async (values) => {
+    const onSubmit = handleSubmit((values) => {
         updateMe(toPayload(values))
     })
 

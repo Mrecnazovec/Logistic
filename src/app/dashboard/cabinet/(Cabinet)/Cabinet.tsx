@@ -1,11 +1,19 @@
 'use client'
 
-import { CabinetEmailModal } from '@/components/ui/modals/CabinetEmailModal'
-import { CabinetPhoneModal } from '@/components/ui/modals/CabinetPhoneModal'
 import { isValueMissing } from './guards/profileGuards'
 import { useCabinetPage } from './hooks/useCabinetPage'
 import { AnalyticsPanel } from './ui/AnalyticsPanel'
 import { ProfilePanel } from './ui/ProfilePanel'
+import dynamic from 'next/dynamic'
+
+const CabinetEmailModal = dynamic(
+	() => import('@/components/ui/modals/CabinetEmailModal').then((mod) => mod.CabinetEmailModal),
+	{ ssr: false },
+)
+const CabinetPhoneModal = dynamic(
+	() => import('@/components/ui/modals/CabinetPhoneModal').then((mod) => mod.CabinetPhoneModal),
+	{ ssr: false },
+)
 
 export function Cabinet() {
 	const {

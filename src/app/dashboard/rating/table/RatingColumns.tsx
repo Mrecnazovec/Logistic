@@ -57,12 +57,15 @@ export const getRatingColumns = (t: Translator, locale: string): ColumnDef<IRati
 		{
 			accessorKey: 'avg_rating',
 			header: ({ column }) => renderSortableHeader(column, t('rating.table.rating')),
-			cell: ({ row }) => (
-				<span className='flex items-center gap-2 font-medium'>
-					<Star className='size-4 text-warning-500 fill-warning-500' />
-					{toNumber(row.original.avg_rating) !== null ? toNumber(row.original.avg_rating)?.toFixed(1) : <Minus />}
-				</span>
-			),
+			cell: ({ row }) => {
+				const value = toNumber(row.original.avg_rating)
+				return (
+					<span className='flex items-center gap-2 font-medium'>
+						<Star className='size-4 text-warning-500 fill-warning-500' />
+						{value !== null ? value.toFixed(1) : <Minus />}
+					</span>
+				)
+			},
 			sortingFn: (a, b) => (toNumber(a.original.avg_rating) ?? 0) - (toNumber(b.original.avg_rating) ?? 0),
 		},
 		{

@@ -11,6 +11,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return <SettingPage />
 }

@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
 import { AuthPage } from './AuthPage'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
@@ -12,9 +13,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return (
-		<Suspense>
+		<Suspense fallback={<SuspensePageSkeleton variant='form' />}>
 			<AuthPage />
 		</Suspense>
 	)

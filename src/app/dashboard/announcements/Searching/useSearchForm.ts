@@ -10,10 +10,11 @@ export function useSearchForm() {
 	const router = useRouter()
 	const queryClient = useQueryClient()
 	const searchParams = useSearchParams()
+	const searchParamsString = searchParams.toString()
 
 	const defaultValues = useMemo(
-		() => buildSearchDefaultValues(searchParams),
-		[searchParams],
+		() => buildSearchDefaultValues(new URLSearchParams(searchParamsString)),
+		[searchParamsString],
 	)
 
 	const form = useForm<ISearch>({
@@ -25,7 +26,7 @@ export function useSearchForm() {
 		form.reset(defaultValues)
 	}, [defaultValues, form])
 
-	const onSubmit: SubmitHandler<ISearch> = async (params) => {
+	const onSubmit: SubmitHandler<ISearch> = (params) => {
 		const normalizedParams: Record<string, unknown> = { ...params }
 		const hasCurrency = Boolean(normalizedParams.price_currency)
 		const hasMinPrice = normalizedParams.min_price !== undefined && normalizedParams.min_price !== null && normalizedParams.min_price !== ''
@@ -56,7 +57,7 @@ export function useSearchForm() {
 			scroll: false,
 		})
 
-		await queryClient.invalidateQueries({
+		void queryClient.invalidateQueries({
 			queryKey: ['get loads', 'public'],
 		})
 	}

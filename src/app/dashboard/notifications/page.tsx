@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Notifications } from './(Notifications)'
-import { LoaderTable } from '@/components/ui/table/TableStates'
+import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
@@ -13,9 +13,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return (
-		<Suspense fallback={<LoaderTable />}>
+		<Suspense fallback={<SuspensePageSkeleton variant='dashboard' />}>
 			<Notifications />
 		</Suspense>
 	)

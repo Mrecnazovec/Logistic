@@ -4,7 +4,7 @@ import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/form-control/Input'
-import { Loader } from '@/components/ui/Loader'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -231,12 +231,35 @@ export function InviteView(props: Props) {
 }
 
 export function InvitePageFallback() {
-	const { t } = useI18n()
 	return (
 		<InviteLayout>
-			<div className='flex flex-col items-center gap-3 text-muted-foreground'>
-				<Loader />
-				<p>{t('desk.invite.loading')}</p>
+			<div className='w-full max-w-5xl space-y-6'>
+				<Card className='rounded-3xl border-none shadow-lg'>
+					<CardHeader className='space-y-3 pb-4'>
+						<Skeleton className='h-8 w-52 rounded-full' />
+						<Skeleton className='h-4 w-72 rounded-full' />
+					</CardHeader>
+					<CardContent className='space-y-4'>
+						<Skeleton className='h-24 w-full rounded-3xl' />
+						<Skeleton className='h-14 w-full rounded-3xl' />
+						<Skeleton className='h-14 w-full rounded-3xl' />
+					</CardContent>
+				</Card>
+				<Card className='rounded-3xl border-none shadow-lg'>
+					<CardHeader className='space-y-3 pb-4'>
+						<Skeleton className='h-7 w-48 rounded-full' />
+						<Skeleton className='h-4 w-80 rounded-full' />
+					</CardHeader>
+					<CardContent className='space-y-4'>
+						<Skeleton className='h-11 w-full rounded-full' />
+						<Skeleton className='h-11 w-full rounded-full' />
+						<div className='flex gap-3 justify-end'>
+							<Skeleton className='h-11 w-28 rounded-full' />
+							<Skeleton className='h-11 w-28 rounded-full' />
+							<Skeleton className='h-11 w-28 rounded-full' />
+						</div>
+					</CardContent>
+				</Card>
 			</div>
 		</InviteLayout>
 	)

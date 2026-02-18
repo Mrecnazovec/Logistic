@@ -6,20 +6,26 @@ import { useI18n } from '@/i18n/I18nProvider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useMemo } from 'react'
+
+const DOC_FOLDERS = ['licenses', 'contracts', 'loading', 'unloading', 'others'] as const
 
 export function DocsPage() {
 	const { t, locale } = useI18n()
 	const { order, isLoading } = useGetSharedOrder()
 	const params = useParams<{ share_token: string }>()
-	const documents = order?.documents ?? []
+	const documents = useMemo(() => order?.documents ?? [], [order?.documents])
 
-	const folderStructure = [
-		{ title: t('order.docs.folder.licenses'), folder: 'licenses' },
-		{ title: t('order.docs.folder.contracts'), folder: 'contracts' },
-		{ title: t('order.docs.folder.loading'), folder: 'loading' },
-		{ title: t('order.docs.folder.unloading'), folder: 'unloading' },
-		{ title: t('order.docs.folder.other'), folder: 'others' },
-	]
+	const folderStructure = useMemo(
+		() => [
+			{ title: t('order.docs.folder.licenses'), folder: 'licenses' },
+			{ title: t('order.docs.folder.contracts'), folder: 'contracts' },
+			{ title: t('order.docs.folder.loading'), folder: 'loading' },
+			{ title: t('order.docs.folder.unloading'), folder: 'unloading' },
+			{ title: t('order.docs.folder.other'), folder: 'others' },
+		],
+		[t],
+	)
 
 	const formatFileCount = (count: number) => {
 		if (locale === 'ru') {
@@ -34,18 +40,22 @@ export function DocsPage() {
 		return `${count} ${count === 1 ? t('order.docs.files.one') : t('order.docs.files.many')}`
 	}
 
-	const folderCounts = folderStructure.reduce<Record<string, number>>((acc, item) => {
-		const normalizedFolder = item.folder.toLowerCase()
-		const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
+	const folderCounts = useMemo(
+		() =>
+			DOC_FOLDERS.reduce<Record<string, number>>((acc, folder) => {
+				const normalizedFolder = folder.toLowerCase()
+				const normalizedCategory = normalizedFolder === 'others' ? 'other' : normalizedFolder
 
-		acc[item.folder] = documents.filter((document) => {
-			const category = (document.category ?? '').toLowerCase()
-			const title = (document.title ?? '').toLowerCase()
-			return category === normalizedCategory || title === normalizedFolder
-		}).length
+				acc[folder] = documents.filter((document) => {
+					const category = (document.category ?? '').toLowerCase()
+					const title = (document.title ?? '').toLowerCase()
+					return category === normalizedCategory || title === normalizedFolder
+				}).length
 
-		return acc
-	}, {})
+				return acc
+			}, {}),
+		[documents],
+	)
 
 	const shareToken = params.share_token
 
@@ -59,10 +69,10 @@ export function DocsPage() {
 
 	return (
 		<div className='h-full rounded-3xl bg-background p-8 space-y-4'>
-			{folderStructure.map((item, index) => (
+			{folderStructure.map((item) => (
 				<Link
 					className='flex items-center justify-between gap-6 not-last:pb-4 not-last:border-b-2'
-					key={index}
+					key={item.folder}
 					href={DASHBOARD_URL.order(`shared/${shareToken}/docs/${item.folder}`)}
 				>
 					<div className='flex items-center gap-4'>

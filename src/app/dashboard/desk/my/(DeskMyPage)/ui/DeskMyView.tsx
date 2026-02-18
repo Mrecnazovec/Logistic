@@ -59,6 +59,8 @@ export function DeskMyView({
 	handleOpenDecision,
 	handleTabChange,
 }: DeskMyViewProps) {
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
+
 	const myDesktopContent = isLoadingMy ? (
 		<LoaderTable />
 	) : !myResults.length ? (
@@ -93,13 +95,13 @@ export function DeskMyView({
 		<>
 			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
+					<form onSubmit={handleSearchSubmit}>
 						<SearchFields
 							form={form}
 							showOffersFilter
 							showWeightRadiusFields={false}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.offer')}
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={handleSearchSubmit}
 						/>
 					</form>
 				</Form>

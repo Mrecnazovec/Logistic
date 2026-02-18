@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import {
+	DEFAULT_PLACEHOLDER,
 	formatDateValue,
 	formatDistanceKm,
 	formatPriceValue,
@@ -57,6 +58,7 @@ export const getCargoColumns = (
 	{
 		accessorKey: 'price_currency',
 		header: t('announcements.table.currency'),
+		cell: ({row}) => row.original.price_currency ? row.original.price_currency : DEFAULT_PLACEHOLDER
 	},
 	{
 		accessorKey: 'route_km',

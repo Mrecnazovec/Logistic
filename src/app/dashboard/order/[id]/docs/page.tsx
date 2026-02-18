@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { DocsPage } from './DocsPage'
+import { DocsPageSkeleton } from './DocsPageSkeleton'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
@@ -12,9 +13,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return (
-		<Suspense>
+		<Suspense fallback={<DocsPageSkeleton />}>
 			<DocsPage />
 		</Suspense>
 	)

@@ -20,6 +20,6 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 	return { title }
 }
 
-export default function page() {
+export default function Page() {
 	return <FolderPage />
 }

@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import { Form } from '@/components/ui/form-control/Form'
 import { SearchFields } from '@/components/ui/search/SearchFields'
@@ -36,31 +36,41 @@ export function TransportationPage() {
     const searchParams = useSearchParams()
 	const status = searchParams.get('status') ?? 'agreements'
     const tableType = useTableTypeStore((state) => state.tableType)
-    const { t } = useI18n()
-    const agreementsTab = { value: 'agreements', label: t('transportation.tabs.agreements') } as const
-    const statusTabs = [
-        { value: 'no_driver', label: t('transportation.tabs.noDriver') },
-        { value: 'pending', label: t('transportation.tabs.pending') },
-        { value: 'in_process', label: t('transportation.tabs.inProcess') },
-        { value: 'delivered', label: t('transportation.tabs.delivered') },
-        { value: 'paid', label: t('transportation.tabs.paid') },
-    ] as const
-    const agreementColumns = useMemo(() => createAgreementColumns(t), [t])
-    const role = useRoleStore((state) => state.role)
-    const tableColumns = useMemo(() => createTransportationColumns(t), [t])
-    const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
-    const { data, isLoading } = useGetOrders('no_driver', ordersRoleParam ? { as_role: ordersRoleParam } : undefined)
+	const { t } = useI18n()
+	const agreementsTab = useMemo(() => ({ value: 'agreements', label: t('transportation.tabs.agreements') } as const), [t])
+	const statusTabs = useMemo(
+		() =>
+			[
+				{ value: 'no_driver', label: t('transportation.tabs.noDriver') },
+				{ value: 'pending', label: t('transportation.tabs.pending') },
+				{ value: 'in_process', label: t('transportation.tabs.inProcess') },
+				{ value: 'delivered', label: t('transportation.tabs.delivered') },
+				{ value: 'paid', label: t('transportation.tabs.paid') },
+			] as const,
+		[t],
+	)
+	const allTabs = useMemo(() => [agreementsTab, ...statusTabs], [agreementsTab, statusTabs])
+	const agreementColumns = useMemo(() => createAgreementColumns(t), [t])
+	const role = useRoleStore((state) => state.role)
+	const tableColumns = useMemo(() => createTransportationColumns(t), [t])
+	const ordersRoleParam = role === RoleEnum.LOGISTIC ? 'customer' : undefined
+	const ordersQueryOverrides = useMemo(
+		() => (ordersRoleParam ? { as_role: ordersRoleParam } : undefined),
+		[ordersRoleParam],
+	)
+	const { data, isLoading } = useGetOrders('no_driver', ordersQueryOverrides)
 
 	const agreements = agreementsData?.results ?? []
 	const orders = data?.results ?? []
 	const hasAgreementUpdates = useAgreementRealtimeStore((state) => state.hasAgreementUpdates)
 	const clearAgreementUpdate = useAgreementRealtimeStore((state) => state.clearAgreementUpdate)
-    const { statusCounts } = useTransportationStatusCounts(
-        statusTabs,
-        searchParams,
-        ordersRoleParam ? { as_role: ordersRoleParam } : undefined,
-    )
-    const agreementsCount = agreementsData?.count
+	const { statusCounts } = useTransportationStatusCounts(
+		statusTabs,
+		searchParams,
+		ordersQueryOverrides,
+	)
+	const agreementsCount = agreementsData?.count
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
 
     const serverPaginationMeta = orders.length
         ? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: orders.length }
@@ -76,13 +86,13 @@ export function TransportationPage() {
 		}
 	}, [agreementsTab.value, clearAgreementUpdate, hasAgreementUpdates, status])
 
-    const handleStatusChange = (nextStatus: string) => {
-        if (nextStatus === status) return
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('status', nextStatus)
-        params.delete('page')
-        router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
-    }
+	const handleStatusChange = useCallback((nextStatus: string) => {
+		if (nextStatus === status) return
+		const params = new URLSearchParams(searchParams.toString())
+		params.set('status', nextStatus)
+		params.delete('page')
+		router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
+	}, [pathname, router, searchParams, status])
 
     const agreementsContent = isLoadingAgreements ? (
         <LoaderTable />
@@ -122,12 +132,12 @@ export function TransportationPage() {
         <div className='flex h-full flex-col gap-4'>
             <div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSearchSubmit}>
 						<SearchFields
 							form={form}
 							showWeightRadiusFields={false}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.shipment')}
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={handleSearchSubmit}
 						/>
                     </form>
                 </Form>
@@ -137,7 +147,7 @@ export function TransportationPage() {
                 <Tabs className='h-full' value={status} onValueChange={handleStatusChange}>
                     <div className='flex flex-wrap items-end gap-4'>
                         <TabsList className='-mb-2 bg-transparent overflow-x-auto'>
-                            {[agreementsTab, ...statusTabs].map((tab) => (
+                            {allTabs.map((tab) => (
                                 <TabsTrigger
                                     key={tab.value}
                                     className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -162,7 +172,7 @@ export function TransportationPage() {
                         </div>
                     </div>
 
-                    {[agreementsTab, ...statusTabs].map((tab) => (
+                    {allTabs.map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
                             {tab.value === agreementsTab.value ? agreementsContent : ordersContent}
                         </TabsContent>
@@ -171,7 +181,7 @@ export function TransportationPage() {
             ) : (
                 <Tabs value={status} onValueChange={handleStatusChange} className='h-full rounded-4xl xs:bg-background'>
                     <TabsList className='-mb-2 w-full justify-start overflow-x-scroll bg-transparent'>
-                        {[agreementsTab, ...statusTabs].map((tab) => (
+                        {allTabs.map((tab) => (
                             <TabsTrigger
                                 key={tab.value}
                                 className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -192,7 +202,7 @@ export function TransportationPage() {
                         ))}
                     </TabsList>
 
-                    {[agreementsTab, ...statusTabs].map((tab) => (
+                    {allTabs.map((tab) => (
                         <TabsContent key={tab.value} value={tab.value} className='flex-1'>
                             {tab.value === agreementsTab.value ? agreementsContent : ordersContent}
                         </TabsContent>

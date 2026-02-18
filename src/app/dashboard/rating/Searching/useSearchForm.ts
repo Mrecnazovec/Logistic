@@ -11,10 +11,9 @@ export function useSearchForm() {
 	const queryClient = useQueryClient()
 	const param = useParams<{ role: string }>()
 	const searchParams = useSearchParams()
+	const searchParamsString = searchParams.toString()
 
-	const defaultValues = useMemo(() => {
-		return buildSearchDefaultValues(searchParams)
-	}, [searchParams])
+	const defaultValues = useMemo(() => buildSearchDefaultValues(new URLSearchParams(searchParamsString)), [searchParamsString])
 
 	const form = useForm<ISearch>({
 		mode: 'onChange',
@@ -25,7 +24,7 @@ export function useSearchForm() {
 		form.reset(defaultValues)
 	}, [defaultValues, form])
 
-	const onSubmit: SubmitHandler<ISearch> = async (params) => {
+	const onSubmit: SubmitHandler<ISearch> = (params) => {
 		const cleanParams: Record<string, string> = {}
 
 		Object.entries(params).forEach(([key, value]) => {
@@ -40,7 +39,7 @@ export function useSearchForm() {
 			scroll: false,
 		})
 
-		await queryClient.invalidateQueries({
+		void queryClient.invalidateQueries({
 			queryKey: ['get ratings'],
 		})
 	}

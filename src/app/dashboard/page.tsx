@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { Dashboard } from './Dashboard'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
@@ -11,6 +11,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return <Dashboard />
 }

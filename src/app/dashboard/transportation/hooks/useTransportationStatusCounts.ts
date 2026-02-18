@@ -10,15 +10,16 @@ export const useTransportationStatusCounts = (
 	searchParams: URLSearchParams,
 	queryOverrides?: Partial<OrdersListQuery>,
 ) => {
+	const searchParamsString = searchParams.toString()
 	const filtersWithoutStatus = useMemo(() => {
 		const params: Record<string, string> = {}
-		searchParams.forEach((value, key) => {
+		new URLSearchParams(searchParamsString).forEach((value, key) => {
 			if (key !== 'status') {
 				params[key] = value
 			}
 		})
 		return { ...params, ...(queryOverrides ?? {}) }
-	}, [queryOverrides, searchParams])
+	}, [queryOverrides, searchParamsString])
 
 	const buildTabQuery = useCallback(
 		(tabValue: string): OrdersListQuery =>

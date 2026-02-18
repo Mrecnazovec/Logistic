@@ -29,6 +29,7 @@ export function AnnouncementsPage() {
 		() => getCargoColumns(t, locale, { showOriginRadius, showDestinationRadius }),
 		[t, locale, showOriginRadius, showDestinationRadius]
 	)
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
 
 
 	const results = data?.results ?? []
@@ -77,13 +78,13 @@ export function AnnouncementsPage() {
 		<div className='flex h-full flex-col md:gap-4'>
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
+					<form onSubmit={handleSearchSubmit}>
 						<SearchFields
 							form={form}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
 							showOffersFilter={false}
 							showAxlesVolumeFields
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={handleSearchSubmit}
 						/>
 					</form>
 				</Form>

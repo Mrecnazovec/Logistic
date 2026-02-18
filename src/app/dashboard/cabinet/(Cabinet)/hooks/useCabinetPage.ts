@@ -63,16 +63,23 @@ export function useCabinetPage() {
 	const ratingTrend = formatTrend(analytics?.successful_deliveries_change, decimalFormatter)
 
 	const analyticsBarChart = analytics?.bar_chart as AnalyticsBarChart | undefined
-	const barChartLabels = Array.isArray(analyticsBarChart?.labels) ? analyticsBarChart.labels : []
+	const barChartLabels = useMemo(
+		() => (Array.isArray(analyticsBarChart?.labels) ? analyticsBarChart.labels : []),
+		[analyticsBarChart],
+	)
 	const hasBarChartLabels = barChartLabels.length > 0
-	const incomeChartData: IncomeChartDatum[] = hasBarChartLabels
-		? barChartLabels.map((label, index) => ({
-				month: label,
-				given: analyticsBarChart?.given?.[index] ?? 0,
-				received: analyticsBarChart?.received?.[index] ?? 0,
-				earned: analyticsBarChart?.earned?.[index] ?? 0,
-			}))
-		: fallbackIncomeChartData
+	const incomeChartData: IncomeChartDatum[] = useMemo(
+		() =>
+			hasBarChartLabels
+				? barChartLabels.map((label, index) => ({
+						month: label,
+						given: analyticsBarChart?.given?.[index] ?? 0,
+						received: analyticsBarChart?.received?.[index] ?? 0,
+						earned: analyticsBarChart?.earned?.[index] ?? 0,
+					}))
+				: fallbackIncomeChartData,
+		[analyticsBarChart?.earned, analyticsBarChart?.given, analyticsBarChart?.received, barChartLabels, fallbackIncomeChartData, hasBarChartLabels],
+	)
 
 	const pieChart = analytics?.pie_chart as
 		| {
@@ -88,54 +95,60 @@ export function useCabinetPage() {
 	const completed = pieChart?.successful ?? 0
 	const cancelled = pieChart?.cancelled ?? 0
 
-	const transportChartData: TransportChartDatum[] = [
-		{ status: 'search', label: t('cabinet.transport.search'), value: queued, fill: 'var(--color-search)' },
-		{ status: 'progress', label: t('cabinet.transport.progress'), value: inProgress, fill: 'var(--color-progress)' },
-		{ status: 'success', label: t('cabinet.transport.success'), value: completed, fill: 'var(--color-success)' },
-		{ status: 'cancelled', label: t('cabinet.transport.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
-	]
+	const transportChartData: TransportChartDatum[] = useMemo(
+		() => [
+			{ status: 'search', label: t('cabinet.transport.search'), value: queued, fill: 'var(--color-search)' },
+			{ status: 'progress', label: t('cabinet.transport.progress'), value: inProgress, fill: 'var(--color-progress)' },
+			{ status: 'success', label: t('cabinet.transport.success'), value: completed, fill: 'var(--color-success)' },
+			{ status: 'cancelled', label: t('cabinet.transport.cancelled'), value: cancelled, fill: 'var(--color-cancelled)' },
+		],
+		[cancelled, completed, inProgress, queued, t],
+	)
 
 	const totalTransports = pieChart?.total ?? transportChartData.reduce((sum, item) => sum + item.value, 0)
 
-	const detailCards: AnalyticsCard[] = [
-		{
-			id: 'registration',
-			title: t('cabinet.detail.registered'),
-			value: registrationValue,
-			description: analytics ? t('cabinet.detail.days', { count: analytics.days_since_registered }) : undefined,
-			icon: DoorOpen,
-			accentClass: 'text-indigo-600 bg-indigo-100',
-		},
-		{
-			id: 'price-per-km',
-			title: t('cabinet.detail.avgPrice'),
-			value: averagePriceValue,
-			trend: ratingTrend,
-			trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
-			trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
-			icon: BarChart3,
-			accentClass: 'text-blue-600 bg-blue-100',
-		},
-		{
-			id: 'rating',
-			title: t('cabinet.detail.rating'),
-			value: ratingValue,
-			trend: ratingTrend,
-			trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
-			trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
-			description: analytics ? t('cabinet.detail.dealsBy', { count: integerFormatter.format(dealsCount) }) : undefined,
-			icon: Star,
-			accentClass: 'text-amber-500 bg-amber-50',
-		},
-		{
-			id: 'distance',
-			title: t('cabinet.detail.distance'),
-			value: distanceValue,
-			description: analytics ? t('cabinet.detail.dealsFor', { count: integerFormatter.format(dealsCount) }) : undefined,
-			icon: Truck,
-			accentClass: 'text-sky-600 bg-sky-100',
-		},
-	]
+	const detailCards: AnalyticsCard[] = useMemo(
+		() => [
+			{
+				id: 'registration',
+				title: t('cabinet.detail.registered'),
+				value: registrationValue,
+				description: analytics ? t('cabinet.detail.days', { count: analytics.days_since_registered }) : undefined,
+				icon: DoorOpen,
+				accentClass: 'text-indigo-600 bg-indigo-100',
+			},
+			{
+				id: 'price-per-km',
+				title: t('cabinet.detail.avgPrice'),
+				value: averagePriceValue,
+				trend: ratingTrend,
+				trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
+				trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
+				icon: BarChart3,
+				accentClass: 'text-blue-600 bg-blue-100',
+			},
+			{
+				id: 'rating',
+				title: t('cabinet.detail.rating'),
+				value: ratingValue,
+				trend: ratingTrend,
+				trendVariant: (analytics?.successful_deliveries_change ?? 0) < 0 ? 'danger' : 'success',
+				trendLabel: analytics ? t('cabinet.detail.trendFromLastMonth') : undefined,
+				description: analytics ? t('cabinet.detail.dealsBy', { count: integerFormatter.format(dealsCount) }) : undefined,
+				icon: Star,
+				accentClass: 'text-amber-500 bg-amber-50',
+			},
+			{
+				id: 'distance',
+				title: t('cabinet.detail.distance'),
+				value: distanceValue,
+				description: analytics ? t('cabinet.detail.dealsFor', { count: integerFormatter.format(dealsCount) }) : undefined,
+				icon: Truck,
+				accentClass: 'text-sky-600 bg-sky-100',
+			},
+		],
+		[analytics, averagePriceValue, dealsCount, distanceValue, integerFormatter, ratingTrend, ratingValue, registrationValue, t],
+	)
 
 	const emailValue = me?.email ?? ''
 	const isEmailMissing = isValueMissing(emailValue)
@@ -177,16 +190,19 @@ export function useCabinetPage() {
 		},
 	})
 
-	const profileFields: ProfileField[] = [
-		{
-			id: 'full-name',
-			label: t('cabinet.profile.fullName'),
-			value: me?.first_name || me?.company_name || me?.email || '',
-		},
-		{ id: 'company', label: t('cabinet.profile.company'), value: me?.company_name || '' },
-		{ id: 'country', label: t('cabinet.profile.country'), value: me?.profile?.country || '' },
-		{ id: 'city', label: t('cabinet.profile.city'), value: me?.profile?.city || '' },
-	]
+	const profileFields: ProfileField[] = useMemo(
+		() => [
+			{
+				id: 'full-name',
+				label: t('cabinet.profile.fullName'),
+				value: me?.first_name || me?.company_name || me?.email || '',
+			},
+			{ id: 'company', label: t('cabinet.profile.company'), value: me?.company_name || '' },
+			{ id: 'country', label: t('cabinet.profile.country'), value: me?.profile?.country || '' },
+			{ id: 'city', label: t('cabinet.profile.city'), value: me?.profile?.city || '' },
+		],
+		[me?.company_name, me?.email, me?.first_name, me?.profile?.city, me?.profile?.country, t],
+	)
 
 	const handleEmailSendCode = (nextEmail: string) => {
 		if (!nextEmail) {

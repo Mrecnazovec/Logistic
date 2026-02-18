@@ -1,6 +1,6 @@
 import { SERVER_URL } from '@/config/api.config'
 import axios, { CreateAxiosDefaults } from 'axios'
-import { errorCatch, getContentType } from './api.helper'
+import { getContentType } from './api.helper'
 import { getAccessToken, removeFromStorage } from '@/services/auth/auth-token.service'
 
 const options: CreateAxiosDefaults = {
@@ -24,9 +24,14 @@ axiosWithAuth.interceptors.request.use((config) => {
 
 axiosWithAuth.interceptors.response.use(
 	(config) => config,
-	async (error) => {
+	(error) => {
+		const responseMessage = error.response?.data?.message
+		const normalizedMessage = Array.isArray(responseMessage) ? responseMessage[0] : responseMessage
+		const isUnauthorized =
+			error?.response?.status === 401 || normalizedMessage === 'jwt expired' || normalizedMessage === 'jwt must be provided'
+
 		if (
-			(error?.response?.status === 401 || errorCatch(error) === 'jwt expired' || errorCatch(error) === 'jwt must be provided') &&
+			isUnauthorized &&
 			error.config &&
 			!error.config._isRetry
 		) {

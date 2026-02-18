@@ -111,12 +111,16 @@ export function SearchFields({
 
 	const searchButton = (
 		<Button
-			type='submit'
+			type={isMobile ? 'button' : 'submit'}
 			className='max-xl:w-full'
-			onClick={() => {
-				onSubmit()
-				closeDrawer()
-			}}
+			onClick={
+				isMobile
+					? () => {
+						onSubmit()
+						closeDrawer()
+					}
+					: undefined
+			}
 		>
 			<Search className='size-5' />
 			{t('components.search.search')}

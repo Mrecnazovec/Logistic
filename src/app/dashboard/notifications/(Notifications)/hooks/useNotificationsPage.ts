@@ -4,7 +4,7 @@ import { useNotifications } from '@/hooks/queries/notifications/useNotifications
 import { useNotificationsRealtime } from '@/hooks/queries/notifications/useNotificationsRealtime'
 import { useI18n } from '@/i18n/I18nProvider'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IMPORTANT_NOTIFICATION_TYPES, NotificationsTab } from '../constants/notificationFilters'
 
 export function useNotificationsPage() {
@@ -32,14 +32,21 @@ export function useNotificationsPage() {
 
 	const selectedId = useMemo(() => {
 		const param = searchParams.get('id')
-		if (param) return Number(param)
+		if (param) {
+			const parsedId = Number(param)
+			if (Number.isFinite(parsedId)) return parsedId
+		}
 		return notifications[0]?.id ?? null
 	}, [notifications, searchParams])
 
 	useEffect(() => {
 		if (selectedId === null || !pathname) return
 		const currentParam = searchParams.get('id')
-		if (!currentParam) router.replace(`${pathname}?id=${selectedId}`)
+		if (!currentParam) {
+			const params = new URLSearchParams(searchParams.toString())
+			params.set('id', String(selectedId))
+			router.replace(`${pathname}?${params.toString()}`)
+		}
 	}, [pathname, router, searchParams, selectedId])
 
 	useEffect(() => {
@@ -88,10 +95,12 @@ export function useNotificationsPage() {
 	const activeNotifications = notificationsTab === 'all' ? notifications : importantNotifications
 	const isListLoading = isLoadingNotifications || !isNotificationsEnabled
 
-	const handleSelect = (id: number, isRead?: boolean) => {
-		router.push(`${pathname}?id=${id}`)
+	const handleSelect = useCallback((id: number, isRead?: boolean) => {
+		const params = new URLSearchParams(searchParams.toString())
+		params.set('id', String(id))
+		router.push(`${pathname}?${params.toString()}`)
 		if (!isRead) markRead(id)
-	}
+	}, [markRead, pathname, router, searchParams])
 
 	return {
 		t,

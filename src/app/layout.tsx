@@ -67,13 +67,16 @@ export default async function RootLayout({
 }>) {
 	const locale = await getLocale()
 	const messages = getMessages(locale)
+	const isProduction = process.env.NODE_ENV === 'production'
 
 	return (
 		<html lang={locale}>
 			<head>
 				<meta name='yandex-verification' content='0864d4dea57bccec' />
-				<Script id="yandex-metrika">
-					{`(function(m,e,t,r,i,k,a){
+				{isProduction ? (
+					<>
+						<Script id='yandex-metrika'>
+							{`(function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
@@ -81,20 +84,22 @@ export default async function RootLayout({
    			})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106703696', 'ym');
 
     		ym(106703696, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});`}
-				</Script>
-				<noscript>
-					<div>
-						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img src="https://mc.yandex.ru/watch/106703696" style={{ position: 'absolute', left: '-9999px' }} alt="" />
-					</div>
-				</noscript>
-				<Script async src="https://www.googletagmanager.com/gtag/js?id=G-FHD577EN97" />
-				<Script id="google-analytics">
-					{`window.dataLayer = window.dataLayer || [];
+						</Script>
+						<noscript>
+							<div>
+								{/* eslint-disable-next-line @next/next/no-img-element */}
+								<img src='https://mc.yandex.ru/watch/106703696' style={{ position: 'absolute', left: '-9999px' }} alt='' />
+							</div>
+						</noscript>
+						<Script async src='https://www.googletagmanager.com/gtag/js?id=G-FHD577EN97' />
+						<Script id='google-analytics'>
+							{`window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
 						gtag('config', 'G-FHD577EN97');`}
-				</Script>
+						</Script>
+					</>
+				) : null}
 			</head>
 			<body className={`${raleway.variable} ${manrope.variable} ${inter.variable} ${urbanist.variable} antialiased scroll-smooth`}>
 				<I18nProvider locale={locale} messages={messages}>

@@ -276,10 +276,6 @@ export function LocationMapPicker({
 	const handleApply = () => {
 		if (!selectedPoint) return
 		onSelect({ ...selectedPoint, address: selectedAddress || undefined })
-		console.log(`[PostingPage][${type}] selected coordinates`, {
-			...selectedPoint,
-			address: selectedAddress || undefined,
-		})
 		setOpen(false)
 	}
 

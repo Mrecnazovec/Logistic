@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
 import { PostingPage } from './(PostingPage)'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
@@ -12,12 +13,12 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	const isDevelopmentMapsEnabled = process.env.APP_ENV === 'development'
 	const yandexApiKey = isDevelopmentMapsEnabled ? process.env.YANDEX_SECRET_KEY : undefined
 
 	return (
-		<Suspense fallback={null}>
+		<Suspense fallback={<SuspensePageSkeleton variant='form' />}>
 			<PostingPage yandexApiKey={yandexApiKey} showMap={isDevelopmentMapsEnabled} />
 		</Suspense>
 	)

@@ -5,29 +5,31 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useI18n } from '@/i18n/I18nProvider'
 import { PUBLIC_URL } from '@/config/url.config'
 import { AUTH_TOKENS_REFRESHED_EVENT } from '@/constants/auth-events'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { getRefreshToken } from '@/services/auth/auth-token.service'
 import { authService } from '@/services/auth/auth.service'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface UseGetMeOptions {
 	enabled?: boolean
 }
 
+const ME_QUERY_KEY = ['get profile'] as const
+
 export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLoading: boolean; isError: boolean; error: unknown } => {
 	const { t } = useI18n()
+	const enabled = options?.enabled ?? true
 	const {
 		data: me,
 		isLoading,
 		isError,
 		error,
 	} = useQuery<IMe>({
-		queryKey: ['get profile'],
+		queryKey: ME_QUERY_KEY,
 		queryFn: () => meService.getMe(),
-		enabled: options?.enabled ?? true,
+		enabled,
 		retry: 0,
 	})
 	const queryClient = useQueryClient()
@@ -46,7 +48,7 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		if (refreshToken) {
 			refreshTokenRef.current = refreshToken
 		}
-	})
+	}, [])
 
 	useEffect(() => {
 		setRole(me?.role)
@@ -58,6 +60,25 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		refreshAttempted.current = false
 		lastErrorMessage.current = null
 	}, [me])
+
+	const redirectToAuth = useCallback(() => {
+		const query = searchParams.toString()
+		const returnPath = query ? `${pathname}?${query}` : pathname
+		router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
+	}, [pathname, router, searchParams])
+
+	const notifyAndRedirect = useCallback(
+		(err: unknown) => {
+			const message = getErrorMessage(err) ?? t('hooks.me.get.error')
+			if (message !== lastErrorMessage.current) {
+				lastErrorMessage.current = message
+				toast.error(message)
+			}
+			hasHandledError.current = true
+			redirectToAuth()
+		},
+		[redirectToAuth, t],
+	)
 
 	useEffect(() => {
 		if (!isError) return
@@ -76,18 +97,10 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 					if (typeof window !== 'undefined') {
 						window.dispatchEvent(new Event(AUTH_TOKENS_REFRESHED_EVENT))
 					}
-					queryClient.invalidateQueries({ queryKey: ['get profile'] })
+					queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY })
 				})
-				.catch(() => {
-					const message = getErrorMessage(error) ?? t('hooks.me.get.error')
-					if (message !== lastErrorMessage.current) {
-						lastErrorMessage.current = message
-						toast.error(message)
-					}
-					hasHandledError.current = true
-					const query = searchParams.toString()
-					const returnPath = query ? `${pathname}?${query}` : pathname
-					router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
+				.catch((refreshError) => {
+					notifyAndRedirect(refreshError)
 				})
 				.finally(() => {
 					isRefreshing.current = false
@@ -95,19 +108,11 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 			return
 		}
 
-		const message = getErrorMessage(error) ?? t('hooks.me.get.error')
-		if (message === lastErrorMessage.current) return
-
-		lastErrorMessage.current = message
-		toast.error(message)
-		hasHandledError.current = true
-		const query = searchParams.toString()
-		const returnPath = query ? `${pathname}?${query}` : pathname
-		router.push(`${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`)
-	}, [error, isError, pathname, queryClient, router, searchParams, t])
+		notifyAndRedirect(error)
+	}, [error, isError, notifyAndRedirect, queryClient])
 
 	useEffect(() => {
-		if (!(options?.enabled ?? true)) return
+		if (!enabled) return
 
 		const intervalId = window.setInterval(() => {
 			if (isRefreshing.current) return
@@ -132,7 +137,7 @@ export const useGetMe = (options?: UseGetMeOptions): { me: IMe | undefined; isLo
 		return () => {
 			window.clearInterval(intervalId)
 		}
-	}, [options?.enabled])
+	}, [enabled])
 
 	return { me, isLoading, isError, error }
 }

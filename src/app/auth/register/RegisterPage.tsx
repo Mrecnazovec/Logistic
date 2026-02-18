@@ -84,6 +84,7 @@ export function RegisterPage() {
 
 	const isPhoneVerified = verifiedPhone !== null && verifiedPhone === phoneValue
 	const totalSteps = role ? baseSteps + (isPhoneVerified ? 1 : 2) : 2
+	const isOtpCountdownActive = (otpSecondsLeft ?? 0) > 0
 
 	const currentStepIndex = useMemo(() => {
 		if (!role) return step
@@ -91,6 +92,14 @@ export function RegisterPage() {
 		if (isPhoneVerified) return baseSteps + 1
 		return baseSteps + (step === 4 ? 1 : 2)
 	}, [step, baseSteps, role, isPhoneVerified])
+
+	const registerTitle = !role
+		? t('register.title')
+		: step === 1
+			? t('register.title')
+			: step === 2 || step === 3
+				? t('register.companyInfo')
+				: t('register.confirmation')
 
 	const { mutateAsync: sendPhoneOtp, isPending: isSendingOtp } = useMutation({
 		mutationKey: ['send phone otp'],
@@ -272,14 +281,20 @@ export function RegisterPage() {
 	}
 
 	useEffect(() => {
-		if (!otpSecondsLeft || otpSecondsLeft <= 0) return
+		if (!isOtpCountdownActive) return
 
-		const timer = setInterval(() => {
-			setOtpSecondsLeft((prev) => (prev && prev > 0 ? prev - 1 : 0))
+		const timer = window.setInterval(() => {
+			setOtpSecondsLeft((prev) => {
+				if (!prev || prev <= 1) {
+					window.clearInterval(timer)
+					return 0
+				}
+				return prev - 1
+			})
 		}, 1000)
 
-		return () => clearInterval(timer)
-	}, [otpSecondsLeft])
+		return () => window.clearInterval(timer)
+	}, [isOtpCountdownActive])
 
 	return (
 		<div className='min-h-screen grid grid-cols-1 lg:grid-cols-2'>
@@ -305,9 +320,7 @@ export function RegisterPage() {
 				<div className='flex flex-1 items-center justify-center'>
 					<Card className='w-full max-w-xl border-none bg-transparent shadow-none'>
 						<CardHeader className='mb-6'>
-							<h1 className='sm:text-5xl text-4xl font-bold text-center'>
-								{!role ? t('register.title') : step === 1 ? t('register.title') : step === 2 || step === 3 ? t('register.companyInfo') : t('register.confirmation')}
-							</h1>
+							<h1 className='sm:text-5xl text-4xl font-bold text-center'>{registerTitle}</h1>
 							{!role && (
 								<p className='text-center text-lg font-bold mt-6'>
 									{t('register.welcomeTitle', { siteName: SITE_NAME })} <br /> {t('register.welcomeSubtitle')}

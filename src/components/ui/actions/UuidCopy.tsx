@@ -16,7 +16,7 @@ interface UuidCopy {
 export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 	const { t } = useI18n()
 	const [copied, setCopied] = useState(false)
-	const displayId = uuid || String(id)
+	const displayId = uuid ?? (typeof id === 'number' ? String(id) : '')
 
 	useEffect(() => {
 		if (!copied) return
@@ -29,6 +29,10 @@ export const UuidCopy = ({ uuid, id, isPlaceholder = false }: UuidCopy) => {
 		event.stopPropagation()
 
 		try {
+			if (!displayId) {
+				toast.error(t("components.uuidCopy.error"))
+				return
+			}
 			if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
 				await navigator.clipboard.writeText(displayId)
 			} else {

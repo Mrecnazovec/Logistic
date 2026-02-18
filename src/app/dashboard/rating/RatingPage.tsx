@@ -18,19 +18,15 @@ import { getRatingColumns } from './table/RatingColumns'
 
 export function RatingPage() {
 	const params = useParams<{ role?: string | string[] }>()
-	const role = useMemo(() => {
-		if (Array.isArray(params?.role)) {
-			return params.role[0] || 'logistic'
-		}
-
-		return params?.role || 'logistic'
-	}, [params])
+	const roleParam = params?.role
+	const role = Array.isArray(roleParam) ? roleParam[0] || 'logistic' : roleParam || 'logistic'
 	const { ratings, isLoading } = useGetRatings(role)
 	const { form, onSubmit } = useSearchForm()
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const tableType = useTableTypeStore((state) => state.tableType)
 	const { t, locale } = useI18n()
 	const columns = useMemo(() => getRatingColumns(t, locale), [t, locale])
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
 
 	const results = ratings?.results ?? []
 
@@ -47,8 +43,8 @@ export function RatingPage() {
 		<div className='flex flex-col md:gap-4 h-full'>
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
-						<SearchRatingFields form={form} onSubmit={form.handleSubmit(onSubmit)} />
+					<form onSubmit={handleSearchSubmit}>
+						<SearchRatingFields form={form} onSubmit={handleSearchSubmit} />
 					</form>
 				</Form>
 			</div>

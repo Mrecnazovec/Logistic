@@ -31,6 +31,7 @@ export function HistoryPage() {
 	const role = useRoleStore((state) => state.role)
 	const { t } = useI18n()
 	const columns = useMemo(() => getHistoryColumns(t, role), [role, t])
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
 	const statusTabs = useMemo(
 		() => [
 			{ value: 'paid', label: t('history.tabs.paid') },
@@ -50,13 +51,13 @@ export function HistoryPage() {
 		[router],
 	)
 
-	const handleStatusChange = (nextStatus: string) => {
+	const handleStatusChange = useCallback((nextStatus: string) => {
 		if (nextStatus === status) return
 		const params = new URLSearchParams(searchParams.toString())
 		params.set('status', nextStatus)
 		params.delete('page')
 		router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
-	}
+	}, [pathname, router, searchParams, status])
 
 	const results = data?.results ?? []
 
@@ -69,54 +70,40 @@ export function HistoryPage() {
 		}
 		: undefined
 
-	const renderDesktopContent = () => {
-		if (isLoading) return <LoaderTable />
-		if (!results.length) return <EmptyTableState />
+	const desktopContent = isLoading ? (
+		<LoaderTable />
+	) : !results.length ? (
+		<EmptyTableState />
+	) : tableType === 'card' ? (
+		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} />
+	) : (
+		<DataTable
+			columns={columns}
+			data={results}
+			isButton
+			onRowClick={handleRowClick}
+			serverPagination={serverPaginationMeta}
+		/>
+	)
 
-		if (tableType === 'card') {
-			return (
-				<HistoryCardList
-					orders={results}
-					serverPagination={serverPaginationMeta}
-					onView={handleRowClick}
-				/>
-			)
-		}
-
-		return (
-			<DataTable
-				columns={columns}
-				data={results}
-				isButton
-				onRowClick={handleRowClick}
-				serverPagination={serverPaginationMeta}
-			/>
-		)
-	}
-
-	const renderMobileContent = () => {
-		if (isLoading) return <LoaderTable />
-		if (!results.length) return <EmptyTableState />
-
-		return (
-			<HistoryCardList
-				orders={results}
-				serverPagination={serverPaginationMeta}
-				onView={handleRowClick}
-			/>
-		)
-	}
+	const mobileContent = isLoading ? (
+		<LoaderTable />
+	) : !results.length ? (
+		<EmptyTableState />
+	) : (
+		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} />
+	)
 
 	return (
 		<div className='flex flex-col md:gap-4 h-full'>
 			<div className='w-full bg-background rounded-4xl max-md:mb-6 px-4 py-8 max-md:hidden'>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
+					<form onSubmit={handleSearchSubmit}>
 						<SearchFields
 							form={form}
 							showWeightRadiusFields={false}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.shipment')}
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={handleSearchSubmit}
 						/>
 					</form>
 				</Form>
@@ -146,7 +133,7 @@ export function HistoryPage() {
 
 					{statusTabs.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderDesktopContent()}
+							{desktopContent}
 						</TabsContent>
 					))}
 				</Tabs>
@@ -169,7 +156,7 @@ export function HistoryPage() {
 
 					{statusTabs.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value} className='flex-1'>
-							{renderMobileContent()}
+							{mobileContent}
 						</TabsContent>
 					))}
 				</Tabs>

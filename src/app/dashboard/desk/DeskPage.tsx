@@ -37,6 +37,7 @@ export function DeskPage() {
 		[unreadOffers],
 	)
 	const columns = useMemo(() => getDeskColumns(t, locale), [t, locale])
+	const handleSearchSubmit = form.handleSubmit(onSubmit)
 
 	useEffect(() => {
 		if (role === RoleEnum.CARRIER) router.push(DASHBOARD_URL.desk('my'))
@@ -84,13 +85,13 @@ export function DeskPage() {
 		<div className='flex h-full flex-col md:gap-4'>
 			<div className='w-full rounded-4xl bg-background px-4 py-8 max-md:mb-6 max-md:hidden'>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
+					<form onSubmit={handleSearchSubmit}>
 						<SearchFields
 							form={form}
 							showOffersFilter
 							showWeightRadiusFields={false}
 							uuidPlaceholder={t('components.search.uuidPlaceholder.request')}
-							onSubmit={form.handleSubmit(onSubmit)}
+							onSubmit={handleSearchSubmit}
 						/>
 					</form>
 				</Form>

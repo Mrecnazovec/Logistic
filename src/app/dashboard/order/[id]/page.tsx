@@ -3,6 +3,7 @@ import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
 import { OrderPage } from './(OrderPage)'
+import { OrderPageSkeleton } from './(OrderPage)/ui/OrderPageSkeleton'
 
 export const generateMetadata = async (): Promise<Metadata> => {
 	const locale = await getLocale()
@@ -12,9 +13,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 	}
 }
 
-export default function page() {
+export default function Page() {
 	return (
-		<Suspense>
+		<Suspense fallback={<OrderPageSkeleton />}>
 			<OrderPage />
 		</Suspense>
 	)

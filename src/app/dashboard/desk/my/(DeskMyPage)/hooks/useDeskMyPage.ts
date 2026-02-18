@@ -11,7 +11,7 @@ import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import { useRoleStore } from '@/store/useRoleStore'
 import { useTableTypeStore } from '@/store/useTableTypeStore'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useSearchForm } from '../../Searching/useSearchForm'
 import { getDeskIncomeColumns } from '../../table/DeskIncomeColumns'
 import { getDeskMyColumns } from '../../table/DeskMyColumns'
@@ -22,7 +22,7 @@ function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: 
 	const [decisionNote, setDecisionNote] = useState<string | undefined>()
 	const [decisionActionable, setDecisionActionable] = useState(false)
 
-	const openDecisionModal = (offer: IOfferShort, options?: { forceFull?: boolean }) => {
+	const openDecisionModal = useCallback((offer: IOfferShort, options?: { forceFull?: boolean }) => {
 		const meta = getOfferStatusMeta(offer, role, t)
 		setSelectedOffer(offer)
 		if (options?.forceFull) {
@@ -33,16 +33,16 @@ function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: 
 			setDecisionActionable(Boolean(meta.requireDecision))
 		}
 		setIsDecisionModalOpen(true)
-	}
+	}, [role, t])
 
-	const closeDecisionModal = (open: boolean) => {
+	const closeDecisionModal = useCallback((open: boolean) => {
 		setIsDecisionModalOpen(open)
 		if (!open) {
 			setSelectedOffer(undefined)
 			setDecisionNote(undefined)
 			setDecisionActionable(false)
 		}
-	}
+	}, [])
 
 	return {
 		selectedOffer,
@@ -99,10 +99,10 @@ export function useDeskMyPage() {
 	const hasUnreadDesk = deskResults.some((offer) => unreadOfferIds.has(offer.id))
 	const hasUnreadMy = myResults.some((offer) => unreadOfferIds.has(offer.id))
 
-	const handleOpenDecision = (offer: IOfferShort, options?: { forceFull?: boolean }) => {
+	const handleOpenDecision = useCallback((offer: IOfferShort, options?: { forceFull?: boolean }) => {
 		clearOffer(offer.id)
 		openDecisionModal(offer, options)
-	}
+	}, [clearOffer, openDecisionModal])
 
 	const deskPagination = deskResults.length
 		? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: deskResults.length }
@@ -111,12 +111,12 @@ export function useDeskMyPage() {
 		? { next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count, pageSize: myResults.length }
 		: undefined
 
-	const handleTabChange = () => {
+	const handleTabChange = useCallback(() => {
 		const params = new URLSearchParams(searchParams.toString())
 		params.delete('page')
 		const query = params.toString()
 		router.replace(query ? `${pathname}?${query}` : pathname)
-	}
+	}, [pathname, router, searchParams])
 
 	return {
 		t,
