@@ -296,6 +296,7 @@ Sheet - sliding panel built on Radix Sheet.
 Sidebar - responsive sidebar component with mobile sheet behavior.
 Skeleton - skeleton placeholder.
 SuspensePageSkeleton - reusable suspense fallback skeleton with dashboard/form/detail variants.
+PostingEditPageSkeleton - suspense skeleton for posting/edit forms with two-column section layout and action buttons.
 Tabs - Radix tabs.
 Toggle - toggle button.
 Tooltip - Radix tooltip.
