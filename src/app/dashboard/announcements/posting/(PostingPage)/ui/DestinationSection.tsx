@@ -11,6 +11,7 @@ import { POSTING_SECTION_CLASS } from '../constants/postingLayout'
 import { LocationMapPicker } from './LocationMapPicker'
 import { useState } from 'react'
 import { CityCoordinates } from '@/shared/types/Nominatim.interface'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 
 type DestinationSectionProps = {
 	form: UseFormReturn<CargoPublishRequestDto>
@@ -45,48 +46,54 @@ export function DestinationSection({
 							{t('announcements.posting.destination.title')}
 						</FormLabel>
 						<FormControl>
-							<CitySelector
-								value={field.value || ''}
-								countryName={destinationCountryValue}
-								onChange={(val, city) => {
-									field.onChange(val)
-									form.setValue('destination_country', city?.country ?? '')
-									form.setValue('destination_address', '', { shouldDirty: true, shouldTouch: true })
-									setExactCoordinates(null)
-								}}
-								onCoordinates={(coordinates) => {
-									setCityCoordinates(coordinates)
-								}}
-								countryCode={undefined}
-								placeholder={t('announcements.posting.destination.cityPlaceholder')}
-								disabled={isLoadingCreate}
-							/>
+							<div className='flex items-center gap-2'>
+								<div className='flex-1'>
+									<CitySelector
+										value={field.value || ''}
+										countryName={destinationCountryValue}
+										onChange={(val, city) => {
+											field.onChange(val)
+											form.setValue('destination_country', city?.country ?? '')
+											form.setValue('destination_address', '', { shouldDirty: true, shouldTouch: true })
+											setExactCoordinates(null)
+										}}
+										onCoordinates={(coordinates) => {
+											setCityCoordinates(coordinates)
+										}}
+										countryCode={undefined}
+										placeholder={t('announcements.posting.destination.cityPlaceholder')}
+										disabled={isLoadingCreate}
+									/>
+								</div>
+								{showMap ? (
+									<LocationMapPicker
+										type='destination'
+										apiKey={yandexApiKey}
+										city={destinationCity}
+										country={destinationCountryValue}
+										address={destinationAddress}
+										fallbackPoint={
+											cityCoordinates
+												? {
+														lat: Number(cityCoordinates.lat),
+														lng: Number(cityCoordinates.lon),
+													}
+												: null
+										}
+										value={exactCoordinates}
+										onSelect={(selection) => {
+											setExactCoordinates({ lat: selection.lat, lng: selection.lng })
+											if (selection.address) {
+												form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+											}
+										}}
+										disabled={isLoadingCreate}
+										compact
+										disabledCityTooltip='Требуется указать город'
+									/>
+								) : null}
+							</div>
 						</FormControl>
-						{showMap ? (
-							<LocationMapPicker
-								type='destination'
-								apiKey={yandexApiKey}
-								city={destinationCity}
-								country={destinationCountryValue}
-								address={destinationAddress}
-								fallbackPoint={
-									cityCoordinates
-										? {
-												lat: Number(cityCoordinates.lat),
-												lng: Number(cityCoordinates.lon),
-										  }
-										: null
-								}
-								value={exactCoordinates}
-								onSelect={(selection) => {
-									setExactCoordinates({ lat: selection.lat, lng: selection.lng })
-									if (selection.address) {
-										form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
-									}
-								}}
-								disabled={isLoadingCreate}
-							/>
-						) : null}
 						<FormMessage />
 					</FormItem>
 				)}
@@ -98,17 +105,40 @@ export function DestinationSection({
 				render={({ field }) => (
 					<FormItem className='w-full'>
 						<FormControl>
-							<InputGroup>
-								<InputGroupInput
-									placeholder={t('announcements.posting.destination.addressPlaceholder')}
-									{...field}
-									value={field.value ?? ''}
-									disabled={isLoadingCreate || showMap}
-								/>
-								<InputGroupAddon className='pr-2'>
-									<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
-								</InputGroupAddon>
-							</InputGroup>
+							{showMap ? (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<span className='inline-flex w-full'>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('announcements.posting.destination.addressPlaceholder')}
+													{...field}
+													value={field.value ?? ''}
+													disabled
+												/>
+												<InputGroupAddon className='pr-2'>
+													<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+												</InputGroupAddon>
+											</InputGroup>
+										</span>
+									</TooltipTrigger>
+									<TooltipContent side='top' className='text-black' sideOffset={6}>
+										Укажите адрес на карте
+									</TooltipContent>
+								</Tooltip>
+							) : (
+								<InputGroup>
+									<InputGroupInput
+										placeholder={t('announcements.posting.destination.addressPlaceholder')}
+										{...field}
+										value={field.value ?? ''}
+										disabled={isLoadingCreate}
+									/>
+									<InputGroupAddon className='pr-2'>
+										<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+									</InputGroupAddon>
+								</InputGroup>
+							)}
 						</FormControl>
 						<FormMessage />
 					</FormItem>

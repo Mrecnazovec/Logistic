@@ -5,6 +5,7 @@ import { MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 import { useI18n } from '@/i18n/I18nProvider'
 
 type MapPoint = {
@@ -26,6 +27,8 @@ type LocationMapPickerProps = {
 	value?: MapPoint | null
 	onSelect: (selection: MapSelection) => void
 	disabled?: boolean
+	compact?: boolean
+	disabledCityTooltip?: string
 }
 
 declare global {
@@ -82,6 +85,8 @@ export function LocationMapPicker({
 	value,
 	onSelect,
 	disabled,
+	compact = false,
+	disabledCityTooltip,
 }: LocationMapPickerProps) {
 	const { t, locale } = useI18n()
 	const tm = (key: string, fallback: string) => {
@@ -101,6 +106,7 @@ export function LocationMapPicker({
 	const placemarkRef = useRef<any>(null)
 	const setPlacemarkRef = useRef<((point: MapPoint) => void) | null>(null)
 	const reverseGeocodeRequestRef = useRef(0)
+	const skipAutoApplyOnCloseRef = useRef(false)
 
 	const initialQuery = useMemo(() => [country, city, address].filter(Boolean).join(', '), [address, city, country])
 	const hasMinimumData = Boolean(city)
@@ -273,8 +279,17 @@ export function LocationMapPicker({
 		}
 	}, [apiKey, fallbackPoint, initialQuery, locale, mapContainerNode, open, value])
 
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (!nextOpen && selectedPoint && !skipAutoApplyOnCloseRef.current) {
+			onSelect({ ...selectedPoint, address: selectedAddress || undefined })
+		}
+		skipAutoApplyOnCloseRef.current = false
+		setOpen(nextOpen)
+	}
+
 	const handleApply = () => {
 		if (!selectedPoint) return
+		skipAutoApplyOnCloseRef.current = true
 		onSelect({ ...selectedPoint, address: selectedAddress || undefined })
 		setOpen(false)
 	}
@@ -288,35 +303,65 @@ export function LocationMapPicker({
 	const coordsText = selectedPoint
 		? `${selectedPoint.lat.toFixed(6)}, ${selectedPoint.lng.toFixed(6)}`
 		: tm('announcements.posting.map.coordinatesPlaceholder', 'Coordinates are not selected')
+	const isTriggerDisabled = Boolean(disabled || !hasMinimumData || !apiKey)
+
+	const triggerButton = (
+		<Button
+			type='button'
+			variant='default'
+			className={
+				compact
+					? 'h-11 w-11 rounded-full bg-brand border-none p-0 text-white hover:bg-brand/90'
+					: 'rounded-4xl h-11 bg-brand border-none text-white hover:bg-brand/90'
+			}
+			size='sm'
+			onClick={() => setOpen(true)}
+			disabled={isTriggerDisabled}
+		>
+			<MapPin className='size-4 text-white' />
+			{compact ? null : tm('announcements.posting.map.open', 'Open map')}
+		</Button>
+	)
+
+	const triggerWithOptionalTooltip =
+		isTriggerDisabled && !hasMinimumData && disabledCityTooltip ? (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<span className='inline-flex'>{triggerButton}</span>
+				</TooltipTrigger>
+				<TooltipContent side='top' className='text-black' sideOffset={6}>
+					{disabledCityTooltip}
+				</TooltipContent>
+			</Tooltip>
+		) : (
+			triggerButton
+		)
 
 	return (
-		<div className='mt-2 space-y-2'>
+		<div className={compact ? '' : 'mt-2 space-y-2'}>
 			<div className='flex flex-wrap items-center gap-2'>
-				<Button
-					type='button'
-					variant='outline'
-					className='rounded-4xl h-11 bg-grayscale-50 border-none'
-					size='sm'
-					onClick={() => setOpen(true)}
-					disabled={disabled || !hasMinimumData || !apiKey}
-				>
-					<MapPin className='size-4' />
-					{tm('announcements.posting.map.open', 'Open map')}
-				</Button>
-				<p className='text-xs text-muted-foreground'>{coordsText}</p>
+				{triggerWithOptionalTooltip}
+				{compact ? null : <p className='text-xs text-muted-foreground'>{coordsText}</p>}
 			</div>
-			{!apiKey ? (
-				<p className='text-xs text-destructive'>
-					{tm('announcements.posting.map.missingKey', 'Yandex key is missing: set YANDEX_SECRET_KEY in environment.')}
-				</p>
-			) : null}
-			{!hasMinimumData ? (
-				<p className='text-xs text-muted-foreground'>
-					{tm('announcements.posting.map.fillAddress', 'Fill in city to open map. Address is optional.')}
-				</p>
-			) : null}
-
-			<Dialog open={open} onOpenChange={setOpen}>
+			{compact
+				? null
+				: !apiKey
+					? (
+						<p className='text-xs text-destructive'>
+							{tm('announcements.posting.map.missingKey', 'Yandex key is missing: set YANDEX_SECRET_KEY in environment.')}
+						</p>
+					)
+					: null}
+			{compact
+				? null
+				: !hasMinimumData
+					? (
+						<p className='text-xs text-muted-foreground'>
+							{tm('announcements.posting.map.fillAddress', 'Fill in city to open map. Address is optional.')}
+						</p>
+					)
+					: null}
+			<Dialog open={open} onOpenChange={handleOpenChange}>
 				<DialogContent className='max-w-4xl'>
 					<DialogHeader>
 						<DialogTitle>{tm('announcements.posting.map.title', 'Specify exact point on map')}</DialogTitle>
@@ -329,9 +374,7 @@ export function LocationMapPicker({
 					</DialogHeader>
 
 					<div className='space-y-3'>
-						<p className='text-sm text-muted-foreground'>
-							{initialQuery || tm('announcements.posting.map.queryEmpty', 'Enter city to improve map centering.')}
-						</p>
+
 						<div className='flex flex-col gap-2 sm:flex-row'>
 							<Input
 								value={searchAddress}

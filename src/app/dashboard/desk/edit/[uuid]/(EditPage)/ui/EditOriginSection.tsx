@@ -1,10 +1,11 @@
-'use client'
+﻿'use client'
 
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form-control/Form'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
 import { LocationMapPicker } from '@/app/dashboard/announcements/posting/(PostingPage)/ui/LocationMapPicker'
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
@@ -46,47 +47,53 @@ export function EditOriginSection({
 							<UuidCopy uuid={loadUuid} isPlaceholder />
 						</FormLabel>
 						<FormControl>
-							<CitySelector
-								value={field.value || ''}
-								displayValue={originCityLabel}
-								countryName={originCountryValue}
-								onChange={(val, city) => {
-									field.onChange(val)
-									form.setValue('origin_country', city?.country ?? '')
-									form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
-									mapState.setOriginExactCoordinates(null)
-								}}
-								onCoordinates={mapState.setOriginCityCoordinates}
-								countryCode={undefined}
-								placeholder={t('desk.edit.origin.cityPlaceholder')}
-								disabled={isLoadingPatch}
-							/>
+							<div className='flex items-center gap-2'>
+								<div className='flex-1'>
+									<CitySelector
+										value={field.value || ''}
+										displayValue={originCityLabel}
+										countryName={originCountryValue}
+										onChange={(val, city) => {
+											field.onChange(val)
+											form.setValue('origin_country', city?.country ?? '')
+											form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
+											mapState.setOriginExactCoordinates(null)
+										}}
+										onCoordinates={mapState.setOriginCityCoordinates}
+										countryCode={undefined}
+										placeholder={t('desk.edit.origin.cityPlaceholder')}
+										disabled={isLoadingPatch}
+									/>
+								</div>
+								{showMap ? (
+									<LocationMapPicker
+										type='origin'
+										apiKey={yandexApiKey}
+										city={mapState.originCity}
+										country={originCountryValue}
+										address={mapState.originAddress}
+										fallbackPoint={
+											mapState.originCityCoordinates
+												? {
+														lat: Number(mapState.originCityCoordinates.lat),
+														lng: Number(mapState.originCityCoordinates.lon),
+												  }
+												: null
+										}
+										value={mapState.originExactCoordinates}
+										onSelect={(selection) => {
+											mapState.setOriginExactCoordinates({ lat: selection.lat, lng: selection.lng })
+											if (selection.address) {
+												form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
+											}
+										}}
+										disabled={isLoadingPatch}
+										compact
+										disabledCityTooltip='Требуется указать город'
+									/>
+								) : null}
+							</div>
 						</FormControl>
-						{showMap ? (
-							<LocationMapPicker
-								type='origin'
-								apiKey={yandexApiKey}
-								city={mapState.originCity}
-								country={originCountryValue}
-								address={mapState.originAddress}
-								fallbackPoint={
-									mapState.originCityCoordinates
-										? {
-												lat: Number(mapState.originCityCoordinates.lat),
-												lng: Number(mapState.originCityCoordinates.lon),
-										  }
-										: null
-								}
-								value={mapState.originExactCoordinates}
-								onSelect={(selection) => {
-									mapState.setOriginExactCoordinates({ lat: selection.lat, lng: selection.lng })
-									if (selection.address) {
-										form.setValue('origin_address', selection.address, { shouldDirty: true, shouldTouch: true })
-									}
-								}}
-								disabled={isLoadingPatch}
-							/>
-						) : null}
 						<FormMessage />
 					</FormItem>
 				)}
@@ -98,17 +105,40 @@ export function EditOriginSection({
 				render={({ field }) => (
 					<FormItem className='w-full'>
 						<FormControl>
-							<InputGroup>
-								<InputGroupInput
-									placeholder={t('desk.edit.origin.addressPlaceholder')}
-									{...field}
-									value={field.value ?? ''}
-									disabled={isLoadingPatch || showMap}
-								/>
-								<InputGroupAddon className='pr-2'>
-									<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
-								</InputGroupAddon>
-							</InputGroup>
+							{showMap ? (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<span className='inline-flex w-full'>
+											<InputGroup>
+												<InputGroupInput
+													placeholder={t('desk.edit.origin.addressPlaceholder')}
+													{...field}
+													value={field.value ?? ''}
+													disabled
+												/>
+												<InputGroupAddon className='pr-2'>
+													<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+												</InputGroupAddon>
+											</InputGroup>
+										</span>
+									</TooltipTrigger>
+									<TooltipContent side='top' className='text-black' sideOffset={6}>
+										Укажите адрес на карте
+									</TooltipContent>
+								</Tooltip>
+							) : (
+								<InputGroup>
+									<InputGroupInput
+										placeholder={t('desk.edit.origin.addressPlaceholder')}
+										{...field}
+										value={field.value ?? ''}
+										disabled={isLoadingPatch}
+									/>
+									<InputGroupAddon className='pr-2'>
+										<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+									</InputGroupAddon>
+								</InputGroup>
+							)}
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -135,4 +165,3 @@ export function EditOriginSection({
 		</div>
 	)
 }
-

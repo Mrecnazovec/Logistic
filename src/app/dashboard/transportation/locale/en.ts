@@ -1,5 +1,8 @@
 const messages: Record<string, string> = {
 	// TransportationPage.tsx, TransportationMyPage.tsx
+	'transportation.meta.title': 'My cargoes',
+
+	// TransportationPage.tsx, TransportationMyPage.tsx
 	'transportation.tabs.agreements': 'Agreements',
 	'transportation.tabs.noDriver': 'No driver',
 	'transportation.tabs.pending': 'Pending',
