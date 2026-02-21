@@ -144,6 +144,7 @@ usePostForm - manages announcements posting form defaults and submits createLoad
 usePostingPage - composes posting page state (form, loading, country watchers, and email-contact availability).
 useStatusPage - composes order status page data (order, status history timeline, localized formatters, and status badge metadata).
 useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
+useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
 /i18n - translation keys and locale messages directory.
 config.ts - locales list, Locale type, defaultLocale, localeCookie.
 getLocale - reads locale from cookie (server) with fallback to default.
@@ -408,6 +409,7 @@ StatusProgressCard - presentational transportation progress card with route citi
 StatusCarrierCard - presentational carrier status card with profile link, location, remaining distance, and update time.
 StatusTimelineFeed - presentational scrollable status history timeline with grouped sections and event cards.
 OrderRouteMap - order status map panel with Yandex map, status-based truck target routing via MultiRoute, and callbacks for remaining distance/driver location.
+MapTouchHintOverlay - touch-device overlay prompt that unlocks map dragging after tap.
 StatusPageSkeleton - skeleton layout for order status page while order/history data is loading.
 EmptyTimelineState - empty state UI for order status timeline.
 IdProfile - profile-by-id page composer that wires derived state to profile view UI.
