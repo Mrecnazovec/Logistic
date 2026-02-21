@@ -29,6 +29,8 @@ type LocationMapPickerProps = {
 	disabled?: boolean
 	compact?: boolean
 	disabledCityTooltip?: string
+	open?: boolean
+	onOpenChange?: (nextOpen: boolean) => void
 }
 
 declare global {
@@ -87,13 +89,15 @@ export function LocationMapPicker({
 	disabled,
 	compact = false,
 	disabledCityTooltip,
+	open,
+	onOpenChange,
 }: LocationMapPickerProps) {
 	const { t, locale } = useI18n()
 	const tm = (key: string, fallback: string) => {
 		const value = t(key)
 		return value === key ? fallback : value
 	}
-	const [open, setOpen] = useState(false)
+	const [internalOpen, setInternalOpen] = useState(false)
 	const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(value ?? null)
 	const [selectedAddress, setSelectedAddress] = useState<string>('')
 	const [isLoadingMap, setIsLoadingMap] = useState(false)
@@ -110,6 +114,14 @@ export function LocationMapPicker({
 
 	const initialQuery = useMemo(() => [country, city, address].filter(Boolean).join(', '), [address, city, country])
 	const hasMinimumData = Boolean(city)
+	const dialogOpen = open ?? internalOpen
+
+	const setDialogOpen = (nextOpen: boolean) => {
+		if (open === undefined) {
+			setInternalOpen(nextOpen)
+		}
+		onOpenChange?.(nextOpen)
+	}
 
 	useEffect(() => {
 		setSelectedPoint(value ?? null)
@@ -177,7 +189,7 @@ export function LocationMapPicker({
 	}
 
 	useEffect(() => {
-		if (!open || !mapContainerNode || !apiKey) return
+		if (!dialogOpen || !mapContainerNode || !apiKey) return
 
 		let isCancelled = false
 
@@ -277,21 +289,21 @@ export function LocationMapPicker({
 				mapRef.current = null
 			}
 		}
-	}, [apiKey, fallbackPoint, initialQuery, locale, mapContainerNode, open, value])
+	}, [apiKey, dialogOpen, fallbackPoint, initialQuery, locale, mapContainerNode, value])
 
 	const handleOpenChange = (nextOpen: boolean) => {
 		if (!nextOpen && selectedPoint && !skipAutoApplyOnCloseRef.current) {
 			onSelect({ ...selectedPoint, address: selectedAddress || undefined })
 		}
 		skipAutoApplyOnCloseRef.current = false
-		setOpen(nextOpen)
+		setDialogOpen(nextOpen)
 	}
 
 	const handleApply = () => {
 		if (!selectedPoint) return
 		skipAutoApplyOnCloseRef.current = true
 		onSelect({ ...selectedPoint, address: selectedAddress || undefined })
-		setOpen(false)
+		setDialogOpen(false)
 	}
 
 	const handleSearch = () => {
@@ -315,7 +327,7 @@ export function LocationMapPicker({
 					: 'rounded-4xl h-11 bg-brand border-none text-white hover:bg-brand/90'
 			}
 			size='sm'
-			onClick={() => setOpen(true)}
+			onClick={() => setDialogOpen(true)}
 			disabled={isTriggerDisabled}
 		>
 			<MapPin className='size-4 text-white' />
@@ -361,7 +373,7 @@ export function LocationMapPicker({
 						</p>
 					)
 					: null}
-			<Dialog open={open} onOpenChange={handleOpenChange}>
+			<Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
 				<DialogContent className='max-w-4xl'>
 					<DialogHeader>
 						<DialogTitle>{tm('announcements.posting.map.title', 'Specify exact point on map')}</DialogTitle>
@@ -415,7 +427,7 @@ export function LocationMapPicker({
 					</div>
 
 					<DialogFooter>
-						<Button type='button' variant='outline' onClick={() => setOpen(false)}>
+						<Button type='button' variant='outline' onClick={() => setDialogOpen(false)}>
 							{tm('announcements.posting.map.close', 'Close')}
 						</Button>
 						<Button type='button' onClick={handleApply} disabled={!selectedPoint}>

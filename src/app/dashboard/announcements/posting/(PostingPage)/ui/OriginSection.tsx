@@ -25,8 +25,10 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue, yande
 	const { t } = useI18n()
 	const [cityCoordinates, setCityCoordinates] = useState<CityCoordinates | null>(null)
 	const [exactCoordinates, setExactCoordinates] = useState<{ lat: number; lng: number } | null>(null)
+	const [isMapOpen, setIsMapOpen] = useState(false)
 	const originCity = form.watch('origin_city')
 	const originAddress = form.watch('origin_address')
+	const canOpenMapFromAddress = Boolean(originCity?.trim())
 
 	return (
 		<div className={POSTING_SECTION_CLASS}>
@@ -40,26 +42,67 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue, yande
 							{t('announcements.posting.origin.title')}
 						</FormLabel>
 						<FormControl>
-							<div className='flex items-center gap-2'>
-								<div className='flex-1'>
-									<CitySelector
-										value={field.value || ''}
-										countryName={originCountryValue}
-										onChange={(val, city) => {
-											field.onChange(val)
-											form.setValue('origin_country', city?.country ?? '')
-											form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
-											setExactCoordinates(null)
-										}}
-										onCoordinates={(coordinates) => {
-											setCityCoordinates(coordinates)
-										}}
-										countryCode={undefined}
-										placeholder={t('announcements.posting.origin.cityPlaceholder')}
-										disabled={isLoadingCreate}
-									/>
-								</div>
-								{showMap ? (
+							<CitySelector
+								value={field.value || ''}
+								countryName={originCountryValue}
+								onChange={(val, city) => {
+									field.onChange(val)
+									form.setValue('origin_country', city?.country ?? '')
+									form.setValue('origin_address', '', { shouldDirty: true, shouldTouch: true })
+									setExactCoordinates(null)
+								}}
+								onCoordinates={(coordinates) => {
+									setCityCoordinates(coordinates)
+								}}
+								countryCode={undefined}
+								placeholder={t('announcements.posting.origin.cityPlaceholder')}
+								disabled={isLoadingCreate}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name='origin_address'
+				render={({ field }) => (
+					<FormItem className='w-full'>
+						<FormControl>
+							{showMap ? (
+								<div className='flex items-center gap-2'>
+									<div className='flex-1'>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<span
+													className={cn('inline-flex w-full', canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed')}
+													onClick={() => {
+														if (canOpenMapFromAddress) setIsMapOpen(true)
+													}}
+												>
+													<InputGroup>
+														<InputGroupInput
+															placeholder={t('announcements.posting.origin.addressPlaceholder')}
+															{...field}
+															value={field.value ?? ''}
+															disabled
+															className={cn(
+																canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed',
+																field.value ? 'text-black disabled:text-black disabled:opacity-100' : undefined,
+															)}
+														/>
+														<InputGroupAddon className='pr-2'>
+															<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+														</InputGroupAddon>
+													</InputGroup>
+												</span>
+											</TooltipTrigger>
+											<TooltipContent side='top' className='text-black' sideOffset={6}>
+												{canOpenMapFromAddress ? 'Укажите адрес на карте' : 'Требуется указать город'}
+											</TooltipContent>
+										</Tooltip>
+									</div>
 									<LocationMapPicker
 										type='origin'
 										apiKey={yandexApiKey}
@@ -84,42 +127,10 @@ export function OriginSection({ form, isLoadingCreate, originCountryValue, yande
 										disabled={isLoadingCreate}
 										compact
 										disabledCityTooltip='Требуется указать город'
+										open={isMapOpen}
+										onOpenChange={setIsMapOpen}
 									/>
-								) : null}
-							</div>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-
-			<FormField
-				control={form.control}
-				name='origin_address'
-				render={({ field }) => (
-					<FormItem className='w-full'>
-						<FormControl>
-							{showMap ? (
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<span className='inline-flex w-full'>
-											<InputGroup>
-												<InputGroupInput
-													placeholder={t('announcements.posting.origin.addressPlaceholder')}
-													{...field}
-													value={field.value ?? ''}
-													disabled
-												/>
-												<InputGroupAddon className='pr-2'>
-													<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
-												</InputGroupAddon>
-											</InputGroup>
-										</span>
-									</TooltipTrigger>
-									<TooltipContent side='top' className='text-black' sideOffset={6}>
-										Укажите адрес на карте
-									</TooltipContent>
-								</Tooltip>
+								</div>
 							) : (
 								<InputGroup>
 									<InputGroupInput
