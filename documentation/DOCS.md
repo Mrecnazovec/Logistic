@@ -198,6 +198,7 @@ resolveYandexLang - maps app locale to Yandex Maps language code.
 loadYandexMaps - dynamically loads Yandex Maps JS API v2.1 script and returns initialized ymaps instance.
 ensureYandexMultiRouterModule - ensures Yandex `multiRouter.MultiRoute` module is loaded before building road routes.
 getFirstDocumentByCategory - returns the earliest document in a category from order documents list.
+statusView.helpers - helpers for status view composition (status normalization, progress placeholder/percent, route cities, locale tag, driver badge variants).
 
 ## Services
 
@@ -402,7 +403,11 @@ FolderPageView - presentational order documents folder UI with upload/list contr
 PaymentPageView - presentational payment summary and confirmation UI for order payments.
 StatusPage - order status page composer that wires status hook, skeleton state, and status view layout.
 StatusPageView - presentational order status workspace with map block, status badge, and timeline feed.
-OrderRouteMap - order status map panel with Yandex map, status-based truck target routing via MultiRoute, and remaining distance overlay.
+TemporaryDriverStatusBranches - fallback timeline-only status view used when map is disabled.
+StatusProgressCard - presentational transportation progress card with route cities, progress state, ETA, and via cities.
+StatusCarrierCard - presentational carrier status card with profile link, location, remaining distance, and update time.
+StatusTimelineFeed - presentational scrollable status history timeline with grouped sections and event cards.
+OrderRouteMap - order status map panel with Yandex map, status-based truck target routing via MultiRoute, and callbacks for remaining distance/driver location.
 StatusPageSkeleton - skeleton layout for order status page while order/history data is loading.
 EmptyTimelineState - empty state UI for order status timeline.
 IdProfile - profile-by-id page composer that wires derived state to profile view UI.

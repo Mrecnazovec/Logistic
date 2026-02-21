@@ -6,11 +6,20 @@ import { DEFAULT_POINT, DRIVER_ROUTE_STYLES, STATIC_DRIVER_POINT, TRUCK_ICON_URL
 import { buildPointQuery, ensureYandexMultiRouterModule, loadYandexMaps, resolveYandexLang } from '../lib/map'
 import type { OrderRouteMapProps } from '../types'
 
+const MAP_CONTROLS = [
+	'zoomControl',
+	'geolocationControl',
+	'fullscreenControl',
+	'trafficControl',
+	'routeButtonControl',
+	'typeSelector',
+	'rulerControl',
+] as const
+
 export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDriverLocationChange }: OrderRouteMapProps) {
 	const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null)
 	const [mapError, setMapError] = useState<string | null>(null)
 	const [isLoadingMap, setIsLoadingMap] = useState(false)
-	const [remainingKm, setRemainingKm] = useState<number | null>(null)
 	const mapRef = useRef<any>(null)
 
 	const originQuery = useMemo(
@@ -33,7 +42,6 @@ export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDr
 
 		const initMap = async () => {
 			setMapError(null)
-			setRemainingKm(null)
 			onRemainingKmChange?.(null)
 			onDriverLocationChange?.(null)
 			if (!apiKey) {
@@ -50,7 +58,7 @@ export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDr
 				const map = new ymaps.Map(containerNode, {
 					center: DEFAULT_POINT,
 					zoom: 7,
-					controls: ['zoomControl', 'fullscreenControl'],
+					controls: [...MAP_CONTROLS],
 				})
 				mapRef.current = map
 
@@ -151,19 +159,16 @@ export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDr
 							const distance = activeRoute?.properties?.get('distance')
 							const meters = distance?.value
 							const nextRemainingKm = typeof meters === 'number' ? meters / 1000 : null
-							setRemainingKm(nextRemainingKm)
 							onRemainingKmChange?.(nextRemainingKm)
 							setMapError(null)
 						})
 
 						multiRoute.model.events.add('requestfail', () => {
-							setRemainingKm(null)
 							onRemainingKmChange?.(null)
 							setMapError('Failed to build driver route')
 						})
 					} catch (error) {
 						setMapError(error instanceof Error ? error.message : 'Failed to build driver route')
-						setRemainingKm(null)
 						onRemainingKmChange?.(null)
 					}
 				} else {
@@ -177,7 +182,7 @@ export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDr
 				}
 
 				setTimeout(() => {
-									if (mapRef.current) {
+					if (mapRef.current) {
 						mapRef.current.container.fitToViewport()
 					}
 				}, 0)
@@ -217,11 +222,6 @@ export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDr
 	return (
 		<section className='relative h-full min-h-0 overflow-hidden rounded-3xl border bg-muted/30'>
 			<div ref={setContainerNode} className='h-full w-full' />
-			{remainingKm !== null ? (
-				<div className='absolute left-4 top-4 rounded-full bg-background/90 px-3 py-1 text-sm font-semibold text-foreground shadow-sm'>
-					{locale === 'en' ? 'Remaining' : 'Осталось'} {remainingKm.toFixed(1)} {locale === 'en' ? 'km' : 'км'}
-				</div>
-			) : null}
 			{isLoadingMap ? (
 				<div className='absolute inset-0 grid place-items-center bg-background/40 text-sm text-muted-foreground'>
 					Loading map...
