@@ -8,6 +8,7 @@ export type StatusPageProps = {
 export type TimelineEvent = {
 	id: string
 	timeLabel: string
+	occurredAt: string | null
 	author: string
 	statusFrom: string
 	statusTo: string
@@ -37,10 +38,17 @@ export type StatusPageViewProps = {
 	hasHistory: boolean
 	orderStatusLabel: string
 	orderStatusVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'destructive' | 'outline'
+	carrierCurrentPosition?: {
+		lat: number
+		lng: number
+		capturedAt: string
+	} | null
 }
 
 export type OrderRouteMapProps = {
 	order?: IOrderDetail
 	apiKey?: string
 	locale: string
+	onRemainingKmChange?: (value: number | null) => void
+	onDriverLocationChange?: (value: string | null) => void
 }

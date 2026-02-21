@@ -46,6 +46,7 @@ export const buildTimelineSections = (history: StatusHistory, options: BuildTime
 		const event: TimelineEvent = {
 			id: String(item.id),
 			timeLabel: formatTimeLabel(eventDate),
+			occurredAt: eventDate ? eventDate.toISOString() : null,
 			author: item.user_name?.trim() || t('order.status.timeline.system'),
 			statusFrom: normalizeStatusLabel(item.old_status_label),
 			statusTo: normalizeStatusLabel(item.new_status_label),

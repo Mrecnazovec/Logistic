@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import type { Locale } from '@/i18n/config'
 
 const FALLBACK_SITE_URL = 'https://kad-one.com'
@@ -10,6 +10,7 @@ export const SITE_DESCRIPTION =
 export const SITE_KEYWORDS = [
 	'KAD',
 	'KAD Logistic',
+	'KAD Logistics',
 	'logistics platform',
 	'freight management',
 	'transport management',
@@ -57,7 +58,7 @@ const LOCALIZED_SEO: Record<Locale, LocalizedSeo> = {
 			'KAD - цифровая логистическая платформа для клиентов, перевозчиков и логистов: публикация и поиск грузов, офферы и встречные предложения, управление заказами и перевозочными документами, договоренности, рейтинги, платежные статусы и realtime-уведомления в едином кабинете.',
 		keywords: [
 			'KAD',
-			'KAD Logistic',
+			'KAD логистика',
 			'логистика',
 			'грузоперевозки',
 			'автоперевозки',

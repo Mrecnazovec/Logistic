@@ -204,6 +204,17 @@
 	'order.status.timeline.notSpecified': 'Не указан',
 	'order.status.empty.title': 'Статусы пока не обновлялись',
 	'order.status.empty.description': 'История статусов отображается после изменения статусов.',
+	'order.status.progress.title': 'Прогресс перевозки',
+	'order.status.progress.completed': 'Завершено',
+	'order.status.progress.inTransit': 'В пути',
+	'order.status.progress.remainingHours': 'Осталось ~{hours}ч',
+	'order.status.progress.via': 'Через',
+	'order.status.progress.notStarted': 'Водитель ещё не начал путь',
+	'order.status.progress.completedDelivery': 'Перевозчик завершил доставку',
+	'order.status.progress.locationUnknown': 'Локация не определена',
+	'order.status.carrier.title': 'Статус перевозчика',
+	'order.status.carrier.remaining': 'Осталось:',
+	'order.status.carrier.updated': 'Обновлено',
 	// shared/[share_token]/status/StatusPage.tsx
 	'order.shared.status.restricted': 'Данные этой вкладки доступны только участникам перевозки',
 

@@ -204,6 +204,17 @@ const messages: Record<string, string> = {
 	'order.status.timeline.notSpecified': "Ko'rsatilmagan",
 	'order.status.empty.title': 'Statuslar hali yangilanmagan',
 	'order.status.empty.description': "Statuslar tarixi status o'zgargandan so'ng ko'rinadi.",
+	'order.status.progress.title': 'Tashish jarayoni',
+	'order.status.progress.completed': 'Yakunlandi',
+	'order.status.progress.inTransit': "Yo'lda",
+	'order.status.progress.remainingHours': '~{hours} soat qoldi',
+	'order.status.progress.via': "Orqali",
+	'order.status.progress.notStarted': "Haydovchi hali yo'lga chiqmagan",
+	'order.status.progress.completedDelivery': 'Tashuvchi yetkazib berishni yakunladi',
+	'order.status.progress.locationUnknown': 'Joylashuv aniqlanmagan',
+	'order.status.carrier.title': 'Tashuvchi holati',
+	'order.status.carrier.remaining': 'Qoldi:',
+	'order.status.carrier.updated': 'Yangilangan',
 	// shared/[share_token]/status/StatusPage.tsx
 	'order.shared.status.restricted': 'Ushbu bo‘lim maʼlumotlari faqat tashish ishtirokchilari uchun mavjud',
 

@@ -39,6 +39,7 @@ export function StatusPage({ yandexApiKey, showMap = true }: StatusPageProps) {
 					hasHistory={state.hasHistory}
 					orderStatusLabel={state.orderStatusLabel}
 					orderStatusVariant={state.orderStatusVariant}
+					carrierCurrentPosition={carrierLocation.lastPosition}
 				/>
 			)}
 		</div>

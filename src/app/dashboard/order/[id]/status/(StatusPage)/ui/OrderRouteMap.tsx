@@ -6,7 +6,7 @@ import { DEFAULT_POINT, DRIVER_ROUTE_STYLES, STATIC_DRIVER_POINT, TRUCK_ICON_URL
 import { buildPointQuery, ensureYandexMultiRouterModule, loadYandexMaps, resolveYandexLang } from '../lib/map'
 import type { OrderRouteMapProps } from '../types'
 
-export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
+export function OrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDriverLocationChange }: OrderRouteMapProps) {
 	const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null)
 	const [mapError, setMapError] = useState<string | null>(null)
 	const [isLoadingMap, setIsLoadingMap] = useState(false)
@@ -34,6 +34,8 @@ export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
 		const initMap = async () => {
 			setMapError(null)
 			setRemainingKm(null)
+			onRemainingKmChange?.(null)
+			onDriverLocationChange?.(null)
 			if (!apiKey) {
 				setMapError('Yandex key is missing.')
 				return
@@ -96,6 +98,20 @@ export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
 				if (shouldShowDriverRoute && driverTargetPoint) {
 					const driverPoint: [number, number] = STATIC_DRIVER_POINT
 					points.push(driverPoint)
+
+					try {
+						const locationResult = await ymaps.geocode(driverPoint, { results: 1 })
+						const locationGeoObject = locationResult.geoObjects.get(0)
+						const locality =
+							locationGeoObject?.getLocalities?.()?.[0] ??
+							locationGeoObject?.properties?.get('name') ??
+							locationGeoObject?.properties?.get('text') ??
+							null
+						onDriverLocationChange?.(locality)
+					} catch {
+						onDriverLocationChange?.(`${driverPoint[0].toFixed(5)}, ${driverPoint[1].toFixed(5)}`)
+					}
+
 					map.geoObjects.add(
 						new ymaps.Placemark(
 							driverPoint,
@@ -134,18 +150,24 @@ export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
 							const activeRoute = multiRoute.getActiveRoute?.()
 							const distance = activeRoute?.properties?.get('distance')
 							const meters = distance?.value
-							setRemainingKm(typeof meters === 'number' ? meters / 1000 : null)
+							const nextRemainingKm = typeof meters === 'number' ? meters / 1000 : null
+							setRemainingKm(nextRemainingKm)
+							onRemainingKmChange?.(nextRemainingKm)
 							setMapError(null)
 						})
 
 						multiRoute.model.events.add('requestfail', () => {
 							setRemainingKm(null)
+							onRemainingKmChange?.(null)
 							setMapError('Failed to build driver route')
 						})
 					} catch (error) {
 						setMapError(error instanceof Error ? error.message : 'Failed to build driver route')
 						setRemainingKm(null)
+						onRemainingKmChange?.(null)
 					}
+				} else {
+					onDriverLocationChange?.(null)
 				}
 
 				if (points.length > 1) {
@@ -155,13 +177,14 @@ export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
 				}
 
 				setTimeout(() => {
-					if (mapRef.current) {
+									if (mapRef.current) {
 						mapRef.current.container.fitToViewport()
 					}
 				}, 0)
 			} catch (error) {
 				if (!isCancelled) {
 					setMapError(error instanceof Error ? error.message : 'Failed to initialize map')
+					onRemainingKmChange?.(null)
 				}
 			} finally {
 				if (!isCancelled) {
@@ -179,7 +202,17 @@ export function OrderRouteMap({ order, apiKey, locale }: OrderRouteMapProps) {
 				mapRef.current = null
 			}
 		}
-	}, [apiKey, containerNode, destinationQuery, locale, normalizedOrderStatus, originQuery, shouldShowDriverRoute])
+	}, [
+		apiKey,
+		containerNode,
+		destinationQuery,
+		locale,
+		normalizedOrderStatus,
+		onDriverLocationChange,
+		onRemainingKmChange,
+		originQuery,
+		shouldShowDriverRoute,
+	])
 
 	return (
 		<section className='relative h-full min-h-0 overflow-hidden rounded-3xl border bg-muted/30'>

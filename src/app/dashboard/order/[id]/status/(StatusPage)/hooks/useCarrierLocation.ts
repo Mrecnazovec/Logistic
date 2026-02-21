@@ -10,6 +10,7 @@ type CarrierLocationState = {
 	isRequesting: boolean
 	lastError: string | null
 	notice: string | null
+	lastPosition: { lat: number; lng: number; capturedAt: string } | null
 	requestLocation: () => void
 	requestLocationWithNotice: () => void
 }
@@ -22,6 +23,7 @@ export function useCarrierLocation(): CarrierLocationState {
 	const [isRequesting, setIsRequesting] = useState(false)
 	const [lastError, setLastError] = useState<string | null>(null)
 	const [notice, setNotice] = useState<string | null>(null)
+	const [lastPosition, setLastPosition] = useState<{ lat: number; lng: number; capturedAt: string } | null>(null)
 
 	const requestLocationInternal = useCallback((withNotice: boolean) => {
 		if (!isCarrier) return
@@ -40,6 +42,11 @@ export function useCarrierLocation(): CarrierLocationState {
 				setPermissionState('granted')
 				setLastError(null)
 				setIsRequesting(false)
+				setLastPosition({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+					capturedAt: new Date(position.timestamp).toISOString(),
+				})
 				if (withNotice) {
 					setNotice('Доступ к геолокации разрешен. Трансляция местоположения включена.')
 				}
@@ -125,6 +132,7 @@ export function useCarrierLocation(): CarrierLocationState {
 		isRequesting: isCarrier ? isRequesting : false,
 		lastError: isCarrier ? (isGeolocationSupported ? lastError : 'Geolocation is not supported in this browser.') : null,
 		notice: isCarrier ? notice : null,
+		lastPosition: isCarrier ? lastPosition : null,
 		requestLocation,
 		requestLocationWithNotice,
 	}
