@@ -4,7 +4,7 @@ import { TIMELINE_SKELETON_EVENTS_PER_SECTION, TIMELINE_SKELETON_SECTION_COUNT }
 export function StatusPageSkeleton() {
 	return (
 		<div className='grid h-full min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-6'>
-			<div className='h-full min-h-0 rounded-3xl border p-4'>
+			<div className='h-full min-h-[500px] rounded-3xl border p-4'>
 				<Skeleton className='h-full w-full rounded-2xl' />
 			</div>
 			<div className='flex h-full min-h-0 flex-col rounded-3xl border p-4'>
