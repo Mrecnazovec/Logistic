@@ -9,7 +9,6 @@ useChangePassword - changes password via authService.changePassword.
 useResendVerify - mutation to resend verification email via authService.resendVerify.
 useVerifyEmail - mutation to verify email via authService.verifyEmail.
 useGetDashboardStats - fetches dashboard stats via authService.getDashboardStats.
-тест PR
  - ## Me
 
 useGetAnalytics - fetches profile analytics via meService.getAnalytics.
