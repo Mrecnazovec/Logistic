@@ -8,14 +8,12 @@ import { OrderRouteMap } from './OrderRouteMap'
 import { StatusCarrierCard } from './StatusCarrierCard'
 import { StatusProgressCard } from './StatusProgressCard'
 import { StatusTimelineFeed } from './StatusTimelineFeed'
-import { TemporaryDriverStatusBranches } from './TemporaryDriverStatusBranches'
 
 export function StatusPageView({
 	t,
 	locale,
 	order,
 	apiKey,
-	showMap = true,
 	timelineSections,
 	hasHistory,
 	orderStatusLabel,
@@ -31,10 +29,6 @@ export function StatusPageView({
 	const handleDriverLocationChange = useCallback((nextValue: string | null) => {
 		setDriverLocationFromMap(nextValue)
 	}, [])
-
-	if (!showMap) {
-		return <TemporaryDriverStatusBranches t={t} timelineSections={timelineSections} hasHistory={hasHistory} />
-	}
 
 	const latestEvent = timelineSections[0]?.events[0] ?? null
 	const normalizedStatus = normalizeOrderStatus(String(order?.status ?? ''))
@@ -110,4 +104,3 @@ export function StatusPageView({
 		</div>
 	)
 }
-

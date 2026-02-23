@@ -6,7 +6,7 @@ import { StatusPageSkeleton } from './ui/StatusPageSkeleton'
 import { StatusPageView } from './ui/StatusPageView'
 import type { StatusPageProps } from './types'
 
-export function StatusPage({ yandexApiKey, showMap = true }: StatusPageProps) {
+export function StatusPage({ yandexApiKey }: StatusPageProps) {
 	const state = useStatusPage()
 	const carrierLocation = useCarrierLocation()
 	const showLocationButton = carrierLocation.isCarrier && carrierLocation.permissionState === 'denied'
@@ -34,7 +34,6 @@ export function StatusPage({ yandexApiKey, showMap = true }: StatusPageProps) {
 					locale={state.locale}
 					order={state.order}
 					apiKey={yandexApiKey}
-					showMap={showMap}
 					timelineSections={state.timelineSections}
 					hasHistory={state.hasHistory}
 					orderStatusLabel={state.orderStatusLabel}

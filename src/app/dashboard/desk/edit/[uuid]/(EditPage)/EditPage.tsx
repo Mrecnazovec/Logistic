@@ -5,10 +5,9 @@ import { EditFormContent } from './ui/EditFormContent'
 
 type EditPageProps = {
 	yandexApiKey?: string
-	showMap?: boolean
 }
 
-export function EditPage({ yandexApiKey, showMap = true }: EditPageProps) {
+export function EditPage({ yandexApiKey }: EditPageProps) {
 	const state = useEditPage()
-	return <EditFormContent {...state} yandexApiKey={yandexApiKey} showMap={showMap} />
+	return <EditFormContent {...state} yandexApiKey={yandexApiKey} />
 }

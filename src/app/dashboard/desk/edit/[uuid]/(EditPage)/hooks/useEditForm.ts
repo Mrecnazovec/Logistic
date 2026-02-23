@@ -32,6 +32,10 @@ export function useEditForm() {
 				price_value: normalizedPriceValue,
 				price_currency: normalizedPriceCurrency as CargoPublishRequestDto['price_currency'],
 				is_hidden: data.is_hidden ?? false,
+				origin_lat: data.origin_lat,
+				origin_lng: data.origin_lng,
+				dest_lat: data.dest_lat,
+				dest_lng: data.dest_lng,
 			},
 		})
 
