@@ -28,6 +28,7 @@ const ORDERS_ACTIONS = new Set([
 	'order_invite_accepted',
 	'order_invite_declined',
 	'order_canceled',
+	'gps_updated',
 ])
 
 type OffersEventPayload = {
