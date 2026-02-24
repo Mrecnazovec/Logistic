@@ -83,15 +83,6 @@ class OrdersService {
 		return data
 	}
 
-	async getOrderTracking(id: string | number) {
-		const { data } = await axiosWithAuth<IOrderDetail>({
-			url: API_URL.orders(`${id}/tracking`),
-			method: 'GET',
-		})
-
-		return data
-	}
-
 	/* POST */
 
 	async createOrder(data: OrderDetailRequestDto) {
@@ -163,9 +154,9 @@ class OrdersService {
 		return order
 	}
 
-	async updateOrderGps(id: string | number, data: GpsUpdateRequestDto) {
+	async updateOrderGps(data: GpsUpdateRequestDto) {
 		const { data: gpsUpdate } = await axiosWithAuth<IGpsUpdate>({
-			url: API_URL.orders(`${id}/gps`),
+			url: API_URL.orders('gps'),
 			method: 'POST',
 			data,
 		})

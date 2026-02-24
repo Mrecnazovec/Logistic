@@ -31,11 +31,10 @@ export function useCarrierGpsSync({
 
 		lastSentCapturedAtRef.current = lastPosition.capturedAt
 		updateOrderGps({
-			id: orderId,
+			orderId,
 			data: {
 				lat: lastPosition.lat,
 				lng: lastPosition.lng,
-				recorded_at: lastPosition.capturedAt,
 			},
 		})
 		console.log('[status-gps] sent', {
@@ -59,4 +58,3 @@ export function useCarrierGpsSync({
 		}
 	}, [isCarrier, orderId, permissionState, requestLocation])
 }
-

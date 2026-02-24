@@ -36,11 +36,6 @@ export type StatusPageViewProps = {
 	hasHistory: boolean
 	orderStatusLabel: string
 	orderStatusVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'destructive' | 'outline'
-	carrierCurrentPosition?: {
-		lat: number
-		lng: number
-		capturedAt: string
-	} | null
 }
 
 export type OrderRouteMapProps = {

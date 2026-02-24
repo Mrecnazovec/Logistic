@@ -53,6 +53,12 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		const lng = toFiniteNumber(source?.dest_lng)
 		return lat !== null && lng !== null ? ([lat, lng] as [number, number]) : null
 	}, [order])
+	const driverCoordsFromOrder = useMemo(() => {
+		const source = order as unknown as { driver_location?: { lat?: unknown; lng?: unknown } | null }
+		const lat = toFiniteNumber(source?.driver_location?.lat)
+		const lng = toFiniteNumber(source?.driver_location?.lng)
+		return lat !== null && lng !== null ? ([lat, lng] as [number, number]) : null
+	}, [order])
 	const rawOrderStatus = String(order?.status ?? '')
 	const normalizedOrderStatus = rawOrderStatus === 'in_proccess' ? OrderStatusEnum.IN_PROCESS : rawOrderStatus
 	const shouldShowDriverRoute =
@@ -124,12 +130,20 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 
 				if (originPoint) {
 					points.push(originPoint.coords)
-					map.geoObjects.add(new ymaps.Placemark(originPoint.coords, { balloonContent: originPoint.name }))
+					map.geoObjects.add(
+						new ymaps.Placemark(originPoint.coords, {
+							balloonContent: order?.origin_address || originPoint.name,
+						}),
+					)
 				}
 
 				if (destinationPoint) {
 					points.push(destinationPoint.coords)
-					map.geoObjects.add(new ymaps.Placemark(destinationPoint.coords, { balloonContent: destinationPoint.name }))
+					map.geoObjects.add(
+						new ymaps.Placemark(destinationPoint.coords, {
+							balloonContent: order?.destination_address || destinationPoint.name,
+						}),
+					)
 				}
 
 				if (originPoint && destinationPoint) {
@@ -151,7 +165,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 							: null
 
 				if (shouldShowDriverRoute && driverTargetPoint) {
-					const driverPoint: [number, number] = STATIC_DRIVER_POINT
+					const driverPoint: [number, number] = driverCoordsFromOrder ?? STATIC_DRIVER_POINT
 					points.push(driverPoint)
 
 					try {
@@ -170,7 +184,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 					map.geoObjects.add(
 						new ymaps.Placemark(
 							driverPoint,
-							{ balloonContent: 'Driver (static)' },
+							{ balloonContent: order?.carrier_name || order?.roles?.carrier?.name || 'Carrier' },
 							{
 								iconLayout: 'default#image',
 								iconImageHref: TRUCK_ICON_URL,
@@ -267,8 +281,13 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		originCoordsFromOrder,
 		order?.origin_city,
 		order?.destination_city,
+		order?.origin_address,
+		order?.destination_address,
+		order?.carrier_name,
+		order?.roles?.carrier?.name,
 		shouldShowDriverRoute,
 		destinationCoordsFromOrder,
+		driverCoordsFromOrder,
 	])
 
 	useEffect(() => {

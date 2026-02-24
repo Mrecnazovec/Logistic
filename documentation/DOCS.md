@@ -103,9 +103,8 @@ useUpdateOrder - full order update via ordersService.updateOrder.
 useUpdateOrderStatus - updates driver status via ordersService.updateOrderStatus.
 useUploadOrderDocument - uploads document for order via ordersService.uploadOrderDocument.
 usePatchOrder - partial order update via ordersService.patchOrder. 
-useUpdateOrderGps - posts order gps update via ordersService.updateOrderGps and invalidates order queries.
+useUpdateOrderGps - posts order gps update via ordersService.updateOrderGps (payload: GPSUpdateRequest) and invalidates related order queries.
 useToggleOrderPrivacy - posts order privacy toggle via ordersService.toggleOrderPrivacy and invalidates order queries.
-useGetOrderTracking - loads order tracking payload by id via ordersService.getOrderTracking.
 
 - ## Payments
 
@@ -145,6 +144,7 @@ usePostingPage - composes posting page state (form, loading, country watchers, a
 useStatusPage - composes order status page data (order, status history timeline, localized formatters, and status badge metadata).
 useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
 useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
+useCarrierGpsSync - syncs carrier location to `/orders/gps`, deduplicates by capturedAt, and triggers periodic refresh every 15 minutes.
 /i18n - translation keys and locale messages directory.
 config.ts - locales list, Locale type, defaultLocale, localeCookie.
 getLocale - reads locale from cookie (server) with fallback to default.
@@ -209,7 +209,7 @@ loadsService - load CRUD, invites, visibility management via /loads API.
 meService - fetch/update profile and analytics.
 notificationsService - load notifications and mark as read.
 offersService - offer CRUD, actions (accept/reject/invite/counter), and status logs.
-ordersService - order CRUD, cancel, invites, status updates, gps/privacy/tracking methods, document upload, and public order fetch by share token.
+ordersService - order CRUD, cancel, invites, status updates, gps/privacy methods, document upload, and public order fetch by share token.
 paymentsService - fetches payment by id and confirms payments for customer/carrier/logistic endpoints.
 ratingsService - user ratings CRUD.
 agreementsService - agreements list/detail plus accept/reject actions.
