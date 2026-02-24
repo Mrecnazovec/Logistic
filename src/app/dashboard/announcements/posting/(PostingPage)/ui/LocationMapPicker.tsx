@@ -397,7 +397,7 @@ export function LocationMapPicker({
 					)
 					: null}
 			<Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
-				<DialogContent className='max-w-4xl'>
+				<DialogContent className='md:max-h-[80dvh]'>
 					<DialogHeader>
 						<DialogTitle>{tm('announcements.posting.map.title', 'Specify exact point on map')}</DialogTitle>
 						<DialogDescription>

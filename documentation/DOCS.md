@@ -142,6 +142,7 @@ useIdProfilePage - composes profile-by-id page data, chart stats, locale formatt
 usePostForm - manages announcements posting form defaults and submits createLoad payload (data: CargoPublishRequestDto).
 usePostingPage - composes posting page state (form, loading, country watchers, and email-contact availability).
 useStatusPage - composes order status page data (order, status history timeline, localized formatters, and status badge metadata).
+useAgreementPage - composes agreement detail page state (query data, countdown/progress, terms state, and accept/reject handlers).
 useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
 useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
 useCarrierGpsSync - syncs carrier location to `/orders/gps`, deduplicates by capturedAt, and triggers periodic refresh every 15 minutes.
@@ -200,6 +201,11 @@ loadYandexMaps - dynamically loads Yandex Maps JS API v2.1 script and returns in
 ensureYandexMultiRouterModule - ensures Yandex `multiRouter.MultiRoute` module is loaded before building road routes.
 getFirstDocumentByCategory - returns the earliest document in a category from order documents list.
 statusView.helpers - helpers for status view composition (status normalization, progress placeholder/percent, route cities, locale tag, driver badge variants).
+formatCountdown - formats remaining milliseconds into `HH:MM:SS` or `MM:SS` for agreement countdown UI.
+withFallback - returns a placeholder for null/empty values in agreement sections.
+getAgreementStatusMeta - returns localized agreement status label and badge classes by status.
+getTotalDistance - formats agreement distance value into localized km label with fallback.
+getPaymentMethod - maps agreement payment method to localized selector label with fallback.
 
 ## Services
 
@@ -258,6 +264,7 @@ Search.interface.ts - ISearch filter params with ordering, numeric/boolean extra
 DashboardStats.interface.ts - dashboard statistics response type for auth dashboard stats endpoint.
 Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
 Support.interface.ts - support ticket and consultation request DTOs.
+agreementPage.types.ts - local agreement feature type for translator function passed across decomposed UI modules.
 
 ## Shared regex
 
@@ -390,6 +397,13 @@ NotificationsHeader - notifications header with unread badge, refresh, and mark-
 NotificationsListPanel - notifications list panel with tabs, infinite-scroll sentinel, and item selection.
 NotificationsDetailsPanel - details panel wrapper that renders selected notification details or empty/loading state.
 AgreementPageView - presentational agreement detail and accept/reject UI for order agreement route.
+AgreementHeader - presentational agreement header with UUID, status badge, and circular countdown progress.
+AgreementParticipantSection - presentational participant info block with profile/id/contact fields.
+AgreementParticipantsGrid - participant sections grid for customer/logistic/carrier agreement roles.
+AgreementTripDetails - presentational loading/unloading/trip summary block for agreement route details.
+AgreementTermsSection - terms checkbox and modal content for agreement confirmation workflow.
+AgreementAcceptanceStatus - acceptance indicators for customer/logistic/carrier states in agreement view.
+AgreementActions - agreement accept/reject action buttons with loading and terms gating states.
 InvitePageView - presentational order invite preview and decision workflow UI.
 SharedOrderPageView - presentational shared order overview UI with statuses and participants.
 OrderPage - order page composer that renders OrderPageView from route group.
