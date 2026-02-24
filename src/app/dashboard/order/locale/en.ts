@@ -190,7 +190,7 @@ const messages: Record<string, string> = {
 	'order.payment.confirmed': 'You confirmed the payment',
 
 	// [id]/status/page.tsx
-	'order.status.meta.title': 'Status',
+	'order.status.meta.title': 'Tracking',
 	// shared/[share_token]/status/page.tsx
 	'order.shared.status.meta.title': 'Order status view',
 

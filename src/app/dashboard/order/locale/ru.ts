@@ -192,7 +192,7 @@
 	'order.payment.confirmed': 'Вы подтвердили оплату',
 
 	// [id]/status/page.tsx
-	'order.status.meta.title': 'Статусы',
+	'order.status.meta.title': 'Отслеживание',
 	// shared/[share_token]/status/page.tsx
 	'order.shared.status.meta.title': 'Просмотр статусов заказа',
 

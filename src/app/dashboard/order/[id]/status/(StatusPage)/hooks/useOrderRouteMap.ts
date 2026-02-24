@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { DEFAULT_POINT, DRIVER_ROUTE_STYLES, STATIC_DRIVER_POINT, TRUCK_ICON_URL } from '../constants'
 import { buildPointQuery, ensureYandexMultiRouterModule, loadYandexMaps, resolveYandexLang } from '../lib/map'
 import type { OrderRouteMapProps } from '../types'
@@ -29,7 +30,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 	const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null)
 	const [mapError, setMapError] = useState<string | null>(null)
 	const [isLoadingMap, setIsLoadingMap] = useState(false)
-	const [isTouchDevice, setIsTouchDevice] = useState(false)
+	const isMobile = useIsMobile(1024)
 	const [showTouchHint, setShowTouchHint] = useState(false)
 	const mapRef = useRef<any>(null)
 
@@ -71,13 +72,8 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 				: 'Нажмите на карту, чтобы перемещать'
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return
-		const coarsePointer = window.matchMedia?.('(any-pointer: coarse)')?.matches ?? false
-		const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-		const nextIsTouchDevice = coarsePointer || hasTouch
-		setIsTouchDevice(nextIsTouchDevice)
-		setShowTouchHint(nextIsTouchDevice)
-	}, [])
+		setShowTouchHint(isMobile)
+	}, [isMobile])
 
 	useEffect(() => {
 		if (!containerNode) return
@@ -105,7 +101,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 					controls: [...MAP_CONTROLS],
 				})
 				mapRef.current = map
-				if (isTouchDevice) {
+				if (isMobile) {
 					map.behaviors.disable('drag')
 				}
 
@@ -272,7 +268,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		apiKey,
 		containerNode,
 		destinationQuery,
-		isTouchDevice,
+		isMobile,
 		locale,
 		normalizedOrderStatus,
 		onDriverLocationChange,
@@ -292,7 +288,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 
 	useEffect(() => {
 		const map = mapRef.current
-		if (!map || !isTouchDevice) return
+		if (!map || !isMobile) return
 
 		if (showTouchHint) {
 			map.behaviors.disable('drag')
@@ -300,13 +296,13 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		}
 
 		map.behaviors.enable('drag')
-	}, [isTouchDevice, showTouchHint])
+	}, [isMobile, showTouchHint])
 
 	return {
 		setContainerNode,
 		mapError,
 		isLoadingMap,
-		isTouchDevice,
+		isTouchDevice: isMobile,
 		showTouchHint,
 		setShowTouchHint,
 		touchHintLabel,
