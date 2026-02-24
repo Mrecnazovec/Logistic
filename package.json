@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start -p 3002",
     "lint": "eslint",
+    "analyze": "next experimental-analyze",
     "gen:types": "openapi-typescript https://kad-one.com/api/schema/ -o src/shared/types/api.ts"
   },
   "dependencies": {

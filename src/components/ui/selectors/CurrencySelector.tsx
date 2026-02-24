@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
 
 interface CurrencySelectProps {
-	value?: string
+	value?: string | null
 	onChange: (value: string) => void
 	placeholder?: string
 	disabled?: boolean

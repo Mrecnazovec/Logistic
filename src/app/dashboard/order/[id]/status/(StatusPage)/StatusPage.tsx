@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useCarrierLocation } from './hooks/useCarrierLocation'
+import { useCarrierGpsSync } from './hooks/useCarrierGpsSync'
 import { useStatusPage } from './hooks/useStatusPage'
 import { StatusPageSkeleton } from './ui/StatusPageSkeleton'
 import { StatusPageView } from './ui/StatusPageView'
@@ -9,6 +10,13 @@ import type { StatusPageProps } from './types'
 export function StatusPage({ yandexApiKey }: StatusPageProps) {
 	const state = useStatusPage()
 	const carrierLocation = useCarrierLocation()
+	useCarrierGpsSync({
+		orderId: state.order?.id,
+		isCarrier: carrierLocation.isCarrier,
+		permissionState: carrierLocation.permissionState,
+		lastPosition: carrierLocation.lastPosition,
+		requestLocation: carrierLocation.requestLocation,
+	})
 	const showLocationButton = carrierLocation.isCarrier && carrierLocation.permissionState === 'denied'
 
 	return (

@@ -70,3 +70,5 @@ export type OrderAcceptInviteResponse = {
 }
 
 export type DriverStatus = IOrderDriverStatusUpdate['driver_status']
+export type IGpsUpdate = components['schemas']['GPSUpdate']
+export type GpsUpdateRequestDto = components['schemas']['GPSUpdateRequest']

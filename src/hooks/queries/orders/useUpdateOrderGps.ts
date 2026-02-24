@@ -1,11 +1,11 @@
 import { ordersService } from '@/services/orders.service'
-import type { OrderDetailRequestDto } from '@/shared/types/Order.interface'
+import type { GpsUpdateRequestDto } from '@/shared/types/Order.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 type UpdateOrderGpsPayload = {
 	id: string | number
-	data: OrderDetailRequestDto
+	data: GpsUpdateRequestDto
 }
 
 export const useUpdateOrderGps = () => {

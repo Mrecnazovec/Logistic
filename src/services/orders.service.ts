@@ -14,6 +14,8 @@ import {
 	OrderInvitePayload,
 	PatchedOrderDetailDto,
 	PatchedOrderDriverStatusUpdateDto,
+	GpsUpdateRequestDto,
+	IGpsUpdate,
 } from '@/shared/types/Order.interface'
 import { IPaginatedOrderListList } from '@/shared/types/PaginatedList.interface'
 
@@ -161,14 +163,14 @@ class OrdersService {
 		return order
 	}
 
-	async updateOrderGps(id: string | number, data: OrderDetailRequestDto) {
-		const { data: order } = await axiosWithAuth<IOrderDetail>({
+	async updateOrderGps(id: string | number, data: GpsUpdateRequestDto) {
+		const { data: gpsUpdate } = await axiosWithAuth<IGpsUpdate>({
 			url: API_URL.orders(`${id}/gps`),
 			method: 'POST',
 			data,
 		})
 
-		return order
+		return gpsUpdate
 	}
 
 	async toggleOrderPrivacy(id: string | number, isHidden: boolean) {

@@ -1505,6 +1505,10 @@ export interface components {
             readonly is_hidden: boolean;
             readonly user_name: string;
             readonly user_id: string;
+            readonly origin_lat: string;
+            readonly origin_lng: string;
+            readonly dest_lat: string;
+            readonly dest_lng: string;
         };
         CargoPublish: {
             /** Format: uuid */
@@ -1588,6 +1592,14 @@ export interface components {
             payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
+            /** Format: double */
+            origin_lat?: number | null;
+            /** Format: double */
+            origin_lng?: number | null;
+            /** Format: double */
+            dest_lat?: number | null;
+            /** Format: double */
+            dest_lng?: number | null;
         };
         CargoPublishRequest: {
             /** Название груза */
@@ -1670,13 +1682,13 @@ export interface components {
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
             /** Format: double */
-            origin_lat?: number;
+            origin_lat?: number | null;
             /** Format: double */
-            origin_lng?: number;
+            origin_lng?: number | null;
             /** Format: double */
-            dest_lat?: number;
+            dest_lat?: number | null;
             /** Format: double */
-            dest_lng?: number;
+            dest_lng?: number | null;
         };
         CargoVisibilityRequestRequest: {
             is_hidden: boolean;
@@ -1728,6 +1740,22 @@ export interface components {
         };
         ForgotPasswordResponse: {
             detail: string;
+        };
+        GPSUpdate: {
+            /** Format: double */
+            lat: number;
+            /** Format: double */
+            lng: number;
+            /** Format: date-time */
+            recorded_at: string | null;
+        };
+        GPSUpdateRequest: {
+            /** Format: double */
+            lat: number;
+            /** Format: double */
+            lng: number;
+            /** Format: date-time */
+            recorded_at: string | null;
         };
         GenerateInviteResponse: {
             token: string;
@@ -2181,10 +2209,18 @@ export interface components {
             readonly price_per_km: number;
             readonly origin_city: string;
             readonly origin_address: string;
+            /** Format: double */
+            readonly origin_lat: number | null;
+            /** Format: double */
+            readonly origin_lng: number | null;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
             readonly destination_address: string;
+            /** Format: double */
+            readonly dest_lat: number | null;
+            /** Format: double */
+            readonly dest_lng: number | null;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
@@ -2196,6 +2232,7 @@ export interface components {
              * @description Публичный токен для просмотра заказа
              */
             readonly share_token: string;
+            readonly driver_location: unknown;
             /** Format: date-time */
             loading_datetime?: string | null;
             /** Format: date-time */
@@ -2329,10 +2366,18 @@ export interface components {
             readonly price_per_km: number;
             readonly origin_city: string;
             readonly origin_address: string;
+            /** Format: double */
+            readonly origin_lat: number | null;
+            /** Format: double */
+            readonly origin_lng: number | null;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
             readonly destination_address: string;
+            /** Format: double */
+            readonly dest_lat: number | null;
+            /** Format: double */
+            readonly dest_lng: number | null;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
@@ -2344,6 +2389,7 @@ export interface components {
              * @description Публичный токен для просмотра заказа
              */
             readonly share_token: string;
+            readonly driver_location: unknown;
         };
         OrderStatusHistory: {
             readonly id: number;
@@ -2572,13 +2618,13 @@ export interface components {
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
             /** Format: double */
-            origin_lat?: number;
+            origin_lat?: number | null;
             /** Format: double */
-            origin_lng?: number;
+            origin_lng?: number | null;
             /** Format: double */
-            dest_lat?: number;
+            dest_lat?: number | null;
             /** Format: double */
-            dest_lng?: number;
+            dest_lng?: number | null;
         };
         /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
          *     и добавляет служебные поля вроде `updated_at`. */
@@ -4575,9 +4621,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OrderDetailRequest"];
-                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+                "application/json": components["schemas"]["GPSUpdateRequest"];
+                "multipart/form-data": components["schemas"]["GPSUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GPSUpdateRequest"];
             };
         };
         responses: {
@@ -4586,7 +4632,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrderDetail"];
+                    "application/json": components["schemas"]["GPSUpdate"];
                 };
             };
         };
