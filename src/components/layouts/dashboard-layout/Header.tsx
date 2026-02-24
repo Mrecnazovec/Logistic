@@ -9,6 +9,7 @@ import { notificationTypeSamples } from '@/app/dashboard/notifications/notificat
 import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { usePatchMe } from '@/hooks/queries/me/usePatchMe'
+import { useUpdateOrderGps } from '@/hooks/queries/orders/useUpdateOrderGps'
 import { useNotifications } from '@/hooks/queries/notifications/useNotifications'
 import { useNotificationsRealtime } from '@/hooks/queries/notifications/useNotificationsRealtime'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -56,6 +57,7 @@ export function Header() {
 	const { items: navItems, backLink } = resolveHeaderNavItems(pathname, role)
 	const { me, isLoading } = useGetMe()
 	const { patchMe, isLoadingPatchMe } = usePatchMe()
+	const { updateOrderGps } = useUpdateOrderGps()
 	const [policyOpen, setPolicyOpen] = useState(false)
 	const [policyAccepted, setPolicyAccepted] = useState(false)
 	const shouldForceOpen = me?.is_accept_policy === false
@@ -118,6 +120,7 @@ export function Header() {
 	}, [clearTarget, normalizedPathname])
 
 	const visibleNavItems = navItems.filter((item) => item.labelKey)
+	const isCarrier = role === RoleEnum.CARRIER || me?.role === RoleEnum.CARRIER
 	const { hasDeskUnread, hasMyOffersUnread } = useMemo(() => {
 		let desk = false
 		let myOffers = false
@@ -128,6 +131,42 @@ export function Header() {
 		}
 		return { hasDeskUnread: desk, hasMyOffersUnread: myOffers }
 	}, [unreadOffers])
+
+	useEffect(() => {
+		if (!isCarrier) return
+		if (typeof window === 'undefined' || !('geolocation' in navigator)) return
+
+		const sendCurrentGps = () => {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					updateOrderGps({
+						data: {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude,
+						},
+					})
+				},
+				(error) => {
+					console.warn('[header-gps] geolocation error', { error: error.message })
+				},
+				{
+					enableHighAccuracy: true,
+					maximumAge: 30000,
+					timeout: 20000,
+				},
+			)
+		}
+
+		sendCurrentGps()
+
+		const intervalId = window.setInterval(() => {
+			sendCurrentGps()
+		}, 15 * 60 * 1000)
+
+		return () => {
+			window.clearInterval(intervalId)
+		}
+	}, [isCarrier, updateOrderGps])
 
 	const handlePolicySubmit = () => {
 		if (!policyAccepted || isLoadingPatchMe) return

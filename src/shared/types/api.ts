@@ -938,22 +938,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/orders/{id}/gps/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["orders_gps_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/orders/{id}/invite-by-id/": {
         parameters: {
             query?: never;
@@ -1002,22 +986,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/orders/{id}/tracking/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["orders_tracking_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/orders/accept-invite/": {
         parameters: {
             query?: never;
@@ -1044,6 +1012,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["orders_decline_invite_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/gps/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["orders_gps_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1394,6 +1378,7 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** @description Оптимизированный сериализатор списка грузов с кэшированием вычислений */
         CargoList: {
             readonly id: number;
             /** Format: uuid */
@@ -1434,7 +1419,10 @@ export interface components {
             readonly transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             readonly weight_kg: string;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Оптимизированное вычисление веса в тоннах
+             */
             readonly weight_t: number;
             /** @description Количество осей (3–10) */
             readonly axles: number | null;
@@ -1451,9 +1439,9 @@ export interface components {
              *     * `RUB` - руб
              *     * `USD` - USD
              *     * `EUR` - EUR
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            readonly price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR" | null;
             /** Format: decimal */
             readonly price_uzs: string;
             /**
@@ -1503,7 +1491,10 @@ export interface components {
              * @enum {string}
              */
             readonly payment_method: "cash" | "cashless" | "both";
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Оптимизированный расчет цены за км
+             */
             readonly price_per_km: number;
             /** Format: double */
             readonly origin_dist_km: number;
@@ -1514,6 +1505,10 @@ export interface components {
             readonly is_hidden: boolean;
             readonly user_name: string;
             readonly user_id: string;
+            readonly origin_lat: string;
+            readonly origin_lng: string;
+            readonly dest_lat: string;
+            readonly dest_lng: string;
         };
         CargoPublish: {
             /** Format: uuid */
@@ -1554,24 +1549,30 @@ export interface components {
             transport_type: "TENT" | "CONT" | "REEFER" | "DUMP" | "CARTR" | "GRAIN" | "LOG" | "PICKUP" | "MEGA" | "OTHER";
             /** Format: decimal */
             weight_kg: string;
-            /** @description Количество осей (3–10) */
+            /** @description Количество осей (3–10, необязательное поле) */
             axles?: number | null;
             /**
              * Format: decimal
              * @description Объём, м³
              */
             volume_m3?: string | null;
-            /** Format: decimal */
+            /**
+             * Format: decimal
+             * @description Цена перевозки (необязательное поле)
+             */
             price_value?: string | null;
             /**
-             * @description * `UZS` - сум
+             * @description Валюта (необязательное поле, по умолчанию UZS)
+             *
+             *     * `UZS` - сум
              *     * `KZT` - тнг
              *     * `RUB` - руб
              *     * `USD` - USD
              *     * `EUR` - EUR
-             * @enum {string}
+             * @default UZS
+             * @enum {string|null}
              */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR" | null;
             /** Format: decimal */
             readonly price_uzs: string;
             /**
@@ -1591,6 +1592,14 @@ export interface components {
             payment_method: "cash" | "cashless" | "both";
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
+            /** Format: double */
+            origin_lat?: number | null;
+            /** Format: double */
+            origin_lng?: number | null;
+            /** Format: double */
+            dest_lat?: number | null;
+            /** Format: double */
+            dest_lng?: number | null;
         };
         CargoPublishRequest: {
             /** Название груза */
@@ -1631,24 +1640,30 @@ export interface components {
             weight_kg: string;
             /** Format: double */
             weight_tons?: number;
-            /** @description Количество осей (3–10) */
+            /** @description Количество осей (3–10, необязательное поле) */
             axles?: number | null;
             /**
              * Format: decimal
              * @description Объём, м³
              */
             volume_m3?: string | null;
-            /** Format: decimal */
+            /**
+             * Format: decimal
+             * @description Цена перевозки (необязательное поле)
+             */
             price_value?: string | null;
             /**
-             * @description * `UZS` - сум
+             * @description Валюта (необязательное поле, по умолчанию UZS)
+             *
+             *     * `UZS` - сум
              *     * `KZT` - тнг
              *     * `RUB` - руб
              *     * `USD` - USD
              *     * `EUR` - EUR
-             * @enum {string}
+             * @default UZS
+             * @enum {string|null}
              */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR" | null;
             /**
              * @description * `email` - Email
              *     * `phone` - Телефон
@@ -1667,13 +1682,13 @@ export interface components {
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
             /** Format: double */
-            origin_lat?: number;
+            origin_lat?: number | null;
             /** Format: double */
-            origin_lng?: number;
+            origin_lng?: number | null;
             /** Format: double */
-            dest_lat?: number;
+            dest_lat?: number | null;
             /** Format: double */
-            dest_lng?: number;
+            dest_lng?: number | null;
         };
         CargoVisibilityRequestRequest: {
             is_hidden: boolean;
@@ -1725,6 +1740,18 @@ export interface components {
         };
         ForgotPasswordResponse: {
             detail: string;
+        };
+        GPSUpdate: {
+            /** Format: double */
+            lat: number;
+            /** Format: double */
+            lng: number;
+        };
+        GPSUpdateRequest: {
+            /** Format: double */
+            lat: number;
+            /** Format: double */
+            lng: number;
         };
         GenerateInviteResponse: {
             token: string;
@@ -2178,10 +2205,18 @@ export interface components {
             readonly price_per_km: number;
             readonly origin_city: string;
             readonly origin_address: string;
+            /** Format: double */
+            readonly origin_lat: number | null;
+            /** Format: double */
+            readonly origin_lng: number | null;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
             readonly destination_address: string;
+            /** Format: double */
+            readonly dest_lat: number | null;
+            /** Format: double */
+            readonly dest_lng: number | null;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
@@ -2193,6 +2228,7 @@ export interface components {
              * @description Публичный токен для просмотра заказа
              */
             readonly share_token: string;
+            readonly driver_location: unknown;
             /** Format: date-time */
             loading_datetime?: string | null;
             /** Format: date-time */
@@ -2326,10 +2362,18 @@ export interface components {
             readonly price_per_km: number;
             readonly origin_city: string;
             readonly origin_address: string;
+            /** Format: double */
+            readonly origin_lat: number | null;
+            /** Format: double */
+            readonly origin_lng: number | null;
             /** Format: date */
             readonly load_date: string;
             readonly destination_city: string;
             readonly destination_address: string;
+            /** Format: double */
+            readonly dest_lat: number | null;
+            /** Format: double */
+            readonly dest_lng: number | null;
             /** Format: date */
             readonly delivery_date: string;
             readonly documents_count: number;
@@ -2341,6 +2385,7 @@ export interface components {
              * @description Публичный токен для просмотра заказа
              */
             readonly share_token: string;
+            readonly driver_location: unknown;
         };
         OrderStatusHistory: {
             readonly id: number;
@@ -2527,24 +2572,30 @@ export interface components {
             weight_kg?: string;
             /** Format: double */
             weight_tons?: number;
-            /** @description Количество осей (3–10) */
+            /** @description Количество осей (3–10, необязательное поле) */
             axles?: number | null;
             /**
              * Format: decimal
              * @description Объём, м³
              */
             volume_m3?: string | null;
-            /** Format: decimal */
+            /**
+             * Format: decimal
+             * @description Цена перевозки (необязательное поле)
+             */
             price_value?: string | null;
             /**
-             * @description * `UZS` - сум
+             * @description Валюта (необязательное поле, по умолчанию UZS)
+             *
+             *     * `UZS` - сум
              *     * `KZT` - тнг
              *     * `RUB` - руб
              *     * `USD` - USD
              *     * `EUR` - EUR
-             * @enum {string}
+             * @default UZS
+             * @enum {string|null}
              */
-            price_currency?: "UZS" | "KZT" | "RUB" | "USD" | "EUR";
+            price_currency: "UZS" | "KZT" | "RUB" | "USD" | "EUR" | null;
             /**
              * @description * `email` - Email
              *     * `phone` - Телефон
@@ -2563,13 +2614,13 @@ export interface components {
             /** Скрыта от других пользователей */
             is_hidden?: boolean;
             /** Format: double */
-            origin_lat?: number;
+            origin_lat?: number | null;
             /** Format: double */
-            origin_lng?: number;
+            origin_lng?: number | null;
             /** Format: double */
-            dest_lat?: number;
+            dest_lat?: number | null;
             /** Format: double */
-            dest_lng?: number;
+            dest_lng?: number | null;
         };
         /** @description Детальная карточка оффера. Наследует все поля из OfferShortSerializer
          *     и добавляет служебные поля вроде `updated_at`. */
@@ -2684,6 +2735,9 @@ export interface components {
             /** Format: date-time */
             readonly completed_at: string | null;
             order: number;
+        };
+        PrivacyToggleRequest: {
+            hide: boolean;
         };
         Profile: {
             /** Страна */
@@ -3667,6 +3721,8 @@ export interface operations {
             query?: {
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -3735,6 +3791,8 @@ export interface operations {
             query?: {
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -3757,6 +3815,8 @@ export interface operations {
             query?: {
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -4545,34 +4605,6 @@ export interface operations {
             };
         };
     };
-    orders_gps_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description A unique integer value identifying this Заказ. */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OrderDetailRequest"];
-                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrderDetail"];
-                };
-            };
-        };
-    };
     orders_invite_by_id_create: {
         parameters: {
             query?: never;
@@ -4613,9 +4645,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["OrderDetailRequest"];
-                "multipart/form-data": components["schemas"]["OrderDetailRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["OrderDetailRequest"];
+                "application/json": components["schemas"]["PrivacyToggleRequest"];
+                "multipart/form-data": components["schemas"]["PrivacyToggleRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PrivacyToggleRequest"];
             };
         };
         responses: {
@@ -4647,28 +4679,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderStatusHistory"];
-                };
-            };
-        };
-    };
-    orders_tracking_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description A unique integer value identifying this Заказ. */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrderDetail"];
                 };
             };
         };
@@ -4719,6 +4729,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_gps_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GPSUpdateRequest"];
+                "multipart/form-data": components["schemas"]["GPSUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GPSUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GPSUpdate"];
                 };
             };
         };

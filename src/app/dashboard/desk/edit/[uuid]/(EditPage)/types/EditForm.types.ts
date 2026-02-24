@@ -35,7 +35,6 @@ export type EditFormContentProps = {
 	originCityLabel?: string
 	destinationCityLabel?: string
 	yandexApiKey?: string
-	showMap?: boolean
 }
 
 export type EditSectionCommonProps = {

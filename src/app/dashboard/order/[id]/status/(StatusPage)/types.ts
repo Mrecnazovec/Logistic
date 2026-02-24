@@ -2,7 +2,6 @@
 
 export type StatusPageProps = {
 	yandexApiKey?: string
-	showMap?: boolean
 }
 
 export type TimelineEvent = {
@@ -33,16 +32,10 @@ export type StatusPageViewProps = {
 	locale: string
 	order?: IOrderDetail
 	apiKey?: string
-	showMap?: boolean
 	timelineSections: TimelineSection[]
 	hasHistory: boolean
 	orderStatusLabel: string
 	orderStatusVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'destructive' | 'outline'
-	carrierCurrentPosition?: {
-		lat: number
-		lng: number
-		capturedAt: string
-	} | null
 }
 
 export type OrderRouteMapProps = {

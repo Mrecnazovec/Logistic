@@ -8,19 +8,16 @@ import { OrderRouteMap } from './OrderRouteMap'
 import { StatusCarrierCard } from './StatusCarrierCard'
 import { StatusProgressCard } from './StatusProgressCard'
 import { StatusTimelineFeed } from './StatusTimelineFeed'
-import { TemporaryDriverStatusBranches } from './TemporaryDriverStatusBranches'
 
 export function StatusPageView({
 	t,
 	locale,
 	order,
 	apiKey,
-	showMap = true,
 	timelineSections,
 	hasHistory,
 	orderStatusLabel,
 	orderStatusVariant,
-	carrierCurrentPosition,
 }: StatusPageViewProps) {
 	const [remainingKmFromMap, setRemainingKmFromMap] = useState<number | null>(null)
 	const [driverLocationFromMap, setDriverLocationFromMap] = useState<string | null>(null)
@@ -31,10 +28,6 @@ export function StatusPageView({
 	const handleDriverLocationChange = useCallback((nextValue: string | null) => {
 		setDriverLocationFromMap(nextValue)
 	}, [])
-
-	if (!showMap) {
-		return <TemporaryDriverStatusBranches t={t} timelineSections={timelineSections} hasHistory={hasHistory} />
-	}
 
 	const latestEvent = timelineSections[0]?.events[0] ?? null
 	const normalizedStatus = normalizeOrderStatus(String(order?.status ?? ''))
@@ -54,13 +47,11 @@ export function StatusPageView({
 	const carrierStatusLabel =
 		(currentDriverStatus ? getOrderDriverStatusName(t, currentDriverStatus) : '') || driverStatusMeta?.fallback || orderStatusLabel
 
-	const carrierLocation = driverLocationFromMap?.trim()
-		? driverLocationFromMap
-		: carrierCurrentPosition
-			? `${carrierCurrentPosition.lat.toFixed(5)}, ${carrierCurrentPosition.lng.toFixed(5)}`
-			: order?.origin_city?.trim() || t('order.status.progress.locationUnknown')
+	const carrierCity = driverLocationFromMap?.trim() || order?.origin_city?.trim() || t('order.status.progress.locationUnknown')
+	const carrierLocation = `Сейчас в г. ${carrierCity}`
 
-	const updatedAtSource = carrierCurrentPosition?.capturedAt ?? latestEvent?.occurredAt ?? null
+	const driverLocationFromOrder = (order as unknown as { driver_location?: { recorded_at?: string | null } | null })?.driver_location
+	const updatedAtSource = driverLocationFromOrder?.recorded_at ?? latestEvent?.occurredAt ?? null
 	const updatedAt = updatedAtSource
 		? new Intl.DateTimeFormat(getLocaleTag(locale), {
 				day: '2-digit',
@@ -110,4 +101,3 @@ export function StatusPageView({
 		</div>
 	)
 }
-

@@ -10,14 +10,9 @@ import { usePostingPage } from './hooks/usePostingPage'
 
 type PostingPageProps = {
 	yandexApiKey?: string
-	showMap?: boolean
 }
 
-type PostingPageVariantProps = {
-	yandexApiKey?: string
-}
-
-export function PostingPage({ yandexApiKey, showMap = true }: PostingPageProps) {
+export function PostingPage({ yandexApiKey }: PostingPageProps) {
 	const { form, isLoadingCreate, onSubmit, originCountryValue, destinationCountryValue, disableEmailContact } =
 		usePostingPage()
 
@@ -30,14 +25,12 @@ export function PostingPage({ yandexApiKey, showMap = true }: PostingPageProps) 
 						isLoadingCreate={isLoadingCreate}
 						originCountryValue={originCountryValue}
 						yandexApiKey={yandexApiKey}
-						showMap={showMap}
 					/>
 					<DestinationSection
 						form={form}
 						isLoadingCreate={isLoadingCreate}
 						destinationCountryValue={destinationCountryValue}
 						yandexApiKey={yandexApiKey}
-						showMap={showMap}
 					/>
 					<ShippingSection
 						form={form}
@@ -50,12 +43,4 @@ export function PostingPage({ yandexApiKey, showMap = true }: PostingPageProps) 
 			</form>
 		</Form>
 	)
-}
-
-export function PostingPageWithMap({ yandexApiKey }: PostingPageVariantProps) {
-	return <PostingPage yandexApiKey={yandexApiKey} showMap />
-}
-
-export function PostingPageWithoutMap({ yandexApiKey }: PostingPageVariantProps) {
-	return <PostingPage yandexApiKey={yandexApiKey} showMap={false} />
 }

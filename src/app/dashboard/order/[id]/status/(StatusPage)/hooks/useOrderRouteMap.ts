@@ -16,6 +16,15 @@ const MAP_CONTROLS = [
 
 type UseOrderRouteMapParams = Pick<OrderRouteMapProps, 'order' | 'apiKey' | 'locale' | 'onRemainingKmChange' | 'onDriverLocationChange'>
 
+const toFiniteNumber = (value: unknown): number | null => {
+	if (typeof value === 'number') return Number.isFinite(value) ? value : null
+	if (typeof value === 'string') {
+		const parsed = Number(value)
+		return Number.isFinite(parsed) ? parsed : null
+	}
+	return null
+}
+
 export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, onDriverLocationChange }: UseOrderRouteMapParams) {
 	const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null)
 	const [mapError, setMapError] = useState<string | null>(null)
@@ -32,6 +41,24 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		() => buildPointQuery(order?.destination_city, order?.destination_address),
 		[order?.destination_address, order?.destination_city],
 	)
+	const originCoordsFromOrder = useMemo(() => {
+		const source = order as unknown as { origin_lat?: unknown; origin_lng?: unknown }
+		const lat = toFiniteNumber(source?.origin_lat)
+		const lng = toFiniteNumber(source?.origin_lng)
+		return lat !== null && lng !== null ? ([lat, lng] as [number, number]) : null
+	}, [order])
+	const destinationCoordsFromOrder = useMemo(() => {
+		const source = order as unknown as { dest_lat?: unknown; dest_lng?: unknown }
+		const lat = toFiniteNumber(source?.dest_lat)
+		const lng = toFiniteNumber(source?.dest_lng)
+		return lat !== null && lng !== null ? ([lat, lng] as [number, number]) : null
+	}, [order])
+	const driverCoordsFromOrder = useMemo(() => {
+		const source = order as unknown as { driver_location?: { lat?: unknown; lng?: unknown } | null }
+		const lat = toFiniteNumber(source?.driver_location?.lat)
+		const lng = toFiniteNumber(source?.driver_location?.lng)
+		return lat !== null && lng !== null ? ([lat, lng] as [number, number]) : null
+	}, [order])
 	const rawOrderStatus = String(order?.status ?? '')
 	const normalizedOrderStatus = rawOrderStatus === 'in_proccess' ? OrderStatusEnum.IN_PROCESS : rawOrderStatus
 	const shouldShowDriverRoute =
@@ -84,7 +111,10 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 
 				const points: [number, number][] = []
 
-				const resolvePoint = async (query: string) => {
+				const resolvePoint = async (query: string, predefinedCoords: [number, number] | null, fallbackName: string) => {
+					if (predefinedCoords) {
+						return { coords: predefinedCoords, name: fallbackName }
+					}
 					if (!query) return null
 					const result = await ymaps.geocode(query, { results: 1 })
 					const first = result.geoObjects.get(0)
@@ -93,16 +123,27 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 					return { coords, name: first.properties?.get('name') ?? query }
 				}
 
-				const [originPoint, destinationPoint] = await Promise.all([resolvePoint(originQuery), resolvePoint(destinationQuery)])
+				const [originPoint, destinationPoint] = await Promise.all([
+					resolvePoint(originQuery, originCoordsFromOrder, order?.origin_city || originQuery || 'Origin'),
+					resolvePoint(destinationQuery, destinationCoordsFromOrder, order?.destination_city || destinationQuery || 'Destination'),
+				])
 
 				if (originPoint) {
 					points.push(originPoint.coords)
-					map.geoObjects.add(new ymaps.Placemark(originPoint.coords, { balloonContent: originPoint.name }))
+					map.geoObjects.add(
+						new ymaps.Placemark(originPoint.coords, {
+							balloonContent: order?.origin_address || originPoint.name,
+						}),
+					)
 				}
 
 				if (destinationPoint) {
 					points.push(destinationPoint.coords)
-					map.geoObjects.add(new ymaps.Placemark(destinationPoint.coords, { balloonContent: destinationPoint.name }))
+					map.geoObjects.add(
+						new ymaps.Placemark(destinationPoint.coords, {
+							balloonContent: order?.destination_address || destinationPoint.name,
+						}),
+					)
 				}
 
 				if (originPoint && destinationPoint) {
@@ -124,7 +165,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 							: null
 
 				if (shouldShowDriverRoute && driverTargetPoint) {
-					const driverPoint: [number, number] = STATIC_DRIVER_POINT
+					const driverPoint: [number, number] = driverCoordsFromOrder ?? STATIC_DRIVER_POINT
 					points.push(driverPoint)
 
 					try {
@@ -143,7 +184,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 					map.geoObjects.add(
 						new ymaps.Placemark(
 							driverPoint,
-							{ balloonContent: 'Driver (static)' },
+							{ balloonContent: order?.carrier_name || order?.roles?.carrier?.name || 'Carrier' },
 							{
 								iconLayout: 'default#image',
 								iconImageHref: TRUCK_ICON_URL,
@@ -237,7 +278,16 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 		onDriverLocationChange,
 		onRemainingKmChange,
 		originQuery,
+		originCoordsFromOrder,
+		order?.origin_city,
+		order?.destination_city,
+		order?.origin_address,
+		order?.destination_address,
+		order?.carrier_name,
+		order?.roles?.carrier?.name,
 		shouldShowDriverRoute,
+		destinationCoordsFromOrder,
+		driverCoordsFromOrder,
 	])
 
 	useEffect(() => {

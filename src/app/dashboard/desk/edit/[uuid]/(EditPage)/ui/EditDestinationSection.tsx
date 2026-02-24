@@ -17,7 +17,6 @@ type EditDestinationSectionProps = EditSectionCommonProps & {
 	destinationCountryValue?: string
 	destinationCityLabel?: string
 	yandexApiKey?: string
-	showMap: boolean
 	mapState: EditFormMapState
 }
 
@@ -27,7 +26,6 @@ export function EditDestinationSection({
 	destinationCountryValue,
 	destinationCityLabel,
 	yandexApiKey,
-	showMap,
 	mapState,
 }: EditDestinationSectionProps) {
 	const { t } = useI18n()
@@ -52,6 +50,8 @@ export function EditDestinationSection({
 									field.onChange(val)
 									form.setValue('destination_country', city?.country ?? '')
 									form.setValue('destination_address', '', { shouldDirty: true, shouldTouch: true })
+									form.setValue('dest_lat', undefined)
+									form.setValue('dest_lng', undefined)
 									mapState.setDestinationExactCoordinates(null)
 								}}
 								onCoordinates={mapState.setDestinationCityCoordinates}
@@ -71,80 +71,68 @@ export function EditDestinationSection({
 				render={({ field }) => (
 					<FormItem className='w-full'>
 						<FormControl>
-							{showMap ? (
-								<div className='flex items-center gap-2'>
-									<div className='flex-1'>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<span
-													className={cn('inline-flex w-full', canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed')}
-													onClick={() => {
-														if (canOpenMapFromAddress) setIsMapOpen(true)
-													}}
-												>
-													<InputGroup>
-														<InputGroupInput
-															placeholder={t('desk.edit.destination.addressPlaceholder')}
-															{...field}
-															value={field.value ?? ''}
-															disabled
-															className={cn(
-																canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed',
-																field.value ? 'text-black disabled:text-black disabled:opacity-100' : undefined,
-															)}
-														/>
-														<InputGroupAddon className='pr-2'>
-															<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
-														</InputGroupAddon>
-													</InputGroup>
-												</span>
-											</TooltipTrigger>
-											<TooltipContent side='top' className='text-black' sideOffset={6}>
-												{canOpenMapFromAddress ? 'Укажите адрес на карте' : 'Требуется указать город'}
-											</TooltipContent>
-										</Tooltip>
-									</div>
-									<LocationMapPicker
-										type='destination'
-										apiKey={yandexApiKey}
-										city={mapState.destinationCity}
-										country={destinationCountryValue}
-										address={mapState.destinationAddress}
-										fallbackPoint={
-											mapState.destinationCityCoordinates
-												? {
-														lat: Number(mapState.destinationCityCoordinates.lat),
-														lng: Number(mapState.destinationCityCoordinates.lon),
-													}
-												: null
-										}
-										value={mapState.destinationExactCoordinates}
-										onSelect={(selection) => {
-											mapState.setDestinationExactCoordinates({ lat: selection.lat, lng: selection.lng })
-											if (selection.address) {
-												form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
-											}
-										}}
-										disabled={isLoadingPatch}
-										compact
-										disabledCityTooltip='Требуется указать город'
-										open={isMapOpen}
-										onOpenChange={setIsMapOpen}
-									/>
+							<div className='flex items-center gap-2'>
+								<div className='flex-1'>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<span
+												className={cn('inline-flex w-full', canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed')}
+												onClick={() => {
+													if (canOpenMapFromAddress) setIsMapOpen(true)
+												}}
+											>
+												<InputGroup>
+													<InputGroupInput
+														placeholder={t('desk.edit.destination.addressPlaceholder')}
+														{...field}
+														value={field.value ?? ''}
+														disabled
+														className={cn(
+															canOpenMapFromAddress ? 'cursor-pointer' : 'cursor-not-allowed',
+															field.value ? 'text-black disabled:text-black disabled:opacity-100' : undefined,
+														)}
+													/>
+													<InputGroupAddon className='pr-2'>
+														<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
+													</InputGroupAddon>
+												</InputGroup>
+											</span>
+										</TooltipTrigger>
+										<TooltipContent side='top' className='text-black' sideOffset={6}>
+											{canOpenMapFromAddress ? 'Укажите адрес на карте' : 'Требуется указать город'}
+										</TooltipContent>
+									</Tooltip>
 								</div>
-							) : (
-								<InputGroup>
-									<InputGroupInput
-										placeholder={t('desk.edit.destination.addressPlaceholder')}
-										{...field}
-										value={field.value ?? ''}
-										disabled={isLoadingPatch}
-									/>
-									<InputGroupAddon className='pr-2'>
-										<Home className={cn('text-grayscale size-5', field.value && 'text-black')} />
-									</InputGroupAddon>
-								</InputGroup>
-							)}
+								<LocationMapPicker
+									type='destination'
+									apiKey={yandexApiKey}
+									city={mapState.destinationCity}
+									country={destinationCountryValue}
+									address={mapState.destinationAddress}
+									fallbackPoint={
+										mapState.destinationCityCoordinates
+											? {
+													lat: Number(mapState.destinationCityCoordinates.lat),
+													lng: Number(mapState.destinationCityCoordinates.lon),
+												}
+											: null
+									}
+									value={mapState.destinationExactCoordinates}
+									onSelect={(selection) => {
+										mapState.setDestinationExactCoordinates({ lat: selection.lat, lng: selection.lng })
+										form.setValue('dest_lat', selection.lat, { shouldDirty: true })
+										form.setValue('dest_lng', selection.lng, { shouldDirty: true })
+										if (selection.address) {
+											form.setValue('destination_address', selection.address, { shouldDirty: true, shouldTouch: true })
+										}
+									}}
+									disabled={isLoadingPatch}
+									compact
+									disabledCityTooltip='Требуется указать город'
+									open={isMapOpen}
+									onOpenChange={setIsMapOpen}
+								/>
+							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>

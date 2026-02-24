@@ -20,7 +20,6 @@ export function EditFormContent({
 	originCityLabel,
 	destinationCityLabel,
 	yandexApiKey,
-	showMap = true,
 }: EditFormContentProps) {
 	const mapState = useEditFormMapState(form)
 
@@ -35,7 +34,6 @@ export function EditFormContent({
 						originCountryValue={originCountryValue}
 						originCityLabel={originCityLabel}
 						yandexApiKey={yandexApiKey}
-						showMap={showMap}
 						mapState={mapState}
 					/>
 					<EditDestinationSection
@@ -44,7 +42,6 @@ export function EditFormContent({
 						destinationCountryValue={destinationCountryValue}
 						destinationCityLabel={destinationCityLabel}
 						yandexApiKey={yandexApiKey}
-						showMap={showMap}
 						mapState={mapState}
 					/>
 					<EditShippingSection
@@ -59,4 +56,3 @@ export function EditFormContent({
 		</Form>
 	)
 }
-

@@ -42,6 +42,31 @@ declare global {
 
 const DEFAULT_POINT: MapPoint = { lat: 41.3111, lng: 69.2797 }
 
+const extractGeoObjectAddress = (geoObject: any): string => {
+	if (!geoObject) return ''
+
+	const getAddressLine = geoObject.getAddressLine
+	if (typeof getAddressLine === 'function') {
+		const directAddress = getAddressLine.call(geoObject)
+		if (typeof directAddress === 'string' && directAddress.trim()) return directAddress
+	}
+
+	const properties = geoObject.properties
+	const candidates = [
+		properties?.get?.('metaDataProperty.GeocoderMetaData.Address.formatted'),
+		properties?.get?.('metaDataProperty.GeocoderMetaData.text'),
+		properties?.get?.('text'),
+		properties?.get?.('name'),
+		properties?.get?.('description'),
+	]
+
+	for (const candidate of candidates) {
+		if (typeof candidate === 'string' && candidate.trim()) return candidate
+	}
+
+	return ''
+}
+
 const resolveYandexLang = (locale: string) => {
 	if (locale === 'en') return 'en_US'
 	return 'ru_RU'
@@ -177,11 +202,7 @@ export function LocationMapPicker({
 				return
 			}
 
-			const resolvedAddress =
-				firstGeoObject.getAddressLine?.() ??
-				firstGeoObject.properties?.get('text') ??
-				firstGeoObject.properties?.get('name') ??
-				''
+			const resolvedAddress = extractGeoObjectAddress(firstGeoObject)
 			setSelectedAddress(resolvedAddress)
 		} catch {
 			setSelectedAddress('')
@@ -235,6 +256,8 @@ export function LocationMapPicker({
 
 				if (value) {
 					setPlacemark(value)
+					setSelectedPoint(value)
+					void resolveAddressByCoords(value)
 				}
 
 				if (!value && initialQuery) {
