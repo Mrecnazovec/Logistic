@@ -32,6 +32,7 @@ const messages: Record<string, string> = {
 
 	'components.dashboard.headerNav.desk.myOffers': 'My offers',
 	'components.dashboard.headerNav.back.toMyCargo': 'Back to my cargo',
+	'components.dashboard.headerNav.back.toCargo': 'Back to cargo',
 	'components.dashboard.headerNav.back.toAnnouncements': 'Back to announcements list',
 	'components.dashboard.headerNav.back.toDocs': 'Back to documents',
 	'components.dashboard.headerNav.back': 'Back',

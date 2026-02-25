@@ -218,10 +218,6 @@ export function Header() {
 	}
 
 	const handleBackClick = () => {
-		if (typeof window !== 'undefined' && window.history.length > 1) {
-			router.back()
-			return
-		}
 		if (backLink) {
 			router.push(backLink.href)
 		}
@@ -237,7 +233,7 @@ export function Header() {
 							className='flex justify-center self-start items-center gap-2.5 text-brand md:text-xl text-md font-medium hover:text-brand/70 transition-colors line-clamp-1 cursor-pointer'
 							onClick={handleBackClick}
 						>
-							<ChevronLeft /> {t('components.dashboard.headerNav.back')}
+							<ChevronLeft /> {t(backLink.labelKey)}
 						</button>
 					)}
 					{visibleNavItems.length > 0 && (

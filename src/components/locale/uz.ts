@@ -31,6 +31,7 @@ const messages: Record<string, string> = {
 	'components.dashboard.headerNav.rating.carrier': 'Haydovchilar',
 	'components.dashboard.headerNav.desk.myOffers': 'Mening takliflarim',
 	'components.dashboard.headerNav.back.toMyCargo': 'Yuklarimga qaytish',
+	'components.dashboard.headerNav.back.toCargo': 'Yukka qaytish',
 	'components.dashboard.headerNav.back.toAnnouncements': "E'lonlar ro'yxatiga qaytish",
 	'components.dashboard.headerNav.back.toDocs': 'Hujjatlarga qaytish',
 	'components.dashboard.headerNav.back': 'Qaytish',

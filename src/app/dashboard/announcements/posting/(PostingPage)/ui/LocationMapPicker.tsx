@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MapPin } from 'lucide-react'
+import { MapPin, Maximize2, Minimize2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/form-control/Input'
@@ -127,6 +127,7 @@ export function LocationMapPicker({
 	const [selectedAddress, setSelectedAddress] = useState<string>('')
 	const [isLoadingMap, setIsLoadingMap] = useState(false)
 	const [isSearching, setIsSearching] = useState(false)
+	const [isMapFullscreen, setIsMapFullscreen] = useState(false)
 	const [loadError, setLoadError] = useState<string | null>(null)
 	const [searchAddress, setSearchAddress] = useState(address ?? '')
 	const [mapContainerNode, setMapContainerNode] = useState<HTMLDivElement | null>(null)
@@ -318,6 +319,9 @@ export function LocationMapPicker({
 		if (!nextOpen && selectedPoint && !skipAutoApplyOnCloseRef.current) {
 			onSelect({ ...selectedPoint, address: selectedAddress || undefined })
 		}
+		if (!nextOpen) {
+			setIsMapFullscreen(false)
+		}
 		skipAutoApplyOnCloseRef.current = false
 		setDialogOpen(nextOpen)
 	}
@@ -334,6 +338,15 @@ export function LocationMapPicker({
 		const query = [country, city, searchAddress].filter(Boolean).join(', ')
 		void geocodeAndSelect(query)
 	}
+
+	useEffect(() => {
+		if (!dialogOpen) return
+		const map = mapRef.current
+		if (!map) return
+		setTimeout(() => {
+			map.container.fitToViewport()
+		}, 0)
+	}, [dialogOpen, isMapFullscreen])
 
 	const coordsText = selectedPoint
 		? `${selectedPoint.lat.toFixed(6)}, ${selectedPoint.lng.toFixed(6)}`
@@ -397,7 +410,14 @@ export function LocationMapPicker({
 					)
 					: null}
 			<Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
-				<DialogContent className='md:max-h-[80dvh]'>
+				<DialogContent
+					fullscreen={isMapFullscreen}
+					className={
+						isMapFullscreen
+							? 'grid grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden p-4 md:p-6'
+							: 'grid max-h-[88dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden md:max-h-[80dvh]'
+					}
+				>
 					<DialogHeader>
 						<DialogTitle>{tm('announcements.posting.map.title', 'Specify exact point on map')}</DialogTitle>
 						<DialogDescription>
@@ -408,7 +428,7 @@ export function LocationMapPicker({
 						</DialogDescription>
 					</DialogHeader>
 
-					<div className='space-y-3'>
+					<div className='space-y-3 overflow-y-auto pr-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
 
 						<div className='flex flex-col gap-2 sm:flex-row'>
 							<Input
@@ -428,8 +448,17 @@ export function LocationMapPicker({
 									? tm('announcements.posting.map.searching', 'Searching...')
 									: tm('announcements.posting.map.search', 'Search')}
 							</Button>
+							<Button type='button' variant='outline' onClick={() => setIsMapFullscreen((prev) => !prev)}>
+								{isMapFullscreen ? <Minimize2 className='size-4' /> : <Maximize2 className='size-4' />}
+							</Button>
 						</div>
-						<div className='h-[420px] w-full overflow-hidden rounded-2xl border bg-muted/30'>
+						<div
+							className={
+								isMapFullscreen
+									? 'h-[calc(100dvh-260px)] min-h-[320px] w-full overflow-hidden rounded-2xl border bg-muted/30'
+									: 'h-[38dvh] min-h-[220px] max-h-[420px] w-full overflow-hidden rounded-2xl border bg-muted/30'
+							}
+						>
 							{isLoadingMap ? (
 								<div className='flex h-full items-center justify-center text-sm text-muted-foreground'>
 									{tm('announcements.posting.map.loading', 'Loading map...')}

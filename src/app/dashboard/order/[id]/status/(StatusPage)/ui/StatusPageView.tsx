@@ -1,7 +1,9 @@
 'use client'
 
 import { getOrderDriverStatusName, type OrderDriverStatusEnum } from '@/shared/enums/OrderStatus.enum'
+import { parseDistanceKm } from '@/lib/formatters'
 import { useCallback, useState } from 'react'
+import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import { AVERAGE_SPEED_KMH, DRIVER_STATUS_BADGE_MAP, getLocaleTag, getProgressPercent, getProgressPlaceholderKey, getRouteCities, normalizeOrderStatus } from '../lib/statusView.helpers'
 import type { StatusPageViewProps } from '../types'
 import { OrderRouteMap } from './OrderRouteMap'
@@ -31,12 +33,22 @@ export function StatusPageView({
 
 	const latestEvent = timelineSections[0]?.events[0] ?? null
 	const normalizedStatus = normalizeOrderStatus(String(order?.status ?? ''))
-	const progressPercent = getProgressPercent(normalizedStatus)
+	const totalRouteKm = parseDistanceKm(order?.route_distance_km)
+	const progressPercentByRoute =
+		normalizedStatus === OrderStatusEnum.IN_PROCESS && remainingKmFromMap !== null && totalRouteKm > 0
+			? Math.max(0, Math.min(100, (1 - remainingKmFromMap / totalRouteKm) * 100))
+			: null
+	const progressPercent =
+		normalizedStatus === OrderStatusEnum.IN_PROCESS ? progressPercentByRoute ?? getProgressPercent(normalizedStatus) : null
 	const canShowProgress = progressPercent !== null
 	const progressPlaceholderKey = getProgressPlaceholderKey(normalizedStatus)
 	const routeCities = getRouteCities(order)
 	const viaCities = routeCities.length > 2 ? routeCities.slice(1, -1) : []
 	const remainingHours = remainingKmFromMap !== null ? Math.max(1, Math.ceil(remainingKmFromMap / AVERAGE_SPEED_KMH)) : null
+	const remainingMinutes =
+		remainingKmFromMap !== null && remainingKmFromMap < AVERAGE_SPEED_KMH
+			? Math.max(1, Math.ceil((remainingKmFromMap / AVERAGE_SPEED_KMH) * 60))
+			: null
 	const remainingKmLabel =
 		remainingKmFromMap !== null ? `${remainingKmFromMap.toFixed(1)} ${t('order.unit.km')}` : t('order.status.timeline.notSpecified')
 
@@ -82,6 +94,7 @@ export function StatusPageView({
 					progressPercent={progressPercent}
 					progressPlaceholderKey={progressPlaceholderKey}
 					remainingHours={remainingHours}
+					remainingMinutes={remainingMinutes}
 					viaCities={viaCities}
 				/>
 
