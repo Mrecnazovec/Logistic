@@ -10,7 +10,14 @@ type Props = {
 	carrierPriceValue: string | number | null | undefined
 }
 
-export function OrderFinanceSection({ t, order, isOrderCustomer, isOrderLogistic, isOrderCarrier, carrierPriceValue }: Props) {
+export function OrderFinanceSection({
+	t,
+	order,
+	isOrderCustomer,
+	isOrderLogistic,
+	isOrderCarrier,
+	carrierPriceValue,
+}: Props) {
 	return (
 		<div className='grid gap-15 lg:grid-cols-3'>
 			<div className='space-y-3'>

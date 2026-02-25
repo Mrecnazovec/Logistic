@@ -15,7 +15,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export default function Page() {
 	return (
-		<Suspense fallback={<SuspensePageSkeleton variant='form' />}>
+		<Suspense fallback={<SuspensePageSkeleton variant='auth' />}>
 			<RegisterPage />
 		</Suspense>
 	)

@@ -16,6 +16,7 @@
 	'order.section.customerInfo': 'Информация о заказчике',
 	'order.section.logisticInfo': 'Информация о логисте',
 	'order.section.carrierInfo': 'Информация о перевозчике',
+	'order.section.participants': 'Участники',
 	'order.section.loading': 'Погрузка',
 	'order.section.unloading': 'Разгрузка',
 	'order.section.transport': 'Параметры перевозки',
