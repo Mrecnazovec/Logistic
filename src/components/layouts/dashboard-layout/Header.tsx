@@ -26,7 +26,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
 import { resolveHeaderNavItems } from './HeaderNavConfig'
 
 const SEARCH_ENABLED_ROUTES = [
@@ -66,8 +65,6 @@ export function Header() {
 	const isPolicyOpen = shouldForceOpen ? true : policyOpen
 	const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 	const [notificationsTab, setNotificationsTab] = useState<'all' | 'important'>('all')
-	const [driverSpeedKmh, setDriverSpeedKmh] = useState<number | null>(null)
-	const [isGpsToastEnabled, setIsGpsToastEnabled] = useState(false)
 	const {
 		firstPageNotifications,
 		refetchNotifications,
@@ -142,21 +139,6 @@ export function Header() {
 		if (typeof window === 'undefined' || !('geolocation' in navigator)) return
 		const watchId = navigator.geolocation.watchPosition(
 			(position) => {
-				const speedMps = position.coords.speed
-				const nextSpeedKmh = typeof speedMps === 'number' && Number.isFinite(speedMps) && speedMps >= 0 ? Math.round(speedMps * 3.6) : null
-				setDriverSpeedKmh(nextSpeedKmh)
-				console.log('[header-gps] speed update', {
-					speed_mps: speedMps,
-					speed_kmh: nextSpeedKmh,
-					lat: position.coords.latitude,
-					lng: position.coords.longitude,
-					captured_at: new Date(position.timestamp).toISOString(),
-				})
-				if (isGpsToastEnabled) {
-					const speedLabel = nextSpeedKmh === null ? '— км/ч' : `${nextSpeedKmh} км/ч`
-					toast(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)} • ${speedLabel}`)
-				}
-
 				const now = Date.now()
 				if (now - lastGpsSentAtRef.current < GPS_SEND_INTERVAL_MS) return
 
@@ -181,7 +163,7 @@ export function Header() {
 		return () => {
 			navigator.geolocation.clearWatch(watchId)
 		}
-	}, [isCarrier, isGpsToastEnabled, updateOrderGps])
+	}, [isCarrier, updateOrderGps])
 
 	const handlePolicySubmit = () => {
 		if (!policyAccepted || isLoadingPatchMe) return
@@ -297,24 +279,6 @@ export function Header() {
 							) : null}
 							<div className='hidden md:block'>
 								<div className='flex items-center gap-2'>
-									{isCarrier ? (
-										<div className='flex items-center gap-2'>
-											<p className='rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs font-medium text-brand'>
-												{driverSpeedKmh === null
-													? t('components.dashboard.header.speed.unavailable')
-													: t('components.dashboard.header.speed.value', { speed: String(driverSpeedKmh) })}
-											</p>
-											<label className='flex items-center gap-1 text-xs text-muted-foreground select-none'>
-												<input
-													type='checkbox'
-													checked={isGpsToastEnabled}
-													onChange={(event) => setIsGpsToastEnabled(event.target.checked)}
-													className='size-3 accent-brand'
-												/>
-												toast
-											</label>
-										</div>
-									) : null}
 									<Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
 										<PopoverTrigger asChild>
 											<Button
