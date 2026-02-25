@@ -48,6 +48,8 @@ const messages: Record<string, string> = {
 	'components.dashboard.header.notifications.empty': "Bildirishnoma yo'q",
 	'components.dashboard.header.notifications.tabs.all': 'Barchasi({count})',
 	'components.dashboard.header.notifications.tabs.important': 'Muhim({count})',
+	'components.dashboard.header.speed.value': '{speed} km/soat',
+	'components.dashboard.header.speed.unavailable': '— km/soat',
 	'components.dashboard.header.profile.noName': "Ism yo'q",
 	'components.dashboard.header.profile.unknownRole': "Noma'lum",
 	'components.dashboard.header.profile.rating': 'reyting',

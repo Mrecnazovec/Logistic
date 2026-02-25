@@ -26,6 +26,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import { resolveHeaderNavItems } from './HeaderNavConfig'
 
 const SEARCH_ENABLED_ROUTES = [
@@ -41,6 +42,7 @@ const SEARCH_ENABLED_ROUTES = [
 const IMPORTANT_NOTIFICATION_TYPES = new Set<string>(
 	notificationTypeSamples.filter((item) => item.importance).map((item) => item.type)
 )
+const GPS_SEND_INTERVAL_MS = 15 * 60 * 1000
 
 const getDeskTabTarget = (pathname: string): 'desk' | 'myOffers' | null => {
 	if (pathname.startsWith('/dashboard/desk/my')) return 'myOffers'
@@ -64,6 +66,8 @@ export function Header() {
 	const isPolicyOpen = shouldForceOpen ? true : policyOpen
 	const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 	const [notificationsTab, setNotificationsTab] = useState<'all' | 'important'>('all')
+	const [driverSpeedKmh, setDriverSpeedKmh] = useState<number | null>(null)
+	const [isGpsToastEnabled, setIsGpsToastEnabled] = useState(false)
 	const {
 		firstPageNotifications,
 		refetchNotifications,
@@ -86,6 +90,7 @@ export function Header() {
 	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
 	const clearTarget = useOfferRealtimeStore((state) => state.clearTarget)
 	const previousDeskTabTargetRef = useRef<'desk' | 'myOffers' | null>(null)
+	const lastGpsSentAtRef = useRef(0)
 
 	const isSearchAvailable = SEARCH_ENABLED_ROUTES.some((route) => normalizedPathname?.startsWith(route))
 
@@ -135,38 +140,48 @@ export function Header() {
 	useEffect(() => {
 		if (!isCarrier) return
 		if (typeof window === 'undefined' || !('geolocation' in navigator)) return
+		const watchId = navigator.geolocation.watchPosition(
+			(position) => {
+				const speedMps = position.coords.speed
+				const nextSpeedKmh = typeof speedMps === 'number' && Number.isFinite(speedMps) && speedMps >= 0 ? Math.round(speedMps * 3.6) : null
+				setDriverSpeedKmh(nextSpeedKmh)
+				console.log('[header-gps] speed update', {
+					speed_mps: speedMps,
+					speed_kmh: nextSpeedKmh,
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+					captured_at: new Date(position.timestamp).toISOString(),
+				})
+				if (isGpsToastEnabled) {
+					const speedLabel = nextSpeedKmh === null ? '— км/ч' : `${nextSpeedKmh} км/ч`
+					toast(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)} • ${speedLabel}`)
+				}
 
-		const sendCurrentGps = () => {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					updateOrderGps({
-						data: {
-							lat: position.coords.latitude,
-							lng: position.coords.longitude,
-						},
-					})
-				},
-				(error) => {
-					console.warn('[header-gps] geolocation error', { error: error.message })
-				},
-				{
-					enableHighAccuracy: true,
-					maximumAge: 30000,
-					timeout: 20000,
-				},
-			)
-		}
+				const now = Date.now()
+				if (now - lastGpsSentAtRef.current < GPS_SEND_INTERVAL_MS) return
 
-		sendCurrentGps()
-
-		const intervalId = window.setInterval(() => {
-			sendCurrentGps()
-		}, 15 * 60 * 1000)
+				updateOrderGps({
+					data: {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude,
+					},
+				})
+				lastGpsSentAtRef.current = now
+			},
+			(error) => {
+				console.warn('[header-gps] geolocation error', { error: error.message })
+			},
+			{
+				enableHighAccuracy: true,
+				maximumAge: 30000,
+				timeout: 20000,
+			},
+		)
 
 		return () => {
-			window.clearInterval(intervalId)
+			navigator.geolocation.clearWatch(watchId)
 		}
-	}, [isCarrier, updateOrderGps])
+	}, [isCarrier, isGpsToastEnabled, updateOrderGps])
 
 	const handlePolicySubmit = () => {
 		if (!policyAccepted || isLoadingPatchMe) return
@@ -281,67 +296,87 @@ export function Header() {
 								</Button>
 							) : null}
 							<div className='hidden md:block'>
-								<Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
-									<PopoverTrigger asChild>
-										<Button
-											size='icon'
-											className={cn(
-												'rounded-[13.5px] bg-brand/20 hover:bg-brand/10 size-9 relative',
-												unreadCount > 0 && 'ring-2 ring-brand/30',
-											)}
-										>
-											<Bell className='size-5 text-brand' />
-											{unreadCount > 0 && (
-												<span className='absolute -top-1 -right-1 min-w-5 min-h-5 rounded-full bg-error-500 text-white text-[10px] leading-5 font-semibold px-1 text-center'>
-													{unreadCount > 9 ? '9+' : unreadCount}
-												</span>
-											)}
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent align='end' className='w-[360px] p-0 shadow-xl'>
-										<Tabs value={notificationsTab} onValueChange={(value) => setNotificationsTab(value as 'all' | 'important')}>
-											<div className='flex items-center justify-between px-4 py-3 border-b'>
-												<div>
-													<p className='text-base font-semibold'>{t('components.dashboard.header.notifications.title')}</p>
-													<p className='text-xs text-gray-500'>
-														{isLoadingNotifications
-															? t('components.dashboard.header.notifications.loading')
-															: t('components.dashboard.header.notifications.latest', {
+								<div className='flex items-center gap-2'>
+									{isCarrier ? (
+										<div className='flex items-center gap-2'>
+											<p className='rounded-full border border-brand/20 bg-brand/5 px-3 py-1 text-xs font-medium text-brand'>
+												{driverSpeedKmh === null
+													? t('components.dashboard.header.speed.unavailable')
+													: t('components.dashboard.header.speed.value', { speed: String(driverSpeedKmh) })}
+											</p>
+											<label className='flex items-center gap-1 text-xs text-muted-foreground select-none'>
+												<input
+													type='checkbox'
+													checked={isGpsToastEnabled}
+													onChange={(event) => setIsGpsToastEnabled(event.target.checked)}
+													className='size-3 accent-brand'
+												/>
+												toast
+											</label>
+										</div>
+									) : null}
+									<Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+										<PopoverTrigger asChild>
+											<Button
+												size='icon'
+												className={cn(
+													'rounded-[13.5px] bg-brand/20 hover:bg-brand/10 size-9 relative',
+													unreadCount > 0 && 'ring-2 ring-brand/30',
+												)}
+											>
+												<Bell className='size-5 text-brand' />
+												{unreadCount > 0 && (
+													<span className='absolute -top-1 -right-1 min-w-5 min-h-5 rounded-full bg-error-500 text-white text-[10px] leading-5 font-semibold px-1 text-center'>
+														{unreadCount > 9 ? '9+' : unreadCount}
+													</span>
+												)}
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent align='end' className='w-[360px] p-0 shadow-xl'>
+											<Tabs value={notificationsTab} onValueChange={(value) => setNotificationsTab(value as 'all' | 'important')}>
+												<div className='flex items-center justify-between px-4 py-3 border-b'>
+													<div>
+														<p className='text-base font-semibold'>{t('components.dashboard.header.notifications.title')}</p>
+														<p className='text-xs text-gray-500'>
+															{isLoadingNotifications
+																? t('components.dashboard.header.notifications.loading')
+																: t('components.dashboard.header.notifications.latest', {
+																	count: allNotifications.length,
+																})}
+														</p>
+													</div>
+													<Button
+														variant='ghost'
+														size='sm'
+														disabled={
+															isLoadingNotifications || isMarkingAllRead || allNotifications.length === 0
+														}
+														onClick={() => markAllRead()}
+														className='h-8 px-2 text-xs text-brand hover:text-brand/80'
+													>
+														<CheckCheck className='size-4' />
+														{t('components.dashboard.header.notifications.allRead')}
+													</Button>
+												</div>
+												<div className='px-4 py-2 border-b'>
+													<TabsList className='w-full'>
+														<TabsTrigger value='all' className='flex-1'>
+															{t('components.dashboard.header.notifications.tabs.all', {
 																count: allNotifications.length,
 															})}
-													</p>
+														</TabsTrigger>
+														<TabsTrigger value='important' className='flex-1'>
+															{t('components.dashboard.header.notifications.tabs.important', {
+																count: importantNotifications.length,
+															})}
+														</TabsTrigger>
+													</TabsList>
 												</div>
-												<Button
-													variant='ghost'
-													size='sm'
-													disabled={
-														isLoadingNotifications || isMarkingAllRead || allNotifications.length === 0
-													}
-													onClick={() => markAllRead()}
-													className='h-8 px-2 text-xs text-brand hover:text-brand/80'
-												>
-													<CheckCheck className='size-4' />
-													{t('components.dashboard.header.notifications.allRead')}
-												</Button>
-											</div>
-											<div className='px-4 py-2 border-b'>
-												<TabsList className='w-full'>
-													<TabsTrigger value='all' className='flex-1'>
-														{t('components.dashboard.header.notifications.tabs.all', {
-															count: allNotifications.length,
-														})}
-													</TabsTrigger>
-													<TabsTrigger value='important' className='flex-1'>
-														{t('components.dashboard.header.notifications.tabs.important', {
-															count: importantNotifications.length,
-														})}
-													</TabsTrigger>
-												</TabsList>
-											</div>
-											{renderNotifications(activeNotifications)}
-										</Tabs>
-									</PopoverContent>
-								</Popover>
+												{renderNotifications(activeNotifications)}
+											</Tabs>
+										</PopoverContent>
+									</Popover>
+								</div>
 							</div>
 
 							<Link

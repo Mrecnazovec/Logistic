@@ -48,6 +48,8 @@
 	'components.dashboard.header.notifications.empty': 'Нет уведомлений',
 	'components.dashboard.header.notifications.tabs.all': 'Все({count})',
 	'components.dashboard.header.notifications.tabs.important': 'Важные({count})',
+	'components.dashboard.header.speed.value': '{speed} км/ч',
+	'components.dashboard.header.speed.unavailable': '— км/ч',
 	'components.dashboard.header.profile.noName': 'Без имени',
 	'components.dashboard.header.profile.unknownRole': 'Неизвестно',
 	'components.dashboard.header.profile.rating': 'рейтинг',
