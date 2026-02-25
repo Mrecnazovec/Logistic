@@ -49,6 +49,8 @@ const messages: Record<string, string> = {
 	'components.dashboard.header.notifications.empty': 'No notifications',
 	'components.dashboard.header.notifications.tabs.all': 'All({count})',
 	'components.dashboard.header.notifications.tabs.important': 'Important({count})',
+	'components.dashboard.header.speed.value': '{speed} km/h',
+	'components.dashboard.header.speed.unavailable': '— km/h',
 	'components.dashboard.header.profile.noName': 'No name',
 	'components.dashboard.header.profile.unknownRole': 'Unknown',
 	'components.dashboard.header.profile.rating': 'rating',
