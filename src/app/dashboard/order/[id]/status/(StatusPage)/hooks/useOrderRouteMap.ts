@@ -195,7 +195,7 @@ export function useOrderRouteMap({ order, apiKey, locale, onRemainingKmChange, o
 						const multiRoute = new ymaps.multiRouter.MultiRoute(
 							{
 								referencePoints: [driverPoint, driverTargetPoint],
-								params: { routingMode: 'auto' },
+								params: { routingMode: 'auto', results: 1 },
 							},
 							{
 								boundsAutoApply: true,
