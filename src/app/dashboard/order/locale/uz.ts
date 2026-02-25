@@ -16,6 +16,7 @@ const messages: Record<string, string> = {
 	'order.section.customerInfo': "Mijoz ma'lumotlari",
 	'order.section.logisticInfo': 'Logistika ma\'lumotlari',
 	'order.section.carrierInfo': "Haydovchi ma'lumotlari",
+	'order.section.participants': 'Ishtirokchilar',
 	'order.section.loading': 'Yuklash',
 	'order.section.unloading': 'Tushirish',
 	'order.section.transport': 'Transport tafsilotlari',

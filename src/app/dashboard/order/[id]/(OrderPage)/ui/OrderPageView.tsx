@@ -1,7 +1,9 @@
 "use client"
 
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
 
 import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
@@ -25,6 +27,7 @@ const OrderRatingModal = dynamic(() =>
 )
 
 export function OrderPageView() {
+	const [isParticipantsOpen, setIsParticipantsOpen] = useState(false)
 	const state = useOrderPage()
 	const {
 		t,
@@ -98,6 +101,59 @@ export function OrderPageView() {
 		<Badge variant='secondary'>{t('order.status.notSet')}</Badge>
 	)
 
+	const renderActionButtons = () => (
+		<>
+			{canToggleContacts && (
+				<Button type='button' variant='outline' onClick={handleToggleContacts} disabled={isLoadingToggleOrderPrivacy}>
+					{isCurrentRoleHidden ? t('order.actions.showContacts') : t('order.actions.hideContacts')}
+				</Button>
+			)}
+			{!isCarrier && (
+				<Button type='button' variant='outline' onClick={handleShare}>
+					{t('order.actions.share')}
+				</Button>
+			)}
+			{canCancelOrder && (
+				<Button
+					type='button'
+					onClick={() => setCancelOpen(true)}
+					disabled={isLoadingCancel}
+					className='bg-error-500 text-white hover:bg-error-400'
+				>
+					{t('order.actions.cancel')}
+				</Button>
+			)}
+			{renderCarrierUploadButton()}
+			{canInviteDriver && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
+			{canRateParticipants && <OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />}
+		</>
+	)
+
+	const participantsAccordion = (
+		<div className='lg:hidden pb-6 border-b-2'>
+			<button
+				type='button'
+				onClick={() => setIsParticipantsOpen((current) => !current)}
+				aria-expanded={isParticipantsOpen}
+				className='flex w-full items-center justify-between gap-3 text-left'
+			>
+				<span className='font-medium text-foreground'>{t('order.section.participants')}</span>
+				{isParticipantsOpen ? <ChevronUp className='size-5 text-muted-foreground' /> : <ChevronDown className='size-5 text-muted-foreground' />}
+			</button>
+
+			{isParticipantsOpen ? (
+				<div className='pt-4'>
+					<OrderParticipantsGrid
+						t={t}
+						order={order}
+						hasDriver={hasDriver}
+						shouldHideCustomerContactsForCarrier={shouldHideCustomerContactsForCarrier}
+					/>
+				</div>
+			) : null}
+		</div>
+	)
+
 	return (
 		<div className='space-y-6 rounded-4xl bg-background p-8'>
 			<div className='flex flex-wrap items-center gap-3'>
@@ -105,63 +161,116 @@ export function OrderPageView() {
 				<UuidCopy id={order.id} isPlaceholder />
 			</div>
 
-			<OrderParticipantsGrid
-				t={t}
-				order={order}
-				hasDriver={hasDriver}
-				shouldHideCustomerContactsForCarrier={shouldHideCustomerContactsForCarrier}
-			/>
+			{isCarrier ? (
+				<>
+					<div className='lg:hidden space-y-6'>
+						<OrderTripGrid
+							t={t}
+							order={order}
+							hasLoadingDocument={hasLoadingDocument}
+							hasUnloadingDocument={hasUnloadingDocument}
+							firstLoadingDocumentDate={firstLoadingDocumentDate}
+							firstUnloadingDocumentDate={firstUnloadingDocumentDate}
+							docsBasePath={docsBasePath}
+							isCarrier={isCarrier}
+							driverStatusMeta={driverStatusMeta}
+							transportPriceValue={transportPriceValue}
+							mobileAfterUnloadingSlot={
+								<OrderFinanceSection
+									t={t}
+									order={order}
+									isOrderCustomer={isOrderCustomer}
+									isOrderLogistic={isOrderLogistic}
+									isOrderCarrier={isOrderCarrier}
+									carrierPriceValue={carrierPriceValue}
+								/>
+							}
+							mobileActionsSlot={renderActionButtons()}
+						/>
 
-			<div className='h-px w-full bg-grayscale' />
+						<div className='h-px w-full bg-grayscale' />
 
-			<OrderTripGrid
-				t={t}
-				order={order}
-				hasLoadingDocument={hasLoadingDocument}
-				hasUnloadingDocument={hasUnloadingDocument}
-				firstLoadingDocumentDate={firstLoadingDocumentDate}
-				firstUnloadingDocumentDate={firstUnloadingDocumentDate}
-				docsBasePath={docsBasePath}
-				isCarrier={isCarrier}
-				driverStatusMeta={driverStatusMeta}
-				transportPriceValue={transportPriceValue}
-			/>
+						{participantsAccordion}
+					</div>
 
-			<div className='h-px w-full bg-grayscale' />
+					<div className='hidden lg:block '>
+						<OrderParticipantsGrid
+							t={t}
+							order={order}
+							hasDriver={hasDriver}
+							shouldHideCustomerContactsForCarrier={shouldHideCustomerContactsForCarrier}
+						/>
+					</div>
+				</>
+			) : (
+				<OrderParticipantsGrid
+					t={t}
+					order={order}
+					hasDriver={hasDriver}
+					shouldHideCustomerContactsForCarrier={shouldHideCustomerContactsForCarrier}
+				/>
+			)}
 
-			<OrderFinanceSection
-				t={t}
-				order={order}
-				isOrderCustomer={isOrderCustomer}
-				isOrderLogistic={isOrderLogistic}
-				isOrderCarrier={isOrderCarrier}
-				carrierPriceValue={carrierPriceValue}
-			/>
+			{!isCarrier ? (
+				<>
+					<div className='h-px w-full bg-grayscale' />
 
-			<div className='flex flex-wrap items-center justify-end gap-3'>
-				{canToggleContacts && (
-					<Button type='button' variant='outline' onClick={handleToggleContacts} disabled={isLoadingToggleOrderPrivacy}>
-						{isCurrentRoleHidden ? t('order.actions.showContacts') : t('order.actions.hideContacts')}
-					</Button>
-				)}
-				{!isCarrier && (
-					<Button type='button' variant='outline' onClick={handleShare}>
-						{t('order.actions.share')}
-					</Button>
-				)}
-				{canCancelOrder && (
-					<Button
-						type='button'
-						onClick={() => setCancelOpen(true)}
-						disabled={isLoadingCancel}
-						className='bg-error-500 text-white hover:bg-error-400'
-					>
-						{t('order.actions.cancel')}
-					</Button>
-				)}
-				{renderCarrierUploadButton()}
-				{canInviteDriver && <InviteDriverModal order={order} canInviteById={canInviteDriver} />}
-				{canRateParticipants && <OrderRatingModal order={order} currentRole={role ?? null} disabled={isLoading} />}
+					<OrderTripGrid
+						t={t}
+						order={order}
+						hasLoadingDocument={hasLoadingDocument}
+						hasUnloadingDocument={hasUnloadingDocument}
+						firstLoadingDocumentDate={firstLoadingDocumentDate}
+						firstUnloadingDocumentDate={firstUnloadingDocumentDate}
+						docsBasePath={docsBasePath}
+						isCarrier={isCarrier}
+						driverStatusMeta={driverStatusMeta}
+						transportPriceValue={transportPriceValue}
+					/>
+
+					<div className='h-px w-full bg-grayscale' />
+
+					<OrderFinanceSection
+						t={t}
+						order={order}
+						isOrderCustomer={isOrderCustomer}
+						isOrderLogistic={isOrderLogistic}
+						isOrderCarrier={isOrderCarrier}
+						carrierPriceValue={carrierPriceValue}
+					/>
+				</>
+			) : (
+				<div className='hidden lg:block space-y-6'>
+					<div className='h-px w-full bg-grayscale' />
+
+					<OrderTripGrid
+						t={t}
+						order={order}
+						hasLoadingDocument={hasLoadingDocument}
+						hasUnloadingDocument={hasUnloadingDocument}
+						firstLoadingDocumentDate={firstLoadingDocumentDate}
+						firstUnloadingDocumentDate={firstUnloadingDocumentDate}
+						docsBasePath={docsBasePath}
+						isCarrier={isCarrier}
+						driverStatusMeta={driverStatusMeta}
+						transportPriceValue={transportPriceValue}
+					/>
+
+					<div className='h-px w-full bg-grayscale' />
+
+					<OrderFinanceSection
+						t={t}
+						order={order}
+						isOrderCustomer={isOrderCustomer}
+						isOrderLogistic={isOrderLogistic}
+						isOrderCarrier={isOrderCarrier}
+						carrierPriceValue={carrierPriceValue}
+					/>
+				</div>
+			)}
+
+			<div className={isCarrier ? 'hidden lg:flex flex-wrap items-center justify-end gap-3' : 'flex flex-wrap items-center justify-end gap-3'}>
+				{renderActionButtons()}
 			</div>
 
 			<ConfirmIrreversibleActionModal

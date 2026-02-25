@@ -16,6 +16,7 @@ const messages: Record<string, string> = {
 	'order.section.customerInfo': 'Customer information',
 	'order.section.logisticInfo': 'Logistic information',
 	'order.section.carrierInfo': 'Carrier information',
+	'order.section.participants': 'Participants',
 	'order.section.loading': 'Loading',
 	'order.section.unloading': 'Unloading',
 	'order.section.transport': 'Transport details',

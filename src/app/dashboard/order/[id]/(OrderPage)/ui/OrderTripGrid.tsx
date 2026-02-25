@@ -19,6 +19,8 @@ type Props = {
 	isCarrier: boolean
 	driverStatusMeta: DriverStatusMeta
 	transportPriceValue: string | number | null | undefined
+	mobileAfterUnloadingSlot?: React.ReactNode
+	mobileActionsSlot?: React.ReactNode
 }
 
 const withFallback = (value?: string | number | null) => {
@@ -37,6 +39,8 @@ export function OrderTripGrid({
 	isCarrier,
 	driverStatusMeta,
 	transportPriceValue,
+	mobileAfterUnloadingSlot,
+	mobileActionsSlot,
 }: Props) {
 	const renderDocumentAction = (
 		hasDocument: boolean,
@@ -116,6 +120,9 @@ export function OrderTripGrid({
 					</p>
 				)}
 			</div>
+
+			{mobileAfterUnloadingSlot ? <div className='lg:hidden'>{mobileAfterUnloadingSlot}</div> : null}
+			{mobileActionsSlot ? <div className='lg:hidden flex flex-wrap items-center justify-end gap-3'>{mobileActionsSlot}</div> : null}
 
 			<div className='space-y-3'>
 				<p className='font-medium text-brand'>{t('order.section.transport')}</p>

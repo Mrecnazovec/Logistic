@@ -6,6 +6,8 @@ import { useNotifications } from '@/hooks/queries/notifications/useNotifications
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import { useAgreementRealtimeStore } from '@/store/useAgreementRealtimeStore'
+import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
 import { useRoleStore } from '@/store/useRoleStore'
 import { Bell, ChevronRight, MoreHorizontal, X } from 'lucide-react'
 import Link from 'next/link'
@@ -17,6 +19,8 @@ export function MobileNav() {
 	const pathname = usePathname()
 	const { locale, t } = useI18n()
 	const role = useRoleStore((state) => state.role)
+	const unreadOffers = useOfferRealtimeStore((state) => state.unreadOffers)
+	const hasAgreementUpdates = useAgreementRealtimeStore((state) => state.hasAgreementUpdates)
 	const [isMoreOpen, setIsMoreOpen] = useState(false)
 	const { notifications } = useNotifications(true)
 	const navItems = useMemo(() => getNavItems(role, locale), [role, locale])
@@ -27,6 +31,7 @@ export function MobileNav() {
 		() => notifications.filter((item) => !item.is_read).length,
 		[notifications],
 	)
+	const hasDeskUnread = useMemo(() => unreadOffers.length > 0, [unreadOffers.length])
 
 	const normalizeHref = (href: string) => (href.endsWith('/') ? href : `${href}/`)
 	const normalizedPathname = normalizeHref(pathname)
@@ -92,6 +97,9 @@ export function MobileNav() {
 	const renderNavButton = (item: (typeof mainNavItems)[number]) => {
 		const Icon = item.icon
 		const isActive = isItemActive(item.href)
+		const showDeskBadge = item.labelKey === 'components.dashboard.nav.desk' && hasDeskUnread
+		const showTransportationBadge =
+			item.labelKey === 'components.dashboard.nav.transportation' && hasAgreementUpdates
 
 		return (
 			<Link
@@ -111,6 +119,9 @@ export function MobileNav() {
 					)}
 				>
 					<Icon className='size-5' />
+					{showDeskBadge || showTransportationBadge ? (
+						<span className='absolute -top-1 -right-1 size-2 rounded-full bg-error-500' />
+					) : null}
 				</span>
 				<span
 					aria-hidden='true'
@@ -219,6 +230,9 @@ export function MobileNav() {
 								additionalItems.map((item) => {
 									const Icon = item.icon
 									const isActive = isItemActive(item.href)
+									const showDeskBadge = item.labelKey === 'components.dashboard.nav.desk' && hasDeskUnread
+									const showTransportationBadge =
+										item.labelKey === 'components.dashboard.nav.transportation' && hasAgreementUpdates
 
 									return (
 										<Link
@@ -233,8 +247,11 @@ export function MobileNav() {
 											)}
 										>
 											<span className='flex items-center gap-3 text-base font-medium'>
-												<span className='flex size-10 items-center justify-center rounded-2xl bg-muted/60 text-foreground/70'>
+												<span className='relative flex size-10 items-center justify-center rounded-2xl bg-muted/60 text-foreground/70'>
 													<Icon className='size-5' />
+													{showDeskBadge || showTransportationBadge ? (
+														<span className='absolute -top-0.5 -right-0.5 size-2 rounded-full bg-error-500' />
+													) : null}
 												</span>
 												{t(item.labelKey)}
 											</span>
