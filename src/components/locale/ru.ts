@@ -31,6 +31,7 @@
 	'components.dashboard.headerNav.rating.carrier': 'Перевозчики',
 	'components.dashboard.headerNav.desk.myOffers': 'Мои предложения',
 	'components.dashboard.headerNav.back.toMyCargo': 'Назад к моим грузам',
+	'components.dashboard.headerNav.back.toCargo': 'Назад к грузу',
 	'components.dashboard.headerNav.back.toAnnouncements': 'Назад к списку объявлений',
 	'components.dashboard.headerNav.back.toDocs': 'Назад к документам',
 	'components.dashboard.headerNav.back': 'Назад',

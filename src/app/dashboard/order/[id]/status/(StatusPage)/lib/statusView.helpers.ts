@@ -38,6 +38,12 @@ export const getProgressPercent = (normalizedStatus: string) => {
 }
 
 export const getProgressPlaceholderKey = (normalizedStatus: string) => {
+	if (normalizedStatus === OrderStatusEnum.PENDING) {
+		return 'order.status.progress.pendingLoading'
+	}
+	if (normalizedStatus === OrderStatusEnum.NODRIVER) {
+		return 'order.status.progress.noDriver'
+	}
 	if (normalizedStatus === OrderStatusEnum.DELIVERED || normalizedStatus === OrderStatusEnum.PAID) {
 		return 'order.status.progress.completedDelivery'
 	}
@@ -56,4 +62,3 @@ export const getLocaleTag = (locale: string) => {
 	if (locale === 'uz') return 'uz-UZ'
 	return 'ru-RU'
 }
-

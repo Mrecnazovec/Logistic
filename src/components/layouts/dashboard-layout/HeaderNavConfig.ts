@@ -70,15 +70,7 @@ const getOrderDocsFolderInfo = (pathname: string) => {
 		return { orderId: `shared/${shareToken}`, folder }
 	}
 
-	const match = normalizedPath.match(/^\/dashboard\/order\/([^/]+)\/docs\/([^/]+)$/)
-
-	if (!match) return null
-
-	const [, orderId, folder] = match
-
-	if (!orderId || orderId === '[id]' || !folder || folder === '[folder]') return null
-
-	return { orderId, folder }
+	return null
 }
 
 const getOrderNavItems = (orderId: string): HeaderNavItem[] => {
@@ -286,9 +278,33 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			return getOrderNavItems(orderId)
 		},
-		backLink: {
-			labelKey: 'components.dashboard.headerNav.back.toMyCargo',
-			href: DASHBOARD_URL.transportation(),
+		backLink: (pathname) => {
+			const orderId = getOrderIdFromPath(pathname)
+			if (!orderId) return null
+
+			const normalizedPath = normalizePath(pathname)
+			const baseOrderPath = `/dashboard/order/${orderId}`
+			const segments = normalizedPath.split('/').filter(Boolean)
+			const isDocsFolderPath = segments.length === 5 && segments[0] === 'dashboard' && segments[1] === 'order' && segments[2] === orderId && segments[3] === 'docs'
+
+			if (normalizedPath === baseOrderPath) {
+				return {
+					labelKey: 'components.dashboard.headerNav.back.toMyCargo',
+					href: DASHBOARD_URL.transportation(),
+				}
+			}
+
+			if (isDocsFolderPath) {
+				return {
+					labelKey: 'components.dashboard.headerNav.back',
+					href: DASHBOARD_URL.order(`${orderId}/docs`),
+				}
+			}
+
+			return {
+				labelKey: 'components.dashboard.headerNav.back.toCargo',
+				href: DASHBOARD_URL.order(orderId),
+			}
 		},
 	},
 	{

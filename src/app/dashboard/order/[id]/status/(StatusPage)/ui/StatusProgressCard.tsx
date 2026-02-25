@@ -11,6 +11,7 @@ type StatusProgressCardProps = {
 	progressPercent: number | null
 	progressPlaceholderKey: string
 	remainingHours: number | null
+	remainingMinutes: number | null
 	viaCities: string[]
 }
 
@@ -23,6 +24,7 @@ export function StatusProgressCard({
 	progressPercent,
 	progressPlaceholderKey,
 	remainingHours,
+	remainingMinutes,
 	viaCities,
 }: StatusProgressCardProps) {
 	return (
@@ -72,9 +74,13 @@ export function StatusProgressCard({
 				{canShowProgress ? (
 					<div className='mt-3 flex items-center justify-between gap-3 text-sm'>
 						<p className='font-medium text-foreground'>
-							{remainingHours !== null
-								? t('order.status.progress.remainingHours', { hours: String(remainingHours) })
-								: t('order.status.timeline.notSpecified')}
+							{remainingMinutes !== null && remainingMinutes < 30
+								? t('order.status.progress.arrivingSoon')
+								: remainingMinutes !== null
+									? t('order.status.progress.remainingMinutes', { minutes: String(remainingMinutes) })
+								: remainingHours !== null
+									? t('order.status.progress.remainingHours', { hours: String(remainingHours) })
+									: t('order.status.timeline.notSpecified')}
 						</p>
 						{viaCities.length > 0 ? (
 							<p className='truncate text-muted-foreground'>
@@ -87,4 +93,3 @@ export function StatusProgressCard({
 		</section>
 	)
 }
-
