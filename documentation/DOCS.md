@@ -143,6 +143,10 @@ usePostForm - manages announcements posting form defaults and submits createLoad
 usePostingPage - composes posting page state (form, loading, country watchers, and email-contact availability).
 useStatusPage - composes order status page data (order, status history timeline, localized formatters, and status badge metadata).
 useAgreementPage - composes agreement detail page state (query data, countdown/progress, terms state, and accept/reject handlers).
+usePaymentPage - composes payment page state (order/me roles, payment sections, confirm action, and dialog open states).
+useInvitePage - composes order invite page state (auth redirect, invite preview load, terms toggles, and accept/decline handlers).
+useSharedOrderPage - composes shared order page state (order query, status badges, participant sections, and document/driver metadata).
+useFolderPage - composes order docs folder page state (folder access, upload queue/timers, drag-drop handlers, and filtered documents list).
 useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
 useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
 useCarrierGpsSync - syncs carrier location to `/orders/gps`, deduplicates by capturedAt, and triggers periodic refresh every 15 minutes.
@@ -206,6 +210,23 @@ withFallback - returns a placeholder for null/empty values in agreement sections
 getAgreementStatusMeta - returns localized agreement status label and badge classes by status.
 getTotalDistance - formats agreement distance value into localized km label with fallback.
 getPaymentMethod - maps agreement payment method to localized selector label with fallback.
+withFallback - returns placeholder for empty payment role fields (phone/company/login).
+isPaymentAvailableByStatus - checks if payment actions are available for DELIVERED/PAID order statuses.
+buildPaymentSections - builds localized payment participant sections with per-role confirmation flags.
+buildConfirmAction - builds role-based payment confirmation action with request payload and loading/confirmed state.
+buildAuthHref - builds auth redirect URL with encoded `next` return path for invite pages.
+buildInvitePreviewViewModel - maps invite preview API payload to formatted UI fields (dates, distance, transport, price, inviter, payment method).
+withFallbackText - returns safe shared-order display text with placeholder handling and optional hidden-field masking.
+getDriverStatusMeta - maps shared order driver status to localized badge label and variant.
+buildParticipantSections - builds customer/logistic/carrier section rows with role masking and profile-id metadata.
+getDocumentDisplayValue - builds loading/unloading document availability + formatted datetime model for shared order UI.
+getExtension - extracts normalized file extension from a file name.
+validateFile - validates upload file type and size against allowed document constraints.
+buildDocumentsForFolder - filters and sorts documents for current folder/category.
+buildDocumentsCountLabel - returns localized files-count label with pluralization for ru/en.
+resolveFolderLabel - resolves folder title key to localized label with fallback to generic documents section.
+getDisplayName - returns the preferred display name for a document row.
+toPlaceholder - converts nullable text values to default placeholder for document UI.
 
 ## Services
 
@@ -265,6 +286,10 @@ DashboardStats.interface.ts - dashboard statistics response type for auth dashbo
 Nominatim.interface.ts - CityCoordinates and NominatimResult response types for Nominatim lookups.
 Support.interface.ts - support ticket and consultation request DTOs.
 agreementPage.types.ts - local agreement feature type for translator function passed across decomposed UI modules.
+paymentPage.types.ts - local payment feature types for translator, sections, and role-based confirm action model.
+invitePage.types.ts - local invite feature types for translator and formatted preview view model.
+sharedOrderPage.types.ts - local shared-order feature types for translator, section rows, and driver status badge metadata.
+folderPage.types.ts - local folder page types for upload queue item/status and date locale mapping.
 
 ## Shared regex
 
@@ -405,7 +430,27 @@ AgreementTermsSection - terms checkbox and modal content for agreement confirmat
 AgreementAcceptanceStatus - acceptance indicators for customer/logistic/carrier states in agreement view.
 AgreementActions - agreement accept/reject action buttons with loading and terms gating states.
 InvitePageView - presentational order invite preview and decision workflow UI.
+InvitePageContent - invite page composer that switches auth/loading/not-found/content states from invite hook data.
+InvitePageFallback - invite loading fallback state with spinner inside shared invite layout.
+InviteLayout - shared centered layout wrapper used by invite state/content screens.
+InviteStateCard - generic invite state card for auth and not-found cases with optional icon/actions.
+InviteSummaryCard - presentational invite summary card with route, transport, weight, price, and inviter info.
+InviteTermsSection - terms checkbox and modal content used in invite response workflow.
+InviteResponseCard - presentational invite response card with payment method and accept/decline actions.
 SharedOrderPageView - presentational shared order overview UI with statuses and participants.
+SharedOrderStatusHeader - shared order status header rendering a localized status badge.
+SharedOrderParticipantsGrid - participant info grid for customer/logistic/carrier in shared order view.
+SharedOrderTripGrid - loading/unloading/transport details block with document dates and driver status badge.
+SharedOrderFinanceSection - shared order finance summary block with total and per-km prices.
+SharedOrderPageSkeleton - loading skeleton layout for shared order overview route.
+FileThumbnail - reusable document thumbnail icon renderer by file extension with accessible file label.
+StatusPill - upload-status badge renderer for pending/uploading/success/error queue items.
+FolderPageHeader - docs folder header with localized section title and files-count badge.
+FolderUploadDropzone - drag-drop and click-to-upload area with access restrictions for folder uploads.
+FolderUploadQueue - upload queue list for pending/in-progress/completed/error files with remove actions.
+FolderDocumentsList - presentational documents list with extension badges, metadata, and download actions.
+DocumentListSkeleton - loading skeleton list for documents inside a folder.
+EmptyState - reusable empty-state block for folder document list.
 OrderPage - order page composer that renders OrderPageView from route group.
 OrderPageView - presentational order detail workspace UI with actions and status transitions.
 OrderPageSkeleton - skeleton layout for order detail page while data is loading.
@@ -416,6 +461,11 @@ OrderFinanceSection - presentational finance summary section with role-dependent
 OrderDriverStatusFloating - floating driver-status dropdown control for carrier role.
 FolderPageView - presentational order documents folder UI with upload/list controls and role-aware access.
 PaymentPageView - presentational payment summary and confirmation UI for order payments.
+PaymentPageSkeleton - payment page loading skeleton with participant rows and action placeholders.
+PaymentRoleSection - presentational payment participant section with profile/contact and confirmation status fields.
+PaymentConfirmDialog - confirmation modal for finalizing role-specific payment acknowledgment.
+PaymentDisputeDialog - dispute modal with support navigation for payment conflicts.
+PaymentActions - payment action toolbar composing confirm/later/dispute controls.
 StatusPage - order status page composer that wires status hook, skeleton state, and status view layout.
 StatusPageView - presentational order status workspace with map block, status badge, and timeline feed.
 TemporaryDriverStatusBranches - fallback timeline-only status view used when map is disabled.
