@@ -105,7 +105,7 @@ export function EditOriginSection({
 											</span>
 										</TooltipTrigger>
 										<TooltipContent side='top' className='text-black' sideOffset={6}>
-											{canOpenMapFromAddress ? 'Укажите адрес на карте' : 'Требуется указать город'}
+											{canOpenMapFromAddress ? t('desk.edit.map.pickAddressTooltip') : t('desk.edit.map.cityRequiredTooltip')}
 										</TooltipContent>
 									</Tooltip>
 								</div>
@@ -134,7 +134,7 @@ export function EditOriginSection({
 									}}
 									disabled={isLoadingPatch}
 									compact
-									disabledCityTooltip='Требуется указать город'
+									disabledCityTooltip={t('desk.edit.map.cityRequiredTooltip')}
 									open={isMapOpen}
 									onOpenChange={setIsMapOpen}
 								/>

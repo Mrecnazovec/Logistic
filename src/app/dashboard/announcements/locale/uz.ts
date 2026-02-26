@@ -93,6 +93,8 @@ const messages: Record<string, string> = {
 	'announcements.posting.map.searchFailed': 'Xaritada qidiruvni bajarib bolmadi.',
 	'announcements.posting.map.selectedAddress': 'Tanlangan manzil',
 	'announcements.posting.map.addressPlaceholder': 'Manzil aniqlanmagan',
+	'announcements.posting.map.pickAddressTooltip': 'Xaritada manzilni belgilang',
+	'announcements.posting.map.cityRequiredTooltip': 'Shaharni ko‘rsatish kerak',
 	'announcements.posting.shipping.title': "Yuk ma'lumotlari",
 	'announcements.posting.shipping.currencyRequired': 'Valyuta talab qilinadi',
 	'announcements.posting.shipping.currencyLabel': 'Valyuta / Narx',

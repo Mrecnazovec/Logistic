@@ -75,6 +75,8 @@ const messages: Record<string, string> = {
 	'desk.edit.destination.cityPlaceholder': 'City, country',
 	'desk.edit.destination.addressRequired': 'Unloading address is required',
 	'desk.edit.destination.addressPlaceholder': 'Street, house number',
+	'desk.edit.map.pickAddressTooltip': 'Specify address on map',
+	'desk.edit.map.cityRequiredTooltip': 'City is required',
 	'desk.edit.destination.dateRequired': 'Unloading date is required',
 	'desk.edit.destination.datePlaceholder': 'Unloading date',
 	'desk.edit.shipping.title': 'Shipment details',

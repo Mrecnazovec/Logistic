@@ -250,7 +250,7 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 			if (!info) return null
 
 			return {
-				labelKey: 'components.dashboard.headerNav.back.toDocs',
+				labelKey: 'components.dashboard.headerNav.back',
 				href: DASHBOARD_URL.order(`${info.orderId}/docs`),
 			}
 		},
@@ -264,9 +264,24 @@ const headerNavDefinitions: HeaderNavDefinition[] = [
 
 			return getOrderNavItems(`shared/${shareToken}`)
 		},
-		backLink: {
-			labelKey: 'components.dashboard.headerNav.back.toMyCargo',
-			href: DASHBOARD_URL.transportation(),
+		backLink: (pathname) => {
+			const shareToken = getSharedOrderTokenFromPath(pathname)
+			if (!shareToken) return null
+
+			const normalizedPath = normalizePath(pathname)
+			const baseOrderPath = `/dashboard/order/shared/${shareToken}`
+
+			if (normalizedPath === baseOrderPath) {
+				return {
+					labelKey: 'components.dashboard.headerNav.back.toMyCargo',
+					href: DASHBOARD_URL.transportation(),
+				}
+			}
+
+			return {
+				labelKey: 'components.dashboard.headerNav.back.toCargo',
+				href: DASHBOARD_URL.order(`shared/${shareToken}`),
+			}
 		},
 	},
 	{
@@ -396,7 +411,12 @@ export const resolveHeaderNavItems = (pathname: string, role?: RoleEnum): Resolv
 	}
 
 	const resolvedItems = Array.isArray(matchedDefinition.items) ? matchedDefinition.items : matchedDefinition.items(normalizedPath)
-	const localizedItems = resolvedItems.map((item) => ({
+	const isDirectOrderPath = Boolean(getOrderIdFromPath(normalizedPath))
+	const filteredItems =
+		role === RoleEnum.CARRIER && isDirectOrderPath
+			? resolvedItems.filter((item) => item.labelKey !== 'components.dashboard.headerNav.order.statuses')
+			: resolvedItems
+	const localizedItems = filteredItems.map((item) => ({
 		...item,
 		href: withLocale(item.href, locale),
 	}))

@@ -92,6 +92,8 @@ const messages: Record<string, string> = {
 	'announcements.posting.map.searchFailed': 'Failed to search location on map.',
 	'announcements.posting.map.selectedAddress': 'Selected address',
 	'announcements.posting.map.addressPlaceholder': 'Address is not defined',
+	'announcements.posting.map.pickAddressTooltip': 'Specify address on map',
+	'announcements.posting.map.cityRequiredTooltip': 'City is required',
 	'announcements.posting.shipping.title': 'Shipment details',
 	'announcements.posting.shipping.currencyRequired': 'Currency is required',
 	'announcements.posting.shipping.currencyLabel': 'Currency / Price',
