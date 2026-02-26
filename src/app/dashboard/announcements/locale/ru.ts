@@ -92,6 +92,8 @@ const messages: Record<string, string> = {
 	'announcements.posting.map.searchFailed': 'Не удалось выполнить поиск по карте.',
 	'announcements.posting.map.selectedAddress': 'Выбранный адрес',
 	'announcements.posting.map.addressPlaceholder': 'Адрес не определен',
+	'announcements.posting.map.pickAddressTooltip': 'Укажите адрес на карте',
+	'announcements.posting.map.cityRequiredTooltip': 'Требуется указать город',
 	'announcements.posting.shipping.title': 'Детали перевозки',
 	'announcements.posting.shipping.currencyRequired': 'Валюта обязательна',
 	'announcements.posting.shipping.currencyLabel': 'Валюта/Цена',

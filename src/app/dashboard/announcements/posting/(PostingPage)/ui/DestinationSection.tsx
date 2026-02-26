@@ -104,7 +104,9 @@ export function DestinationSection({
 											</span>
 										</TooltipTrigger>
 										<TooltipContent side='top' className='text-black' sideOffset={6}>
-											{canOpenMapFromAddress ? 'Укажите адрес на карте' : 'Требуется указать город'}
+											{canOpenMapFromAddress
+												? t('announcements.posting.map.pickAddressTooltip')
+												: t('announcements.posting.map.cityRequiredTooltip')}
 										</TooltipContent>
 									</Tooltip>
 								</div>
@@ -133,7 +135,7 @@ export function DestinationSection({
 									}}
 									disabled={isLoadingCreate}
 									compact
-									disabledCityTooltip='Требуется указать город'
+									disabledCityTooltip={t('announcements.posting.map.cityRequiredTooltip')}
 									open={isMapOpen}
 									onOpenChange={setIsMapOpen}
 								/>

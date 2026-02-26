@@ -75,6 +75,8 @@ const messages: Record<string, string> = {
 	'desk.edit.destination.cityPlaceholder': 'Shahar, mamlakat',
 	'desk.edit.destination.addressRequired': 'Tushirish manzili talab qilinadi',
 	'desk.edit.destination.addressPlaceholder': "Ko'cha, uy raqami",
+	'desk.edit.map.pickAddressTooltip': 'Xaritada manzilni belgilang',
+	'desk.edit.map.cityRequiredTooltip': 'Shaharni ko‘rsatish kerak',
 	'desk.edit.destination.dateRequired': 'Tushirish sanasi talab qilinadi',
 	'desk.edit.destination.datePlaceholder': 'Tushirish sanasi',
 	'desk.edit.shipping.title': "Yuk ma'lumotlari",

@@ -75,6 +75,8 @@ const messages: Record<string, string> = {
 	'desk.edit.destination.cityPlaceholder': 'Город, страна',
 	'desk.edit.destination.addressRequired': 'Адрес разгрузки обязателен',
 	'desk.edit.destination.addressPlaceholder': 'Улица, № Дома',
+	'desk.edit.map.pickAddressTooltip': 'Укажите адрес на карте',
+	'desk.edit.map.cityRequiredTooltip': 'Требуется указать город',
 	'desk.edit.destination.dateRequired': 'Дата разгрузки обязательна',
 	'desk.edit.destination.datePlaceholder': 'Дата разгрузки',
 	'desk.edit.shipping.title': 'Детали перевозки',
