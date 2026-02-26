@@ -62,7 +62,18 @@ export function StatusPageView({
 	const carrierCity = driverLocationFromMap?.trim() || order?.origin_city?.trim() || t('order.status.progress.locationUnknown')
 	const carrierLocation = `Сейчас в г. ${carrierCity}`
 
-	const driverLocationFromOrder = (order as unknown as { driver_location?: { recorded_at?: string | null } | null })?.driver_location
+	const driverLocationFromOrder = (order as unknown as { driver_location?: { recorded_at?: string | null; speed?: unknown } | null })?.driver_location
+	const speedFromOrderRaw = driverLocationFromOrder?.speed
+	const speedFromOrder =
+		typeof speedFromOrderRaw === 'number'
+			? speedFromOrderRaw
+			: typeof speedFromOrderRaw === 'string'
+				? Number(speedFromOrderRaw)
+				: NaN
+	const speedLabel =
+		Number.isFinite(speedFromOrder) && speedFromOrder >= 0
+			? t('order.status.carrier.speedKmh', { speed: String(Math.round(speedFromOrder)) })
+			: t('order.status.carrier.speedUnavailable')
 	const updatedAtSource = driverLocationFromOrder?.recorded_at ?? latestEvent?.occurredAt ?? null
 	const updatedAt = updatedAtSource
 		? new Intl.DateTimeFormat(getLocaleTag(locale), {
@@ -106,6 +117,7 @@ export function StatusPageView({
 					carrierName={carrierName}
 					carrierLocation={carrierLocation}
 					remainingKmLabel={remainingKmLabel}
+					speedLabel={speedLabel}
 					updatedAt={updatedAt}
 				/>
 

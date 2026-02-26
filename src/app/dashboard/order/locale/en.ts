@@ -217,6 +217,9 @@ const messages: Record<string, string> = {
 	'order.status.progress.locationUnknown': 'Location unknown',
 	'order.status.carrier.title': 'Carrier status',
 	'order.status.carrier.remaining': 'Remaining:',
+	'order.status.carrier.speed': 'Speed',
+	'order.status.carrier.speedKmh': '{speed} km/h',
+	'order.status.carrier.speedUnavailable': 'Not defined',
 	'order.status.carrier.updated': 'Updated',
 	// shared/[share_token]/status/StatusPage.tsx
 	'order.shared.status.restricted': 'Data for this tab is available only to shipment participants',

@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/Badge'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
-import { Clock3, MapPin } from 'lucide-react'
+import { Clock3, Gauge, MapPin } from 'lucide-react'
 
 type StatusCarrierCardProps = {
 	t: (key: string, params?: Record<string, string>) => string
@@ -12,6 +12,7 @@ type StatusCarrierCardProps = {
 	carrierName: string
 	carrierLocation: string
 	remainingKmLabel: string
+	speedLabel: string
 	updatedAt: string
 }
 
@@ -23,6 +24,7 @@ export function StatusCarrierCard({
 	carrierName,
 	carrierLocation,
 	remainingKmLabel,
+	speedLabel,
 	updatedAt,
 }: StatusCarrierCardProps) {
 	return (
@@ -48,6 +50,12 @@ export function StatusCarrierCard({
 				<p>
 					{t('order.status.carrier.remaining')} <span className='font-semibold text-brand'>{remainingKmLabel}</span>
 				</p>
+				<p className='flex items-center gap-2'>
+					<Gauge className='size-5 text-foreground/80' />
+					<span>
+						{t('order.status.carrier.speed')}: <span className='font-semibold text-brand'>{speedLabel}</span>
+					</span>
+				</p>
 				<p className='flex items-center gap-2 text-muted-foreground'>
 					<Clock3 className='size-5' />
 					<span>
@@ -58,4 +66,3 @@ export function StatusCarrierCard({
 		</section>
 	)
 }
-
