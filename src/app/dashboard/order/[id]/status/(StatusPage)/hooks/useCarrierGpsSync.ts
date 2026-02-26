@@ -4,6 +4,7 @@ import { useUpdateOrderGps } from '@/hooks/queries/orders/useUpdateOrderGps'
 type CarrierPosition = {
 	lat: number
 	lng: number
+	speed: number | null
 	capturedAt: string
 }
 
@@ -35,12 +36,16 @@ export function useCarrierGpsSync({
 			data: {
 				lat: lastPosition.lat,
 				lng: lastPosition.lng,
+				...(typeof lastPosition.speed === 'number' && Number.isFinite(lastPosition.speed) && lastPosition.speed >= 0
+					? { speed: lastPosition.speed }
+					: {}),
 			},
 		})
 		console.log('[status-gps] sent', {
 			orderId,
 			lat: lastPosition.lat,
 			lng: lastPosition.lng,
+			speed: lastPosition.speed,
 			recorded_at: lastPosition.capturedAt,
 		})
 	}, [isCarrier, lastPosition, orderId, updateOrderGps])

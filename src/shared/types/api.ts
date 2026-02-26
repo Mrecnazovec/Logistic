@@ -1746,12 +1746,16 @@ export interface components {
             lat: number;
             /** Format: double */
             lng: number;
+            /** Format: double */
+            speed?: number;
         };
         GPSUpdateRequest: {
             /** Format: double */
             lat: number;
             /** Format: double */
             lng: number;
+            /** Format: double */
+            speed?: number;
         };
         GenerateInviteResponse: {
             token: string;

@@ -141,11 +141,14 @@ export function Header() {
 			(position) => {
 				const now = Date.now()
 				if (now - lastGpsSentAtRef.current < GPS_SEND_INTERVAL_MS) return
+				const speed = position.coords.speed
+				const normalizedSpeed = typeof speed === 'number' && Number.isFinite(speed) && speed >= 0 ? speed : undefined
 
 				updateOrderGps({
 					data: {
 						lat: position.coords.latitude,
 						lng: position.coords.longitude,
+						...(normalizedSpeed !== undefined ? { speed: normalizedSpeed } : {}),
 					},
 				})
 				lastGpsSentAtRef.current = now

@@ -219,6 +219,9 @@ const messages: Record<string, string> = {
 	'order.status.progress.locationUnknown': 'Joylashuv aniqlanmagan',
 	'order.status.carrier.title': 'Tashuvchi holati',
 	'order.status.carrier.remaining': 'Qoldi:',
+	'order.status.carrier.speed': 'Tezlik',
+	'order.status.carrier.speedKmh': '{speed} km/soat',
+	'order.status.carrier.speedUnavailable': "Ko'rsatilmagan",
 	'order.status.carrier.updated': 'Yangilangan',
 	// shared/[share_token]/status/StatusPage.tsx
 	'order.shared.status.restricted': 'Ushbu bo‘lim maʼlumotlari faqat tashish ishtirokchilari uchun mavjud',

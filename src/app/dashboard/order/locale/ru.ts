@@ -219,6 +219,9 @@
 	'order.status.progress.locationUnknown': 'Локация не определена',
 	'order.status.carrier.title': 'Статус перевозчика',
 	'order.status.carrier.remaining': 'Осталось:',
+	'order.status.carrier.speed': 'Скорость',
+	'order.status.carrier.speedKmh': '{speed} км/ч',
+	'order.status.carrier.speedUnavailable': 'Не определена',
 	'order.status.carrier.updated': 'Обновлено',
 	// shared/[share_token]/status/StatusPage.tsx
 	'order.shared.status.restricted': 'Данные этой вкладки доступны только участникам перевозки',
