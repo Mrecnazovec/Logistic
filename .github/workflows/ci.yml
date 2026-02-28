@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      CI: "true"
+      APP_ENV: ${{ vars.APP_ENV || 'development' }}
+      APP_URL: ${{ vars.APP_URL || 'http://localhost:3000' }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN || 'localhost' }}
+      SERVER_URL: ${{ vars.SERVER_URL || 'http://localhost:4200/api' }}
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}
+      YANDEX_SECRET_KEY: ${{ secrets.YANDEX_SECRET_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate .env
+        run: |
+          cat > .env <<EOF
+          APP_ENV=${APP_ENV}
+          APP_URL=${APP_URL}
+          APP_DOMAIN=${APP_DOMAIN}
+          SERVER_URL=${SERVER_URL}
+          NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+          YANDEX_SECRET_KEY=${YANDEX_SECRET_KEY}
+          EOF
+
+      - name: Lint
+        run: npm run lint
+
+  build:
+    if: ${{ github.event.pull_request.base.ref == 'dev' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      CI: "true"
+      APP_ENV: ${{ vars.APP_ENV || 'development' }}
+      APP_URL: ${{ vars.APP_URL || 'http://localhost:3000' }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN || 'localhost' }}
+      SERVER_URL: ${{ vars.SERVER_URL || 'http://localhost:4200/api' }}
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}
+      YANDEX_SECRET_KEY: ${{ secrets.YANDEX_SECRET_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate .env
+        run: |
+          cat > .env <<EOF
+          APP_ENV=${APP_ENV}
+          APP_URL=${APP_URL}
+          APP_DOMAIN=${APP_DOMAIN}
+          SERVER_URL=${SERVER_URL}
+          NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+          YANDEX_SECRET_KEY=${YANDEX_SECRET_KEY}
+          EOF
+
+      - name: Build
+        run: npm run build

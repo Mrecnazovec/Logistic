@@ -105,3 +105,26 @@ Frontend приложение для платформы логистики: ка
 - `documentation/DOCS.md` - единый справочник по hooks, services, utils, enums, types, regex, components и stores.
 - `documentation/COMMANDS.md` - доступные команды для агента.
 - `documentation/AGENTS.md` - правила разработки и соглашения проекта.
+
+## CI/CD в GitHub Actions
+
+- `CI`: `.github/workflows/ci.yml`
+  - Запускается на `pull_request` и `push` в `main`.
+  - Выполняет `npm ci`, `npm run lint`, `npm run build`.
+- `CD`: `.github/workflows/cd.yml`
+  - Запускается на `push` в `main` и вручную (`workflow_dispatch`).
+  - Собирает Docker-образ из `Dockerfile` и пушит в `ghcr.io/<owner>/<repo>`.
+  - Теги образа: `latest` и короткий `sha` коммита.
+
+### Что включить в репозитории GitHub
+
+- Repository Settings -> Actions -> General: разрешить запуск workflows.
+- Repository Settings -> Actions -> General -> Workflow permissions:
+  - выбрать `Read and write permissions` (нужно для push в GHCR).
+- Packages: убедиться, что для `ghcr.io` у репозитория есть право записи.
+
+### Как использовать образ
+
+- После merge в `main` образ будет доступен по имени:
+  - `ghcr.io/<owner>/<repo>:latest`
+  - `ghcr.io/<owner>/<repo>:<short-sha>`
