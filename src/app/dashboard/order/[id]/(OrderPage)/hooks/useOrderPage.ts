@@ -51,6 +51,7 @@ export const useOrderPage = () => {
 	const isCarrier = role === RoleEnum.CARRIER
 	const orderId = order ? String(order.id) : ''
 	const isHiddenContact = Boolean(order?.roles.customer.hidden)
+	const isHiddenByContact = Boolean(order?.roles.customer.hidden_by)
 	const canChangeDriverStatus = Boolean(order && isCarrier)
 	const orderStatus = order?.status ?? null
 	const orderLogisticId = order?.roles?.logistic?.id ?? null
@@ -171,7 +172,9 @@ export const useOrderPage = () => {
 
 	const handleToggleContacts = () => {
 		if (!orderId) return
-		toggleOrderPrivacy({ id: orderId, isHidden: !isHiddenContact })
+		const nextIsHidden =
+			role === RoleEnum.LOGISTIC ? !isHiddenByContact : role === RoleEnum.CUSTOMER ? !isHiddenContact : !isHiddenContact
+		toggleOrderPrivacy({ id: orderId, isHidden: nextIsHidden })
 	}
 
 	const carrierPriceValue = hasLogisticRole ? order?.driver_price : order?.price_total
