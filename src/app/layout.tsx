@@ -2,11 +2,13 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Raleway, Manrope, Inter, Urbanist } from 'next/font/google'
 import './globals.css'
-import { SITE_AUTHOR, SITE_NAME, SITE_URL, getLocalizedSeo } from '@/constants/seo.constants'
+import { SITE_NAME, SITE_URL, getLocalizedSeo } from '@/constants/seo.constants'
 import { Providers } from './provider'
 import { I18nProvider } from '@/i18n/I18nProvider'
 import { getMessages } from '@/i18n/messages'
 import { getLocale } from '@/i18n/getLocale'
+
+// Code author: Aleksandr A. Salnikov (https://t.me/Sallexe_dev)
 
 const raleway = Raleway({
 	variable: '--font-raleway',
@@ -39,7 +41,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
 			template: `%s | ${SITE_NAME}`,
 		},
 		description: seo.description,
-		authors: SITE_AUTHOR,
 		keywords: seo.keywords,
 		alternates: {
 			canonical: SITE_URL,
@@ -72,6 +73,7 @@ export default async function RootLayout({
 	return (
 		<html lang={locale}>
 			<head>
+				<meta name='code-author' content='Aleksandr A. Salnikov, https://t.me/Sallexe_dev' />
 				<meta name='yandex-verification' content='0864d4dea57bccec' />
 				{isProduction ? (
 					<>
