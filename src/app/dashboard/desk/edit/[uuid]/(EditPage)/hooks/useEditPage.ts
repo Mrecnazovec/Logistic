@@ -2,6 +2,7 @@
 
 import { useGetLoad } from '@/hooks/queries/loads/useGet/useGetLoad'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
+import { formatPriceInputValue } from '@/lib/InputValidation'
 import { useEffect } from 'react'
 import { createCityFromValues, formatCityLabel } from '../lib/city'
 import { useEditForm } from './useEditForm'
@@ -39,7 +40,7 @@ export function useEditPage() {
 			load_date: load.load_date ?? '',
 			delivery_date: load.delivery_date ?? '',
 			price_currency: load.price_currency ?? undefined,
-			price_value: load.price_value ?? '',
+			price_value: formatPriceInputValue(load.price_value ?? ''),
 			product: load.product ?? '',
 			transport_type: load.transport_type ?? '',
 			contact_pref: load.contact_pref ?? '',

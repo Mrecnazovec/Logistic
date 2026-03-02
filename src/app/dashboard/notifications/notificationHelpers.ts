@@ -242,9 +242,9 @@ export const getNotificationDetailsModel = (notification: INotification, t: Tran
 		const userId = context.currentUserId
 		const replyHref =
 			userId === customer_id
-				? withLocale(DASHBOARD_URL.home(`desk?uuid=${offerId}`), locale)
+				? withLocale(DASHBOARD_URL.home(`desk`), locale)
 				: userId === carrier_id || userId === logistic_id
-				? withLocale(DASHBOARD_URL.desk(`my?uuid=${offerId}`), locale)
+				? withLocale(DASHBOARD_URL.desk(`my`), locale)
 				: null
 
 		if (replyHref) {

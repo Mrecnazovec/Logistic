@@ -1,4 +1,5 @@
 import { useCreateLoad } from '@/hooks/queries/loads/useCreateLoad'
+import { normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
@@ -19,7 +20,7 @@ export function usePostForm() {
 		const rawPriceValue = data.price_value as string | null | undefined
 		const rawPriceCurrency = data.price_currency as string | null | undefined
 		const normalizedAxles = rawAxles === null || rawAxles === undefined || rawAxles === '' ? null : Number(rawAxles)
-		const normalizedPriceValue = rawPriceValue === '' || rawPriceValue === undefined ? null : rawPriceValue
+		const normalizedPriceValue = normalizePriceValueForPayload(rawPriceValue)
 		const normalizedPriceCurrency = rawPriceCurrency === '' || rawPriceCurrency === undefined ? null : rawPriceCurrency
 
 		createLoad({

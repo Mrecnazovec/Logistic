@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useI18n } from '@/i18n/I18nProvider'
+import { formatPriceInputValue, handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import type { InviteResponseActionsProps } from '@/shared/types/Invite.interface'
@@ -308,7 +309,7 @@ function InviteResponseActions({
 	isProcessing,
 }: InviteResponseActionsProps) {
 	const { t } = useI18n()
-	const [priceValue, setPriceValue] = useState(() => (defaultPrice ? String(defaultPrice) : ''))
+	const [priceValue, setPriceValue] = useState(() => formatPriceInputValue(defaultPrice ? String(defaultPrice) : ''))
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(() => (defaultCurrency ? (defaultCurrency as PriceCurrencyCode) : ''))
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(
 		() => (defaultPaymentMethod ? (defaultPaymentMethod as PaymentMethodEnum) : ''),
@@ -342,7 +343,7 @@ function InviteResponseActions({
 		onCounter({
 			offerId,
 			data: {
-				price_value: String(priceValue),
+				price_value: normalizePriceValueForPayload(String(priceValue)) ?? '',
 				price_currency: currency as PriceCurrencyCode,
 				payment_method: paymentMethod as PaymentMethodEnum,
 			},
@@ -363,9 +364,9 @@ function InviteResponseActions({
 				<Input
 					placeholder={t('desk.invite.pricePlaceholder')}
 					value={priceValue}
-					onChange={(event) => setPriceValue(event.target.value)}
-					type='number'
-					inputMode='decimal'
+					onChange={(event) => handlePriceInput(event, setPriceValue)}
+					type='text'
+					inputMode='numeric'
 					min='0'
 					className='rounded-full border-none bg-muted/40'
 					disabled={isActionDisabled || !isCounterEditing}

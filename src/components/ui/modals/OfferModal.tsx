@@ -19,6 +19,7 @@ import { useCreateOffer } from '@/hooks/queries/offers/useCreateOffer'
 import { useI18n } from '@/i18n/I18nProvider'
 import { formatCurrencyPerKmValue } from '@/lib/currency'
 import { formatPriceValue } from '@/lib/formatters'
+import { formatPriceInputValue, handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
@@ -64,7 +65,7 @@ export function OfferModal({
 	const [paymentDrafts, setPaymentDrafts] = useState<Record<string, PaymentMethodEnum | ''>>({})
 
 	const priceValue = selectedRow
-		? priceDrafts[selectedRow.uuid] ?? (selectedRow.price_value ? String(selectedRow.price_value) : '')
+		? priceDrafts[selectedRow.uuid] ?? formatPriceInputValue(selectedRow.price_value ? String(selectedRow.price_value) : '')
 		: ''
 	const currency = selectedRow
 		? currencyDrafts[selectedRow.uuid] ?? (selectedRow.price_currency ?? '')
@@ -84,7 +85,7 @@ export function OfferModal({
 		createOffer(
 			{
 				cargo: cargoId,
-				price_value: priceValue,
+				price_value: normalizePriceValueForPayload(priceValue) ?? '',
 				price_currency: currency as NonNullable<ICargoList['price_currency']>,
 				payment_method: paymentMethod as PaymentMethodEnum,
 			},
@@ -155,10 +156,10 @@ export function OfferModal({
 								value={priceValue}
 								onChange={(event) =>
 									selectedRow?.uuid &&
-									setPriceDrafts((prev) => ({ ...prev, [selectedRow.uuid]: event.target.value }))
+									handlePriceInput(event, (value) => setPriceDrafts((prev) => ({ ...prev, [selectedRow.uuid]: value })))
 								}
-								inputMode='decimal'
-								type='number'
+								inputMode='numeric'
+								type='text'
 							/>
 							<Select
 								value={currency || undefined}

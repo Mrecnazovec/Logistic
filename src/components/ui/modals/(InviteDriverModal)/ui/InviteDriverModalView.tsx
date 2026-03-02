@@ -15,6 +15,7 @@ import { useGenerateOrderInvite } from '@/hooks/queries/orders/useGenerateOrderI
 import { useInviteOrderById } from '@/hooks/queries/orders/useInviteOrderById'
 import { useI18n } from '@/i18n/I18nProvider'
 import { DEFAULT_PLACEHOLDER, formatDateValue, formatDistanceKm, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
+import { handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { PriceCurrencyEnum } from '@/shared/enums/PriceCurrency.enum'
 import type { DriverPaymentMethod, IOrderDetail } from '@/shared/types/Order.interface'
 
@@ -78,14 +79,18 @@ export function InviteDriverModalView({ order, canInviteById }: InviteDriverModa
       toast.error(t('components.inviteDriver.driverPaymentRequired'))
       return
     }
-    const parsedDriverPrice = Number(driverPrice.replace(',', '.'))
+    const normalizedDriverPrice = normalizePriceValueForPayload(driverPrice)
+    if (!normalizedDriverPrice) {
+      toast.error(t('components.inviteDriver.driverPriceRequired'))
+      return
+    }
 
     inviteOrderById(
       {
         id: String(order.id),
         payload: {
           driver_id: parsedCarrierId,
-          driver_price: driverPrice,
+          driver_price: normalizedDriverPrice,
           driver_currency: driverCurrency,
           driver_payment_method: driverPaymentMethod,
         },
@@ -110,13 +115,17 @@ export function InviteDriverModalView({ order, canInviteById }: InviteDriverModa
       toast.error(t('components.inviteDriver.driverPaymentRequired'))
       return
     }
-    const parsedDriverPrice = Number(driverPrice.replace(',', '.'))
+    const normalizedDriverPrice = normalizePriceValueForPayload(driverPrice)
+    if (!normalizedDriverPrice) {
+      toast.error(t('components.inviteDriver.driverPriceRequired'))
+      return
+    }
     setShareCopyStatus('idle')
     generateOrderInvite({
       id: String(order.id),
       payload: {
         cargo: order.cargo,
-        driver_price: driverPrice,
+        driver_price: normalizedDriverPrice,
         driver_currency: driverCurrency,
         driver_payment_method: driverPaymentMethod,
       },
@@ -186,20 +195,11 @@ export function InviteDriverModalView({ order, canInviteById }: InviteDriverModa
                 </p>
                 <div className='grid gap-3 md:grid-cols-[1fr_auto_auto]'>
                   <Input
-                    type='number'
+                    type='text'
                     value={driverPrice}
-                    onChange={(event) => {
-                      const nextValue = event.target.value
-                      if (!nextValue) {
-                        setDriverPrice('')
-                        return
-                      }
-                      const parsedValue = Number(nextValue.replace(',', '.'))
-                      setDriverPrice(nextValue)
-                    }}
+                    onChange={(event) => handlePriceInput(event, setDriverPrice)}
                     placeholder={t('components.inviteDriver.driverPricePlaceholder')}
-                    step='0.01'
-                    inputMode='decimal'
+                    inputMode='numeric'
                   />
                   <Select
                     value={driverCurrency || undefined}
