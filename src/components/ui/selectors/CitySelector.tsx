@@ -45,28 +45,20 @@ export function CitySelector({
 	const { t } = useI18n()
 	const isDisabled = disabled
 	const [open, setOpen] = useState(false)
-	const [selectedCity, setSelectedCity] = useState<City | null>(null)
-	const searchQuery = value ?? ''
+	const [search, setSearch] = useState('')
 	const displayText =
 		displayValue ??
-		(selectedCity?.name === value && selectedCity
-			? `${selectedCity.name}, ${selectedCity.country}`
-			: value && countryName
-				? `${value}, ${countryName}`
-				: value ?? '')
+		(value && countryName
+			? `${value}, ${countryName}`
+			: value ?? '')
 	const resolvedPlaceholder = placeholder ?? t('components.select.city.placeholder')
 
-	const { data, isLoading } = useCitySuggest(searchQuery, countryCode)
+	const { data, isLoading } = useCitySuggest(search, countryCode)
 	const cities = data?.results ?? []
 
-	const handleInputChange = (nextValue: string) => {
-		setSelectedCity(null)
-		onChange(nextValue, null)
-	}
-
 	const handleSelect = async (city: City) => {
-		setSelectedCity(city)
 		onChange(city.name, city)
+		setSearch(city.name)
 		setOpen(false)
 
 		const coordinates = await nominatimService.getCityCoordinates(city)
@@ -78,7 +70,18 @@ export function CitySelector({
 
 	return (
 		<div className={cn('w-full', className)}>
-			<Popover open={isDisabled ? false : open} onOpenChange={(next) => !isDisabled && setOpen(next)}>
+			<Popover
+				open={isDisabled ? false : open}
+				onOpenChange={(next) => {
+					if (isDisabled) return
+					setOpen(next)
+					if (next) {
+						setSearch(value ?? '')
+						return
+					}
+					setSearch(value ?? '')
+				}}
+			>
 				<PopoverTrigger asChild>
 					<Button
 						type='button'
@@ -101,8 +104,8 @@ export function CitySelector({
 					<Command shouldFilter={false}>
 						<CommandInput
 							placeholder={t('components.select.city.searchPlaceholder')}
-							value={displayText}
-							onValueChange={handleInputChange}
+							value={search}
+							onValueChange={setSearch}
 							disabled={isDisabled}
 						/>
 						<CommandList className='max-h-60'>

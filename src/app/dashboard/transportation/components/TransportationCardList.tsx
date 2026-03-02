@@ -3,6 +3,7 @@
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
@@ -45,17 +46,30 @@ type TransportationCardProps = {
 function TransportationCard({ cargo }: TransportationCardProps) {
 	const { t } = useI18n()
 	const placeholder = t('transportation.card.placeholder')
-	const carrierLogisticItems = [
-		cargo.carrier_name
-			? { icon: Building2, primary: cargo.carrier_name, secondary: t('transportation.card.label.carrier') }
-			: null,
-		cargo.logistic_name
-			? { icon: Building2, primary: cargo.logistic_name, secondary: t('transportation.card.label.logistic') }
-			: null,
-	].filter(Boolean) as CardSection['items']
+	const logisticName = cargo.roles?.logistic?.name ?? cargo.logistic_name
+	const logisticId = cargo.roles?.logistic?.id
+	const carrierName = cargo.roles?.carrier?.name ?? cargo.carrier_name
+	const carrierId = cargo.roles?.carrier?.id
 	const sections: CardSection[] = [
-		...(carrierLogisticItems.length
-			? [{ title: t('transportation.card.section.carrierLogistic'), items: carrierLogisticItems }]
+		...(logisticName
+			? [{
+				title: t('transportation.card.label.logistic'),
+				items: [{
+					icon: Building2,
+					primary: logisticId ? <ProfileLink id={logisticId} name={logisticName} /> : logisticName,
+					secondary: t('transportation.card.label.logistic'),
+				}],
+			}]
+			: []),
+		...(carrierName
+			? [{
+				title: t('transportation.card.label.carrier'),
+				items: [{
+					icon: Building2,
+					primary: carrierId ? <ProfileLink id={carrierId} name={carrierName} /> : carrierName,
+					secondary: t('transportation.card.label.carrier'),
+				}],
+			}]
 			: []),
 		{
 			title: t('transportation.card.section.origin'),

@@ -1,22 +1,15 @@
 "use client"
 
-import { useState } from "react"
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { useAcceptOffer } from "@/hooks/queries/offers/useAction/useAcceptOffer"
-import { useCounterOffer } from "@/hooks/queries/offers/useAction/useCounterOffer"
-import { useRejectOffer } from "@/hooks/queries/offers/useAction/useRejectOffer"
-import { useGetOffers } from "@/hooks/queries/offers/useGet/useGetOffers"
+import { Tabs, TabsContent } from "@/components/ui/Tabs"
 import { useI18n } from "@/i18n/I18nProvider"
-import type { PriceCurrencyCode } from "@/lib/currency"
-import { PaymentMethodEnum } from "@/shared/enums/PaymentMethod.enum"
 
 import { CargoInfo } from "../../CargoInfo"
 import { OfferCard } from "../../OfferCard"
 import { OfferHistoryItem } from "../../OfferHistoryItem"
-import { buildCargoInfo } from '../../helpers'
-import type { OfferFormState, OffersTab } from "../../types"
+import type { OffersTab } from "../../types"
+import { useDeskOffersModalView } from "../hooks/useDeskOffersModalView"
+import { DeskOffersTabs } from "./DeskOffersTabs"
 
 interface DeskOffersModalProps {
   cargoUuid?: string
@@ -32,57 +25,27 @@ export function DeskOffersModalView({
   initialPrice,
 }: DeskOffersModalProps) {
   const { t } = useI18n()
-  const [activeTab, setActiveTab] = useState<OffersTab>("incoming")
-  const [formState, setFormState] = useState<Record<number, OfferFormState>>({})
-  const [expandedOfferId, setExpandedOfferId] = useState<number | null>(null)
-
-  const { data, isLoading } = useGetOffers(
-    cargoUuid ? { cargo_uuid: cargoUuid } : undefined,
-    { enabled: Boolean(cargoUuid) },
-  )
-  const { acceptOffer, isLoadingAcceptOffer } = useAcceptOffer()
-  const { rejectOffer, isLoadingRejectOffer } = useRejectOffer()
-  const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
-
-  const offers = data?.results ?? []
-  const incomingOffers = offers.filter(
-    (offer) =>
-      !offer.accepted_by_customer &&
-      !offer.accepted_by_logistic &&
-      !offer.accepted_by_carrier &&
-      offer.response_status !== "counter_from_customer" && offer.response_status !== 'rejected'
-  )
-  const acceptedOffers = offers.filter(
-    (offer) =>
-      (offer.accepted_by_logistic && !offer.accepted_by_customer && offer.response_status !== 'rejected') ||
-      (offer.accepted_by_carrier && !offer.accepted_by_customer && offer.response_status !== 'rejected'),
-  )
-  const activeHistoryOffers = offers.filter((offer) => offer.is_active !== false)
-  const inactiveHistoryOffers = offers.filter((offer) => offer.is_active === false)
-
-  const cargoInfo = buildCargoInfo(offers, t, initialPrice)
-
-  const handleFormChange = (
-    offerId: number,
-    next: Partial<OfferFormState>,
-    defaultForm: OfferFormState,
-  ) => {
-    setFormState((prev) => ({
-      ...prev,
-      [offerId]: { ...defaultForm, ...prev[offerId], ...next },
-    }))
-  }
-
-  const handleCounterOffer = (
-    offerId: number,
-    payload: {
-      price_value: string
-      price_currency: PriceCurrencyCode
-      payment_method: PaymentMethodEnum
-    },
-  ) => {
-    counterOffer({ id: String(offerId), data: payload })
-  }
+  const {
+    activeTab,
+    setActiveTab,
+    formState,
+    expandedOfferId,
+    setExpandedOfferId,
+    isLoading,
+    offers,
+    incomingOffers,
+    acceptedOffers,
+    activeHistoryOffers,
+    inactiveHistoryOffers,
+    cargoInfo,
+    acceptOffer,
+    rejectOffer,
+    isLoadingAcceptOffer,
+    isLoadingRejectOffer,
+    isLoadingCounterOffer,
+    handleFormChange,
+    handleCounterOffer,
+  } = useDeskOffersModalView(cargoUuid, initialPrice, t)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,37 +71,12 @@ export function DeskOffersModalView({
               onValueChange={(value) => setActiveTab(value as OffersTab)}
               className="space-y-4"
             >
-              <div className="w-full overflow-x-auto">
-                <TabsList className="flex min-w-max flex-nowrap justify-start gap-8 border-b bg-transparent p-0 whitespace-nowrap w-full max-sm:flex-col max-sm:h-fit">
-                  <TabsTrigger
-                    value="incoming"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
-                  >
-                    {t("components.deskOffers.tabs.incoming")}
-                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
-                      <span className="-mt-0.5">{incomingOffers.length}</span>
-                    </div>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="accepted"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
-                  >
-                    {t("components.deskOffers.tabs.accepted")}
-                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
-                      <span className="-mt-0.5">{acceptedOffers.length}</span>
-                    </div>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="history"
-                    className="rounded-none border-1 bg-transparent text-base font-semibold text-muted-foreground shadow-none data-[state=active]:border-b-brand data-[state=active]:text-foreground max-sm:w-full max-sm:border-b-border items-start"
-                  >
-                    {t("components.deskOffers.tabs.history")}
-                    <div className="size-4 rounded-full bg-error-500 flex items-center justify-center text-white text-xs">
-                      <span className="-mt-0.5">{offers.length}</span>
-                    </div>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+              <DeskOffersTabs
+                t={t}
+                incomingCount={incomingOffers.length}
+                acceptedCount={acceptedOffers.length}
+                historyCount={offers.length}
+              />
 
               <TabsContent value="incoming" className="space-y-4">
                 {incomingOffers.length ? (
