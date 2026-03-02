@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/Button'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
-import { formatDateValue, formatPriceValue, parseDateToTimestamp } from '@/lib/formatters'
+import { formatDateValue, formatPricePerKmValue, formatPriceValue, parseDateToTimestamp } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOrderList } from '@/shared/types/Order.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -88,6 +88,6 @@ export const createTransportationColumns = (t: Translator, role?: RoleEnum): Col
 		{
 				accessorKey: 'price_per_km',
 				header: t('transportation.columns.pricePerKm'),
-				cell: ({ row }) => Number(row.original.price_per_km || 0).toLocaleString(),
+				cell: ({ row }) => formatPricePerKmValue(row.original.price_per_km, row.original.currency),
 		},
 ]

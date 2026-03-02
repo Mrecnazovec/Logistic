@@ -3,6 +3,7 @@
 import { CardListLayout } from '@/components/card/CardListLayout'
 import { CardSections, type CardSection } from '@/components/card/CardSections'
 import { useCardPagination } from '@/components/pagination/CardPagination'
+import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
@@ -55,23 +56,38 @@ function TransportationMyCard({ cargo, role }: TransportationMyCardProps) {
 	const customerCarrierValue = role === RoleEnum.CUSTOMER
 		? cargo.roles?.carrier?.name
 		: cargo.roles?.customer?.name
+	const customerCarrierId = role === RoleEnum.CUSTOMER
+		? cargo.roles?.carrier?.id
+		: cargo.roles?.customer?.id
 	const logisticCarrierLabel = role === RoleEnum.LOGISTIC
 		? t('transportation.card.label.carrier')
 		: t('transportation.card.label.logistic')
 	const logisticCarrierValue = role === RoleEnum.LOGISTIC
 		? cargo.roles?.carrier?.name
 		: cargo.roles?.logistic?.name
-	const customerCarrierItems = [
-		customerCarrierValue
-			? { icon: Building2, primary: customerCarrierValue, secondary: customerCarrierLabel }
-			: null,
-		logisticCarrierValue
-			? { icon: Building2, primary: logisticCarrierValue, secondary: logisticCarrierLabel }
-			: null,
-	].filter(Boolean) as CardSection['items']
+	const logisticCarrierId = role === RoleEnum.LOGISTIC
+		? cargo.roles?.carrier?.id
+		: cargo.roles?.logistic?.id
 	const sections: CardSection[] = [
-		...(customerCarrierItems.length
-			? [{ title: t('transportation.card.section.customerCarrier'), items: customerCarrierItems }]
+		...(customerCarrierValue
+			? [{
+				title: customerCarrierLabel,
+				items: [{
+					icon: Building2,
+					primary: customerCarrierId ? <ProfileLink id={customerCarrierId} name={customerCarrierValue} /> : customerCarrierValue,
+					secondary: customerCarrierLabel,
+				}],
+			}]
+			: []),
+		...(logisticCarrierValue
+			? [{
+				title: logisticCarrierLabel,
+				items: [{
+					icon: Building2,
+					primary: logisticCarrierId ? <ProfileLink id={logisticCarrierId} name={logisticCarrierValue} /> : logisticCarrierValue,
+					secondary: logisticCarrierLabel,
+				}],
+			}]
 			: []),
 		{
 			title: t('transportation.card.section.origin'),

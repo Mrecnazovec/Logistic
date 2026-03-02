@@ -148,6 +148,11 @@ useInvitePage - composes order invite page state (auth redirect, invite preview 
 useSharedOrderPage - composes shared order page state (order query, status badges, participant sections, and document/driver metadata).
 useFolderPage - composes order docs folder page state (folder access, upload queue/timers, drag-drop handlers, and filtered documents list).
 useOrderPage - composes order detail page state, handlers, role-based permissions, and action callbacks.
+useDeskOffersModalView - composes desk offers modal state (tabs, filtered offer groups, form drafts, and offer action handlers).
+useOfferDecisionModalState - composes offer decision modal state for invite/counter flows, resolved preview fields, and role actions.
+useOrderRatingModalState - composes order-rating modal state (participants, form/edit state, score handlers, and create/update submit flow).
+useInviteDriverModalState - composes invite-driver modal state (driver payment form, invite/copy actions, and formatted route/price values).
+useDeskInviteModalState - composes desk-invite modal state (invite by id/link actions, copy status, and formatted cargo values).
 useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
 useCarrierGpsSync - syncs carrier location to `/orders/gps`, deduplicates by capturedAt, and triggers periodic refresh every 15 minutes.
 /i18n - translation keys and locale messages directory.
@@ -191,6 +196,7 @@ parseNumber - parses number-like values and returns finite numbers or null.
 getDaysSince - returns full days passed since a date string (dateValue?: string | null).
 parsePieChart - parses profile pie_chart payload from object or JSON string into normalized chart fields.
 formatPlural - returns locale-aware pluralized count string for ru/en forms.
+orderRating.utils - helpers for order-rating modal participants and existing rating metadata by role.
 InputOTP - OTP code input built on input-otp.
 transliterate - transliterates between Cyrillic and Latin characters.
 cn - merges className strings via clsx and tailwind-merge.
@@ -486,7 +492,9 @@ DeskInviteModalView - presentational desk invite modal UI extracted behind a thi
 InviteDriverModalView - presentational invite-driver modal UI extracted behind a thin InviteDriverModal composer.
 OfferDecisionModalView - presentational offer decision modal UI extracted behind a thin OfferDecisionModal composer.
 OrderRatingModalView - presentational order rating modal UI extracted behind a thin OrderRatingModal composer.
+OrderRatingParticipantsGrid - presentational participants grid for order rating cards with stars/comment/edit controls.
 DeskOffersModalView - presentational desk offers modal UI extracted behind a thin DeskOffersModal composer.
+DeskOffersTabs - presentational tabs header for desk offers modal with conditional count badges.
 
 ## Stores
 

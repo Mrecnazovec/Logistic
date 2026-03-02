@@ -138,7 +138,9 @@ export function TransportationMyPage() {
 				<Tabs className='h-full' value={status} onValueChange={handleStatusChange}>
 					<div className='flex flex-wrap items-end gap-4'>
 						<TabsList className='-mb-2 bg-transparent overflow-x-auto'>
-							{allTabs.map((tab) => (
+							{allTabs.map((tab) => {
+								const tabCount = statusCounts[tab.value]
+								return (
 								<TabsTrigger
 									key={tab.value}
 									className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -147,13 +149,14 @@ export function TransportationMyPage() {
 									<span className='inline-flex items-center gap-2'>
 										<span>{tab.label}</span>
 										{tab.value === agreementsTab.value ? (
-											typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
-										) : typeof statusCounts[tab.value] === 'number' ? (
-											<span>({statusCounts[tab.value]})</span>
+											typeof agreementsCount === 'number' && agreementsCount > 0 ? <span>({agreementsCount})</span> : null
+										) : typeof tabCount === 'number' ? (
+											tabCount > 0 ? <span>({tabCount})</span> : null
 										) : null}
 									</span>
 								</TabsTrigger>
-							))}
+								)
+							})}
 						</TabsList>
 						<div className='ml-auto'>
 							<TableTypeSelector />
@@ -169,7 +172,9 @@ export function TransportationMyPage() {
 			) : (
 				<Tabs value={status} onValueChange={handleStatusChange} className='h-full rounded-4xl xs:bg-background'>
 					<TabsList className='-mb-2 w-full justify-start overflow-x-scroll bg-transparent'>
-						{allTabs.map((tab) => (
+						{allTabs.map((tab) => {
+							const tabCount = statusCounts[tab.value]
+							return (
 							<TabsTrigger
 								key={tab.value}
 								className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-b-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none'
@@ -178,13 +183,14 @@ export function TransportationMyPage() {
 								<span className='inline-flex items-center gap-2'>
 									<span>{tab.label}</span>
 									{tab.value === agreementsTab.value ? (
-										typeof agreementsCount === 'number' ? <span>({agreementsCount})</span> : null
-									) : typeof statusCounts[tab.value] === 'number' ? (
-										<span>({statusCounts[tab.value]})</span>
+										typeof agreementsCount === 'number' && agreementsCount > 0 ? <span>({agreementsCount})</span> : null
+									) : typeof tabCount === 'number' ? (
+										tabCount > 0 ? <span>({tabCount})</span> : null
 									) : null}
 								</span>
 							</TabsTrigger>
-						))}
+							)
+						})}
 					</TabsList>
 
 					{allTabs.map((tab) => (

@@ -1,8 +1,6 @@
 "use client"
 
 import { Link2, UserPlus } from 'lucide-react'
-import { useState } from 'react'
-import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -10,148 +8,41 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTr
 import { Input } from '@/components/ui/form-control/Input'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/form-control/InputGroup'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import { DASHBOARD_URL } from '@/config/url.config'
-import { useGenerateOrderInvite } from '@/hooks/queries/orders/useGenerateOrderInvite'
-import { useInviteOrderById } from '@/hooks/queries/orders/useInviteOrderById'
 import { useI18n } from '@/i18n/I18nProvider'
-import { DEFAULT_PLACEHOLDER, formatDateValue, formatDistanceKm, formatPricePerKmValue, formatPriceValue } from '@/lib/formatters'
-import { handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
-import { PriceCurrencyEnum } from '@/shared/enums/PriceCurrency.enum'
+import { DEFAULT_PLACEHOLDER, formatDateValue } from '@/lib/formatters'
+import { handlePriceInput } from '@/lib/InputValidation'
 import type { DriverPaymentMethod, IOrderDetail } from '@/shared/types/Order.interface'
+import { currencyOptions, paymentMethodOptions, useInviteDriverModalState } from '../hooks/useInviteDriverModalState'
 
 interface InviteDriverModalProps {
   order: IOrderDetail
   canInviteById: boolean
 }
 
-type OrderInviteResult = IOrderDetail & { invite_token?: string }
-type CopyState = 'idle' | 'copied' | 'error'
-type CurrencyCode = PriceCurrencyEnum
-
-const currencyOptions: CurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
-const paymentMethodOptions: DriverPaymentMethod[] = ['cash', 'bank_transfer', 'both']
-
 export function InviteDriverModalView({ order, canInviteById }: InviteDriverModalProps) {
   const { t } = useI18n()
-  const [isOpen, setIsOpen] = useState(false)
-  const [carrierId, setCarrierId] = useState('')
-  const [driverPrice, setDriverPrice] = useState('')
-  const [driverCurrency, setDriverCurrency] = useState<CurrencyCode | ''>(order.currency ?? '')
-  const [driverPaymentMethod, setDriverPaymentMethod] = useState<DriverPaymentMethod | ''>('')
-  const [shareCopyStatus, setShareCopyStatus] = useState<CopyState>('idle')
-
-  const { inviteOrderById, isLoadingInviteById } = useInviteOrderById()
-  const { generateOrderInvite, generatedOrder, isLoadingGenerateInvite, resetGenerateInvite } = useGenerateOrderInvite()
-
-  const inviteData = generatedOrder as OrderInviteResult | undefined
-  const inviteToken = inviteData?.invite_token
-  const shareLink = inviteToken ? `${typeof window !== 'undefined' ? window.location.origin : ''}${DASHBOARD_URL.order(`invite/${inviteToken}`)}` : ''
-
-  const handleModalOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) {
-      setCarrierId('')
-      setDriverPrice('')
-      setDriverCurrency(order.currency ?? '')
-      setDriverPaymentMethod('')
-      setShareCopyStatus('idle')
-      resetGenerateInvite()
-    }
-    setIsOpen(nextOpen)
-  }
-
-  const handleInviteCarrier = () => {
-    if (!canInviteById) return
-
-    const parsedCarrierId = Number(carrierId)
-    if (!carrierId || Number.isNaN(parsedCarrierId)) {
-      toast.error(t('components.inviteDriver.invalidId'))
-      return
-    }
-    if (!driverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceRequired'))
-      return
-    }
-    if (!driverCurrency) {
-      toast.error(t('components.inviteDriver.driverCurrencyRequired'))
-      return
-    }
-    if (!driverPaymentMethod) {
-      toast.error(t('components.inviteDriver.driverPaymentRequired'))
-      return
-    }
-    const normalizedDriverPrice = normalizePriceValueForPayload(driverPrice)
-    if (!normalizedDriverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceRequired'))
-      return
-    }
-
-    inviteOrderById(
-      {
-        id: String(order.id),
-        payload: {
-          driver_id: parsedCarrierId,
-          driver_price: normalizedDriverPrice,
-          driver_currency: driverCurrency,
-          driver_payment_method: driverPaymentMethod,
-        },
-      },
-      {
-        onSuccess: () => setCarrierId(''),
-      },
-    )
-  }
-
-  const handleGenerateInviteLink = () => {
-    if (!canInviteById) return
-    if (!driverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceRequired'))
-      return
-    }
-    if (!driverCurrency) {
-      toast.error(t('components.inviteDriver.driverCurrencyRequired'))
-      return
-    }
-    if (!driverPaymentMethod) {
-      toast.error(t('components.inviteDriver.driverPaymentRequired'))
-      return
-    }
-    const normalizedDriverPrice = normalizePriceValueForPayload(driverPrice)
-    if (!normalizedDriverPrice) {
-      toast.error(t('components.inviteDriver.driverPriceRequired'))
-      return
-    }
-    setShareCopyStatus('idle')
-    generateOrderInvite({
-      id: String(order.id),
-      payload: {
-        cargo: order.cargo,
-        driver_price: normalizedDriverPrice,
-        driver_currency: driverCurrency,
-        driver_payment_method: driverPaymentMethod,
-      },
-    })
-  }
-
-  const handleCopyShareLink = async () => {
-    if (!shareLink) {
-      toast.error(t('components.inviteDriver.generateFirst'))
-      return
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareLink)
-      setShareCopyStatus('copied')
-      toast.success(t('components.inviteDriver.copySuccess'))
-    } catch (error) {
-      console.error(error)
-      setShareCopyStatus('error')
-      toast.error(t('components.inviteDriver.copyError'))
-    }
-  }
-
-  const formattedPrice = formatPriceValue(order.price_total, order.currency)
-  const formattedPricePerKm = formatPricePerKmValue(order.price_per_km, order.currency)
-  const formattedRouteDistance = formatDistanceKm(order.route_distance_km, DEFAULT_PLACEHOLDER)
+  const {
+    isOpen,
+    carrierId,
+    setCarrierId,
+    driverPrice,
+    setDriverPrice,
+    driverCurrency,
+    setDriverCurrency,
+    driverPaymentMethod,
+    setDriverPaymentMethod,
+    shareCopyStatus,
+    isLoadingInviteById,
+    isLoadingGenerateInvite,
+    shareLink,
+    formattedPrice,
+    formattedPricePerKm,
+    formattedRouteDistance,
+    handleModalOpenChange,
+    handleInviteCarrier,
+    handleGenerateInviteLink,
+    handleCopyShareLink,
+  } = useInviteDriverModalState(order, canInviteById, t)
 
   return (
     <Dialog open={isOpen} onOpenChange={handleModalOpenChange}>
@@ -203,7 +94,7 @@ export function InviteDriverModalView({ order, canInviteById }: InviteDriverModa
                   />
                   <Select
                     value={driverCurrency || undefined}
-                    onValueChange={(value) => setDriverCurrency(value as CurrencyCode)}
+                    onValueChange={(value) => setDriverCurrency(value as (typeof currencyOptions)[number])}
                   >
                     <SelectTrigger className='w-full rounded-full border-none bg-grayscale-50 shadow-none *:data-[slot=select-value]:text-black'>
                       <SelectValue placeholder={t('components.offerModal.currencyPlaceholder')} />
