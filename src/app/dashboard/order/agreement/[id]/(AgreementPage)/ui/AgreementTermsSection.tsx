@@ -18,10 +18,10 @@ export function AgreementTermsSection({
 	t,
 }: AgreementTermsSectionProps) {
 	return (
-		<div className='flex items-start gap-3 text-sm text-muted-foreground'>
+		<div className='flex items-start gap-3 text-sm text-white bg-brand p-3 w-fit rounded-2xl'>
 			<Checkbox
 				id='agreement-terms'
-				className='shrink-0'
+				className='shrink-0 data-[state=checked]:border-white'
 				checked={isTermsChecked}
 				onCheckedChange={(value) => onTermsCheckedChange(Boolean(value))}
 			/>
@@ -29,7 +29,7 @@ export function AgreementTermsSection({
 				{t('order.agreement.terms.text')}{' '}
 				<Dialog open={isTermsOpen} onOpenChange={onTermsOpenChange}>
 					<DialogTrigger asChild>
-						<button type='button' className='text-brand underline-offset-4 hover:underline'>
+						<button type='button' className='text-white underline-offset-4 underline'>
 							{t('order.agreement.terms.link')}
 						</button>
 					</DialogTrigger>
