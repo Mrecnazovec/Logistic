@@ -177,6 +177,9 @@ parseDateToTimestamp - parses date to timestamp for sorting.
 formatDurationFromMinutes - formats total minutes to "X h Y min".
 formatAgeFromMinutes - human-readable age from minutes ("min/h/day ago").
 handleNumericInput - normalizes numeric input (comma to dot) and applies regex.
+formatPriceInputValue - formats raw price input as grouped digits with spaces (e.g. 1 234 567).
+normalizePriceValueForPayload - strips separators from formatted price and returns digits-only value for API payloads.
+handlePriceInput - validates/formats price input to grouped thousands while typing.
 getLocaleTag - maps app locale code to Intl locale tag for numeric/date formatting.
 formatTrend - formats percent trend text with sign and locale-aware decimals.
 formatCityLabel - builds city display label from city and country fields (city: City | null).
@@ -294,6 +297,7 @@ folderPage.types.ts - local folder page types for upload queue item/status and d
 ## Shared regex
 
 NUMERIC_REGEX - matches numbers up to 12 digits with optional 2 decimals.
+PRICE_FORMAT_REGEX - matches grouped integer price format with spaces between thousands.
 PRODUCT_MAX_LENGTH - max length for product string (120).
 
 ## Components

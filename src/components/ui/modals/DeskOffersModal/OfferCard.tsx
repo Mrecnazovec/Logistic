@@ -9,6 +9,7 @@ import { PaymentSelector } from "@/components/ui/selectors/PaymentSelector"
 import { useI18n } from "@/i18n/I18nProvider"
 import type { PriceCurrencyCode } from "@/lib/currency"
 import { formatCurrencyPerKmValue, formatCurrencyValue } from "@/lib/currency"
+import { formatPriceInputValue, handlePriceInput, normalizePriceValueForPayload } from "@/lib/InputValidation"
 import { cn } from "@/lib/utils"
 import { PaymentMethodEnum } from "@/shared/enums/PaymentMethod.enum"
 import type { IOfferShort } from "@/shared/types/Offer.interface"
@@ -54,7 +55,7 @@ export function OfferCard({
   const defaultForm: OfferFormState = {
     paymentMethod: (offer.payment_method as PaymentMethodEnum) || "",
     currency: priceCurrency,
-    price: offer.price_value ?? "",
+    price: formatPriceInputValue(offer.price_value ?? ""),
   }
   const form = { ...defaultForm, ...formState }
   const [isCounterMode, setIsCounterMode] = useState(false)
@@ -70,7 +71,7 @@ export function OfferCard({
     }
     if (isCounterDisabled) return
     onCounter({
-      price_value: form.price as string,
+      price_value: normalizePriceValueForPayload(form.price as string) ?? "",
       price_currency: form.currency as PriceCurrencyCode,
       payment_method: form.paymentMethod as PaymentMethodEnum,
     })
@@ -110,12 +111,12 @@ export function OfferCard({
 
       <div className="grid gap-3 pt-2 md:grid-cols-[1fr_auto_auto]">
         <Input
-          type="number"
-          inputMode="decimal"
+          type="text"
+          inputMode="numeric"
           min="0"
           step="0.01"
           value={form.price ?? ""}
-          onChange={(event) => updateForm({ price: event.target.value })}
+          onChange={(event) => handlePriceInput(event, (value) => updateForm({ price: value }))}
           placeholder={t("components.offerCard.pricePlaceholder")}
           disabled={!isCounterMode}
           className="w-full rounded-full border-none bg-muted/40 placeholder:text-muted-foreground"

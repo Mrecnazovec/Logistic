@@ -19,6 +19,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue, formatDistanceKm } from '@/lib/formatters'
+import { formatPriceInputValue, handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import { getTransportName, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
@@ -37,7 +38,7 @@ const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
 export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, allowActions = true }: OfferDecisionModalProps) {
 	const { t } = useI18n()
-	const initialPriceValue = offer?.price_value ? String(offer.price_value) : ''
+	const initialPriceValue = formatPriceInputValue(offer?.price_value ? String(offer.price_value) : '')
 	const initialCurrency = (offer?.price_currency as PriceCurrencyCode) ?? ''
 	const initialPaymentMethod = (offer?.payment_method as PaymentMethodEnum) ?? ''
 
@@ -139,7 +140,7 @@ export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, 
 			{
 				id: String(offer.id),
 				data: {
-					price_value: priceValue,
+					price_value: normalizePriceValueForPayload(priceValue) ?? '',
 					price_currency: currency as PriceCurrencyCode,
 					payment_method: paymentMethod as PaymentMethodEnum,
 				},
@@ -238,10 +239,10 @@ export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, 
 											<Input
 												placeholder={t('components.offerDecision.pricePlaceholder')}
 												value={priceValue}
-												onChange={(event) => setPriceValue(event.target.value)}
+												onChange={(event) => handlePriceInput(event, setPriceValue)}
 												disabled={!isCounterMode}
-												type='number'
-												inputMode='decimal'
+												type='text'
+												inputMode='numeric'
 												min='0'
 												className='rounded-full border-none bg-muted/40'
 											/>

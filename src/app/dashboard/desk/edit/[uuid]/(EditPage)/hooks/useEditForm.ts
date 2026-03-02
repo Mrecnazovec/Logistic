@@ -1,5 +1,6 @@
 import { DASHBOARD_URL } from '@/config/url.config'
 import { usePatchLoad } from '@/hooks/queries/loads/usePatchLoad'
+import { normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { CargoPublishRequestDto } from '@/shared/types/CargoPublish.interface'
 import { useParams, useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -21,7 +22,7 @@ export function useEditForm() {
 		const rawPriceValue = data.price_value as string | null | undefined
 		const rawPriceCurrency = data.price_currency as string | null | undefined
 		const normalizedAxles = rawAxles === null || rawAxles === undefined || rawAxles === '' ? null : Number(rawAxles)
-		const normalizedPriceValue = rawPriceValue === '' || rawPriceValue === undefined ? null : rawPriceValue
+		const normalizedPriceValue = normalizePriceValueForPayload(rawPriceValue)
 		const normalizedPriceCurrency = rawPriceCurrency === '' || rawPriceCurrency === undefined ? null : rawPriceCurrency
 
 		patchLoad({

@@ -14,6 +14,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import type { PriceCurrencyCode } from '@/lib/currency'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { formatDateValue } from '@/lib/formatters'
+import { formatPriceInputValue, handlePriceInput, normalizePriceValueForPayload } from '@/lib/InputValidation'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 
@@ -28,7 +29,7 @@ interface CounterOfferModalProps {
 export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferModalProps) {
 	const { t } = useI18n()
 	const { counterOffer, isLoadingCounterOffer } = useCounterOffer()
-	const [price, setPrice] = useState(() => (offer.price_value ? String(offer.price_value) : ''))
+	const [price, setPrice] = useState(() => formatPriceInputValue(offer.price_value ? String(offer.price_value) : ''))
 	const [currency, setCurrency] = useState<PriceCurrencyCode | ''>(() => offer.price_currency ?? '')
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum | ''>(() => (offer.payment_method as PaymentMethodEnum) ?? '')
 	const [message, setMessage] = useState('')
@@ -44,7 +45,7 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 			{
 				id: String(offer.id),
 				data: {
-					price_value: price,
+					price_value: normalizePriceValueForPayload(price) ?? '',
 					price_currency: currency,
 					message: message || undefined,
 					payment_method: paymentMethod as PaymentMethodEnum,
@@ -101,9 +102,9 @@ export function CounterOfferModal({ offer, open, onOpenChange }: CounterOfferMod
 						<Input
 							placeholder={t('components.counterOffer.pricePlaceholder')}
 							value={price}
-							onChange={(event) => setPrice(event.target.value)}
-							type='number'
-							inputMode='decimal'
+							onChange={(event) => handlePriceInput(event, setPrice)}
+							type='text'
+							inputMode='numeric'
 							min='0'
 							className='rounded-full border-none bg-muted/40'
 						/>

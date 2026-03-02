@@ -7,10 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ContactSelector } from '@/components/ui/selectors/ContactSelector'
 import { PaymentSelector } from '@/components/ui/selectors/PaymentSelector'
 import { useI18n } from '@/i18n/I18nProvider'
-import { handleNumericInput } from '@/lib/InputValidation'
+import { handleNumericInput, handlePriceInput } from '@/lib/InputValidation'
 import { cn } from '@/lib/utils'
 import { PriceSelector } from '@/shared/enums/PriceCurrency.enum'
-import { NUMERIC_REGEX } from '@/shared/regex/regex'
+import { NUMERIC_REGEX, PRICE_FORMAT_REGEX } from '@/shared/regex/regex'
 import { Banknote } from 'lucide-react'
 import { EDIT_SECTION_CLASS } from '../constants/editLayout'
 import type { EditSectionCommonProps } from '../types/EditForm.types'
@@ -67,6 +67,9 @@ export function EditShippingSection({ form, isLoadingPatch, disableEmailContact 
 				<FormField
 					control={form.control}
 					name='price_value'
+					rules={{
+						validate: (value) => !value || PRICE_FORMAT_REGEX.test(String(value)),
+					}}
 					render={({ field }) => (
 						<FormItem className='w-1/2'>
 							<FormControl>
@@ -75,8 +78,9 @@ export function EditShippingSection({ form, isLoadingPatch, disableEmailContact 
 										placeholder={t('desk.edit.shipping.pricePlaceholder')}
 										{...field}
 										value={field.value ?? ''}
-										onChange={(event) => handleNumericInput(event, NUMERIC_REGEX, field.onChange)}
-										inputMode='decimal'
+										onChange={(event) => handlePriceInput(event, field.onChange)}
+										inputMode='numeric'
+										type='text'
 										disabled={isLoadingPatch}
 									/>
 									<InputGroupAddon className='pr-2'>
