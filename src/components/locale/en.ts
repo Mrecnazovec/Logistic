@@ -199,6 +199,8 @@ const messages: Record<string, string> = {
 	'components.offerDecision.weightLabel': 'Weight',
 	'components.offerDecision.priceLabel': 'Price',
 	'components.offerDecision.companyLabel': 'Company',
+	'components.offerDecision.toWhom': 'To',
+	'components.offerDecision.fromWhom': 'From',
 	'components.offerDecision.currentPrice': 'Current price',
 	'components.offerDecision.pricePlaceholder': 'Enter amount',
 	'components.offerDecision.currencyPlaceholder': 'Select currency',

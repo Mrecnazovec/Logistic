@@ -198,6 +198,8 @@
 	'components.offerDecision.weightLabel': 'Вес',
 	'components.offerDecision.priceLabel': 'Цена',
 	'components.offerDecision.companyLabel': 'Компания',
+	'components.offerDecision.toWhom': 'Кому',
+	'components.offerDecision.fromWhom': 'От кого',
 	'components.offerDecision.currentPrice': 'Текущая ставка',
 	'components.offerDecision.pricePlaceholder': 'Укажите сумму',
 	'components.offerDecision.currencyPlaceholder': 'Выберите валюту',

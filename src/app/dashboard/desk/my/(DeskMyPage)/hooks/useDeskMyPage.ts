@@ -16,15 +16,23 @@ import { useSearchForm } from '../../Searching/useSearchForm'
 import { getDeskIncomeColumns } from '../../table/DeskIncomeColumns'
 import { getDeskMyColumns } from '../../table/DeskMyColumns'
 
+export type OfferDecisionContext = 'my_offers' | 'offers_to_me'
+export type OpenDecisionOptions = {
+	forceFull?: boolean
+	decisionContext?: OfferDecisionContext
+}
+
 function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: Record<string, string | number>) => string) {
 	const [selectedOffer, setSelectedOffer] = useState<IOfferShort | undefined>()
+	const [selectedDecisionContext, setSelectedDecisionContext] = useState<OfferDecisionContext | undefined>()
 	const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false)
 	const [decisionNote, setDecisionNote] = useState<string | undefined>()
 	const [decisionActionable, setDecisionActionable] = useState(false)
 
-	const openDecisionModal = useCallback((offer: IOfferShort, options?: { forceFull?: boolean }) => {
+	const openDecisionModal = useCallback((offer: IOfferShort, options?: OpenDecisionOptions) => {
 		const meta = getOfferStatusMeta(offer, role, t)
 		setSelectedOffer(offer)
+		setSelectedDecisionContext(options?.decisionContext)
 		if (options?.forceFull) {
 			setDecisionNote(undefined)
 			setDecisionActionable(true)
@@ -39,6 +47,7 @@ function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: 
 		setIsDecisionModalOpen(open)
 		if (!open) {
 			setSelectedOffer(undefined)
+			setSelectedDecisionContext(undefined)
 			setDecisionNote(undefined)
 			setDecisionActionable(false)
 		}
@@ -46,6 +55,7 @@ function useDecisionModal(role: RoleEnum | undefined, t: (key: string, params?: 
 
 	return {
 		selectedOffer,
+		selectedDecisionContext,
 		isDecisionModalOpen,
 		decisionNote,
 		decisionActionable,
@@ -69,6 +79,7 @@ export function useDeskMyPage() {
 	const clearOffer = useOfferRealtimeStore((state) => state.clearOffer)
 	const {
 		selectedOffer,
+		selectedDecisionContext,
 		isDecisionModalOpen,
 		decisionNote,
 		decisionActionable,
@@ -91,18 +102,32 @@ export function useDeskMyPage() {
 	)
 
 	const unreadOfferIds = useMemo(() => new Set(unreadOffers.map((item) => item.offerId)), [unreadOffers])
-	const deskColumns = useMemo(() => getDeskMyColumns(t, openDecisionModal, unreadOfferIds), [openDecisionModal, t, unreadOfferIds])
-	const incomeColumns = useMemo(() => getDeskIncomeColumns(t, openDecisionModal, unreadOfferIds), [openDecisionModal, t, unreadOfferIds])
+	const handleOpenDecision = useCallback((offer: IOfferShort, options?: OpenDecisionOptions) => {
+		clearOffer(offer.id)
+		openDecisionModal(offer, options)
+	}, [clearOffer, openDecisionModal])
+
+	const handleOpenDecisionDeskTab = useCallback((offer: IOfferShort, options?: OpenDecisionOptions) => {
+		handleOpenDecision(offer, {
+			...options,
+			decisionContext: role === RoleEnum.LOGISTIC ? 'offers_to_me' : 'my_offers',
+		})
+	}, [handleOpenDecision, role])
+
+	const handleOpenDecisionDriversTab = useCallback((offer: IOfferShort, options?: OpenDecisionOptions) => {
+		handleOpenDecision(offer, {
+			...options,
+			decisionContext: role === RoleEnum.LOGISTIC ? 'my_offers' : 'offers_to_me',
+		})
+	}, [handleOpenDecision, role])
+
+	const deskColumns = useMemo(() => getDeskMyColumns(t, handleOpenDecisionDeskTab, unreadOfferIds), [handleOpenDecisionDeskTab, t, unreadOfferIds])
+	const incomeColumns = useMemo(() => getDeskIncomeColumns(t, handleOpenDecisionDriversTab, unreadOfferIds), [handleOpenDecisionDriversTab, t, unreadOfferIds])
 
 	const deskResults = data?.results ?? []
 	const myResults = dataMy?.results ?? []
 	const hasUnreadDesk = deskResults.some((offer) => unreadOfferIds.has(offer.id))
 	const hasUnreadMy = myResults.some((offer) => unreadOfferIds.has(offer.id))
-
-	const handleOpenDecision = useCallback((offer: IOfferShort, options?: { forceFull?: boolean }) => {
-		clearOffer(offer.id)
-		openDecisionModal(offer, options)
-	}, [clearOffer, openDecisionModal])
 
 	const deskPagination = deskResults.length
 		? { next: data?.next, previous: data?.previous, totalCount: data?.count, pageSize: deskResults.length }
@@ -140,8 +165,11 @@ export function useDeskMyPage() {
 		deskPagination,
 		myPagination,
 		handleOpenDecision,
+		handleOpenDecisionDeskTab,
+		handleOpenDecisionDriversTab,
 		handleTabChange,
 		selectedOffer,
+		selectedDecisionContext,
 		isDecisionModalOpen,
 		decisionNote,
 		decisionActionable,

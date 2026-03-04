@@ -198,6 +198,8 @@ const messages: Record<string, string> = {
 	'components.offerDecision.weightLabel': "Og'irlik",
 	'components.offerDecision.priceLabel': 'Narx',
 	'components.offerDecision.companyLabel': 'Kompaniya',
+	'components.offerDecision.toWhom': 'Kimga',
+	'components.offerDecision.fromWhom': 'Kimdan',
 	'components.offerDecision.currentPrice': 'Joriy narx',
 	'components.offerDecision.pricePlaceholder': 'Summani kiriting',
 	'components.offerDecision.currencyPlaceholder': 'Valyutani tanlang',

@@ -14,8 +14,11 @@ import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { ProfileLink } from '../../../actions/ProfileLink'
 import { useOfferDecisionModalState } from '../hooks/useOfferDecisionModalState'
 
+type OfferDecisionContext = 'my_offers' | 'offers_to_me'
+
 interface OfferDecisionModalProps {
 	offer?: IOfferShort
+	decisionContext?: OfferDecisionContext
 	open: boolean
 	onOpenChange: (open: boolean) => void
 	statusNote?: string
@@ -25,7 +28,7 @@ interface OfferDecisionModalProps {
 const EMPTY = '-'
 const currencyOptions: PriceCurrencyCode[] = ['UZS', 'USD', 'EUR', 'KZT', 'RUB']
 
-export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, allowActions = true }: OfferDecisionModalProps) {
+export function OfferDecisionModalView({ offer, decisionContext, open, onOpenChange, statusNote, allowActions = true }: OfferDecisionModalProps) {
 	const { t } = useI18n()
 	const {
 		dialogKey,
@@ -65,6 +68,32 @@ export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, 
 		handleReject,
 		handleCounter,
 	} = useOfferDecisionModalState(offer, open, onOpenChange, t)
+
+	const customerName = offer?.customer_full_name || EMPTY
+	const customerId = offer?.customer_id
+	const customerCompany = offer?.customer_company || EMPTY
+	const carrierName = offer?.carrier_full_name || EMPTY
+	const carrierId = offer?.carrier_id
+	const carrierCompany = offer?.carrier_company || EMPTY
+
+	const counterparty =
+		decisionContext === 'my_offers'
+			? {
+					name: carrierName !== EMPTY ? carrierName : customerName,
+					id: carrierName !== EMPTY ? carrierId : customerId,
+					company: carrierCompany !== EMPTY ? carrierCompany : customerCompany,
+				}
+			: {
+					name: customerName,
+					id: customerId,
+					company: customerCompany,
+				}
+	const counterpartyLabel =
+		decisionContext === 'my_offers'
+			? t('components.offerDecision.toWhom')
+			: decisionContext === 'offers_to_me'
+				? t('components.offerDecision.fromWhom')
+				: null
 
 	return (
 		<Dialog
@@ -125,16 +154,21 @@ export function OfferDecisionModalView({ offer, open, onOpenChange, statusNote, 
 
 								<div className='flex flex-wrap items-center justify-between gap-3 border-b pb-6 text-sm text-muted-foreground'>
 									<div className='space-y-1'>
+										{counterpartyLabel ? (
+											<p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>{counterpartyLabel}:</p>
+										) : null}
 										<p className='font-semibold text-foreground'>
 											{inviteUserId && inviteUserName !== EMPTY ? (
 												<ProfileLink name={inviteUserName} id={inviteUserId} />
+											) : counterparty.id ? (
+												<ProfileLink name={counterparty.name} id={counterparty.id} />
 											) : (
-												<ProfileLink name={offer.customer_full_name} id={offer.customer_id} />
+												counterparty.name
 											)}
 										</p>
 										<p className='text-muted-foreground'>
 											<span className='font-semibold text-foreground'>{t('components.offerDecision.companyLabel')}: </span>
-											{invitePreview ? inviteCompanyName : offer.customer_company || EMPTY}
+											{invitePreview ? inviteCompanyName : counterparty.company || EMPTY}
 										</p>
 										<span className='text-error-500 font-bold'>{offer.response_status}</span>
 									</div>
