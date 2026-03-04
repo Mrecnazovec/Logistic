@@ -7,6 +7,7 @@ import { enUS, ru } from 'date-fns/locale'
 
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useGenerateLoadInvite } from '@/hooks/queries/loads/useGenerateLoadInvite'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useInviteOffer } from '@/hooks/queries/offers/useAction/useInviteOffer'
 import { formatCurrencyPerKmValue, formatCurrencyValue } from '@/lib/currency'
 import { PaymentMethodEnum } from '@/shared/enums/PaymentMethod.enum'
@@ -18,6 +19,7 @@ type Translator = (key: string, params?: Record<string, string | number>) => str
 export function useDeskInviteModalState(selectedRow: ICargoList | undefined, locale: string, t: Translator) {
 	const [shareCopyStatus, setShareCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 	const [carrierId, setCarrierId] = useState('')
+	const { me } = useGetMe()
 	const { generateLoadInvite, invite, isLoadingGenerate, resetInvite } = useGenerateLoadInvite()
 	const { inviteOffer, isLoadingInviteOffer } = useInviteOffer()
 	const dateLocale = locale === 'en' ? enUS : ru
@@ -56,6 +58,10 @@ export function useDeskInviteModalState(selectedRow: ICargoList | undefined, loc
 		const parsedCarrierId = Number(carrierId)
 		if (!carrierId || Number.isNaN(parsedCarrierId)) {
 			toast.error(t('components.deskInvite.errors.invalidId'))
+			return
+		}
+		if (me?.id && parsedCarrierId === me.id) {
+			toast.error(t('components.deskInvite.errors.selfInvite'))
 			return
 		}
 
@@ -117,4 +123,3 @@ export function useDeskInviteModalState(selectedRow: ICargoList | undefined, loc
 		handleCopyShareLink,
 	}
 }
-

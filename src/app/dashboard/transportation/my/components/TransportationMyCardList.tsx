@@ -50,15 +50,21 @@ type TransportationMyCardProps = {
 function TransportationMyCard({ cargo, role }: TransportationMyCardProps) {
 	const { t } = useI18n()
 	const placeholder = t('transportation.card.placeholder')
+	const shouldHideCustomerForCarrier =
+		role === RoleEnum.CARRIER && Boolean(cargo.roles?.customer?.hidden || cargo.roles?.customer?.hidden_by)
 	const customerCarrierLabel = role === RoleEnum.CUSTOMER
 		? t('transportation.card.label.carrier')
 		: t('transportation.card.label.customer')
 	const customerCarrierValue = role === RoleEnum.CUSTOMER
 		? cargo.roles?.carrier?.name
-		: cargo.roles?.customer?.name
+		: shouldHideCustomerForCarrier
+			? placeholder
+			: cargo.roles?.customer?.name
 	const customerCarrierId = role === RoleEnum.CUSTOMER
 		? cargo.roles?.carrier?.id
-		: cargo.roles?.customer?.id
+		: shouldHideCustomerForCarrier
+			? undefined
+			: cargo.roles?.customer?.id
 	const logisticCarrierLabel = role === RoleEnum.LOGISTIC
 		? t('transportation.card.label.carrier')
 		: t('transportation.card.label.logistic')

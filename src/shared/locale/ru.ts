@@ -40,7 +40,7 @@ const messages: Record<string, string> = {
 	'shared.payment.both': 'Оба',
 
 	// enums/OrderStatus.enum.ts
-	'shared.orderDriverStatus.stopped': 'Ожидает',
+	'shared.orderDriverStatus.stopped': 'Остановился',
 	'shared.orderDriverStatus.problem': 'Есть проблема',
 	'shared.orderDriverStatus.enRoute': 'В пути',
 

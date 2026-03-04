@@ -320,6 +320,7 @@ const messages: Record<string, string> = {
 	'components.deskInvite.cancel': 'Bekor qilish',
 	'components.deskInvite.errors.noCargo': 'Haydovchini taklif qilish uchun yuk topilmadi.',
 	'components.deskInvite.errors.invalidId': 'Yaroqli haydovchi ID kiriting.',
+	'components.deskInvite.errors.selfInvite': "O'zingizga taklif yuborib bo'lmaydi.",
 	'components.deskInvite.errors.noData': "E'lon ma'lumotlarini yuklab bo'lmadi.",
 	'components.deskInvite.errors.generateFirst': 'Nusxalash uchun havolani yarating.',
 

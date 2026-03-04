@@ -3,6 +3,7 @@
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { formatDateValue, formatPlace, formatPriceValue, formatRelativeDate } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
@@ -30,6 +31,7 @@ const InfoRow = ({ label, value }: InfoRowProps) => (
 export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 	const { t, locale } = useI18n()
 	const { role } = useRoleStore()
+	const { me } = useGetMe()
 
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || EMPTY_VALUE
 	const ratingDisplay =
@@ -44,6 +46,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 			: paymentMethodRaw === 'cash'
 				? t('announcements.expanded.payment.cash')
 				: paymentMethodRaw || EMPTY_VALUE
+	const isOwnCargo = Boolean(me?.id && Number(cargo.user_id) === me.id)
 
 	return (
 		<div className='flex flex-col gap-6'>
@@ -152,7 +155,11 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 
 			{role !== RoleEnum.CUSTOMER && (
 				<div className='mt-2 flex justify-start lg:justify-center'>
-					<OfferModal selectedRow={cargo} title={t('announcements.expanded.offer')} />
+					{isOwnCargo ? (
+						<span className='text-sm font-semibold text-success-500'>Это ваша заявка</span>
+					) : (
+						<OfferModal selectedRow={cargo} title={t('announcements.expanded.offer')} />
+					)}
 				</div>
 			)}
 		</div>

@@ -149,6 +149,8 @@ const messages: Record<string, string> = {
 	'desk.invite.counterLoading': 'Отправка...',
 	'desk.invite.reject': 'Отклонить',
 	'desk.invite.rejectLoading': 'Отклонение...',
+
+	'desk.invite.ownCargoPlaceholder': 'Эта ваша заявка',
 }
 
 export default messages

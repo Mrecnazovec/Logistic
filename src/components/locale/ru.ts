@@ -320,6 +320,7 @@
 	'components.deskInvite.cancel': 'Отменить',
 	'components.deskInvite.errors.noCargo': 'Не найден груз для приглашения перевозчика.',
 	'components.deskInvite.errors.invalidId': 'Введите корректный ID перевозчика.',
+	'components.deskInvite.errors.selfInvite': 'Нельзя отправить приглашение самому себе.',
 	'components.deskInvite.errors.noData': 'Не удалось получить данные объявления.',
 	'components.deskInvite.errors.generateFirst': 'Сгенерируйте ссылку, чтобы её скопировать.',
 
