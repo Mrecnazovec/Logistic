@@ -321,6 +321,7 @@ const messages: Record<string, string> = {
 	'components.deskInvite.cancel': 'Cancel',
 	'components.deskInvite.errors.noCargo': 'Cargo not found for inviting the carrier.',
 	'components.deskInvite.errors.invalidId': 'Enter a valid carrier ID.',
+	'components.deskInvite.errors.selfInvite': 'You cannot send an invite to yourself.',
 	'components.deskInvite.errors.noData': 'Failed to load announcement data.',
 	'components.deskInvite.errors.generateFirst': 'Generate a link to copy it.',
 

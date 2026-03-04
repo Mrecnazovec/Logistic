@@ -10,6 +10,21 @@ import { Minus } from 'lucide-react'
 
 type Translator = (key: string, params?: Record<string, string | number>) => string
 
+const getPrimaryPartyName = (row: IOrderList, role: RoleEnum | undefined, placeholder: string) => {
+	if (role === RoleEnum.CUSTOMER) {
+		return row.roles.carrier?.name ?? placeholder
+	}
+
+	const shouldHideCustomerForCarrier =
+		role === RoleEnum.CARRIER && Boolean(row.roles.customer?.hidden || row.roles.customer?.hidden_by)
+
+	if (shouldHideCustomerForCarrier) {
+		return placeholder
+	}
+
+	return row.roles.customer?.name ?? placeholder
+}
+
 export const createTransportationColumns = (t: Translator, role?: RoleEnum): ColumnDef<IOrderList>[] => [
 		{
 				accessorKey: 'id',
@@ -19,7 +34,7 @@ export const createTransportationColumns = (t: Translator, role?: RoleEnum): Col
 		{
 				accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_name' : 'customer_name',
 				header: role === RoleEnum.CUSTOMER ? t('transportation.columns.carrier') : t('transportation.columns.customer'),
-				cell: ({ row }) => (role === RoleEnum.CUSTOMER ? row.original.roles.carrier?.name : row.original.roles.customer.name),
+				cell: ({ row }) => getPrimaryPartyName(row.original, role, t('transportation.card.placeholder')),
 
 		},
 		{

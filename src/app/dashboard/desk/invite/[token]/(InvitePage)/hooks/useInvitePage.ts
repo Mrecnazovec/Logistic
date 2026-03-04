@@ -2,6 +2,7 @@
 
 import { DASHBOARD_URL, PUBLIC_URL } from '@/config/url.config'
 import { useLoadInvite } from '@/hooks/queries/loads/useLoadInvite'
+import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useAcceptOffer } from '@/hooks/queries/offers/useAction/useAcceptOffer'
 import { useCounterOffer } from '@/hooks/queries/offers/useAction/useCounterOffer'
 import { useRejectOffer } from '@/hooks/queries/offers/useAction/useRejectOffer'
@@ -36,6 +37,7 @@ export function useInvitePage() {
 	const authHref = useMemo(() => `${PUBLIC_URL.auth()}?next=${encodeURIComponent(returnPath)}`, [returnPath])
 
 	const { invite, isLoadingInvite, inviteError, refetchInvite } = useLoadInvite(token, { enabled: Boolean(accessToken) })
+	const { me } = useGetMe()
 	const inviteErrorStatus = useMemo(() => {
 		if (!inviteError) return null
 		if (inviteError instanceof AxiosError || (inviteError as AxiosError).isAxiosError) {
@@ -71,6 +73,7 @@ export function useInvitePage() {
 	const formattedPrice = formatCurrencyValue(cargo?.price_value, cargo?.price_currency as PriceCurrencyCode | undefined)
 	const formattedPricePerKm = formatCurrencyPerKmValue(cargo?.price_per_km, cargo?.price_currency as PriceCurrencyCode | undefined)
 	const isProcessing = isLoadingInvite || isLoadingAcceptOffer || isLoadingCounterOffer || isLoadingRejectOffer
+	const isOwnCargo = Boolean(me?.id && Number(cargo?.user_id) === me.id)
 
 	useEffect(() => {
 		if (!accessToken) router.replace(authHref)
@@ -128,6 +131,7 @@ export function useInvitePage() {
 		defaultCurrencyValue,
 		defaultPaymentMethod,
 		inviteOfferId,
+		isOwnCargo,
 		isProcessing,
 		isLoadingAcceptOffer,
 		isLoadingCounterOffer,

@@ -148,6 +148,7 @@ const messages: Record<string, string> = {
 	'desk.invite.counterLoading': 'Yuborilmoqda...',
 	'desk.invite.reject': 'Rad etish',
 	'desk.invite.rejectLoading': 'Rad etilmoqda...',
+	'desk.invite.ownCargoPlaceholder': "Bu sizning arizangiz",
 }
 
 export default messages

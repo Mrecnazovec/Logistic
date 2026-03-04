@@ -39,6 +39,7 @@ type Props = {
 	defaultCurrencyValue: PriceCurrencyCode | ''
 	defaultPaymentMethod: PaymentMethodEnum | null
 	inviteOfferId: number | null
+	isOwnCargo: boolean
 	isProcessing: boolean
 	isLoadingAcceptOffer: boolean
 	isLoadingCounterOffer: boolean
@@ -68,6 +69,7 @@ export function InviteView(props: Props) {
 		defaultCurrencyValue,
 		defaultPaymentMethod,
 		inviteOfferId,
+		isOwnCargo,
 		isProcessing,
 		isLoadingAcceptOffer,
 		isLoadingCounterOffer,
@@ -204,25 +206,31 @@ export function InviteView(props: Props) {
 						<p className='text-sm text-muted-foreground'>{t('desk.invite.response.description')}</p>
 					</CardHeader>
 					<CardContent className='space-y-4'>
-						<InviteResponseActions
-							key={`${inviteOfferId ?? cargo.id}-${defaultPriceValue}-${defaultCurrencyValue}`}
-							offerId={inviteOfferId}
-							defaultPrice={defaultPriceValue}
-							defaultCurrency={defaultCurrencyValue}
-							defaultPaymentMethod={defaultPaymentMethod}
-							onAccept={onAccept}
-							onCounter={onCounter}
-							onReject={onReject}
-							isLoadingAccept={isLoadingAcceptOffer}
-							isLoadingCounter={isLoadingCounterOffer}
-							isLoadingReject={isLoadingRejectOffer}
-							isProcessing={isProcessing}
-						/>
-						{!inviteOfferId && (
-							<p className='text-sm text-amber-600 flex items-center gap-2'>
-								<AlertCircle className='size-4' />
-								{t('desk.invite.offerIdMissingHint')}
-							</p>
+						{isOwnCargo ? (
+							<p className='text-sm font-semibold text-success-500'>{t('desk.invite.ownCargoPlaceholder')}</p>
+						) : (
+							<>
+								<InviteResponseActions
+									key={`${inviteOfferId ?? cargo.id}-${defaultPriceValue}-${defaultCurrencyValue}`}
+									offerId={inviteOfferId}
+									defaultPrice={defaultPriceValue}
+									defaultCurrency={defaultCurrencyValue}
+									defaultPaymentMethod={defaultPaymentMethod}
+									onAccept={onAccept}
+									onCounter={onCounter}
+									onReject={onReject}
+									isLoadingAccept={isLoadingAcceptOffer}
+									isLoadingCounter={isLoadingCounterOffer}
+									isLoadingReject={isLoadingRejectOffer}
+									isProcessing={isProcessing}
+								/>
+								{!inviteOfferId && (
+									<p className='text-sm text-amber-600 flex items-center gap-2'>
+										<AlertCircle className='size-4' />
+										{t('desk.invite.offerIdMissingHint')}
+									</p>
+								)}
+							</>
 						)}
 					</CardContent>
 				</Card>

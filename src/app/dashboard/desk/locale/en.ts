@@ -149,6 +149,7 @@ const messages: Record<string, string> = {
 	'desk.invite.counterLoading': 'Sending...',
 	'desk.invite.reject': 'Reject',
 	'desk.invite.rejectLoading': 'Rejecting...',
+	'desk.invite.ownCargoPlaceholder': 'This is your cargo request',
 }
 
 export default messages
