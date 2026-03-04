@@ -64,7 +64,7 @@ export const useOrderPage = () => {
 	const canInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
 	const canCancelOrder = Boolean(order && (orderStatus === OrderStatusEnum.PENDING || orderStatus === OrderStatusEnum.NODRIVER))
 	const canToggleContacts =
-		Boolean(order) && ((role === RoleEnum.LOGISTIC && isOrderLogistic) || (role === RoleEnum.CUSTOMER && isOrderCustomer))
+		Boolean(order) && ((role === RoleEnum.LOGISTIC && isOrderLogistic) || (role === RoleEnum.CUSTOMER && isOrderCustomer) || role === RoleEnum.LOGISTIC && isOrderCustomer)
 	const isCurrentRoleHidden =
 		role === RoleEnum.LOGISTIC
 			? Boolean(order?.roles.customer.hidden_by)

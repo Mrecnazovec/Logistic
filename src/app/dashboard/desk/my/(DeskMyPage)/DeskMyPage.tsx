@@ -18,6 +18,7 @@ export function DeskMyPage() {
 			<OfferDecisionModal
 				key={state.selectedOffer?.id ?? 'empty'}
 				offer={state.selectedOffer}
+				decisionContext={state.selectedDecisionContext}
 				open={state.isDecisionModalOpen}
 				onOpenChange={state.closeDecisionModal}
 				statusNote={state.decisionNote}

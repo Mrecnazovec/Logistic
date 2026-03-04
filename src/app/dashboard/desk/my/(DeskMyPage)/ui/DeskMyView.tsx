@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { DeskMyCardList } from '../../components/DeskIncomeCardList'
 import type { IOfferShort } from '@/shared/types/Offer.interface'
 import { RoleEnum } from '@/shared/enums/Role.enum'
+import type { OpenDecisionOptions } from '../hooks/useDeskMyPage'
 
 type DeskMyViewProps = {
 	t: (...args: any[]) => string
@@ -31,7 +32,8 @@ type DeskMyViewProps = {
 	unreadOfferIds: Set<number>
 	deskPagination?: any
 	myPagination?: any
-	handleOpenDecision: (offer: IOfferShort, options?: { forceFull?: boolean }) => void
+	handleOpenDecisionDeskTab: (offer: IOfferShort, options?: OpenDecisionOptions) => void
+	handleOpenDecisionDriversTab: (offer: IOfferShort, options?: OpenDecisionOptions) => void
 	handleTabChange: (tab: string) => void
 }
 
@@ -56,7 +58,8 @@ export function DeskMyView({
 	unreadOfferIds,
 	deskPagination,
 	myPagination,
-	handleOpenDecision,
+	handleOpenDecisionDeskTab,
+	handleOpenDecisionDriversTab,
 	handleTabChange,
 }: DeskMyViewProps) {
 	const handleSearchSubmit = form.handleSubmit(onSubmit)
@@ -66,13 +69,13 @@ export function DeskMyView({
 	) : !myResults.length ? (
 		<EmptyTableState />
 	) : tableType === 'card' ? (
-		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
+		<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecisionDeskTab} role={role} unreadOfferIds={unreadOfferIds} />
 	) : (
 		<DataTable
 			columns={deskColumns}
 			data={myResults}
 			serverPagination={{ next: dataMy?.next, previous: dataMy?.previous, totalCount: dataMy?.count }}
-			onRowClick={handleOpenDecision}
+			onRowClick={handleOpenDecisionDeskTab}
 		/>
 	)
 
@@ -81,13 +84,13 @@ export function DeskMyView({
 	) : !deskResults.length ? (
 		<EmptyTableState />
 	) : tableType === 'card' ? (
-		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
+		<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecisionDriversTab} role={role} unreadOfferIds={unreadOfferIds} />
 	) : (
 		<DataTable
 			columns={incomeColumns}
 			data={deskResults}
 			serverPagination={{ next: data?.next, previous: data?.previous, totalCount: data?.count }}
-			onRowClick={handleOpenDecision}
+			onRowClick={handleOpenDecisionDriversTab}
 		/>
 	)
 
@@ -137,7 +140,7 @@ export function DeskMyView({
 					{isDesktop ? (
 						myDesktopContent
 					) : (
-						<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
+						<DeskMyCardList cargos={myResults} serverPagination={deskPagination} onOpenDecision={handleOpenDecisionDeskTab} role={role} unreadOfferIds={unreadOfferIds} />
 					)}
 				</TabsContent>
 				<TabsContent value='drivers'>
@@ -146,7 +149,7 @@ export function DeskMyView({
 					) : isLoading ? (
 						<LoaderTable />
 					) : deskResults.length ? (
-						<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecision} role={role} unreadOfferIds={unreadOfferIds} />
+						<DeskMyCardList cargos={deskResults} serverPagination={myPagination} onOpenDecision={handleOpenDecisionDriversTab} role={role} unreadOfferIds={unreadOfferIds} />
 					) : (
 						<EmptyTableState />
 					)}
