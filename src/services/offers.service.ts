@@ -51,7 +51,7 @@ class OffersService {
 
 	async getIncomingOffers(params?: Record<string, string>) {
 		const { data } = await axiosWithAuth<IPaginatedOfferShortList>({
-			url: API_URL.offers('incoming'),
+			url: API_URL.root('/offers?scope=incoming'),
 			method: 'GET',
 			params,
 		})
@@ -61,7 +61,7 @@ class OffersService {
 
 	async getMyOffers(params?: Record<string, string>) {
 		const { data } = await axiosWithAuth<IPaginatedOfferShortList>({
-			url: API_URL.offers('my'),
+			url: API_URL.root('/offers?scope=mine'),
 			method: 'GET',
 			params,
 		})

@@ -110,7 +110,7 @@ export function DeskMyView({
 				</Form>
 			</div>
 
-			<Tabs defaultValue='drivers' className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'} onValueChange={handleTabChange}>
+			<Tabs defaultValue='desk' className={isDesktop ? 'flex-1' : 'h-full rounded-4xl xs:bg-background'} onValueChange={handleTabChange}>
 				<div className='flex items-end justify-between'>
 					<TabsList className='-mb-2 bg-transparent'>
 						{tabs.map((tab) => {

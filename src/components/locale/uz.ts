@@ -46,6 +46,7 @@ const messages: Record<string, string> = {
 	'components.dashboard.header.notifications.latest': "So'nggi: {count}",
 	'components.dashboard.header.notifications.allRead': "Hammasi o'qildi",
 	'components.dashboard.header.notifications.empty': "Bildirishnoma yo'q",
+	'components.dashboard.header.notifications.orderStatusUpdated': "Buyurtma holati yangilandi: {oldStatus} => {newStatus}",
 	'components.dashboard.header.notifications.tabs.all': 'Barchasi({count})',
 	'components.dashboard.header.notifications.tabs.important': 'Muhim({count})',
 	'components.dashboard.header.speed.value': '{speed} km/soat',

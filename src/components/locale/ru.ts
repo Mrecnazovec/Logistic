@@ -46,6 +46,7 @@
 	'components.dashboard.header.notifications.latest': 'Последние: {count}',
 	'components.dashboard.header.notifications.allRead': 'Все прочитано',
 	'components.dashboard.header.notifications.empty': 'Нет уведомлений',
+	'components.dashboard.header.notifications.orderStatusUpdated': 'Статус заказа обновлён: {oldStatus} => {newStatus}',
 	'components.dashboard.header.notifications.tabs.all': 'Все({count})',
 	'components.dashboard.header.notifications.tabs.important': 'Важные({count})',
 	'components.dashboard.header.speed.value': '{speed} км/ч',

@@ -5,6 +5,7 @@ import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { PolicyAgreementModal } from '@/components/ui/modals/PolicyAgreementModal'
+import { getOrderStatusLabel } from '@/app/dashboard/history/orderStatusConfig'
 import { notificationTypeSamples } from '@/app/dashboard/notifications/notificationTypes'
 import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
@@ -15,6 +16,7 @@ import { useNotificationsRealtime } from '@/hooks/queries/notifications/useNotif
 import { useI18n } from '@/i18n/I18nProvider'
 import { stripLocaleFromPath } from '@/i18n/paths'
 import { cn } from '@/lib/utils'
+import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import { RoleEnum, RoleSelect } from '@/shared/enums/Role.enum'
 import type { INotification } from '@/shared/types/Notification.interface'
 import { useOfferRealtimeStore } from '@/store/useOfferRealtimeStore'
@@ -42,6 +44,7 @@ const IMPORTANT_NOTIFICATION_TYPES = new Set<string>(
 	notificationTypeSamples.filter((item) => item.importance).map((item) => item.type)
 )
 const GPS_SEND_INTERVAL_MS = 15 * 60 * 1000
+const ORDER_STATUSES = new Set<string>(Object.values(OrderStatusEnum))
 
 const getDeskTabTarget = (pathname: string): 'desk' | 'myOffers' | null => {
 	if (pathname.startsWith('/dashboard/desk/my')) return 'myOffers'
@@ -182,6 +185,29 @@ export function Header() {
 		setPolicyOpen(nextOpen)
 	}
 
+	const getNotificationMessage = (notification: INotification) => {
+		if (notification.type !== 'cargo_status_changed') {
+			return notification.message
+		}
+
+		const payload = notification.payload as Record<string, unknown> | null | undefined
+		const oldStatus = payload?.old_status
+		const newStatus = payload?.new_status
+		if (typeof oldStatus !== 'string' || typeof newStatus !== 'string') {
+			return notification.message
+		}
+		if (!ORDER_STATUSES.has(oldStatus) || !ORDER_STATUSES.has(newStatus)) {
+			return notification.message
+		}
+
+		const oldStatusLabel = getOrderStatusLabel(oldStatus as OrderStatusEnum, t)
+		const newStatusLabel = getOrderStatusLabel(newStatus as OrderStatusEnum, t)
+		return t('components.dashboard.header.notifications.orderStatusUpdated', {
+			oldStatus: oldStatusLabel,
+			newStatus: newStatusLabel,
+		})
+	}
+
 	const renderNotifications = (list: INotification[]) => {
 		if (list.length === 0 && !isLoadingNotifications) {
 			return (
@@ -193,12 +219,14 @@ export function Header() {
 
 		return (
 			<div className='max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-border'>
-				<div className='flex flex-col'>
-					{list.map((item) => (
-						<Link
-							key={item.id}
-							href={`${withLocale(DASHBOARD_URL.notifications(), locale)}?id=${item.id}`}
-							className={cn(
+					<div className='flex flex-col'>
+						{list.map((item) => {
+							const messageText = getNotificationMessage(item)
+							return (
+								<Link
+								key={item.id}
+								href={`${withLocale(DASHBOARD_URL.notifications(), locale)}?id=${item.id}`}
+								className={cn(
 								'text-left px-4 py-3 flex flex-col gap-1 transition-colors border-b last:border-none',
 								item.is_read
 									? 'bg-white hover:bg-accent/40'
@@ -206,16 +234,17 @@ export function Header() {
 							)}
 						>
 							<p className='text-sm font-semibold text-gray-900 line-clamp-2'>{item.title}</p>
-							{item.message && <p className='text-sm text-gray-600 line-clamp-2'>{item.message}</p>}
-							<p className='text-[11px] text-gray-500'>
-								{format(new Date(item.created_at), 'dd.MM.yyyy HH:mm')}
-							</p>
-						</Link>
-					))}
+							{messageText && <p className='text-sm text-gray-600 line-clamp-2'>{messageText}</p>}
+								<p className='text-[11px] text-gray-500'>
+									{format(new Date(item.created_at), 'dd.MM.yyyy HH:mm')}
+								</p>
+								</Link>
+							)
+						})}
+					</div>
 				</div>
-			</div>
-		)
-	}
+			)
+		}
 
 	const handleBackClick = () => {
 		if (backLink) {

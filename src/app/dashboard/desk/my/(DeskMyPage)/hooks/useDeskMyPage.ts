@@ -91,8 +91,8 @@ export function useDeskMyPage() {
 		() =>
 			role === RoleEnum.LOGISTIC
 				? [
-						{ value: 'drivers', label: t('deskMy.tabs.myOffers') },
-						{ value: 'desk', label: t('deskMy.tabs.offersToMe') },
+						{ value: 'desk', label: t('deskMy.tabs.myOffers') },
+						{ value: 'drivers', label: t('deskMy.tabs.offersToMe') },
 					]
 				: [
 						{ value: 'drivers', label: t('deskMy.tabs.offersToMe') },

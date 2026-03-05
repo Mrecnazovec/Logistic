@@ -7,7 +7,7 @@ const messages: Record<string, string> = {
 	'history.status.in_process': 'В процессе',
 	'history.status.no_driver': 'Без водителя',
 	'history.status.paid': 'Оплачено',
-	'history.status.pending': 'В ожидании',
+	'history.status.pending': 'Ожидает',
 	'history.status.canceled': 'Отменено',
 
 	// HistoryPage.tsx
