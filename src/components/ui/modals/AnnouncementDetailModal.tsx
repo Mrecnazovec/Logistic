@@ -5,7 +5,7 @@ import { Star } from "lucide-react"
 import type { ReactNode } from "react"
 
 import { useI18n } from "@/i18n/I18nProvider"
-import { formatDateValue, formatPlace, formatPriceValue } from "@/lib/formatters"
+import { formatDateValue, formatPhoneValue, formatPlace, formatPriceValue } from "@/lib/formatters"
 import { getTransportName } from "@/shared/enums/TransportType.enum"
 import type { ICargoList } from "@/shared/types/CargoList.interface"
 import { ProfileLink } from "../actions/ProfileLink"
@@ -40,7 +40,7 @@ export function AnnouncementDetailModal({ cargo }: Props) {
 	const transportName = getTransportName(t, cargo.transport_type) || cargo.transport_type || EMPTY_VALUE
 	const phoneVisible = cargo.contact_pref === "phone" || cargo.contact_pref === "both"
 	const emailVisible = cargo.contact_pref === "email" || cargo.contact_pref === "both"
-	const phone = phoneVisible ? cargo.phone || EMPTY_VALUE : EMPTY_VALUE
+	const phone = phoneVisible ? formatPhoneValue(cargo.phone, EMPTY_VALUE) : EMPTY_VALUE
 	const email = emailVisible ? cargo.email || EMPTY_VALUE : EMPTY_VALUE
 	const ratingDisplay = Number.isFinite(cargo.company_rating) && cargo.company_rating > 0 ? cargo.company_rating.toFixed(1) : EMPTY_VALUE
 	const paymentMethod = paymentMethodRaw
@@ -108,7 +108,7 @@ export function AnnouncementDetailModal({ cargo }: Props) {
 						<DetailSection title={t("components.announcement.section.payment")}>
 							<DetailRow label={t("components.announcement.label.paymentMethod")} value={paymentMethod} />
 							<DetailRow label={t("components.announcement.label.email")} value={cargo.email || EMPTY_VALUE} />
-							<DetailRow label={t("components.announcement.label.phone")} value={cargo.phone || EMPTY_VALUE} />
+							<DetailRow label={t("components.announcement.label.phone")} value={formatPhoneValue(cargo.phone, EMPTY_VALUE)} />
 							<DetailRow label={t("components.announcement.label.price")} value={formattedPrice} />
 						</DetailSection>
 					</div>

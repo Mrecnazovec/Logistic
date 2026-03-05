@@ -4,7 +4,7 @@ import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
-import { formatDateValue, formatPlace, formatPriceValue, formatRelativeDate } from '@/lib/formatters'
+import { formatDateValue, formatPhoneValue, formatPlace, formatPriceValue, formatRelativeDate } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { getTransportName } from '@/shared/enums/TransportType.enum'
 import { ICargoList } from '@/shared/types/CargoList.interface'
@@ -82,7 +82,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 						/>
 						<InfoRow
 							label={t('announcements.expanded.label.phone')}
-							value={cargo.contact_pref === 'both' || cargo.contact_pref === 'phone' ? cargo.phone : EMPTY_VALUE}
+							value={cargo.contact_pref === 'both' || cargo.contact_pref === 'phone' ? formatPhoneValue(cargo.phone, EMPTY_VALUE) : EMPTY_VALUE}
 						/>
 						<InfoRow
 							label={t('announcements.expanded.label.email')}
@@ -135,7 +135,7 @@ export function ExpandedCargoRow({ cargo }: { cargo: ICargoList }) {
 					<dl className='space-y-2'>
 						<InfoRow label={t('announcements.expanded.payment.method')} value={paymentMethod} />
 						<InfoRow label={t('announcements.expanded.label.email')} value={cargo.email || EMPTY_VALUE} />
-						<InfoRow label={t('announcements.expanded.label.phone')} value={cargo.phone || EMPTY_VALUE} />
+						<InfoRow label={t('announcements.expanded.label.phone')} value={formatPhoneValue(cargo.phone, EMPTY_VALUE)} />
 						<InfoRow label={t('announcements.expanded.payment.price')} value={formattedPrice} />
 					</dl>
 				</div>

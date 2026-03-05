@@ -1,4 +1,4 @@
-import { DEFAULT_PLACEHOLDER } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatPhoneValue } from '@/lib/formatters'
 import { OrderStatusEnum } from '@/shared/enums/OrderStatus.enum'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { PaymentConfirmAction, PaymentPageTranslator, PaymentSection } from '../types/paymentPage.types'
@@ -19,6 +19,8 @@ type BuildConfirmActionParams = {
 
 export const withFallback = (value?: string | number | null) =>
 	value === null || value === undefined || value === '' ? DEFAULT_PLACEHOLDER : String(value)
+
+export const withPhoneFallback = (value?: string | null) => formatPhoneValue(value, DEFAULT_PLACEHOLDER)
 
 export const isPaymentAvailableByStatus = (status: OrderStatusEnum) =>
 	status === OrderStatusEnum.DELIVERED || status === OrderStatusEnum.PAID

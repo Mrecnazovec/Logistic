@@ -8,7 +8,7 @@ import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import { SortIcon } from '@/components/ui/table/SortIcon'
 import { cycleColumnSort } from '@/components/ui/table/utils'
 import { formatCurrencyValue } from '@/lib/currency'
-import { formatDateValue, formatPlace, parseDateToTimestamp } from '@/lib/formatters'
+import { formatDateValue, formatPhoneValue, formatPlace, parseDateToTimestamp } from '@/lib/formatters'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -113,7 +113,7 @@ export const getDeskMyColumns = (
 	{
 		accessorKey: 'phone',
 		header: t('deskMy.table.phone'),
-		cell: ({ row }) => row.original.phone ?? <Minus className='size-5' />,
+		cell: ({ row }) => (row.original.phone ? formatPhoneValue(row.original.phone, '-') : <Minus className='size-5' />),
 	},
 	{
 		accessorKey: 'email',

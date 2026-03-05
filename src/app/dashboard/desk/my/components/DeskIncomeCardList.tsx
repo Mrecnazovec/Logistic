@@ -10,11 +10,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
-import { formatDateValue, formatPlace, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { formatDateValue, formatPhoneValue, formatPlace, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
-import { Mail, MapPin, Phone, Scale, Truck, Wallet } from 'lucide-react'
+import { Mail, MapPin, Phone, Scale, Star, Truck, Wallet } from 'lucide-react'
 
 type DeskMyCardListProps = {
 	cargos: IOfferShort[]
@@ -54,7 +54,7 @@ function DeskDriverCard({ cargo, onOpenDecision, role, isUnread }: DeskDriverCar
 	const { variant, label } = getOfferStatusMeta(cargo, role, t)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
-	const contactPhone = cargo.phone || '-'
+	const contactPhone = formatPhoneValue(cargo.phone, '-')
 	const contactEmail = cargo.email || '-'
 	const rating = cargo.carrier_rating ?? '-'
 	const sections = [
@@ -105,13 +105,14 @@ function DeskDriverCard({ cargo, onOpenDecision, role, isUnread }: DeskDriverCar
 						<Badge variant={variant}>{label}</Badge>
 						{isUnread ? <span className='absolute -top-1 -right-1 size-2 rounded-full bg-error-500' /> : null}
 					</div>
+					
+					<UuidCopy uuid={cargo.cargo_uuid || String(cargo.id)} />
+				</div>
+				<div className='flex items-center flex-wrap gap-4 text-sm text-muted-foreground'>
 					<CardTitle className='text-lg font-semibold leading-tight text-foreground'>
 						{cargo.customer_full_name || '—'}
 					</CardTitle>
-					<UuidCopy uuid={cargo.cargo_uuid || String(cargo.id)} />
-				</div>
-				<div className='flex flex-wrap gap-4 text-sm text-muted-foreground'>
-					<span className='font-semibold text-foreground'>{t('deskMy.income.card.rating')}: {rating}</span>
+					<span className='flex items-center bg-star text-white px-2 py-1 rounded-2xl gap-1'>{rating} <Star className='size-4'/></span>
 				</div>
 			</CardHeader>
 
@@ -131,6 +132,8 @@ function DeskDriverCard({ cargo, onOpenDecision, role, isUnread }: DeskDriverCar
 					type='button'
 					onClick={() => onOpenDecision?.(cargo, { forceFull: true })}
 					className='flex-1 rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+					disabled={cargo.response_status === 'rejected'}
+
 				>
 					{t('deskMy.income.card.edit')}
 				</Button>

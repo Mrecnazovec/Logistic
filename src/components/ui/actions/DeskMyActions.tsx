@@ -39,6 +39,7 @@ export function DeskMyActions({ cargo, onOpenDecision }: CargoActionsDropdownPro
 						setOpen(false)
 					}}
 					className='flex items-center gap-2'
+					disabled={cargo.response_status === 'rejected'}
 				>
 					<Pencil className='size-4 text-muted-foreground' />
 					{t('components.deskMyActions.edit')}

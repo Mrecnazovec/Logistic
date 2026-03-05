@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/form-control/Label'
 import { NoPhoto } from '@/components/ui/NoPhoto'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { DASHBOARD_URL } from '@/config/url.config'
+import { formatPhoneValue } from '@/lib/formatters'
 import { LogOut, Pencil } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -175,7 +176,7 @@ export function ProfilePanel({
 						) : (
 							<Input
 								id='phone'
-								value={phoneValue}
+								value={formatPhoneValue(phoneValue, '')}
 								disabled
 								className='rounded-3xl bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80 disabled:opacity-100'
 								placeholder={t('cabinet.profile.phonePlaceholder')}

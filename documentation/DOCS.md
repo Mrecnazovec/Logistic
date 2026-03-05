@@ -170,6 +170,7 @@ getCurrencySymbol - returns currency symbol or code.
 formatCurrencyValue - formats number/string as currency with grouping.
 formatCurrencyPerKmValue - formats currency value and appends /km.
 formatDateValue - safe date formatting with pattern (default dd.MM.yyyy).
+formatPhoneValue - formats phone number by matching dial-code mask from lib/phoneMasks.json.
 formatDateTimeValue - formats date/time with Russian locale full date and time.
 formatRelativeDate - relative time formatting (min/hour/day ago).
 formatPlace - joins city/country with comma or placeholder.
