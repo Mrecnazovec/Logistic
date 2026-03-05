@@ -3,8 +3,22 @@ import { ru } from 'date-fns/locale'
 import type { Locale } from '@/i18n/config'
 
 import { formatCurrencyPerKmValue, formatCurrencyValue, type PriceCurrencyCode } from './currency'
+import phoneMasks from './phoneMasks.json'
 
 export const DEFAULT_PLACEHOLDER = '—'
+
+type PhoneMaskEntry = {
+	mask: string
+	prefixDigits: string
+}
+
+const PHONE_MASK_ENTRIES: PhoneMaskEntry[] = Array.from(new Set(Object.values(phoneMasks as Record<string, string>)))
+	.map((mask) => ({
+		mask,
+		prefixDigits: mask.split('#')[0]?.replace(/\D/g, '') ?? '',
+	}))
+	.filter((entry) => entry.prefixDigits.length > 0)
+	.sort((a, b) => b.prefixDigits.length - a.prefixDigits.length)
 
 export function formatDateValue(value?: string | number | Date | null, pattern = 'dd.MM.yyyy', placeholder = DEFAULT_PLACEHOLDER) {
 	if (!value) return placeholder
@@ -13,6 +27,54 @@ export function formatDateValue(value?: string | number | Date | null, pattern =
 	} catch {
 		return placeholder
 	}
+}
+
+export function formatPhoneValue(value?: string | null, placeholder = DEFAULT_PLACEHOLDER) {
+	if (value === null || value === undefined || value === '') return placeholder
+
+	const rawValue = String(value).trim()
+	if (!rawValue) return placeholder
+
+	const digits = rawValue.replace(/\D/g, '')
+	if (!digits) return rawValue
+
+	const matchedMask = PHONE_MASK_ENTRIES.find((entry) => digits.startsWith(entry.prefixDigits))
+	if (!matchedMask) return rawValue
+
+	let digitIndex = 0
+	let hasAnyPlaceholder = false
+	let formatted = ''
+
+	for (const symbol of matchedMask.mask) {
+		if (symbol === '#') {
+			hasAnyPlaceholder = true
+			if (digitIndex >= digits.length) break
+			formatted += digits[digitIndex]
+			digitIndex += 1
+			continue
+		}
+
+		if (symbol >= '0' && symbol <= '9') {
+			if (digitIndex < digits.length && digits[digitIndex] === symbol) {
+				digitIndex += 1
+			}
+			formatted += symbol
+			continue
+		}
+
+		if (!hasAnyPlaceholder && symbol === '+' && formatted.length === 0) {
+			formatted += symbol
+			continue
+		}
+
+		formatted += symbol
+	}
+
+	if (digitIndex < digits.length) {
+		formatted += digits.slice(digitIndex)
+	}
+
+	return formatted || rawValue
 }
 
 export function formatDateTimeValue(value?: string | number | Date | null, placeholder = DEFAULT_PLACEHOLDER) {

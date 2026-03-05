@@ -9,6 +9,7 @@ import { useI18n } from '@/i18n/I18nProvider'
 import {
 	DEFAULT_PLACEHOLDER,
 	formatDistanceKm,
+	formatPhoneValue,
 	formatPlace,
 	formatPriceValue,
 	formatRelativeDate
@@ -122,7 +123,7 @@ function AnnouncementCard({ cargo, showOriginRadius, showDestinationRadius }: An
 		},
 		{
 			title: t('announcements.card.phone'),
-			items: [{ icon: Phone, primary: canShowPhone ? cargo.phone : '-' }],
+			items: [{ icon: Phone, primary: canShowPhone ? formatPhoneValue(cargo.phone, '-') : '-' }],
 		},
 		{
 			title: t('announcements.card.email'),

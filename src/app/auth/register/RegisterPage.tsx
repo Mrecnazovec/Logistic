@@ -17,6 +17,7 @@ import LogistIcon from '@/app/svg/LogistIcon'
 import TruckIcon from '@/app/svg/TruckIcon'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/InputOTP'
 import { authService } from '@/services/auth/auth.service'
+import { formatPhoneValue } from '@/lib/formatters'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { getErrorMessage } from '@/utils/getErrorMessage'
@@ -46,6 +47,7 @@ export function RegisterPage() {
 	const transportName = form.watch('transport_name') ?? ''
 	const hasTransportName = transportName.trim().length > 0
 	const phoneValue = form.watch('phone') ?? ''
+	const phoneDisplayValue = formatPhoneValue(phoneValue, t('register.yourPhone'))
 
 	const roles = useMemo(
 		() => [
@@ -396,7 +398,7 @@ export function RegisterPage() {
 										{step === 4 && (
 											<div className='space-y-8'>
 												<p className='text-center text-muted-foreground'>
-													{t('register.otpSent', { phone: phoneValue || t('register.yourPhone') })}
+													{t('register.otpSent', { phone: phoneDisplayValue })}
 												</p>
 												<div className='flex justify-center'>
 													<InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>

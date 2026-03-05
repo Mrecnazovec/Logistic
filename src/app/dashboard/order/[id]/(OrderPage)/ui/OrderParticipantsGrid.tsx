@@ -1,5 +1,5 @@
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
-import { DEFAULT_PLACEHOLDER } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatPhoneValue } from '@/lib/formatters'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 
 type Props = {
@@ -16,6 +16,11 @@ const withFallback = (value?: string | number | null, id?: number | null, should
 	return String(value)
 }
 
+const withPhoneFallback = (value?: string | null, shouldHide?: boolean) => {
+	if (shouldHide) return DEFAULT_PLACEHOLDER
+	return formatPhoneValue(value, DEFAULT_PLACEHOLDER)
+}
+
 export function OrderParticipantsGrid({ t, order, hasDriver, shouldHideCustomerContactsForCarrier }: Props) {
 	return (
 		<div className='grid gap-15 lg:grid-cols-3'>
@@ -30,7 +35,7 @@ export function OrderParticipantsGrid({ t, order, hasDriver, shouldHideCustomerC
 						{ label: t('order.field.company'), value: withFallback(order.roles.customer.company) },
 						{
 							label: t('order.field.phone'),
-							value: withFallback(order.roles.customer.phone, null, shouldHideCustomerContactsForCarrier),
+							value: withPhoneFallback(order.roles.customer.phone, shouldHideCustomerContactsForCarrier),
 						},
 						{
 							label: t('order.field.email'),
@@ -46,7 +51,7 @@ export function OrderParticipantsGrid({ t, order, hasDriver, shouldHideCustomerC
 							value: withFallback(order.roles.logistic?.name, order.roles.logistic?.id),
 						},
 						{ label: t('order.field.company'), value: withFallback(order.roles.logistic?.company) },
-						{ label: t('order.field.phone'), value: withFallback(order.roles.logistic?.phone) },
+						{ label: t('order.field.phone'), value: withPhoneFallback(order.roles.logistic?.phone) },
 						{ label: t('order.field.email'), value: withFallback(order.roles.logistic?.email) },
 					],
 				},
@@ -58,7 +63,7 @@ export function OrderParticipantsGrid({ t, order, hasDriver, shouldHideCustomerC
 							value: hasDriver ? withFallback(order.roles.carrier?.name, order.roles.carrier?.id) : DEFAULT_PLACEHOLDER,
 						},
 						{ label: t('order.field.company'), value: withFallback(order.roles.carrier?.company) },
-						{ label: t('order.field.phone'), value: withFallback(order.roles.carrier?.phone) },
+						{ label: t('order.field.phone'), value: withPhoneFallback(order.roles.carrier?.phone) },
 						{ label: t('order.field.email'), value: withFallback(order.roles.carrier?.email) },
 					],
 				},

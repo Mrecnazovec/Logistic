@@ -1,6 +1,6 @@
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
-import { formatDateValue } from '@/lib/formatters'
+import { formatDateValue, formatPhoneValue } from '@/lib/formatters'
 import { EMPTY_VALUE } from '../constants/agreementPage.constants'
 import { withFallback } from '../lib/agreementPage.utils'
 
@@ -49,7 +49,7 @@ export function AgreementParticipantSection({
 				</p>
 				<p className='flex justify-between gap-6'>
 					<span className='text-grayscale'>{fieldPhoneLabel}</span>
-					<span className='text-end font-medium'>{withFallback(phone)}</span>
+					<span className='text-end font-medium'>{formatPhoneValue(phone, EMPTY_VALUE)}</span>
 				</p>
 				<p className='flex justify-between gap-6'>
 					<span className='text-grayscale'>{fieldEmailLabel}</span>

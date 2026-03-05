@@ -1,4 +1,4 @@
-import { DEFAULT_PLACEHOLDER, formatDateTimeValue } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatDateTimeValue, formatPhoneValue } from '@/lib/formatters'
 import type { IOrderDetail } from '@/shared/types/Order.interface'
 import type { DriverStatusBadgeMap, SharedOrderDriverStatusMeta, SharedOrderPageTranslator, SharedOrderSection } from '../types/sharedOrderPage.types'
 
@@ -38,7 +38,7 @@ export const buildParticipantSections = (order: IOrderDetail, t: SharedOrderPage
 				{ label: t('order.field.company'), value: withFallbackText(order.roles.customer.company) },
 				{
 					label: t('order.field.phone'),
-					value: withFallbackText(order.roles.customer.phone, order.roles.customer.hidden),
+					value: withFallbackText(formatPhoneValue(order.roles.customer.phone, DEFAULT_PLACEHOLDER), order.roles.customer.hidden),
 				},
 			],
 		},
@@ -53,7 +53,7 @@ export const buildParticipantSections = (order: IOrderDetail, t: SharedOrderPage
 				{ label: t('order.field.company'), value: withFallbackText(order.roles.logistic?.company) },
 				{
 					label: t('order.field.phone'),
-					value: withFallbackText(order.roles.logistic?.phone, order.roles.logistic?.hidden),
+					value: withFallbackText(formatPhoneValue(order.roles.logistic?.phone, DEFAULT_PLACEHOLDER), order.roles.logistic?.hidden),
 				},
 			],
 		},
@@ -70,7 +70,7 @@ export const buildParticipantSections = (order: IOrderDetail, t: SharedOrderPage
 				{ label: t('order.field.company'), value: withFallbackText(order.roles.carrier?.company) },
 				{
 					label: t('order.field.phone'),
-					value: withFallbackText(order.roles.carrier?.phone, order.roles.carrier?.hidden),
+					value: withFallbackText(formatPhoneValue(order.roles.carrier?.phone, DEFAULT_PLACEHOLDER), order.roles.carrier?.hidden),
 				},
 			],
 		},

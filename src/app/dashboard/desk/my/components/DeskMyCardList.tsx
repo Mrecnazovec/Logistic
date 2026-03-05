@@ -10,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { getOfferStatusMeta } from '@/components/ui/selectors/BadgeSelector'
 import type { ServerPaginationMeta } from '@/components/ui/table/DataTable'
 import { useI18n } from '@/i18n/I18nProvider'
-import { formatDateValue, formatPlace, formatPriceValue, formatWeightValue } from '@/lib/formatters'
+import { formatDateValue, formatPhoneValue, formatPlace, formatPriceValue, formatWeightValue } from '@/lib/formatters'
 import { getTransportSymbol, type TransportTypeEnum } from '@/shared/enums/TransportType.enum'
 import { RoleEnum } from '@/shared/enums/Role.enum'
 import { IOfferShort } from '@/shared/types/Offer.interface'
@@ -49,7 +49,7 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 	const { variant, label, highlight } = getOfferStatusMeta(cargo, role, t)
 	const formattedLoadDate = formatDateValue(cargo.load_date)
 	const formattedDeliveryDate = formatDateValue(cargo.delivery_date)
-	const contactPhone = cargo.phone || '-'
+	const contactPhone = formatPhoneValue(cargo.phone, '-')
 	const contactEmail = cargo.email || '-'
 	const sections = [
 		{
@@ -120,6 +120,7 @@ function DeskMyCard({ cargo, onOpenDecision, role }: DeskMyCardProps) {
 					type='button'
 					onClick={() => onOpenDecision?.(cargo, { forceFull: true })}
 					className='flex-1 rounded-full bg-brand text-white hover:bg-brand/90 disabled:opacity-60'
+					disabled={cargo.response_status === 'rejected'}
 				>
 					{t('deskMy.card.edit')}
 				</Button>

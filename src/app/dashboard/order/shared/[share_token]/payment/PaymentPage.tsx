@@ -6,7 +6,7 @@ import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetSharedOrder } from '@/hooks/queries/orders/useGet/useGetSharedOrder'
 import { useI18n } from '@/i18n/I18nProvider'
-import { DEFAULT_PLACEHOLDER } from '@/lib/formatters'
+import { DEFAULT_PLACEHOLDER, formatPhoneValue } from '@/lib/formatters'
 
 export function PaymentPage() {
 	const { t } = useI18n()
@@ -52,6 +52,7 @@ export function PaymentPage() {
 
 	const withFallback = (value?: string | number | null) =>
 		value === null || value === undefined || value === '' ? DEFAULT_PLACEHOLDER : String(value)
+	const withPhoneFallback = (value?: string | null) => formatPhoneValue(value, DEFAULT_PLACEHOLDER)
 
 	return (
 		<div className='space-y-8 rounded-4xl bg-background p-8'>
@@ -76,7 +77,7 @@ export function PaymentPage() {
 							<div className='flex items-center justify-between gap-6'>
 								<span className='text-grayscale'>{t('order.payment.field.phone')}</span>
 								<span className='text-end font-medium text-foreground'>
-									{withFallback(section.role?.phone)}
+									{withPhoneFallback(section.role?.phone)}
 								</span>
 							</div>
 							<div className='flex items-center justify-between gap-6'>

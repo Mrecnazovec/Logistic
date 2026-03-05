@@ -7,6 +7,7 @@ import {
 	DEFAULT_PLACEHOLDER,
 	formatDateValue,
 	formatDistanceKm,
+	formatPhoneValue,
 	formatPriceValue,
 	formatRelativeDate,
 	formatWeightValue,
@@ -128,7 +129,7 @@ export const getCargoColumns = (
 		accessorKey: 'phone',
 		header: t('announcements.table.phone'),
 		cell: ({ row }) => {
-			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return row.original.phone
+			if (row.original.contact_pref === 'phone' || row.original.contact_pref === 'both') return formatPhoneValue(row.original.phone, '-')
 			return <Minus className='size-5' />
 		},
 	},

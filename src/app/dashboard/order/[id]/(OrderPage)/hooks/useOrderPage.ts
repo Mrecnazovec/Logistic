@@ -60,7 +60,7 @@ export const useOrderPage = () => {
 	const orderCarrierId = order?.roles?.carrier?.id ?? null
 	const isOrderCustomer = Boolean(orderCustomerId && me?.id === orderCustomerId)
 	const isOrderCarrier = Boolean(orderCarrierId && me?.id === orderCarrierId)
-	const hasLogisticRole = Boolean(order?.roles?.logistic)
+	const hasLogisticRole = order?.roles?.logistic?.id !== 0 ? true : false
 	const canInviteDriver = Boolean(order && orderStatus === OrderStatusEnum.NODRIVER && isOrderLogistic)
 	const canCancelOrder = Boolean(order && (orderStatus === OrderStatusEnum.PENDING || orderStatus === OrderStatusEnum.NODRIVER))
 	const canToggleContacts =

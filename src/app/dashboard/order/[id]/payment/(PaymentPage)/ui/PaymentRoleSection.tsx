@@ -1,7 +1,7 @@
 import { UserRound } from 'lucide-react'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'
 import { DEFAULT_PLACEHOLDER } from '@/lib/formatters'
-import { withFallback } from '../lib/paymentPage.utils'
+import { withFallback, withPhoneFallback } from '../lib/paymentPage.utils'
 import type { PaymentPageTranslator, PaymentSection } from '../types/paymentPage.types'
 
 type PaymentRoleSectionProps = {
@@ -21,12 +21,12 @@ export function PaymentRoleSection({ section, t }: PaymentRoleSectionProps) {
 					<div className='flex items-center justify-between gap-6'>
 						<span className='text-grayscale'>{t('order.payment.field.fullName')}</span>
 						<span className='text-end font-medium text-foreground'>
-							{section.role ? <ProfileLink name={section.role.name} id={section.role.id} /> : DEFAULT_PLACEHOLDER}
+							{!section.role || section.role.hidden || section.role.hidden_by ? DEFAULT_PLACEHOLDER : <ProfileLink name={section.role.name} id={section.role.id} />}
 						</span>
 					</div>
 					<div className='flex items-center justify-between gap-6'>
 						<span className='text-grayscale'>{t('order.payment.field.phone')}</span>
-						<span className='text-end font-medium text-foreground'>{withFallback(section.role?.phone)}</span>
+						<span className='text-end font-medium text-foreground'>{withPhoneFallback(section.role?.phone)}</span>
 					</div>
 					<div className='flex items-center justify-between gap-6'>
 						<span className='text-grayscale'>{t('order.payment.field.company')}</span>
@@ -34,7 +34,7 @@ export function PaymentRoleSection({ section, t }: PaymentRoleSectionProps) {
 					</div>
 					<div className='flex items-center justify-between gap-6'>
 						<span className='text-grayscale'>{t('order.payment.field.email')}</span>
-						<span className='text-end font-medium text-foreground'>{withFallback(section.role?.login)}</span>
+						<span className='text-end font-medium text-foreground'>{withFallback(section.role?.email)}</span>
 					</div>
 				</div>
 				<div className='space-y-4'>
