@@ -32,7 +32,7 @@ type RatedMap = {
 	by_logistic?: RatedEntry
 }
 
-const getRatingsForRole = (order: IOrderList, role?: RoleEnum | null) => {
+export const getRatingsForRole = (order: IOrderList, role?: RoleEnum | null) => {
 	const rated = order.rated as RatedMap | null | undefined
 	if (!rated || !role) return []
 

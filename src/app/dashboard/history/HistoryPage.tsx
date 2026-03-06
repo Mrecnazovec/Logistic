@@ -75,7 +75,7 @@ export function HistoryPage() {
 	) : !results.length ? (
 		<EmptyTableState />
 	) : tableType === 'card' ? (
-		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} />
+		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} role={role} />
 	) : (
 		<DataTable
 			columns={columns}
@@ -91,7 +91,7 @@ export function HistoryPage() {
 	) : !results.length ? (
 		<EmptyTableState />
 	) : (
-		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} />
+		<HistoryCardList orders={results} serverPagination={serverPaginationMeta} onView={handleRowClick} role={role} />
 	)
 
 	return (
