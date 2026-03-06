@@ -65,7 +65,7 @@ export function AnalyticsPanel({
 							</DialogHeader>
 							<div className='space-y-4'>
 								<div className='flex flex-wrap items-center justify-between gap-3'>
-									<div className='flex flex-wrap gap-3'>
+									{/* <div className='flex flex-wrap gap-3'>
 										<Button
 											type='button'
 											variant='outline'
@@ -82,7 +82,7 @@ export function AnalyticsPanel({
 											{t('cabinet.analytics.periodHalf')}
 											<ChevronDown className='size-4 text-muted-foreground' />
 										</Button>
-									</div>
+									</div> */}
 									<div className='flex flex-wrap items-center gap-4 text-xs text-muted-foreground'>
 										{Object.entries(incomeChartConfig).map(([key, item]) => (
 											<div key={key} className='flex items-center gap-2'>
