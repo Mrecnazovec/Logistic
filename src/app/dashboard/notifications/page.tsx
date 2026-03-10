@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { Notifications } from './(Notifications)'
+import { Notifications } from './(Notifications)/Notifications'
 import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'

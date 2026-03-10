@@ -1,4 +1,4 @@
-import { InvitePage } from './(InvitePage)'
+import { InvitePage } from './(InvitePage)/InvitePage'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import { addLocaleToPath } from '@/i18n/paths'

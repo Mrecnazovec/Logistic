@@ -170,12 +170,11 @@ Make distinctions between files, for example, by leaving a comment indicating wh
    - `ui/` must not call API/services directly.
    - `lib/` must be pure (no React, no side effects).
    - Keep server/client boundary intact (do not accidentally pull client-only code into `page.tsx`).
-7. Add an `index.ts` barrel inside the route group folder if it simplifies imports (recommended, not mandatory).
-8. Remove dead code and duplication only when clearly unused.
-9. Run and fix:
+7. Remove dead code and duplication only when clearly unused.
+8. Run and fix:
    - `npm run lint`
    - `npm run build`
-10. Update `DOCS.md` after successful build:
+9. Update `DOCS.md` after successful build:
     - Add entries for newly created hooks/utils/services/enums/types/regex/components/stores.
     - Update entries when functionality changed.
     - Remove entries when corresponding files were deleted.

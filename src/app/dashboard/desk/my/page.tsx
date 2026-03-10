@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
-import { DeskMyPage } from './(DeskMyPage)'
+import { DeskMyPage } from './(DeskMyPage)/DeskMyPage'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 

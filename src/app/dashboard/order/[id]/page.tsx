@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
-import { OrderPage } from './(OrderPage)'
+import { OrderPage } from './(OrderPage)/OrderPage'
 import { OrderPageSkeleton } from './(OrderPage)/ui/OrderPageSkeleton'
 
 export const generateMetadata = async (): Promise<Metadata> => {

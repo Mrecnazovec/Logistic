@@ -1,1 +1,0 @@
-export { IdProfile } from './IdProfile'

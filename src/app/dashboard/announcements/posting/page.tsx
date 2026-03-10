@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { PostingEditPageSkeleton } from '@/components/ui/skeletons/PostingEditPageSkeleton'
-import { PostingPage } from './(PostingPage)'
+import { PostingPage } from './(PostingPage)/PostingPage'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 

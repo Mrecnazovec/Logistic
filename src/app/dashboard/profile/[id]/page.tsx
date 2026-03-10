@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
-import { IdProfile } from './(IdProfile)'
+import { IdProfile } from './(IdProfile)/IdProfile'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'

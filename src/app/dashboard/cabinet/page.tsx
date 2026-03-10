@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Cabinet } from './(Cabinet)'
+import { Cabinet } from './(Cabinet)/Cabinet'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 
