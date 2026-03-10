@@ -16,7 +16,9 @@ import { CircleCheck, Minus } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
-const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
+const DeskOffersModal = dynamic(() =>
+	import('@/components/ui/modals/DeskOffersModal/(DeskOffersModal)/DeskOffersModal').then((mod) => mod.DeskOffersModal),
+)
 
 export const getDeskRowClassName = (cargo: ICargoList) => {
 	const classes: string[] = []

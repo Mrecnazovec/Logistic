@@ -1,1 +1,0 @@
-export { DeskOffersModal } from './(DeskOffersModal)'

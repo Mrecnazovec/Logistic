@@ -1,1 +1,0 @@
-export { DeskInviteModal } from './DeskInviteModal'

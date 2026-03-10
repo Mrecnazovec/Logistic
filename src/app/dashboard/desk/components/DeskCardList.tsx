@@ -24,8 +24,12 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
 
-const DeskInviteModal = dynamic(() => import('@/components/ui/modals/DeskInviteModal').then((mod) => mod.DeskInviteModal))
-const DeskOffersModal = dynamic(() => import('@/components/ui/modals/DeskOffersModal/DeskOffersModal').then((mod) => mod.DeskOffersModal))
+const DeskInviteModal = dynamic(() =>
+	import('@/components/ui/modals/(DeskInviteModal)/DeskInviteModal').then((mod) => mod.DeskInviteModal),
+)
+const DeskOffersModal = dynamic(() =>
+	import('@/components/ui/modals/DeskOffersModal/(DeskOffersModal)/DeskOffersModal').then((mod) => mod.DeskOffersModal),
+)
 
 type DeskCardListProps = {
 	cargos: ICargoList[]

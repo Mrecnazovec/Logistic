@@ -9,7 +9,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
-import { DeskInviteModal } from '@/components/ui/modals/DeskInviteModal'
+import { DeskInviteModal } from '@/components/ui/modals/(DeskInviteModal)/DeskInviteModal'
 import { OfferModal } from '@/components/ui/modals/OfferModal'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useCancelLoad } from '@/hooks/queries/loads/useCancelLoad'

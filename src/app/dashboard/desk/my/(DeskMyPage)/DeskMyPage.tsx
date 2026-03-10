@@ -5,7 +5,7 @@ import { useDeskMyPage } from './hooks/useDeskMyPage'
 import { DeskMyView } from './ui/DeskMyView'
 
 const OfferDecisionModal = dynamic(() =>
-	import('@/components/ui/modals/OfferDecisionModal').then((mod) => mod.OfferDecisionModal),
+	import('@/components/ui/modals/(OfferDecisionModal)/OfferDecisionModal').then((mod) => mod.OfferDecisionModal),
 )
 
 export function DeskMyPage() {

@@ -20,10 +20,10 @@ import { OrderParticipantsGrid } from './OrderParticipantsGrid'
 import { OrderTripGrid } from './OrderTripGrid'
 
 const InviteDriverModal = dynamic(() =>
-	import('@/components/ui/modals/InviteDriverModal').then((mod) => mod.InviteDriverModal),
+	import('@/components/ui/modals/(InviteDriverModal)/InviteDriverModal').then((mod) => mod.InviteDriverModal),
 )
 const OrderRatingModal = dynamic(() =>
-	import('@/components/ui/modals/OrderRatingModal').then((mod) => mod.OrderRatingModal),
+	import('@/components/ui/modals/(OrderRatingModal)/OrderRatingModal').then((mod) => mod.OrderRatingModal),
 )
 
 export function OrderPageView() {
