@@ -13,6 +13,11 @@ export const getLocaleFromPath = (pathname: string): Locale | null => {
 	return locales.includes(candidate as Locale) ? (candidate as Locale) : null
 }
 
+export const resolveLocaleFromPath = (pathname?: string | null): Locale => {
+	if (!pathname) return defaultLocale
+	return getLocaleFromPath(pathname) ?? defaultLocale
+}
+
 export const stripLocaleFromPath = (pathname: string) => {
 	const locale = getLocaleFromPath(pathname)
 	if (!locale) return normalizePath(pathname)
@@ -23,9 +28,6 @@ export const stripLocaleFromPath = (pathname: string) => {
 
 export const addLocaleToPath = (pathname: string, locale: Locale) => {
 	const stripped = stripLocaleFromPath(pathname)
-	if (locale === defaultLocale) {
-		return stripped
-	}
 	const base = stripped === '/' ? '' : stripped
 	return `/${locale}${base}`
 }
