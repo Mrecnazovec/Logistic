@@ -11,7 +11,7 @@ import type { PriceCurrencyCode } from '@/lib/currency'
 import type { Metadata } from 'next'
 
 type PageProps = {
-	params: Promise<{ token?: string | string[] }>
+	params: Promise<{ locale: string; token?: string | string[] }>
 }
 
 const FALLBACK_SITE_URL = 'https://kad-one.com'
@@ -41,7 +41,7 @@ const getOrderInvitePreview = async (token?: string): Promise<InvitePreview | nu
 }
 
 export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
-	const locale = await getLocale()
+	const locale = await getLocale(params)
 	const messages = getMessages(locale)
 	const token = await resolveToken(params)
 	const invitePreview = await getOrderInvitePreview(token)
@@ -88,3 +88,4 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 export default function Page() {
 	return <InvitePage />
 }
+

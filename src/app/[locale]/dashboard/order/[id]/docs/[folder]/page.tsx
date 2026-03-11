@@ -1,14 +1,16 @@
+import { Suspense } from 'react'
 import { FolderPage } from './(FolderPage)/FolderPage'
 import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
+import { SuspensePageSkeleton } from '@/components/ui/skeletons/SuspensePageSkeleton'
 
 type PageProps = {
-	params: Promise<{ folder?: string | string[] }>
+	params: Promise<{ locale: string; folder?: string | string[] }>
 }
 
 export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
-	const locale = await getLocale()
+	const locale = await getLocale(params)
 	const messages = getMessages(locale)
 	const resolvedParams = await params
 	const folderParam = Array.isArray(resolvedParams?.folder) ? resolvedParams?.folder[0] : resolvedParams?.folder
@@ -21,5 +23,10 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 }
 
 export default function Page() {
-	return <FolderPage />
+	return (
+		<Suspense fallback={<SuspensePageSkeleton variant='detail' />}>
+			<FolderPage />
+		</Suspense>
+	)
 }
+

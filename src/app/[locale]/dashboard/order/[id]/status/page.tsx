@@ -5,8 +5,14 @@ import { Suspense } from 'react'
 import { StatusPage } from './(StatusPage)/StatusPage'
 import { StatusPageSkeleton } from './(StatusPage)/ui/StatusPageSkeleton'
 
-export const generateMetadata = async (): Promise<Metadata> => {
-	const locale = await getLocale()
+type PageProps = {
+	params: Promise<{ locale: string }>
+}
+
+export const generateMetadata = async ({
+	params,
+}: PageProps): Promise<Metadata> => {
+	const locale = await getLocale(params)
 	const messages = getMessages(locale)
 	return {
 		title: messages['order.status.meta.title'] ?? 'Status',
@@ -22,3 +28,4 @@ export default function Page() {
 		</Suspense>
 	)
 }
+

@@ -1,7 +1,7 @@
 'use client'
 
 import { Loader } from '@/components/ui/Loader'
-import { NotificationDetails } from '@/app/dashboard/notifications/NotificationDetails'
+import { NotificationDetails } from '@/app/[locale]/dashboard/notifications/NotificationDetails'
 import type { INotification } from '@/shared/types/Notification.interface'
 
 type NotificationsDetailsPanelProps = {

@@ -1,4 +1,4 @@
-import { getOrderStatusLabel } from '@/app/dashboard/history/orderStatusConfig'
+import { getOrderStatusLabel } from '@/app/[locale]/dashboard/history/orderStatusConfig'
 import { DASHBOARD_URL, withLocale } from '@/config/url.config'
 import type { Locale } from '@/i18n/config'
 import { RoleEnum } from '@/shared/enums/Role.enum'

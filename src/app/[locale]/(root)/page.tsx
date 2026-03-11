@@ -1,6 +1,6 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { HomePage } from './HomePage'
-import { defaultLocale, locales, type Locale } from '@/i18n/config'
+import { isLocale, locales, type Locale } from '@/i18n/config'
 import { addLocaleToPath } from '@/i18n/paths'
 
 const metadataBase = new URL(process.env.APP_URL ?? 'https://kad-one.com')
@@ -30,9 +30,13 @@ const homeSeo: Record<Locale, { title: string; description: string; keywords: st
 	},
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-	// Keep `/` SEO preview in Russian by default.
-	const locale: Locale = defaultLocale
+type PageProps = {
+	params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+	const { locale: routeLocale } = await params
+	const locale: Locale = isLocale(routeLocale) ? routeLocale : 'ru'
 	const { title, description, keywords } = homeSeo[locale]
 
 	return {

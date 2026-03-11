@@ -11,7 +11,7 @@ import { DEFAULT_PLACEHOLDER, formatPriceValue } from '@/lib/formatters'
 import type { components } from '@/shared/types/api'
 
 type PageProps = {
-	params: Promise<{ token?: string | string[] }>
+	params: Promise<{ locale: string; token?: string | string[] }>
 }
 
 type OpenInviteResponse = components['schemas']['OpenInviteResponse']
@@ -47,7 +47,7 @@ const getDeskInvitePreview = async (token?: string): Promise<OpenInviteResponse 
 }
 
 export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
-	const locale = await getLocale()
+	const locale = await getLocale(params)
 	const messages = getMessages(locale)
 	const token = await resolveToken(params)
 	const invitePreview = await getDeskInvitePreview(token)
@@ -94,3 +94,4 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
 export default function Page() {
 	return <InvitePage />
 }
+

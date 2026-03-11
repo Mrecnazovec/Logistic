@@ -5,7 +5,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/fo
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
 import { DatePicker } from '@/components/ui/selectors/DateSelector'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip'
-import { LocationMapPicker } from '@/app/dashboard/announcements/posting/(PostingPage)/ui/LocationMapPicker'
+import { LocationMapPicker } from '@/app/[locale]/dashboard/announcements/posting/(PostingPage)/ui/LocationMapPicker'
 import { useI18n } from '@/i18n/I18nProvider'
 import { cn } from '@/lib/utils'
 import { Home } from 'lucide-react'

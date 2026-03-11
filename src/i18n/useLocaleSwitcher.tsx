@@ -1,9 +1,8 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import Cookies from 'js-cookie'
+import { startTransition } from 'react'
 import type { Locale } from './config'
-import { localeCookie } from './config'
 import { addLocaleToPath, getLocaleFromPath } from './paths'
 
 export const useLocaleSwitcher = () => {
@@ -17,12 +16,9 @@ export const useLocaleSwitcher = () => {
 		}
 		const query = searchParams.toString()
 		const nextPath = `${addLocaleToPath(pathname, nextLocale)}${query ? `?${query}` : ''}`
-		Cookies.set(localeCookie, nextLocale, { path: '/' })
-		if (typeof window !== 'undefined') {
-			window.location.assign(nextPath)
-			return
-		}
-		router.replace(nextPath)
+		startTransition(() => {
+			router.replace(nextPath)
+		})
 	}
 
 	return { switchLocale }

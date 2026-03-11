@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/form-control/Input'
 import { Label } from '@/components/ui/form-control/Label'
 import { CitySelector } from '@/components/ui/selectors/CitySelector'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { useGetMe } from '@/hooks/queries/me/useGetMe'
 import { useUpdateMe } from '@/hooks/queries/me/useUpdateMe'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -26,6 +27,11 @@ export function SettingPage() {
     const { t } = useI18n()
     const { me, isLoading } = useGetMe()
     const { updateMe, isLoadingUpdateMe } = useUpdateMe()
+    const isHydrated = useSyncExternalStore(
+        () => () => undefined,
+        () => true,
+        () => false,
+    )
 
     const { register, handleSubmit, reset, setValue, control } = useForm<UpdateMeDto>({
         defaultValues: {
@@ -38,6 +44,7 @@ export function SettingPage() {
     const watchedCountryCode = useWatch({ control, name: 'profile.country_code' })
     const watchedCity = useWatch({ control, name: 'profile.city' }) || ''
     const watchedCountryName = useWatch({ control, name: 'profile.country' }) || ''
+    const isDisabled = !isHydrated || isLoading || isLoadingUpdateMe
 
     useEffect(() => {
         if (!me) return
@@ -57,6 +64,10 @@ export function SettingPage() {
         updateMe(toPayload(values))
     })
 
+    if (!isHydrated && !me) {
+        return <SettingPageSkeleton />
+    }
+
     return (
         <form onSubmit={onSubmit} className='rounded-[32px] bg-white p-6 shadow-sm md:p-8'>
             <div className='space-y-1'>
@@ -71,7 +82,7 @@ export function SettingPage() {
                         <Input
                             id='fullName'
                             placeholder={t('settings.profile.fullName.placeholder')}
-                            disabled={isLoading || isLoadingUpdateMe}
+                            disabled={isDisabled}
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
                             {...register('first_name')}
                         />
@@ -82,7 +93,7 @@ export function SettingPage() {
                         <Input
                             id='companyName'
                             placeholder={t('settings.profile.companyName.placeholder')}
-                            disabled={isLoading || isLoadingUpdateMe}
+                            disabled={isDisabled}
                             className='rounded-full bg-grayscale-50 text-[15px] placeholder:text-muted-foreground/80'
                             {...register('company_name')}
                         />
@@ -112,7 +123,7 @@ export function SettingPage() {
                             }}
                             countryName={watchedCountryName}
                             countryCode={watchedCountryCode || undefined}
-                            disabled={isLoading || isLoadingUpdateMe}
+                            disabled={isDisabled}
                             placeholder={t('settings.profile.city.placeholder')}
                         />
                     </div>
@@ -121,7 +132,7 @@ export function SettingPage() {
                 <div className='flex justify-end'>
                     <Button
                         type='submit'
-                        disabled={isLoadingUpdateMe}
+                        disabled={isDisabled}
                         className='h-11 rounded-full bg-success-500 px-6 text-sm font-medium text-white hover:bg-success-400 disabled:opacity-80'
                     >
                         {t('settings.profile.save')}
@@ -129,5 +140,31 @@ export function SettingPage() {
                 </div>
             </div>
         </form>
+    )
+}
+
+function SettingPageSkeleton() {
+    return (
+        <div className='rounded-[32px] bg-white p-6 shadow-sm md:p-8'>
+            <div className='space-y-2'>
+                <Skeleton className='h-7 w-56 rounded-full' />
+                <Skeleton className='h-4 w-72 rounded-full' />
+            </div>
+
+            <div className='mt-8 space-y-6'>
+                <div className='grid gap-5 md:grid-cols-2'>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <div key={index} className='space-y-2'>
+                            <Skeleton className='h-4 w-28 rounded-full' />
+                            <Skeleton className='h-11 w-full rounded-full' />
+                        </div>
+                    ))}
+                </div>
+
+                <div className='flex justify-end'>
+                    <Skeleton className='h-11 w-32 rounded-full' />
+                </div>
+            </div>
+        </div>
     )
 }

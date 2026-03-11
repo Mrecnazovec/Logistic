@@ -5,7 +5,7 @@ import {
 	getNotificationDetailsModel,
 	getNotificationRatedById,
 	getNotificationRatedUserId,
-} from '@/app/dashboard/notifications/notificationHelpers'
+} from '@/app/[locale]/dashboard/notifications/notificationHelpers'
 import { formatDateTimeValue } from '@/lib/formatters'
 import type { INotification } from '@/shared/types/Notification.interface'
 import { ProfileLink } from '@/components/ui/actions/ProfileLink'

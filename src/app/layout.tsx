@@ -4,9 +4,7 @@ import { Raleway, Manrope, Inter, Urbanist } from 'next/font/google'
 import './globals.css'
 import { SITE_NAME, SITE_URL, getLocalizedSeo } from '@/constants/seo.constants'
 import { Providers } from './provider'
-import { I18nProvider } from '@/i18n/I18nProvider'
-import { getMessages } from '@/i18n/messages'
-import { getLocale } from '@/i18n/getLocale'
+import { defaultLocale } from '@/i18n/config'
 
 // Code author: Aleksandr A. Salnikov (https://t.me/Sallexe_dev)
 
@@ -30,48 +28,40 @@ const urbanist = Urbanist({
 	subsets: ['latin'],
 })
 
-export const generateMetadata = async (): Promise<Metadata> => {
-	const locale = await getLocale()
-	const seo = getLocalizedSeo(locale)
+const seo = getLocalizedSeo(defaultLocale)
 
-	return {
-		metadataBase: new URL(SITE_URL),
-		title: {
-			absolute: SITE_NAME,
-			template: `%s | ${SITE_NAME}`,
-		},
+export const metadata: Metadata = {
+	metadataBase: new URL(SITE_URL),
+	title: {
+		absolute: SITE_NAME,
+		template: `%s | ${SITE_NAME}`,
+	},
+	description: seo.description,
+	keywords: seo.keywords,
+	openGraph: {
+		type: 'website',
+		siteName: SITE_NAME,
+		url: SITE_URL,
+		title: SITE_NAME,
 		description: seo.description,
-		keywords: seo.keywords,
-		alternates: {
-			canonical: SITE_URL,
-		},
-		openGraph: {
-			type: 'website',
-			siteName: SITE_NAME,
-			url: SITE_URL,
-			title: SITE_NAME,
-			description: seo.description,
-			locale: seo.ogLocale,
-		},
-		twitter: {
-			card: 'summary_large_image',
-			title: SITE_NAME,
-			description: seo.description,
-		},
-	}
+		locale: seo.ogLocale,
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: SITE_NAME,
+		description: seo.description,
+	},
 }
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const locale = await getLocale()
-	const messages = getMessages(locale)
 	const isProduction = process.env.NODE_ENV === 'production'
 
 	return (
-		<html lang={locale}>
+		<html lang={defaultLocale}>
 			<head>
 				<meta name='code-author' content='Aleksandr A. Salnikov, https://t.me/Sallexe_dev' />
 				<meta name='yandex-verification' content='0864d4dea57bccec' />
@@ -104,9 +94,7 @@ export default async function RootLayout({
 				) : null}
 			</head>
 			<body className={`${raleway.variable} ${manrope.variable} ${inter.variable} ${urbanist.variable} antialiased scroll-smooth`}>
-				<I18nProvider locale={locale} messages={messages}>
-					<Providers>{children}</Providers>
-				</I18nProvider>
+				<Providers>{children}</Providers>
 			</body>
 		</html>
 	)

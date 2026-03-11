@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/form-control/Form'
 import { LanguageSelect } from '@/components/ui/LanguageSelect'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { PUBLIC_URL } from '@/config/url.config'
 import { SITE_NAME } from '@/constants/seo.constants'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -22,7 +23,7 @@ import { RoleEnum } from '@/shared/enums/Role.enum'
 import { RegisterDto } from '@/shared/types/Registration.interface'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useMutation } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { RegisterCompanyFields, RegisterTransportField, RegisterVehicleFields } from './RegisterCarrier'
 import { RegisterRoles } from './RegisterRoles'
@@ -31,6 +32,14 @@ import { Logo } from '@/components/ui/Logo'
 const AUTH_FIELDS = ['username', 'password', 'password2'] as const
 const COMPANY_FIELDS = ['first_name', 'email', 'phone', 'country', 'country_code', 'city', 'company_name'] as const
 const VEHICLE_FIELDS = ['car_number', 'trailer_number', 'driver_license'] as const
+
+function RegisterLanguageSelect() {
+	return (
+		<Suspense fallback={<Skeleton className='h-12 w-32 rounded-full' />}>
+			<LanguageSelect />
+		</Suspense>
+	)
+}
 
 export function RegisterPage() {
 	const { t } = useI18n()
@@ -315,7 +324,7 @@ export function RegisterPage() {
 								{t('auth.signIn')}
 							</Button>
 						</Link>
-						<LanguageSelect />
+						<RegisterLanguageSelect />
 					</div>
 				</div>
 

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
-import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
+import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/[locale]/dashboard/history/orderStatusConfig'
 import { UuidCopy } from '@/components/ui/actions/UuidCopy'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'

@@ -1,4 +1,4 @@
-import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
+import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/[locale]/dashboard/history/orderStatusConfig'
 import { useGetSharedOrder } from '@/hooks/queries/orders/useGet/useGetSharedOrder'
 import { useI18n } from '@/i18n/I18nProvider'
 import { buildParticipantSections, getDocumentDisplayValue, getDriverStatusMeta } from '../lib/sharedOrderPage.utils'

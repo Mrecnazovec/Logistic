@@ -6,8 +6,14 @@ import { getLocale } from '@/i18n/getLocale'
 import { getMessages } from '@/i18n/messages'
 import type { Metadata } from 'next'
 
-export const generateMetadata = async (): Promise<Metadata> => {
-	const locale = await getLocale()
+type PageProps = {
+	params: Promise<{ locale: string }>
+}
+
+export const generateMetadata = async ({
+	params,
+}: PageProps): Promise<Metadata> => {
+	const locale = await getLocale(params)
 	const messages = getMessages(locale)
 	return {
 		title: messages['profile.meta.title'] ?? 'Profile',
@@ -21,3 +27,4 @@ export default function Page() {
 		</Suspense>
 	)
 }
+

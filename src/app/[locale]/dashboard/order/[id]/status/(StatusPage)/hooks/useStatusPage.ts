@@ -1,5 +1,5 @@
 ﻿import { useMemo } from 'react'
-import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/dashboard/history/orderStatusConfig'
+import { getOrderStatusLabel, getOrderStatusVariant } from '@/app/[locale]/dashboard/history/orderStatusConfig'
 import { useGetOrder } from '@/hooks/queries/orders/useGet/useGetOrder'
 import { useGetOrderStatusHistory } from '@/hooks/queries/orders/useGet/useGetOrderStatusHistory'
 import { useI18n } from '@/i18n/I18nProvider'

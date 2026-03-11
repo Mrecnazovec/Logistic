@@ -5,12 +5,24 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/form-control/Form'
 import { LanguageSelect } from '@/components/ui/LanguageSelect'
 import { Logo } from '@/components/ui/Logo'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { PUBLIC_URL } from '@/config/url.config'
 import { useI18n } from '@/i18n/I18nProvider'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { AuthFields } from './AuthField'
 import { useAuthForm } from './useAuthForm'
+
+function AuthLanguageSelect() {
+	return (
+		<Suspense fallback={<Skeleton className='h-12 w-32 rounded-full' />}>
+			<LanguageSelect
+				triggerClassName='data-[state=open]:[&_svg]:rotate-180 data-[state=open]:[&_svg]:transition-transform data-[state=open]:[&_svg]:duration-200 data-[state=open]:[&_svg]:text-white'
+			/>
+		</Suspense>
+	)
+}
 
 export function AuthPage() {
 	const { t } = useI18n()
@@ -36,9 +48,7 @@ export function AuthPage() {
 								{t('auth.signUp')}
 							</Button>
 						</Link>
-						<LanguageSelect
-							triggerClassName='data-[state=open]:[&_svg]:rotate-180 data-[state=open]:[&_svg]:transition-transform data-[state=open]:[&_svg]:duration-200 data-[state=open]:[&_svg]:text-white'
-						/>
+						<AuthLanguageSelect />
 					</div>
 				</div>
 				<div className='flex flex-1 items-center justify-center'>

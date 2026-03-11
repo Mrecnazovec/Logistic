@@ -1,4 +1,4 @@
-import { notificationTypeSamples } from '@/app/dashboard/notifications/notificationTypes'
+import { notificationTypeSamples } from '@/app/[locale]/dashboard/notifications/notificationTypes'
 
 export type NotificationsTab = 'all' | 'important'
 

@@ -1,4 +1,6 @@
-﻿## Hooks - ## Auth
+## Hooks
+
+## Auth
 
 useLogin - mutation for user login via authService.login; returns login/isLoading.
 useLogout - mutation for logout with token cleanup and page refresh.
@@ -9,8 +11,8 @@ useChangePassword - changes password via authService.changePassword.
 useResendVerify - mutation to resend verification email via authService.resendVerify.
 useVerifyEmail - mutation to verify email via authService.verifyEmail.
 useGetDashboardStats - fetches dashboard stats via authService.getDashboardStats.
-тест
- - ## Me
+
+## Me
 
 useGetAnalytics - fetches profile analytics via meService.getAnalytics.
 useGetMe - fetches current user profile via meService.getMe.
@@ -129,7 +131,7 @@ useUpdateRating - rating update via ratingsService.updateRating.
 useDebounce - returns a debounced value with a delay timer.
 useMediaQuery - subscribes to matchMedia for a media query string, returns boolean.
 useI18n - provides access to locale and t() from I18nProvider.
-useLocaleSwitcher - switches locale, updates cookie, and replaces the route.
+useLocaleSwitcher - switches locale by replacing the current locale-prefixed route without cookie persistence.
 useIsMobile - tracks viewport width and returns true when below the mobile breakpoint.
 useCabinetPage - composes cabinet page state, analytics/profile data mapping, and email/phone verification actions.
 useDeskMyPage - composes desk my-offers page state, tabs, unread indicators, table/card data, and decision modal state.
@@ -156,11 +158,11 @@ useDeskInviteModalState - composes desk-invite modal state (invite by id/link ac
 useOrderRouteMap - composes Yandex map lifecycle for order status map (geocoding points, routing, touch-behavior hint, and callbacks for remaining distance/driver location).
 useCarrierGpsSync - syncs carrier location to `/orders/gps`, deduplicates by capturedAt, and triggers periodic refresh every 15 minutes.
 /i18n - translation keys and locale messages directory.
-config.ts - locales list, Locale type, defaultLocale, localeCookie.
-getLocale - reads locale from cookie (server) with fallback to default.
+config.ts - locales list, Locale type, defaultLocale, and isLocale guard.
+getLocale - resolves locale from route params with fallback to defaultLocale.
 I18nProvider/useI18n - provider and hook for locale + t() with interpolation.
 languages.ts - languageOptions with labels/flags for selector UI.
-paths.ts - getLocaleFromPath/stripLocaleFromPath/addLocaleToPath helpers.
+paths.ts - locale-path helpers for reading, stripping, resolving, and prefixing locale segments.
 messages/index.ts - aggregates messages and getMessages(locale).
 
 ## Lib helpers
@@ -201,10 +203,6 @@ orderRating.utils - helpers for order-rating modal participants and existing rat
 InputOTP - OTP code input built on input-otp.
 transliterate - transliterates between Cyrillic and Latin characters.
 cn - merges className strings via clsx and tailwind-merge.
-getLocale - resolves locale from path/cookie on the server.
-getLocaleFromPath - extracts locale from a path if present.
-addLocaleToPath - prefixes a path with locale when needed.
-stripLocaleFromPath - removes locale prefix from a path.
 buildSearchDefaultValues - builds ISearch object from URLSearchParams with type coercion.
 buildPaginationItems - creates pagination page list with ellipsis handling for long ranges.
 getPageNumberFromUrl - extracts a valid positive page number from a URL search param.
@@ -310,23 +308,11 @@ PRODUCT_MAX_LENGTH - max length for product string (120).
 ## Components
 
 Badge - badge component built on shadcn/ui.
-getLocale - resolves locale from path/cookie on the server.
-getLocaleFromPath - extracts locale from a path if present.
-addLocaleToPath - prefixes a path with locale when needed.
-stripLocaleFromPath - removes locale prefix from a path.
 Button - shadcn button with variants.
-getLocale - resolves locale from path/cookie on the server.
-getLocaleFromPath - extracts locale from a path if present.
-addLocaleToPath - prefixes a path with locale when needed.
-stripLocaleFromPath - removes locale prefix from a path.
 Calendar - date picker using react-day-picker.
 I18nProvider - provides locale/messages context for translations.
 Card - card container components (Card/CardHeader/CardContent/CardFooter/CardTitle).
 Command - command palette component on shadcn/ui.
-getLocale - resolves locale from path/cookie on the server.
-getLocaleFromPath - extracts locale from a path if present.
-addLocaleToPath - prefixes a path with locale when needed.
-stripLocaleFromPath - removes locale prefix from a path.
 Container - layout wrapper with max width.
 Dialog - modal dialog built on Radix Dialog.
 DropdownMenu - Radix dropdown menu.
@@ -504,6 +490,7 @@ useTableTypeStore - Zustand store for current view mode (card/table) with setTab
 useSearchDrawerStore - Zustand store for opening/closing the shared search drawer.
 useOfferRealtimeStore - Zustand persisted store for unread offers with add/clear by offer or cargo and reset on logout.
 useAgreementRealtimeStore - Zustand persisted store for agreement update flag with mark/clear and reset on logout.
+
 
 
 
