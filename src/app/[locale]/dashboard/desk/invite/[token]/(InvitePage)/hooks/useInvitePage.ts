@@ -16,7 +16,7 @@ import { AxiosError } from 'axios'
 import { format } from 'date-fns'
 import { enUS, ru } from 'date-fns/locale'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 
 const EMPTY = '-'
@@ -74,10 +74,6 @@ export function useInvitePage() {
 	const formattedPricePerKm = formatCurrencyPerKmValue(cargo?.price_per_km, cargo?.price_currency as PriceCurrencyCode | undefined)
 	const isProcessing = isLoadingInvite || isLoadingAcceptOffer || isLoadingCounterOffer || isLoadingRejectOffer
 	const isOwnCargo = Boolean(me?.id && Number(cargo?.user_id) === me.id)
-
-	useEffect(() => {
-		if (!accessToken) router.replace(authHref)
-	}, [accessToken, authHref, router])
 
 	const onAccept = (offerId: number | null) => {
 		if (!offerId) {

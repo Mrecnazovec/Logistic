@@ -1,5 +1,5 @@
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { DASHBOARD_URL } from '@/config/url.config'
 import { useAcceptOrderInvite } from '@/hooks/queries/orders/useAcceptOrderInvite'
@@ -30,12 +30,6 @@ export function useInvitePage() {
 	const { declineOrderInvite, isLoadingDecline } = useDeclineOrderInvite()
 	const { confirmOrderTerms, isLoadingConfirmTerms } = useConfirmOrderTerms()
 	const { invitePreview, isLoading: isLoadingInvitePreview } = useGetInvitePreview(accessToken ? trimmedToken : '')
-
-	useEffect(() => {
-		if (!accessToken) {
-			router.replace(authHref)
-		}
-	}, [accessToken, authHref, router])
 
 	const isSubmitting = isLoadingAccept || isLoadingConfirmTerms || isLoadingDecline
 
