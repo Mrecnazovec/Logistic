@@ -63,6 +63,8 @@ export function ProfilePanel({
 	onOpenEmailModal,
 	onOpenPhoneModal,
 }: ProfilePanelProps) {
+	const canShowProfileActions = !isLoading
+
 	return (
 		<div className='lg:w-[32%] xl:w-[30%]'>
 			<Card className='h-full items-center rounded-[32px] border-none bg-background px-6 py-8 gap-0'>
@@ -89,14 +91,16 @@ export function ProfilePanel({
 								<span className='text-xs text-muted-foreground'>{t('cabinet.profile.id')}:</span>
 								<UuidCopy id={me?.id} isPlaceholder />
 							</div>
-							<Button
-								onClick={() => logout('')}
-								size='icon'
-								className='bg-error-500 hover:bg-error-400 absolute right-0 top-0 rounded-2xl'
-								disabled={isLoadingLogout}
-							>
-								<LogOut />
-							</Button>
+							{canShowProfileActions ? (
+								<Button
+									onClick={() => logout('')}
+									size='icon'
+									className='bg-error-500 hover:bg-error-400 absolute right-0 top-0 rounded-2xl'
+									disabled={isLoadingLogout}
+								>
+									<LogOut />
+								</Button>
+							) : null}
 						</>
 					)}
 				</div>
@@ -133,7 +137,7 @@ export function ProfilePanel({
 							<Label className='text-xs text-muted-foreground' htmlFor='email'>
 								{t('cabinet.profile.email')}
 							</Label>
-							{!isEmailMissing ? (
+							{canShowProfileActions && !isEmailMissing ? (
 								<Button type='button' variant='link' size='sm' className='h-auto px-0 text-xs text-brand' onClick={onOpenEmailModal}>
 									{t('cabinet.profile.emailEdit')}
 								</Button>
@@ -150,8 +154,8 @@ export function ProfilePanel({
 								placeholder={t('cabinet.profile.emailPlaceholder')}
 							/>
 						)}
-						{!isEmailVerified ? <p className='text-xs text-error-500'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
-						{shouldShowEmailActions ? (
+						{canShowProfileActions && !isEmailVerified ? <p className='text-xs text-error-500'>{t('cabinet.profile.emailNeedsVerify')}</p> : null}
+						{canShowProfileActions && shouldShowEmailActions ? (
 							<div className='pt-2'>
 								<Button type='button' variant='outline' disabled={isResendingVerify} onClick={onOpenEmailModal}>
 									{t('cabinet.profile.emailSendCode')}
@@ -165,7 +169,7 @@ export function ProfilePanel({
 							<Label className='text-xs text-muted-foreground' htmlFor='phone'>
 								{t('cabinet.profile.phone')}
 							</Label>
-							{!isPhoneMissing ? (
+							{canShowProfileActions && !isPhoneMissing ? (
 								<Button type='button' variant='link' size='sm' className='h-auto px-0 text-xs text-brand' onClick={onOpenPhoneModal}>
 									{t('cabinet.profile.phoneEdit')}
 								</Button>
@@ -182,7 +186,7 @@ export function ProfilePanel({
 								placeholder={t('cabinet.profile.phonePlaceholder')}
 							/>
 						)}
-						{isPhoneMissing ? (
+						{canShowProfileActions && isPhoneMissing ? (
 							<div className='pt-2'>
 								<Button
 									type='button'

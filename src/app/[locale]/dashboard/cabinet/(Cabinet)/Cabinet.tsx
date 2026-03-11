@@ -5,6 +5,7 @@ import { useCabinetPage } from './hooks/useCabinetPage'
 import { AnalyticsPanel } from './ui/AnalyticsPanel'
 import { ProfilePanel } from './ui/ProfilePanel'
 import dynamic from 'next/dynamic'
+import { useSyncExternalStore } from 'react'
 
 const CabinetEmailModal = dynamic(
 	() => import('@/components/ui/modals/CabinetEmailModal').then((mod) => mod.CabinetEmailModal),
@@ -54,6 +55,13 @@ export function Cabinet() {
 		handlePhoneSendCode,
 		handlePhoneVerifyCode,
 	} = useCabinetPage()
+	const isHydrated = useSyncExternalStore(
+		() => () => undefined,
+		() => true,
+		() => false,
+	)
+	const isProfileLoading = !isHydrated || isLoading
+	const isAnalyticsPanelLoading = !isHydrated || isLoadingAnalytics
 
 	return (
 		<div className='flex h-full flex-col gap-4 lg:flex-row lg:gap-6'>
@@ -62,7 +70,7 @@ export function Cabinet() {
 			<ProfilePanel
 				t={t}
 				me={me}
-				isLoading={isLoading}
+				isLoading={isProfileLoading}
 				isLoadingLogout={isLoadingLogout}
 				logout={logout}
 				profileFields={profileFields}
@@ -82,7 +90,7 @@ export function Cabinet() {
 
 			<AnalyticsPanel
 				t={t}
-				isLoadingAnalytics={isLoadingAnalytics}
+				isLoadingAnalytics={isAnalyticsPanelLoading}
 				detailCards={detailCards}
 				isRevenueOpen={isRevenueOpen}
 				setIsRevenueOpen={setIsRevenueOpen}
