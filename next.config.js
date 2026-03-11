@@ -2,6 +2,7 @@ const serverUrl = process.env.SERVER_URL ?? 'https://kad-one.com/api'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	cacheComponents: true,
 	env: {
 		APP_ENV: process.env.APP_ENV,
 		APP_URL: process.env.APP_URL,
@@ -17,7 +18,10 @@ const nextConfig = {
 		],
 	},
 	async rewrites() {
-		return [{ source: '/uploads/:path*', destination: `${serverUrl}/uploads/:path*` }]
+		return {
+			beforeFiles: [{ source: '/:locale(ru|en|uz)/monitoring', destination: '/monitoring' }],
+			afterFiles: [{ source: '/uploads/:path*', destination: `${serverUrl}/uploads/:path*` }],
+		}
 	},
 }
 

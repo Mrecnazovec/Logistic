@@ -1,10 +1,29 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { DASHBOARD_URL, PUBLIC_URL } from './config/url.config'
 import { addLocaleToPath, getLocaleFromPath, stripLocaleFromPath } from './i18n/paths'
-import { defaultLocale, localeCookie, locales, type Locale } from './i18n/config'
-import { Tokens } from './services/auth/auth-token.service'
+import { defaultLocale, isLocale, type Locale } from './i18n/config'
 
 const PUBLIC_FILE = /\.(.*)$/
+const IGNORED_PATHS = ['/monitoring', '/_next', '/api']
+const ACCESS_TOKEN_COOKIE = 'accessToken'
+
+const shouldIgnorePath = (pathname: string) => {
+	return IGNORED_PATHS.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)) || PUBLIC_FILE.test(pathname)
+}
+
+const isAuthPath = (pathname: string) => {
+	return pathname === '/auth' || pathname === '/auth/register'
+}
+
+const isDashboardPath = (pathname: string) => {
+	return pathname === '/dashboard' || pathname.startsWith('/dashboard/')
+}
+
+const isPublicDashboardInvitePath = (pathname: string) => {
+	return (
+		pathname.startsWith('/dashboard/desk/invite/') ||
+		pathname.startsWith('/dashboard/order/invite/')
+	)
+}
 
 const getLocaleFromHeader = (request: NextRequest): Locale | undefined => {
 	const header = request.headers.get('accept-language')
@@ -15,89 +34,50 @@ const getLocaleFromHeader = (request: NextRequest): Locale | undefined => {
 		.filter(Boolean) as string[]
 
 	for (const preference of preferences) {
-		if (locales.includes(preference as Locale)) {
-			return preference as Locale
-		}
+		if (isLocale(preference)) return preference
 		const base = preference.split('-')[0]
-		if (locales.includes(base as Locale)) {
-			return base as Locale
-		}
+		if (base && isLocale(base)) return base
 	}
 
 	return undefined
 }
 
-export async function proxy(request: NextRequest) {
-	const refreshToken = request.cookies.get(Tokens.REFRESH_TOKEN)?.value
+export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl
 
-	if (pathname.startsWith('/_next') || pathname.startsWith('/api') || PUBLIC_FILE.test(pathname)) {
+	if (shouldIgnorePath(pathname)) {
 		return NextResponse.next()
 	}
 
-	const pathnameLocale = getLocaleFromPath(pathname) ?? undefined
-	const cookieLocale = request.cookies.get(localeCookie)?.value as Locale | undefined
-	const preferredLocale =
-		(pathnameLocale as Locale | undefined) ??
-		(locales.includes(cookieLocale as Locale) ? cookieLocale : undefined) ??
-		getLocaleFromHeader(request) ??
-		defaultLocale
-	const activeLocale = preferredLocale ?? defaultLocale
-	const normalizedPath = stripLocaleFromPath(pathname)
-	const requestHeaders = new Headers(request.headers)
-	requestHeaders.set('x-locale', activeLocale)
-
-	const isAuthPage = normalizedPath.startsWith('/auth')
-	const isDashboard = normalizedPath.startsWith('/dashboard')
-	const isPublicDashboardInvite =
-		normalizedPath.startsWith('/dashboard/desk/invite/') ||
-		normalizedPath.startsWith('/dashboard/order/invite/')
-
-	if (isAuthPage && refreshToken) {
+	if (!getLocaleFromPath(pathname)) {
+		const referer = request.headers.get('referer')
+		const refererLocale = referer ? getLocaleFromPath(new URL(referer).pathname) : null
+		const activeLocale = refererLocale ?? getLocaleFromHeader(request) ?? defaultLocale
 		const redirectUrl = request.nextUrl.clone()
-		redirectUrl.pathname = addLocaleToPath(DASHBOARD_URL.home(), activeLocale)
-		const response = NextResponse.redirect(redirectUrl)
-		response.cookies.set(localeCookie, activeLocale, { path: '/' })
-		return response
+		redirectUrl.pathname = addLocaleToPath(pathname, isLocale(activeLocale) ? activeLocale : defaultLocale)
+		return NextResponse.redirect(redirectUrl)
 	}
 
-	if (isDashboard && !refreshToken && !isPublicDashboardInvite) {
+	const locale = getLocaleFromPath(pathname) ?? defaultLocale
+	const localizedPath = stripLocaleFromPath(pathname)
+	const hasAccessToken = Boolean(request.cookies.get(ACCESS_TOKEN_COOKIE)?.value)
+
+	if (hasAccessToken && isAuthPath(localizedPath)) {
 		const redirectUrl = request.nextUrl.clone()
-		const nextPath = `${pathname}${request.nextUrl.search}`
-		redirectUrl.pathname = addLocaleToPath(PUBLIC_URL.auth(), activeLocale)
-		redirectUrl.searchParams.set('next', nextPath)
-		const response = NextResponse.redirect(redirectUrl)
-		response.cookies.set(localeCookie, activeLocale, { path: '/' })
-		return response
+		redirectUrl.pathname = addLocaleToPath('/dashboard', locale)
+		redirectUrl.search = ''
+		return NextResponse.redirect(redirectUrl)
 	}
 
-	if (pathnameLocale === defaultLocale) {
+	if (!hasAccessToken && isDashboardPath(localizedPath) && !isPublicDashboardInvitePath(localizedPath)) {
 		const redirectUrl = request.nextUrl.clone()
-		redirectUrl.pathname = normalizedPath
-		const response = NextResponse.redirect(redirectUrl)
-		response.cookies.set(localeCookie, activeLocale, { path: '/' })
-		return response
+		redirectUrl.pathname = addLocaleToPath('/auth', locale)
+		redirectUrl.search = ''
+		redirectUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`)
+		return NextResponse.redirect(redirectUrl)
 	}
 
-	if (!pathnameLocale && activeLocale !== defaultLocale) {
-		const redirectUrl = request.nextUrl.clone()
-		redirectUrl.pathname = addLocaleToPath(pathname, activeLocale)
-		const response = NextResponse.redirect(redirectUrl)
-		response.cookies.set(localeCookie, activeLocale, { path: '/' })
-		return response
-	}
-
-	if (pathnameLocale && pathnameLocale !== defaultLocale) {
-		const rewriteUrl = request.nextUrl.clone()
-		rewriteUrl.pathname = normalizedPath
-		const response = NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } })
-		response.cookies.set(localeCookie, activeLocale, { path: '/' })
-		return response
-	}
-
-	const response = NextResponse.next({ request: { headers: requestHeaders } })
-	response.cookies.set(localeCookie, activeLocale, { path: '/' })
-	return response
+	return NextResponse.next()
 }
 
 export const config = {

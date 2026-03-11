@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Container } from '@/components/ui/Container'
 import { LanguageSelect } from '@/components/ui/LanguageSelect'
 import { Logo } from '@/components/ui/Logo'
+import { Skeleton } from '@/components/ui/Skeleton'
 import {
 	Sidebar,
 	SidebarContent,
@@ -18,7 +19,7 @@ import {
 import { useI18n } from '@/i18n/I18nProvider'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 const SECTION_IDS = ['main', 'info', 'how', 'contacts'] as const
 
@@ -73,7 +74,7 @@ function MobileSidebarContent({ items, activeId, onNavigate }: MobileSidebarCont
 							</SidebarMenuItem>
 							<SidebarMenuItem className='pt-2'>
 								<div onClick={(event) => event.stopPropagation()}>
-									<LanguageSelect
+									<DeferredLanguageSelect
 										triggerClassName='w-full justify-between rounded-full border border-white/20 bg-foreground text-white hover:bg-white/20 '
 										contentClassName='rounded-2xl'
 									/>
@@ -102,6 +103,17 @@ function MobileSidebarTrigger() {
 		>
 			<Menu className='size-5' />
 		</Button>
+	)
+}
+
+function DeferredLanguageSelect(props: {
+	triggerClassName?: string
+	contentClassName?: string
+}) {
+	return (
+		<Suspense fallback={<Skeleton className='h-12 w-32 rounded-full bg-white/20' />}>
+			<LanguageSelect {...props} />
+		</Suspense>
 	)
 }
 
@@ -171,7 +183,7 @@ export function Header() {
 						))}
 					</ul>
 					<div className='hidden md:flex items-center gap-3 ml-auto'>
-						<LanguageSelect
+						<DeferredLanguageSelect
 							triggerClassName='border border-white/20 bg-white/10 text-white hover:bg-white/20 data-[state=open]:bg-white/20'
 							contentClassName='rounded-2xl'
 						/>

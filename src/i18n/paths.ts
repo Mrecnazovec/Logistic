@@ -1,4 +1,4 @@
-import { defaultLocale, locales, type Locale } from './config'
+import { defaultLocale, isLocale, type Locale } from './config'
 
 const normalizePath = (pathname: string) => {
 	if (!pathname) return '/'
@@ -10,7 +10,12 @@ export const getLocaleFromPath = (pathname: string): Locale | null => {
 	const normalized = normalizePath(pathname)
 	const segments = normalized.split('/')
 	const candidate = segments[1]
-	return locales.includes(candidate as Locale) ? (candidate as Locale) : null
+	return candidate && isLocale(candidate) ? candidate : null
+}
+
+export const resolveLocaleFromPath = (pathname?: string | null): Locale => {
+	if (!pathname) return defaultLocale
+	return getLocaleFromPath(pathname) ?? defaultLocale
 }
 
 export const stripLocaleFromPath = (pathname: string) => {
@@ -23,9 +28,6 @@ export const stripLocaleFromPath = (pathname: string) => {
 
 export const addLocaleToPath = (pathname: string, locale: Locale) => {
 	const stripped = stripLocaleFromPath(pathname)
-	if (locale === defaultLocale) {
-		return stripped
-	}
 	const base = stripped === '/' ? '' : stripped
 	return `/${locale}${base}`
 }
