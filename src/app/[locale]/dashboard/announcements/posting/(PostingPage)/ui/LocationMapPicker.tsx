@@ -42,6 +42,24 @@ declare global {
 
 const DEFAULT_POINT: MapPoint = { lat: 41.3111, lng: 69.2797 }
 
+const waitForVisibleContainer = (node: HTMLDivElement, maxFrames = 12) =>
+	new Promise<void>((resolve) => {
+		let frame = 0
+
+		const check = () => {
+			const { width, height } = node.getBoundingClientRect()
+			if ((width > 0 && height > 0) || frame >= maxFrames) {
+				resolve()
+				return
+			}
+
+			frame += 1
+			window.requestAnimationFrame(check)
+		}
+
+		check()
+	})
+
 const extractGeoObjectAddress = (geoObject: any): string => {
 	if (!geoObject) return ''
 
@@ -220,6 +238,9 @@ export function LocationMapPicker({
 			setLoadError(null)
 
 			try {
+				await waitForVisibleContainer(mapContainerNode)
+				if (isCancelled || !mapContainerNode) return
+
 				const ymaps = await loadYandexMaps(apiKey, resolveYandexLang(locale))
 				if (isCancelled || !mapContainerNode) return
 				ymapsRef.current = ymaps
@@ -232,11 +253,13 @@ export function LocationMapPicker({
 				})
 
 				mapRef.current = map
-				setTimeout(() => {
-					if (mapRef.current) {
-						mapRef.current.container.fitToViewport()
-					}
-				}, 0)
+				window.requestAnimationFrame(() => {
+					window.requestAnimationFrame(() => {
+						if (mapRef.current) {
+							mapRef.current.container.fitToViewport()
+						}
+					})
+				})
 
 				const setPlacemark = (point: MapPoint) => {
 					const geometry = [point.lat, point.lng]
@@ -343,10 +366,27 @@ export function LocationMapPicker({
 		if (!dialogOpen) return
 		const map = mapRef.current
 		if (!map) return
-		setTimeout(() => {
-			map.container.fitToViewport()
-		}, 0)
+		window.requestAnimationFrame(() => {
+			window.requestAnimationFrame(() => {
+				map.container.fitToViewport()
+			})
+		})
 	}, [dialogOpen, isMapFullscreen])
+
+	useEffect(() => {
+		if (!dialogOpen || !mapContainerNode) return
+
+		const observer = new ResizeObserver(() => {
+			if (!mapRef.current) return
+			window.requestAnimationFrame(() => {
+				mapRef.current?.container.fitToViewport()
+			})
+		})
+
+		observer.observe(mapContainerNode)
+
+		return () => observer.disconnect()
+	}, [dialogOpen, mapContainerNode])
 
 	const coordsText = selectedPoint
 		? `${selectedPoint.lat.toFixed(6)}, ${selectedPoint.lng.toFixed(6)}`
