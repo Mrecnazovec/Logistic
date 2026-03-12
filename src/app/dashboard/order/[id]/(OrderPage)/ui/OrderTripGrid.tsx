@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { AddressLink } from '@/components/ui/actions/AddressLink'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DEFAULT_PLACEHOLDER, formatDateValue, formatDistanceKm, formatPriceValue } from '@/lib/formatters'
@@ -73,7 +74,7 @@ export function OrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<span className='text-end font-medium'>{withFallback(order.origin_address)}</span>
+					<AddressLink address={order.origin_address} city={order.origin_city} />
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.loadDate')}</span>
@@ -101,7 +102,10 @@ export function OrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<span className='text-end font-medium'>{withFallback(order.destination_address)}</span>
+					<AddressLink
+						address={order.destination_address}
+						city={order.destination_city}
+					/>
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.unloadDate')}</span>

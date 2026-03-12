@@ -1,3 +1,4 @@
+import { AddressLink } from '@/components/ui/actions/AddressLink'
 import { Badge } from '@/components/ui/Badge'
 import {
 	DEFAULT_PLACEHOLDER,
@@ -39,7 +40,7 @@ export function SharedOrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<span className='text-end font-medium'>{order.origin_address ?? DEFAULT_PLACEHOLDER}</span>
+					<AddressLink address={order.origin_address} city={order.origin_city} />
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.loadDate')}</span>
@@ -59,7 +60,10 @@ export function SharedOrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<span className='text-end font-medium'>{order.destination_address ?? DEFAULT_PLACEHOLDER}</span>
+					<AddressLink
+						address={order.destination_address}
+						city={order.destination_city}
+					/>
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.unloadDate')}</span>

@@ -1,3 +1,4 @@
+import { AddressLink } from '@/components/ui/actions/AddressLink'
 import { formatDateValue, formatPriceValue } from '@/lib/formatters'
 import type { IAgreementDetail } from '@/shared/types/Agreement.interface'
 import { EMPTY_VALUE } from '../constants/agreementPage.constants'
@@ -25,7 +26,10 @@ export function AgreementTripDetails({ agreement, totalDistance, travelTime, pay
 						</p>
 						<p className='flex items-center justify-between gap-6'>
 							<span className='text-muted-foreground'>{t('order.agreement.field.street')}</span>
-							<span className='text-end font-medium'>{withFallback(agreement.loading_address)}</span>
+							<AddressLink
+								address={agreement.loading_address}
+								city={agreement.loading_city}
+							/>
 						</p>
 						<p className='flex items-center justify-between gap-6'>
 							<span className='text-muted-foreground'>{t('order.agreement.field.date')}</span>
@@ -45,7 +49,10 @@ export function AgreementTripDetails({ agreement, totalDistance, travelTime, pay
 						</p>
 						<p className='flex items-center justify-between gap-6'>
 							<span className='text-muted-foreground'>{t('order.agreement.field.street')}</span>
-							<span className='text-end font-medium'>{withFallback(agreement.unloading_address)}</span>
+							<AddressLink
+								address={agreement.unloading_address}
+								city={agreement.unloading_city}
+							/>
 						</p>
 						<p className='flex items-center justify-between gap-6'>
 							<span className='text-muted-foreground'>{t('order.agreement.field.date')}</span>
