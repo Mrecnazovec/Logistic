@@ -377,6 +377,7 @@ DeskMyActions - quick actions for my dashboard items.
 DeskOfferQuickActions - quick offer actions (accept/reject/contacts).
 OrdersActionsDropdown - order actions menu.
 UuidCopy - copy UUID to clipboard with tooltip.
+AddressLink - clickable address text that opens Yandex Maps with address/city/country query or shows placeholder when address is missing.
 CounterOfferModal - modal to send counter offer.
 DeskInviteModal - modal with offer details and actions.
 DeskOffersModal - modal with offers list for cargo/order.
