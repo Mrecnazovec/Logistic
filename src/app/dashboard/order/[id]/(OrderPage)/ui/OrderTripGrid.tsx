@@ -43,6 +43,13 @@ export function OrderTripGrid({
 	mobileAfterUnloadingSlot,
 	mobileActionsSlot,
 }: Props) {
+	const orderWithCoordinates = order as IOrderDetail & {
+		origin_lat?: number | string | null
+		origin_lng?: number | string | null
+		dest_lat?: number | string | null
+		dest_lng?: number | string | null
+	}
+
 	const renderDocumentAction = (
 		hasDocument: boolean,
 		documentDate: string,
@@ -74,7 +81,12 @@ export function OrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<AddressLink address={order.origin_address} city={order.origin_city} />
+					<AddressLink
+						address={order.origin_address}
+						city={order.origin_city}
+						lat={orderWithCoordinates.origin_lat}
+						lng={orderWithCoordinates.origin_lng}
+					/>
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.loadDate')}</span>
@@ -105,6 +117,8 @@ export function OrderTripGrid({
 					<AddressLink
 						address={order.destination_address}
 						city={order.destination_city}
+						lat={orderWithCoordinates.dest_lat}
+						lng={orderWithCoordinates.dest_lng}
 					/>
 				</p>
 				<p className='flex justify-between gap-3'>
