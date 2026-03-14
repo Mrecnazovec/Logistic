@@ -56,10 +56,10 @@ function TransportationMyCard({ cargo, role }: TransportationMyCardProps) {
 		? t('transportation.card.label.carrier')
 		: t('transportation.card.label.customer')
 	const customerCarrierValue = role === RoleEnum.CUSTOMER
-		? cargo.roles?.carrier?.name
+		? cargo.roles?.carrier?.company
 		: shouldHideCustomerForCarrier
 			? placeholder
-			: cargo.roles?.customer?.name
+			: cargo.roles?.customer?.company
 	const customerCarrierId = role === RoleEnum.CUSTOMER
 		? cargo.roles?.carrier?.id
 		: shouldHideCustomerForCarrier
@@ -69,8 +69,8 @@ function TransportationMyCard({ cargo, role }: TransportationMyCardProps) {
 		? t('transportation.card.label.carrier')
 		: t('transportation.card.label.logistic')
 	const logisticCarrierValue = role === RoleEnum.LOGISTIC
-		? cargo.roles?.carrier?.name
-		: cargo.roles?.logistic?.name
+		? cargo.roles?.carrier?.company
+		: cargo.roles?.logistic?.company
 	const logisticCarrierId = role === RoleEnum.LOGISTIC
 		? cargo.roles?.carrier?.id
 		: cargo.roles?.logistic?.id

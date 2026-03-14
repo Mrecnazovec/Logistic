@@ -22,7 +22,7 @@
 	'order.section.transport': 'Параметры перевозки',
 	'order.section.finance': 'Финансы',
 	'order.field.customer': 'Заказчик',
-	'order.field.logistic': 'Логист',
+	'order.field.logistic': 'Посредник',
 	'order.field.carrier': 'Перевозчик',
 	'order.field.company': 'Компания',
 	'order.field.phone': 'Телефон',

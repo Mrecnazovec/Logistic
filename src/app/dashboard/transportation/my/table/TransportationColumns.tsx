@@ -12,7 +12,7 @@ type Translator = (key: string, params?: Record<string, string | number>) => str
 
 const getPrimaryPartyName = (row: IOrderList, role: RoleEnum | undefined, placeholder: string) => {
 	if (role === RoleEnum.CUSTOMER) {
-		return row.roles.carrier?.name ?? placeholder
+		return row.roles.carrier?.company ?? placeholder
 	}
 
 	const shouldHideCustomerForCarrier =
@@ -22,7 +22,7 @@ const getPrimaryPartyName = (row: IOrderList, role: RoleEnum | undefined, placeh
 		return placeholder
 	}
 
-	return row.roles.customer?.name ?? placeholder
+	return row.roles.customer?.company ?? placeholder
 }
 
 export const createTransportationColumns = (t: Translator, role?: RoleEnum): ColumnDef<IOrderList>[] => [
@@ -32,15 +32,15 @@ export const createTransportationColumns = (t: Translator, role?: RoleEnum): Col
 				cell: ({ row }) => <UuidCopy id={row.original.id} />,
 		},
 		{
-				accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_name' : 'customer_name',
+				accessorKey: role === RoleEnum.CUSTOMER ? 'carrier_company' : 'customer_company',
 				header: role === RoleEnum.CUSTOMER ? t('transportation.columns.carrier') : t('transportation.columns.customer'),
 				cell: ({ row }) => getPrimaryPartyName(row.original, role, t('transportation.card.placeholder')),
 
 		},
 		{
-				accessorKey: role === RoleEnum.LOGISTIC ? 'carrier_name' : 'logistic_name',
+				accessorKey: role === RoleEnum.LOGISTIC ? 'carrier_company' : 'logistic_company',
 				header: role === RoleEnum.LOGISTIC ? t('transportation.columns.carrier') : t('transportation.columns.logistic'),
-				cell: ({ row }) => (role === RoleEnum.LOGISTIC ? row.original.roles.carrier?.name : row.original.roles.logistic?.name),
+				cell: ({ row }) => (role === RoleEnum.LOGISTIC ? row.original.roles.carrier?.company : row.original.roles.logistic?.company),
 		},
 		{
 				id: 'origin',

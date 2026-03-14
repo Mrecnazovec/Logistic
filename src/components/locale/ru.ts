@@ -255,7 +255,7 @@
 	'components.offerLog.no': 'Нет',
 	'components.offerLog.payment.cash': 'Наличные',
 	'components.offerLog.payment.cashless': 'Безнал',
-	'components.offerLog.initiator.logistic': 'Логист',
+	'components.offerLog.initiator.logistic': 'Посредник',
 	'components.offerLog.initiator.customer': 'Заказчик',
 	'components.offerLog.initiator.carrier': 'Перевозчик',
 	'components.offerLog.change.price': 'Цена',

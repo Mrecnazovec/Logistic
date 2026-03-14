@@ -16,11 +16,11 @@ export const createTransportationColumns = (t: Translator): ColumnDef<IOrderList
         cell: ({ row }) => <UuidCopy id={row.original.id} />,
     },
     {
-        accessorKey: 'carrier_name',
+        accessorKey: 'carrier_company',
         header: t('transportation.columns.carrier'),
     },
     {
-        accessorKey: 'logistic_name',
+        accessorKey: 'logistic_company',
         header: t('transportation.columns.logistic'),
     },
     {
