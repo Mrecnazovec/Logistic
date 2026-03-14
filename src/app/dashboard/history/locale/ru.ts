@@ -17,7 +17,7 @@ const messages: Record<string, string> = {
 	// HistoryColumns.tsx
 	'history.table.customer': 'Заказчик',
 	'history.table.carrier': 'Перевозчик',
-	'history.table.logistic': 'Логист',
+	'history.table.logistic': 'Посредник',
 	'history.table.status': 'Статус',
 	'history.table.origin': 'Отправление',
 	'history.table.destination': 'Назначение',
@@ -27,7 +27,7 @@ const messages: Record<string, string> = {
 	'history.table.rating': 'Рейтинг',
 	'history.table.rating.customer': 'Заказчик',
 	'history.table.rating.carrier': 'Перевозчик',
-	'history.table.rating.logistic': 'Логист',
+	'history.table.rating.logistic': 'Посредник',
 	'history.placeholder': '-',
 
 	// HistoryCardList.tsx
@@ -37,7 +37,7 @@ const messages: Record<string, string> = {
 	'history.card.section.price': 'Стоимость',
 	'history.card.section.documents': 'Документы',
 	'history.card.customer': 'Заказчик',
-	'history.card.logistic': 'Логист',
+	'history.card.logistic': 'Посредник',
 	'history.card.carrier': 'Перевозчик',
 	'history.card.load': 'Погрузка',
 	'history.card.unload': 'Выгрузка',

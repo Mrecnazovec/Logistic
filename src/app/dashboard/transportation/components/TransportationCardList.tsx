@@ -46,9 +46,9 @@ type TransportationCardProps = {
 function TransportationCard({ cargo }: TransportationCardProps) {
 	const { t } = useI18n()
 	const placeholder = t('transportation.card.placeholder')
-	const logisticName = cargo.roles?.logistic?.name ?? cargo.logistic_name
+	const logisticName = cargo.roles?.logistic?.company ?? cargo.logistic_company
 	const logisticId = cargo.roles?.logistic?.id
-	const carrierName = cargo.roles?.carrier?.name ?? cargo.carrier_name
+	const carrierName = cargo.roles?.carrier?.company ?? cargo.carrier_company
 	const carrierId = cargo.roles?.carrier?.id
 	const sections: CardSection[] = [
 		...(logisticName
