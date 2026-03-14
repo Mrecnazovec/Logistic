@@ -30,6 +30,13 @@ export function SharedOrderTripGrid({
 	driverStatusMeta,
 	t,
 }: SharedOrderTripGridProps) {
+	const orderWithCoordinates = order as IOrderDetail & {
+		origin_lat?: number | string | null
+		origin_lng?: number | string | null
+		dest_lat?: number | string | null
+		dest_lng?: number | string | null
+	}
+
 	return (
 		<div className='grid gap-15 lg:grid-cols-3'>
 			<div className='space-y-3'>
@@ -40,7 +47,12 @@ export function SharedOrderTripGrid({
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.address')}</span>
-					<AddressLink address={order.origin_address} city={order.origin_city} />
+					<AddressLink
+						address={order.origin_address}
+						city={order.origin_city}
+						lat={orderWithCoordinates.origin_lat}
+						lng={orderWithCoordinates.origin_lng}
+					/>
 				</p>
 				<p className='flex justify-between gap-3'>
 					<span className='text-grayscale'>{t('order.field.loadDate')}</span>
@@ -63,6 +75,8 @@ export function SharedOrderTripGrid({
 					<AddressLink
 						address={order.destination_address}
 						city={order.destination_city}
+						lat={orderWithCoordinates.dest_lat}
+						lng={orderWithCoordinates.dest_lng}
 					/>
 				</p>
 				<p className='flex justify-between gap-3'>
